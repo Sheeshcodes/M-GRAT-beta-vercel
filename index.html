@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Maximo Application Suite — Growth readiness assessment</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans+Condensed:wght@400&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@300&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Carbon Web Components (v2) -->
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/button.min.js"></script>
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/checkbox.min.js"></script>
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/radio-button.min.js"></script>
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/toggle-tip.min.js"></script>
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/progress-bar.min.js"></script>
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/notification.min.js"></script>
+
+  <link rel="stylesheet" href="css/styles.css" />
+
+</head>
+<body>
+  <div class="page">
+    <!-- ============================================================ -->
+    <!-- Sidebar                                                       -->
+    <!-- ============================================================ -->
+    <aside class="sidebar" aria-label="Assessment overview">
+      <div class="sidebar__head">
+        <p class="sidebar__product">
+          <strong id="product-name">Maximo Application Suite</strong><br />
+          <span id="product-subtitle">Growth readiness assessment</span>
+        </p>
+        <p class="sidebar__version" id="product-version">v.1</p>
+      </div>
+
+      <div class="sidebar__hero">
+        <h1 class="sidebar__title" id="page-title"></h1>
+        <p class="sidebar__page" id="page-counter" aria-live="polite"></p>
+      </div>
+
+      <a class="sidebar__logo" href="https://www.ibm.com" aria-label="IBM">
+        <img src="assets/ibm-logo.svg" alt="IBM" width="54" height="20" />
+      </a>
+      <div class="sidebar__art" aria-hidden="true">
+        <img src="assets/sidebar-artwork.png" alt="" />
+      </div>
+    </aside>
+
+    <!-- ============================================================ -->
+    <!-- Main content — sections are rendered from data/assessment.js -->
+    <!-- ============================================================ -->
+    <main class="main">
+      <form class="content" id="assessment-form" novalidate>
+        <div class="progress">
+          <cds-progress-bar
+            id="progress"
+            label="Assessment progress"
+            hide-label
+            size="small"
+            value="0"
+            max="100"
+          ></cds-progress-bar>
+        </div>
+
+        <div class="sections" id="sections"></div>
+
+        <cds-inline-notification
+          id="form-error"
+          class="form-error"
+          kind="error"
+          low-contrast
+          hide-close-button
+          title="Some required questions are unanswered."
+          subtitle="Answer every highlighted item to continue."
+          hidden
+        ></cds-inline-notification>
+
+        <div class="actions-bar" id="actions-bar">
+          <div class="actions">
+            <cds-button id="btn-back" kind="secondary" size="lg" type="button">Back</cds-button>
+            <cds-button id="btn-next" kind="primary" size="lg" type="submit">
+              Next
+              <svg slot="icon" class="btn-icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                <path d="M18 6 16.57 7.393 24.15 15 4 15 4 17 24.15 17 16.57 24.573 18 26 28 16 18 6z"/>
+              </svg>
+            </cds-button>
+          </div>
+        </div>
+      </form>
+    </main>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
