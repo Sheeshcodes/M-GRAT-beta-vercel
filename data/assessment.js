@@ -1,6 +1,6 @@
 /**
  * GENERATED FILE — do not edit by hand.
- * Built from Logic/Question_Binder_Sep17.xlsx by scripts/build_assessment.py.
+ * Built from Logic/Question_Binder_Sep20.xlsx by scripts/build_assessment.py.
  * To update the questions: edit the workbook, then run
  *   python3 scripts/build_assessment.py
  *
@@ -12,7 +12,7 @@ export default {
   "product": "Maximo Application Suite",
   "subtitle": "Growth readiness assessment",
   "version": "beta v3",
-  "source": "Question_Binder_Sep17.xlsx",
+  "source": "Question_Binder_Sep20.xlsx",
   "pages": [
     {
       "id": "goals",
