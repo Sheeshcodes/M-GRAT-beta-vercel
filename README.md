@@ -14,8 +14,8 @@ A static web assessment built with IBM Carbon Web Components. Questions come fro
 | `data/assessment.js` | Generated questions — **do not hand-edit** | No |
 | `scripts/build_assessment.py` | Compiler: reads the Question Binder workbook, writes `data/assessment.js` | Only if the binder gains a new column or type |
 | `scripts/serve.py` | Dev server on `127.0.0.1:8765` with caching off; watches the binder and recompiles on save | Rarely |
-| `Logic/Question_Binder_Sep17.xlsx` | **Source of truth** for all questions, options, milestone mapping, scoring metadata | Yes — this is how content changes |
-| `Logic/Milestone_Register_Sep17.xlsx` | Milestone definitions referenced by the binder (not yet read by code) | For the scoring step |
+| `Logic/Question_Binder_Sep20.xlsx` | **Source of truth** for all questions, options, milestone mapping, scoring metadata | Yes — this is how content changes |
+| `Logic/Milestone_Register_Sep20.xlsx` | Milestone definitions referenced by the binder (not yet read by code) | For the scoring step |
 | `assets/` | `ibm-logo.svg`, `sidebar-artwork.png` (2000×1128, transparent) | Only to swap art |
 
 ---
@@ -69,10 +69,10 @@ Page composition is the `PAGES` list at the top of `build_assessment.py`. A Grou
 
 ## Making content changes
 
-Edit **`Logic/Question_Binder_Sep17.xlsx`** while `serve.py` is running — it recompiles automatically. Saving the workbook is the only change workflow for content.
+Edit **`Logic/Question_Binder_Sep20.xlsx`** while `serve.py` is running — it recompiles automatically. Saving the workbook is the only change workflow for content.
 
 ### Edit a question (wording, options, metadata)
-1. Open `Logic/Question_Binder_Sep17.xlsx`
+1. Open `Logic/Question_Binder_Sep20.xlsx`
 2. Go to the relevant content sheet (`Objectives`, `Obstacles`, `Milestone Qs`, or `Growth Appetite`)
 3. Find the row by its **Question ID** and edit the cell(s)
 4. **Save the workbook** (`Cmd+S`)
