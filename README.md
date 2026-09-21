@@ -23,7 +23,7 @@ A static web assessment built with IBM Carbon Web Components. Questions come fro
 ## Run locally
 
 ```bash
-cd ~/Documents/GitHub/M-GRAT-beta-v3 && python3 scripts/serve.py
+cd ~/Documents/GitHub/M-GRAT && python3 scripts/serve.py
 ```
 
 Then open **http://127.0.0.1:8765/** in a browser.
