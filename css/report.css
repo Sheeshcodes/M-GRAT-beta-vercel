@@ -51,6 +51,7 @@
   background: #ffffff;
   box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.1);
   min-height: 100vh;
+  overflow-x: clip; /* clip unlike hidden does not create a scroll container, so position:sticky still works */
 }
 
 /* --------------------------------------------------------------------------
