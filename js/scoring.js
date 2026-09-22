@@ -11,19 +11,19 @@
  * `answers` is the state.answers object from app.js.
  * `assessment` is the default export from data/assessment.js.
  * Returns a scoringResult object consumed by js/report.js.
+ *
+ * Milestones come from data/report_data.js, which scripts/build_report_data.py
+ * compiles from the Milestone Register. Nothing is fetched at runtime, so the
+ * engine also works inside the single-file standalone build.
  */
 
-// milestone_graph.json is loaded lazily on first score() call (no bundler in this project).
-let _milestoneGraph = null;
-async function getMilestoneGraph() {
-  if (_milestoneGraph) return _milestoneGraph;
-  const res = await fetch("Logic/milestone_graph.json");
-  _milestoneGraph = await res.json();
-  return _milestoneGraph;
-}
+import reportData from "../data/report_data.js";
+
+const MILESTONES = reportData.milestones;
+const MILESTONE_BY_ID = Object.fromEntries(MILESTONES.map(m => [m.id, m]));
 
 /* --------------------------------------------------------------------------
-   Dimension config (8 active scored dimensions, weights from guide §3)
+   Dimension config (8 active scored dimensions, weights from guide §4)
    -------------------------------------------------------------------------- */
 const DIMENSIONS = [
   { id: "DIM-AD",  name: "Asset data",                       weight: 0.15, track: "Shared",
@@ -46,37 +46,54 @@ const DIMENSIONS = [
     isLadder: true, ladderQuestionId: "Q-FSM-AS" },
 ];
 
+const MAX_STAGE = 5;
+
 /* --------------------------------------------------------------------------
-   Stage gating milestones (highest stage with ALL gating milestones met)
-   apm_stage / fsm_stage on each node defines which stage it gates.
+   Question helpers
    -------------------------------------------------------------------------- */
-function parseStageNumber(stageStr) {
-  // "APM1" -> 1, "FSM2" -> 2, "APM 2/3" -> take first
-  if (!stageStr) return null;
-  const m = stageStr.replace(/[A-Za-z\s]/g, "").split("/")[0];
-  return parseInt(m, 10) || null;
+function mainQuestions(assessment) {
+  const questions = [];
+  assessment.pages.forEach(page => {
+    if (page.followUp) return;
+    page.sections.forEach(sec => sec.questions.forEach(q => questions.push(q)));
+  });
+  return questions;
+}
+
+function findQuestion(assessment, id) {
+  return mainQuestions(assessment).find(q => q.id === id) || null;
+}
+
+/** Milestones the questionnaire actually asks about — the only ones that can gate a stage. */
+function assessedMilestoneIds(assessment) {
+  const ids = new Set();
+  mainQuestions(assessment).forEach(q => {
+    (q.rows || []).forEach(r => r.milestoneId && ids.add(r.milestoneId));
+    (q.options || []).forEach(o => o.milestoneId && ids.add(o.milestoneId));
+  });
+  return ids;
+}
+
+/** "APM 2/3/4" -> [2,3,4] */
+function stageNumbers(value) {
+  return String(value || "")
+    .replace(/[^0-9/]/g, "")
+    .split("/")
+    .map(Number)
+    .filter(Boolean);
 }
 
 /* --------------------------------------------------------------------------
    Pass 1 — Milestone state resolution
    Returns milestoneStates: { [milestoneId]: "MET" | "UNMET" | "UNKNOWN" }
    -------------------------------------------------------------------------- */
-function resolvePass1(answers, assessment, milestoneGraph) {
+function resolvePass1(answers, assessment) {
   const states = {};
 
   // Helper: set if not already set (first definitive resolution wins)
   const set = (id, state) => { if (id && !states[id]) states[id] = state; };
 
-  // Collect all questions across all non-followUp pages
-  const questions = [];
-  assessment.pages.forEach(page => {
-    if (page.followUp) return;
-    page.sections.forEach(sec => {
-      sec.questions.forEach(q => questions.push(q));
-    });
-  });
-
-  questions.forEach(q => {
+  mainQuestions(assessment).forEach(q => {
     const answer = answers[q.id];
 
     // ── Group (matrix) questions ──────────────────────────────────────────
@@ -116,26 +133,26 @@ function resolvePass1(answers, assessment, milestoneGraph) {
 
     // ── Ladder (radio) questions — Implied-Met and Floor logic ────────────
     if (q.type === "radio" && q.binderType === "milestone-ladder" && q.ladder) {
-      const selectedValue = answer;
-      const selectedOption = q.options.find(o => o.value === selectedValue);
-      const selectedOrder = selectedOption?.order ?? -1;
+      const selectedOption = q.options.find(o => o.value === answer);
 
+      if (!selectedOption) {
+        // Unanswered ladder -> every rung Unknown (binder: "Unanswered = all Unknown")
+        q.options.forEach(opt => set(opt.milestoneId, "UNKNOWN"));
+        return;
+      }
+
+      const selectedOrder = selectedOption.order ?? 0;
       q.options.forEach(opt => {
-        if (!opt.milestoneId) return; // floor or null milestones
+        if (!opt.milestoneId) return; // floor rung carries no milestone
         const optOrder = opt.order ?? 0;
-        if (optOrder <= selectedOrder) {
-          set(opt.milestoneId, "MET");   // implied-met: at or below selected rung
-        } else {
-          set(opt.milestoneId, "UNMET"); // above selected rung
-        }
+        // Implied-met: the chosen rung and everything below it are met.
+        set(opt.milestoneId, optOrder <= selectedOrder ? "MET" : "UNMET");
       });
     }
   });
 
-  // Any milestone referenced but not yet resolved → UNKNOWN
-  milestoneGraph.nodes.forEach(n => {
-    if (!states[n.id]) states[n.id] = "UNKNOWN";
-  });
+  // Any milestone in the register not touched by a question stays Unknown
+  MILESTONES.forEach(m => { if (!states[m.id]) states[m.id] = "UNKNOWN"; });
 
   return states;
 }
@@ -143,15 +160,16 @@ function resolvePass1(answers, assessment, milestoneGraph) {
 /* --------------------------------------------------------------------------
    Pass 2 — Baseline scoring, current stages, top strengths
    -------------------------------------------------------------------------- */
-function scorePass2(milestoneStates, answers, assessment, milestoneGraph) {
+function scorePass2(milestoneStates, assessment) {
+  const assessedIds = assessedMilestoneIds(assessment);
+
   // Dimension scores
   const dimensionScores = DIMENSIONS.map(dim => {
     let score;
     if (dim.isLadder) {
-      // Ladder: score = (highest met rung index) / (max rung index)
-      const metRung = dim.milestoneIds.reduce((highest, mid, idx) => {
-        return milestoneStates[mid] === "MET" ? idx + 1 : highest;
-      }, 0);
+      // Ladder: score = (highest met rung) / (number of rungs)
+      const metRung = dim.milestoneIds.reduce((highest, mid, idx) =>
+        milestoneStates[mid] === "MET" ? idx + 1 : highest, 0);
       score = Math.round((metRung / dim.milestoneIds.length) * 100);
     } else {
       const total = dim.milestoneIds.length;
@@ -161,65 +179,70 @@ function scorePass2(milestoneStates, answers, assessment, milestoneGraph) {
     return { ...dim, score };
   });
 
-  // Overall Maturity Index = weighted sum of 8 dimension scores
+  // Overall Maturity Index = weighted sum of the 8 dimension scores
   const maturityScore = Math.round(
     dimensionScores.reduce((sum, d) => sum + d.score * d.weight, 0)
   );
 
-  // Level label thresholds
-  function levelLabel(score) {
+  function levelFor(score) {
     if (score >= 80) return { level: 4, label: "Advanced operations" };
     if (score >= 60) return { level: 3, label: "Optimising operations" };
     if (score >= 35) return { level: 2, label: "Core operations established" };
     return               { level: 1, label: "Building foundations" };
   }
-  const { level, label: levelLabel_ } = levelLabel(maturityScore);
+  const { level, label: levelLabel } = levelFor(maturityScore);
 
-  // Current APM/FSM stage — highest contiguous stage (starting from Stage 1)
-  // where ALL gating milestones assessable/active are MET.
-  // A stage is attained only if all required milestones for that stage are MET,
-  // excluding unassessed/under-review milestones.
-  function currentStage(track) {
+  /**
+   * Current stage per track (guide §3, Pass 2): the highest stage whose gating
+   * milestones are ALL met, walking up from stage 1 and stopping at the first
+   * stage that is not fully met.
+   *
+   * Only milestones the questionnaire asks about can gate a stage — the register
+   * carries capabilities that are deliberately unassessed (Work Execution, HSE,
+   * AIP), and those must not hold a customer back or push them forward.
+   * A stage with no assessed milestones is treated as passed-through.
+   */
+  function attainedStage(track) {
     let attained = 0;
-    for (let s = 1; s <= 5; s++) {
-      const stageKey = `${track}${s}`;
-      const gatingMilestones = milestoneGraph.nodes.filter(n => {
-        const stageField = track === "APM" ? n.apm_stage : n.fsm_stage;
-        return stageField === stageKey && !n.is_under_review;
-      });
-      if (gatingMilestones.length === 0) break;
-      const allMet = gatingMilestones.every(n => milestoneStates[n.id] === "MET");
-      if (allMet) {
-        attained = s;
-      } else {
-        break;
-      }
+    for (let s = 1; s <= MAX_STAGE; s++) {
+      const gating = MILESTONES.filter(m =>
+        (track === "APM" ? m.apmStage : m.fsmStage) === s && assessedIds.has(m.id)
+      );
+      if (gating.length === 0) { attained = Math.max(attained, s - 1); continue; }
+      const allMet = gating.every(m => milestoneStates[m.id] === "MET");
+      if (!allMet) break;
+      attained = s;
     }
-    return attained;
+    return attained; // 0 = stage 1 not yet earned
   }
+  const attainedAPM = attainedStage("APM");
+  const attainedFSM = attainedStage("FSM");
 
-  // Top 3 met milestones by "depth" (how many milestones in their dimension are MET)
-  const metMilestones = milestoneGraph.nodes.filter(n =>
-    milestoneStates[n.id] === "MET" && !n.is_under_review
-  );
-  // Group by pillar, pick top pillars by met count, take one representative milestone each
-  const pillarMet = {};
-  metMilestones.forEach(n => {
-    pillarMet[n.pillar] = (pillarMet[n.pillar] || []).concat(n);
+  // Foundational strengths: met milestones, deepest pillars first, one per pillar
+  const byPillar = {};
+  MILESTONES.forEach(m => {
+    if (milestoneStates[m.id] !== "MET") return;
+    (byPillar[m.pillar] = byPillar[m.pillar] || []).push(m);
   });
-  const topPillars = Object.entries(pillarMet)
-    .sort((a, b) => b[1].length - a[1].length)
-    .slice(0, 3)
-    .map(([, nodes]) => nodes[0].id);
+  const establishedMilestoneIds = Object.values(byPillar)
+    .sort((a, b) => b.length - a.length)
+    // within a pillar, showcase the highest level the customer has actually reached
+    .map(list => [...list].sort((a, b) => b.level - a.level)[0].id)
+    .slice(0, 3);
 
   return {
     maturityScore,
     level,
-    levelLabel: levelLabel_,
+    levelLabel,
     dimensionScores,
-    currentAPMStage: currentStage("APM"),
-    currentFSMStage: currentStage("FSM"),
-    establishedMilestoneIds: topPillars,
+    // Stage 1 is the entry point, so that is what the report shows even before
+    // its milestones are earned. Prioritisation uses the true attained stage.
+    currentAPMStage: Math.max(1, attainedAPM),
+    currentFSMStage: Math.max(1, attainedFSM),
+    attainedAPMStage: attainedAPM,
+    attainedFSMStage: attainedFSM,
+    establishedMilestoneIds,
+    assessedIds,
   };
 }
 
@@ -227,127 +250,150 @@ function scorePass2(milestoneStates, answers, assessment, milestoneGraph) {
    Pass 3 — Target stages from selected objectives (Q-OBJ)
    -------------------------------------------------------------------------- */
 function targetStagesPass3(answers, assessment) {
-  // Find Q-OBJ question
-  let objQuestion = null;
-  assessment.pages.forEach(p => p.sections.forEach(s =>
-    s.questions.forEach(q => { if (q.id === "Q-OBJ") objQuestion = q; })
-  ));
+  const objQuestion = findQuestion(assessment, "Q-OBJ");
+  const selected = Array.isArray(answers["Q-OBJ"]) ? answers["Q-OBJ"] : [];
 
-  const selectedObjectives = Array.isArray(answers["Q-OBJ"]) ? answers["Q-OBJ"] : [];
+  let targetAPMStage = 1, targetFSMStage = 1;
+  const objectiveLabels = [];
 
-  let maxAPM = 1, maxFSM = 1;
-
-  selectedObjectives.forEach(val => {
+  selected.forEach(val => {
     const opt = objQuestion?.options.find(o => o.value === val);
     if (!opt) return;
-
-    // Parse "APM 2/3/4" -> take max number
-    if (opt.apmStage) {
-      const nums = opt.apmStage.replace(/[^0-9/]/g, "").split("/").map(Number).filter(Boolean);
-      maxAPM = Math.max(maxAPM, ...nums);
-    }
-    if (opt.fsmStage) {
-      const nums = opt.fsmStage.replace(/[^0-9/]/g, "").split("/").map(Number).filter(Boolean);
-      maxFSM = Math.max(maxFSM, ...nums);
-    }
+    objectiveLabels.push(opt.label);
+    const apm = stageNumbers(opt.apmStage);
+    const fsm = stageNumbers(opt.fsmStage);
+    if (apm.length) targetAPMStage = Math.max(targetAPMStage, ...apm);
+    if (fsm.length) targetFSMStage = Math.max(targetFSMStage, ...fsm);
   });
 
-  return { targetAPMStage: maxAPM, targetFSMStage: maxFSM };
+  return { targetAPMStage, targetFSMStage, objectiveLabels };
 }
 
 /* --------------------------------------------------------------------------
-   Pass 4 — Top 3 action prioritisation
+   Pass 4 — Action prioritisation
+
+   Strict hierarchical sort from guide §3 — no numeric score blending:
+     1. isGatingNext  DESC  (gates the next stage the customer has not reached)
+     2. isUnlocked    DESC  (every prerequisite already met)
+     3. level         ASC   (lower levels first)
+     4. obstacleMatch DESC  (2 = primary, 1 = secondary, 0 = none)
+     5. id            ASC   (stable tie-break)
    -------------------------------------------------------------------------- */
-function prioritisePass4(milestoneStates, pass2, pass3, answers, assessment, milestoneGraph) {
-  const { currentAPMStage, currentFSMStage } = pass2;
+function prioritisePass4(milestoneStates, pass2, pass3, answers, assessment) {
+  const { attainedAPMStage, attainedFSMStage, assessedIds } = pass2;
   const { targetAPMStage, targetFSMStage } = pass3;
 
-  // Find obstacles question
-  let obsQuestion = null;
-  assessment.pages.forEach(p => p.sections.forEach(s =>
-    s.questions.forEach(q => { if (q.id === "Q-OBS") obsQuestion = q; })
-  ));
-  const selectedObstacles = Array.isArray(answers["Q-OBS"]) ? answers["Q-OBS"] : [];
+  // The first stage not yet earned — stage 1 while its own milestones are open.
+  const nextAPMStage = Math.min(attainedAPMStage + 1, MAX_STAGE);
+  const nextFSMStage = Math.min(attainedFSMStage + 1, MAX_STAGE);
 
-  // Build obstacle boost map: milestoneId -> boost points
-  const obstacleBoosts = {};
+  // Obstacle → milestone attribution (primary beats secondary)
+  const obsQuestion = findQuestion(assessment, "Q-OBS");
+  const selectedObstacles = Array.isArray(answers["Q-OBS"]) ? answers["Q-OBS"] : [];
+  const obstacleMatches = {}; // milestoneId -> { weight, label }
   selectedObstacles.forEach(val => {
     const opt = obsQuestion?.options.find(o => o.value === val);
     if (!opt) return;
-    if (opt.milestoneId) {
-      obstacleBoosts[opt.milestoneId] = (obstacleBoosts[opt.milestoneId] || 0) + 25;
-    }
-    if (opt.secondaryMilestoneId) {
-      obstacleBoosts[opt.secondaryMilestoneId] = (obstacleBoosts[opt.secondaryMilestoneId] || 0) + 15;
-    }
+    const apply = (mid, weight) => {
+      if (!mid) return;
+      const existing = obstacleMatches[mid];
+      if (!existing || weight > existing.weight) obstacleMatches[mid] = { weight, label: opt.label };
+    };
+    apply(opt.milestoneId, 2);
+    apply(opt.secondaryMilestoneId, 1);
   });
 
-  // Objective boost: milestones whose track aligns with selected objectives
-  const objBoostMilestones = new Set();
-  (Array.isArray(answers["Q-OBJ"]) ? answers["Q-OBJ"] : []).forEach(val => {
-    // Simple heuristic: if objective targets APM stages, boost APM-track unmet milestones
-    // (full implementation would cross-ref objective<->milestone mapping from workbook)
-    // Using the obstacle question's primary milestones as proxies for objectives here
-  });
+  const inRange = m => {
+    const apmOk = m.apmStage && m.apmStage <= targetAPMStage;
+    const fsmOk = m.fsmStage && m.fsmStage <= targetFSMStage;
+    return apmOk || fsmOk;
+  };
 
-  // Candidate unmet milestones within target stage range
-  const candidates = milestoneGraph.nodes.filter(n => {
-    if (milestoneStates[n.id] !== "UNMET") return false;
-    if (n.is_under_review) return false;
+  // Candidates: what the customer told us they have not done yet.
+  let candidates = MILESTONES.filter(m => milestoneStates[m.id] === "UNMET" && inRange(m));
+  let fromUnknown = false;
 
-    const apmN = parseStageNumber(n.apm_stage);
-    const fsmN = parseStageNumber(n.fsm_stage);
-
-    // Include if milestone is within target stage for either track
-    const inAPMRange = apmN && apmN <= targetAPMStage;
-    const inFSMRange = fsmN && fsmN <= targetFSMStage;
-    return inAPMRange || inFSMRange;
-  });
-
-  // Score each candidate
-  function levelNum(levelStr) {
-    // "Level 1" -> 1, "Level 2" -> 2, etc.
-    return parseInt((levelStr || "Level 1").replace(/\D/g, ""), 10) || 1;
+  // Nothing definitively unmet inside the target range? Fall back to the
+  // capabilities we could not assess, so the plan still has a next move.
+  if (candidates.length === 0) {
+    candidates = MILESTONES.filter(m =>
+      milestoneStates[m.id] === "UNKNOWN" && assessedIds.has(m.id) && inRange(m)
+    );
+    fromUnknown = true;
+  }
+  // Still nothing — every assessed capability is met. Look beyond the target
+  // horizon so a mature customer is shown where the journey continues.
+  if (candidates.length === 0) {
+    candidates = MILESTONES.filter(m =>
+      milestoneStates[m.id] !== "MET" && (m.apmStage || m.fsmStage) && m.imperative
+    );
+    fromUnknown = true;
   }
 
-  const scored = candidates.map(n => {
-    // Base weight: 100 if gating next stage, else 50
-    const apmN = parseStageNumber(n.apm_stage);
-    const fsmN = parseStageNumber(n.fsm_stage);
+  const ranked = candidates.map(m => {
     const isGatingNext =
-      (apmN === currentAPMStage + 1) ||
-      (fsmN === currentFSMStage + 1);
-    const base = isGatingNext ? 100 : 50;
-    const lvl = levelNum(n.level);
-    const obsBoost = obstacleBoosts[n.id] || 0;
+      m.apmStage === nextAPMStage || m.fsmStage === nextFSMStage ? 1 : 0;
 
-    const totalScore = base - (lvl * 5) + obsBoost;
+    const prereqs = m.prerequisites || [];
+    const isUnlocked = prereqs.every(pid => milestoneStates[pid] === "MET") ? 1 : 0;
+    const blockedBy = prereqs.filter(pid => milestoneStates[pid] !== "MET");
 
-    // Track attribution
-    const track = apmN && (!fsmN || apmN <= currentAPMStage + 1) ? "APM" : "FSM";
+    const match = obstacleMatches[m.id];
+    const obstacleMatch = match ? match.weight : 0;
 
-    return { milestoneId: n.id, score: totalScore, track };
+    // Track attribution: prefer the track where this milestone sits closest to
+    // the customer's own next step.
+    const apmDist = m.apmStage ? Math.abs(m.apmStage - nextAPMStage) : Infinity;
+    const fsmDist = m.fsmStage ? Math.abs(m.fsmStage - nextFSMStage) : Infinity;
+    const track = apmDist <= fsmDist ? "APM" : "FSM";
+    const stage = track === "APM" ? m.apmStage : m.fsmStage;
+
+    let reasonTag;
+    if (match) {
+      reasonTag = `Addresses the obstacle you selected: “${match.label}”`;
+    } else if (isGatingNext) {
+      reasonTag = `Gates ${track} Stage ${stage} — your next step`;
+    } else if (fromUnknown) {
+      reasonTag = "Not yet assessed — confirm where you stand";
+    } else {
+      reasonTag = `Foundation for ${track} Stage ${stage || 1}`;
+    }
+
+    return {
+      milestoneId: m.id,
+      track,
+      stage,
+      level: m.level,
+      isGatingNext,
+      isUnlocked,
+      blockedBy,
+      obstacleMatch,
+      obstacleLabel: match ? match.label : null,
+      status: milestoneStates[m.id],
+      reasonTag,
+    };
   });
 
-  // Sort descending by score
-  scored.sort((a, b) => b.score - a.score);
+  ranked.sort((a, b) =>
+    (b.isGatingNext - a.isGatingNext) ||
+    (b.isUnlocked   - a.isUnlocked)   ||
+    (a.level        - b.level)        ||
+    (b.obstacleMatch - a.obstacleMatch) ||
+    a.milestoneId.localeCompare(b.milestoneId)
+  );
 
-  const top3 = scored.slice(0, 3);
-
-  // Roadmap table: remaining unmet candidates after top 3
-  const top3Ids = new Set(top3.map(t => t.milestoneId));
-  const roadmapTable = candidates
-    .filter(n => !top3Ids.has(n.id))
-    .slice(0, 20) // cap at 20 rows
-    .map(n => ({
-      milestoneId: n.id,
-      status: milestoneStates[n.id]
-    }));
+  const top3 = ranked.slice(0, 3).map((entry, i) => ({ ...entry, step: i + 1 }));
 
   return {
-    hero:      top3[0] ? { ...top3[0], step: 1 } : null,
-    secondary: top3.slice(1).map((t, i) => ({ ...t, step: i + 2 })),
-    roadmapTable,
+    hero: top3[0] || null,
+    secondary: top3.slice(1),
+    roadmapTable: ranked.slice(3).map(entry => ({
+      milestoneId: entry.milestoneId,
+      status: entry.status,
+      track: entry.track,
+      stage: entry.stage,
+    })),
+    candidateCount: ranked.length,
   };
 }
 
@@ -355,33 +401,33 @@ function prioritisePass4(milestoneStates, pass2, pass3, answers, assessment, mil
    Main exported score() function
    -------------------------------------------------------------------------- */
 export async function score(answers, assessment) {
-  // Load milestone graph (fetched once, cached in module scope)
-  const milestoneGraph = await getMilestoneGraph();
-
   // Pass 1 — resolve milestone states
-  const milestoneStates = resolvePass1(answers, assessment, milestoneGraph);
+  const milestoneStates = resolvePass1(answers, assessment);
 
   // Pass 2 — baseline scoring + current stages
-  const pass2 = scorePass2(milestoneStates, answers, assessment, milestoneGraph);
+  const pass2 = scorePass2(milestoneStates, assessment);
 
   // Pass 3 — target stages from objectives
   const pass3 = targetStagesPass3(answers, assessment);
 
-  // Ensure target >= current, and at minimum Stage 1
-  const targetAPMStage = Math.max(pass3.targetAPMStage, pass2.currentAPMStage, 1);
-  const targetFSMStage = Math.max(pass3.targetFSMStage, pass2.currentFSMStage, 1);
+  // A target below where the customer already is would read as a downgrade.
+  const targetAPMStage = Math.max(pass3.targetAPMStage, pass2.currentAPMStage);
+  const targetFSMStage = Math.max(pass3.targetFSMStage, pass2.currentFSMStage);
 
-  // Pass 4 — prioritise top 3 actions
+  // Pass 4 — prioritise the action plan
   const actionPlan = prioritisePass4(
     milestoneStates,
     pass2,
     { targetAPMStage, targetFSMStage },
     answers,
-    assessment,
-    milestoneGraph
+    assessment
   );
 
-  // Assemble result consumed by report.js
+  const counts = Object.values(milestoneStates).reduce((acc, s) => {
+    acc[s] = (acc[s] || 0) + 1;
+    return acc;
+  }, { MET: 0, UNMET: 0, UNKNOWN: 0 });
+
   return {
     contact: {
       name:     answers["__contact_name"]     || "Your Organisation",
@@ -400,12 +446,18 @@ export async function score(answers, assessment) {
     apm: {
       currentStage: pass2.currentAPMStage,
       targetStage:  targetAPMStage,
+      nextStage:    Math.min(pass2.attainedAPMStage + 1, MAX_STAGE),
     },
     fsm: {
       currentStage: pass2.currentFSMStage,
       targetStage:  targetFSMStage,
+      nextStage:    Math.min(pass2.attainedFSMStage + 1, MAX_STAGE),
     },
+    objectiveLabels: pass3.objectiveLabels,
     actionPlan,
+    milestoneCounts: counts,
     _milestoneStates: milestoneStates, // kept for debugging
   };
 }
+
+export { MILESTONE_BY_ID, DIMENSIONS };

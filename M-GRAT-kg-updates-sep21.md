@@ -1,6 +1,6 @@
 # MAS Growth Readiness Assessment (v3) — Development Log
 
-> Last updated: Sep 21 — see section 5 for the latest session's changes.
+> Last updated: Sep 22 — see section 6 for the latest session's changes.
 
 # Executive Summary: MAS Growth Readiness Assessment (v3) Implementation & Verification
 
@@ -106,3 +106,101 @@ Wired the app controller to hook into the custom `assessment:submit` event. On s
 - **Removed from:** The maturity index card in Act 1 ("Where you are now"). Customers no longer see the propensity score or signal pills anywhere in the main report view.
 - **Added to:** A new `.seller-intel` panel at the bottom of the "See my responses" drawer (Act 3). On screen it is only visible when a seller expands that drawer. It displays the propensity score prominently and any signal pills (e.g. `Budget: Committed`).
 - **Print / PDF behaviour:** A new `@media print` block in `css/styles.css` forces `.ans-drawer` visible and ensures `.seller-intel` always renders when printing, regardless of the drawer's collapsed state on screen. Interactive chrome (toggle buttons, CTA buttons, feedback widget) is suppressed in print. This means a seller can print/save-as-PDF and the seller intelligence section appears automatically.
+
+---
+
+## 6. Latest Changes (Sep 22) — Register as the single source of truth
+
+The report was reading milestone content from three places at once, and two of
+them had stopped tracking the workbook. This session collapsed the chain so the
+Milestone Register drives everything the report shows.
+
+### L. One compiler, register-driven (`scripts/build_report_data.py`)
+- **Problem:** `data/journey.js` and `data/milestone-actions.js` carried a
+  "GENERATED FILE — do not edit by hand" header but **no script generated them** —
+  they had been hand-maintained since. `data/report_data.js` *was* generated, but
+  built its milestone list from `Logic/milestone_graph.json` rather than the
+  register, and nothing imported it. Editing the register changed nothing on screen.
+- **Fix:** `build_report_data.py` now compiles all three modules from
+  `Logic/Milestone_Register_*.xlsx`. Milestones come from the `Milestone Register`
+  sheet (every column, including `Response: Met/Unmet/Unknown`, `Signals`,
+  `Imperative`, `Touchpoints`, `Personas`); prerequisite edges come from the
+  `Prerequisite IDs` column, typed from the graph JSON where it has a match
+  (101 edges, identical to the graph). Journey outcomes and MAS product pills are
+  parsed out of the `APM Journey` / `FSM Journey` sheets.
+- **Drift found and corrected:** the graph JSON's `description` had diverged from
+  the register on 12 milestones; the hand-maintained `journey.js` had a truncated
+  APM5 value statement, a mislabelled `MAS Scheduler (GWW)` pill and `Spatial` at
+  FSM4 flagged inactive when the register says `Core`.
+- **Validation:** the compiler now reports empty slots rather than letting them
+  render blank. Current output: 8 milestones with no `Value statement` (the
+  unassessed Work Execution pillar plus the `AIP-#-##` placeholder) and one real
+  data bug — **`Milestone Actions` references `WM-1-DATES`, which is not a
+  milestone ID in the register**. Worth a look when you next open the workbook.
+
+### M. Runtime fetches removed (`js/scoring.js`, `js/report.js`)
+Both modules were doing `fetch("Logic/milestone_graph.json")` at render time.
+That is a second copy of the data, and it fails outright over `file://`, which is
+exactly how the standalone build is meant to be opened. Both now import
+`data/report_data.js`. No network or filesystem access at runtime.
+
+### N. Stage gating corrected (`js/scoring.js`, Pass 2)
+- **Problem:** current stage was computed by walking **down** from Stage 5 and
+  returning the first stage with no explicitly `UNMET` milestone. `UNKNOWN`
+  counted as a pass, so **an empty questionnaire returned APM Stage 5 / FSM Stage 5**
+  alongside a 0% maturity index, and target stage was then clamped up to match —
+  Act 2 showed "you are here" and "your target" on the same pill for every customer.
+- **Fix:** walk **up** from Stage 1 per the handover guide; a stage is attained
+  only when every gating milestone at that stage is `MET`, stopping at the first
+  stage that is not. Only milestones the questionnaire actually asks about can gate
+  (35 of 61) — the register deliberately carries unassessed capabilities (Work
+  Execution, HSE, AIP) and those must not push a customer up or hold them back.
+  The report still shows Stage 1 as the floor, but prioritisation uses the true
+  attained stage (0 when Stage 1 has not been earned) so the first recommendation
+  is the Stage 1 milestone itself.
+
+### O. Pass 4 rebuilt to the specified sort (`js/scoring.js`)
+- **Problem:** the handover guide specifies a strict hierarchical tuple with *no
+  numeric blending*. The implementation was summing a base weight, a level penalty
+  and +25/+15 obstacle boosts. `is_unlocked` was never computed at all — the
+  prerequisite DAG was unused despite being documented — and no "why" attribution
+  reached the report.
+- **Fix:** candidates are now ranked on
+  `(isGatingNext DESC, isUnlocked DESC, level ASC, obstacleMatch DESC, id ASC)`.
+  `isUnlocked` checks every prerequisite is `MET`, and each entry carries
+  `blockedBy` (the unmet prerequisites) and a `reasonTag` explaining its rank —
+  e.g. *Addresses the obstacle you selected: "We lack visibility into asset health"*.
+
+### P. The action plan can no longer come back empty
+- **Problem:** with everything answered positively there were no `UNMET`
+  candidates, so `hero` was `null` — and `renderActionPlan` dereferenced
+  `actionPlan.hero.milestoneId` with no guard, throwing before Act 3 rendered.
+- **Fix:** three-tier fallback — definitively unmet within the target horizon,
+  then unassessed capabilities, then anything still open beyond the horizon — plus
+  a null guard in the renderer that explains the situation instead of crashing.
+
+### Q. Both workbooks now watched (`scripts/serve.py`)
+`serve.py` only watched `Question_Binder*.xlsx`. Saving the Milestone Register
+rebuilt nothing. It now watches both and runs the matching compiler:
+
+| Save this | Runs this | Refresh shows |
+| :--- | :--- | :--- |
+| `Logic/Question_Binder*.xlsx` | `build_assessment.py` | new / edited questions |
+| `Logic/Milestone_Register*.xlsx` | `build_report_data.py` | everything the report says |
+
+### R. Stale compiled questions refreshed (`data/assessment.js`)
+The committed file predated the current binder: `grp-rp` was titled
+*"Organisational appetite"* (the appetite group's label had leaked into it) and the
+whole `GRP-CM-ADV` section (`Q-CM-ADV`) was missing. Rebuilt from
+`Question_Binder_Sep20.xlsx` — 5 pages, 16 questions.
+
+### Known issues, not addressed this session
+- **`scripts/bundle.py` targets the old single-page flow.** It inlines `report.js`
+  into `index.html`, but the report has since moved to its own `report.html`, and
+  `app.js` redirects there on submit. The bundle is internally consistent again
+  (the two new data modules are included, no imports or fetches survive), but a
+  lone `assessment-standalone.html` will redirect to a page that is not beside it.
+  Needs a decision: bundle both pages into one document, or emit two files.
+- **Carbon tooltip console error on the report** —
+  `Cannot set properties of null (setting 'align')`, thrown once per
+  `cds-tooltip`. Pre-existing, cosmetic, does not stop the render.

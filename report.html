@@ -20,11 +20,52 @@
   <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/notification.min.js"></script>
   <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/menu-button.min.js"></script>
   <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/menu.min.js"></script>
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/textarea.min.js"></script>
 
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/report.css" />
 </head>
 <body class="report-page">
+
+<!-- Mobile sticky nav — hamburger + current section, hidden on desktop -->
+  <div class="report-mobile-nav">
+    <div class="mobile-nav__bar">
+      <button
+        type="button"
+        class="mobile-nav__toggle"
+        id="mobile-nav-toggle"
+        aria-expanded="false"
+        aria-controls="mobile-nav-panel"
+        aria-label="Open report navigation"
+      >
+        <svg class="mobile-nav__icon mobile-nav__icon--menu" viewBox="0 0 32 32" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M4 6H28V8H4z"/><path d="M4 12H28V14H4z"/><path d="M4 18H28V20H4z"/><path d="M4 24H28V26H4z"/></svg>
+        <svg class="mobile-nav__icon mobile-nav__icon--close" viewBox="0 0 32 32" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M17.4141 16 24 9.4141 22.5859 8 16 14.5859 9.4143 8 8 9.4141 14.5859 16 8 22.5859 9.4143 24 16 17.4141 22.5859 24 24 22.5859 17.4141 16z"/></svg>
+      </button>
+      <p class="mobile-nav__title" id="mobile-nav-title">Where you are today</p>
+    </div>
+
+    <div class="mobile-nav__panel" id="mobile-nav-panel" hidden>
+      <ul class="mobile-nav__list">
+        <li><a class="mobile-nav__item mobile-nav__item--active" href="#act-today" data-section="act-today">Where you are today</a></li>
+        <li><a class="mobile-nav__item" href="#act-roi" data-section="act-roi">Opportunities to increase ROI</a></li>
+        <li><a class="mobile-nav__item" href="#act-plan" data-section="act-plan">Your action plan</a></li>
+        <li><a class="mobile-nav__item" href="#act-resources" data-section="act-resources">Additional resources</a></li>
+        <li><a class="mobile-nav__item" href="#act-improve" data-section="act-improve">Help us improve</a></li>
+      </ul>
+      <div class="mobile-nav__actions">
+        <cds-button kind="primary" size="lg" href="https://www.ibm.com/products/maximo">Talk to a seller
+          <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path stroke-width="0" d="m23.019,10.4332c-.595.3514-1.2795.5668-2.019.5668-2.2056,0-4-1.7944-4-4,0-.3557.0615-.6943.1492-1.0228l2.4368,2.4368.0005-.0004c.3621.3621.8621.5864,1.4136.5864,1.103,0,2-.897,2-2,0-.5515-.2242-1.0515-.5864-1.4136l.0005-.0004-2.4368-2.4368c.3284-.0875.667-.1491,1.0227-.1491,2.2056,0,4,1.7944,4,4,0,.7396-.2155,1.4241-.5669,2.0191l5.5669,5.5668-1.4141,1.4141-5.5669-5.5668Z"/><path stroke-width="0" d="m16,30h-2v-5c-.0018-1.6561-1.3439-2.9982-3-3h-4c-1.6561.0018-2.9982,1.3439-3,3v5h-2v-5c.0033-2.7601,2.2399-4.9967,5-5h4c2.7601.0033,4.9967,2.2399,5,5v5Z"/><path stroke-width="0" d="m9,10c1.6569,0,3,1.3431,3,3s-1.3431,3-3,3-3-1.3431-3-3c.0019-1.6561,1.3439-2.9981,3-3m0-2c-2.7614,0-5,2.2386-5,5s2.2386,5,5,5,5-2.2386,5-5-2.2386-5-5-5Z"/></svg>
+        </cds-button>
+        <cds-menu-button kind="tertiary" label="Download" menu-alignment="bottom" size="lg">
+          <cds-menu>
+            <cds-menu-item label="Full PDF report"></cds-menu-item>
+            <cds-menu-item label="Worksheet"></cds-menu-item>
+            <cds-menu-item label="Your responses"></cds-menu-item>
+          </cds-menu>
+        </cds-menu-button>
+      </div>
+    </div>
+  </div>
 
   <!-- Hero graphics layer — sticky behind content -->
   <div class="report-hero" aria-hidden="true">
@@ -38,24 +79,16 @@
   <!-- Content layer — slides over hero on scroll -->
   <div class="report-body">
 
-    <!-- Mobile sticky tab nav — hidden on desktop, shown at ≤ 1100px -->
-    <div class="report-mobile-nav">
-      <cds-tabs value="act-today">
-        <cds-tab id="tab-act-today" target="act-today" data-section="act-today">Where you are today</cds-tab>
-        <cds-tab id="tab-act-roi" target="act-roi" data-section="act-roi">Opportunities to increase ROI</cds-tab>
-        <cds-tab id="tab-act-plan" target="act-plan" data-section="act-plan">Your action plan</cds-tab>
-        <cds-tab id="tab-act-improve" target="act-improve" data-section="act-improve">Help us improve</cds-tab>
-      </cds-tabs>
-    </div>
 
     <div class="report-layout">
 
       <!-- Left sticky panel -->
       <aside class="report-sidebar" id="report-sidebar">
         <div class="report-sidebar__icon">
-          <img src="assets/IBM Maximo Application Suite.svg" alt="IBM Maximo Application Suite" width="32" height="32" />
+          <img src="assets/IBM Maximo Application Suite.svg" alt="IBM Maximo Application Suite" width="64" height="64" />
         </div>
         <h1 class="report-sidebar__title">Your Maximo<br>growth roadmap</h1>
+        <p class="report-sidebar__version">beta v3</p>
         <div class="report-sidebar__meta" id="sidebar-meta">
           <!-- injected by report.js -->
         </div>
@@ -64,12 +97,15 @@
             <li><a class="report-nav__item report-nav__item--active" href="#act-today" data-section="act-today">Where you are today</a></li>
             <li><a class="report-nav__item" href="#act-roi" data-section="act-roi">Opportunities to increase ROI</a></li>
             <li><a class="report-nav__item" href="#act-plan" data-section="act-plan">Your action plan</a></li>
+            <li><a class="report-nav__item" href="#act-resources" data-section="act-resources">Additional resources</a></li>
             <li><a class="report-nav__item" href="#act-improve" data-section="act-improve">Help us improve</a></li>
           </ul>
         </nav>
         <div class="report-sidebar__actions">
-          <cds-button kind="primary" size="lg" href="https://www.ibm.com/products/maximo">Talk to a seller</cds-button>
-          <cds-menu-button kind="tertiary" label="Actions" menu-alignment="bottom" size="lg">
+          <cds-button kind="primary" size="lg" href="https://www.ibm.com/products/maximo">Talk to a seller
+            <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path stroke-width="0" d="m23.019,10.4332c-.595.3514-1.2795.5668-2.019.5668-2.2056,0-4-1.7944-4-4,0-.3557.0615-.6943.1492-1.0228l2.4368,2.4368.0005-.0004c.3621.3621.8621.5864,1.4136.5864,1.103,0,2-.897,2-2,0-.5515-.2242-1.0515-.5864-1.4136l.0005-.0004-2.4368-2.4368c.3284-.0875.667-.1491,1.0227-.1491,2.2056,0,4,1.7944,4,4,0,.7396-.2155,1.4241-.5669,2.0191l5.5669,5.5668-1.4141,1.4141-5.5669-5.5668Z"/><path stroke-width="0" d="m16,30h-2v-5c-.0018-1.6561-1.3439-2.9982-3-3h-4c-1.6561.0018-2.9982,1.3439-3,3v5h-2v-5c.0033-2.7601,2.2399-4.9967,5-5h4c2.7601.0033,4.9967,2.2399,5,5v5Z"/><path stroke-width="0" d="m9,10c1.6569,0,3,1.3431,3,3s-1.3431,3-3,3-3-1.3431-3-3c.0019-1.6561,1.3439-2.9981,3-3m0-2c-2.7614,0-5,2.2386-5,5s2.2386,5,5,5,5-2.2386,5-5-2.2386-5-5-5Z"/></svg>
+          </cds-button>
+          <cds-menu-button kind="tertiary" label="Download" menu-alignment="bottom" size="lg">
             <cds-menu>
               <cds-menu-item label="Full PDF report"></cds-menu-item>
               <cds-menu-item label="Worksheet"></cds-menu-item>
@@ -96,7 +132,7 @@
           </div>
 
           <!-- Dimension meters -->
-          <p class="report-body-text" style="max-width:367px;margin-top:32px;">
+          <p class="report-body-text" style="max-width:336px;margin-top:32px;">
             Your strongest capabilities are creating value today, while several areas offer opportunities for growth.
           </p>
           <div class="dimension-grid" id="dimension-grid">
@@ -106,7 +142,7 @@
           <!-- Established practices -->
           <div class="report-section__sub-heading-group" style="margin-top:32px;">
             <h3 class="report-section__sub-heading">Established practices</h3>
-            <p class="report-body-text" style="max-width:367px;">The most advanced operational wins your organisation has successfully established:</p>
+            <p class="report-body-text" style="max-width:376px;">The most advanced operational wins your organisation has successfully established:</p>
           </div>
           <div class="established-card" id="established-card">
             <!-- injected by report.js -->
@@ -120,7 +156,7 @@
             <div class="report-rule" aria-hidden="true"></div>
           </div>
           <h2 class="report-section__heading">Two expansion paths</h2>
-          <p class="report-body-text" style="max-width:367px;margin-top:0;">This section recommends an expansion path along two significant journeys.</p>
+          <p class="report-body-text" style="max-width:308px;margin-top:0;">This section recommends an expansion path along two significant journeys.</p>
 
           <!-- APM + FSM intro banner -->
           <div class="expansion-intro">
@@ -170,28 +206,50 @@
               <span slot="body-text">Your top 3 prioritised next steps, selected based on your objectives and obstacles.</span>
             </cds-tooltip>
           </div>
+          <p class="report-body-text" style="max-width:376px;">Based on your assessment results, this action will help build the foundation for your next stage of growth.</p>
           <div id="action-plan-container">
             <!-- injected by report.js -->
           </div>
         </section>
 
-        <!-- ACT 4 ── Help us improve -->
+        <!-- ACT 4 ── Help us improve (Figma 615:4208) -->
         <section id="act-improve" class="report-section">
           <div class="report-eyebrow-row">
-            <p class="report-eyebrow">Act 4 — Help us improve</p>
+            <p class="report-eyebrow">Help us improve</p>
             <div class="report-rule" aria-hidden="true"></div>
           </div>
-          <h2 class="report-section__heading">Help us improve</h2>
-          <p class="report-body-text" style="max-width:480px;">Share a few details about your growth appetite to help us sharpen these recommendations over time. Takes under 2 minutes.</p>
-          <details class="followup-details">
-            <summary class="followup-summary">
-              <cds-button kind="tertiary" size="lg" type="button">Share feedback</cds-button>
-            </summary>
-            <div id="followup-form" class="followup-form">
-              <!-- injected by report.js -->
+          <div class="feedback">
+            <div class="feedback__intro">
+              <p class="feedback__question">Was this report useful?</p>
+              <p class="feedback__text">Your input helps us improve this report for future assessments. A quick response goes a long way.</p>
             </div>
-          </details>
+            <div class="feedback__actions" id="feedback-actions">
+              <cds-button kind="tertiary" size="lg" type="button" data-feedback="yes">
+                Yes
+                <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26,12H20V6a3.0033,3.0033,0,0,0-3-3H14.8672a2.0094,2.0094,0,0,0-1.98,1.7173l-.8453,5.9165L8.4648,16H2V30H23a7.0078,7.0078,0,0,0,7-7V16A4.0045,4.0045,0,0,0,26,12ZM8,28H4V18H8Zm20-5a5.0057,5.0057,0,0,1-5,5H10V17.3027l3.9578-5.9365L14.8672,5H17a1.0008,1.0008,0,0,1,1,1v8h8a2.0025,2.0025,0,0,1,2,2Z"/></svg>
+              </cds-button>
+              <cds-button kind="tertiary" size="lg" type="button" data-feedback="no">
+                No
+                <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M30,16V9a7.0078,7.0078,0,0,0-7-7H2V16H8.4648l3.5774,5.3662.8453,5.9165A2.0094,2.0094,0,0,0,14.8672,29H17a3.0033,3.0033,0,0,0,3-3V20h6A4.0045,4.0045,0,0,0,30,16ZM8,14H4V4H8Zm20,2a2.0025,2.0025,0,0,1-2,2H18v8a1.0008,1.0008,0,0,1-1,1H14.8672l-.9094-6.3662L10,14.6973V4H23a5.0057,5.0057,0,0,1,5,5Z"/></svg>
+              </cds-button>
+            </div>
+          </div>
         </section>
+
+        <!-- Phone only: the CTAs live in the menu and again at the foot of the
+             page, so they are never more than a scroll away. -->
+        <div class="report-end-actions">
+          <cds-button kind="primary" size="lg" href="https://www.ibm.com/products/maximo">Talk to a seller
+            <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path stroke-width="0" d="m23.019,10.4332c-.595.3514-1.2795.5668-2.019.5668-2.2056,0-4-1.7944-4-4,0-.3557.0615-.6943.1492-1.0228l2.4368,2.4368.0005-.0004c.3621.3621.8621.5864,1.4136.5864,1.103,0,2-.897,2-2,0-.5515-.2242-1.0515-.5864-1.4136l.0005-.0004-2.4368-2.4368c.3284-.0875.667-.1491,1.0227-.1491,2.2056,0,4,1.7944,4,4,0,.7396-.2155,1.4241-.5669,2.0191l5.5669,5.5668-1.4141,1.4141-5.5669-5.5668Z"/><path stroke-width="0" d="m16,30h-2v-5c-.0018-1.6561-1.3439-2.9982-3-3h-4c-1.6561.0018-2.9982,1.3439-3,3v5h-2v-5c.0033-2.7601,2.2399-4.9967,5-5h4c2.7601.0033,4.9967,2.2399,5,5v5Z"/><path stroke-width="0" d="m9,10c1.6569,0,3,1.3431,3,3s-1.3431,3-3,3-3-1.3431-3-3c.0019-1.6561,1.3439-2.9981,3-3m0-2c-2.7614,0-5,2.2386-5,5s2.2386,5,5,5,5-2.2386,5-5-2.2386-5-5-5Z"/></svg>
+          </cds-button>
+          <cds-menu-button kind="tertiary" label="Download" menu-alignment="top" size="lg">
+            <cds-menu>
+              <cds-menu-item label="Full PDF report"></cds-menu-item>
+              <cds-menu-item label="Worksheet"></cds-menu-item>
+              <cds-menu-item label="Your responses"></cds-menu-item>
+            </cds-menu>
+          </cds-menu-button>
+        </div>
 
       </main>
     </div>

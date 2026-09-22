@@ -36,6 +36,8 @@ CSS_FILE       = os.path.join(ROOT, "css", "styles.css")
 MODULE_FILES = [
     ("data/assessment.js",  os.path.join(ROOT, "data", "assessment.js")),
     ("data/report_data.js", os.path.join(ROOT, "data", "report_data.js")),
+    ("data/journey.js", os.path.join(ROOT, "data", "journey.js")),
+    ("data/milestone-actions.js", os.path.join(ROOT, "data", "milestone-actions.js")),
     ("js/scoring.js",       os.path.join(ROOT, "js",   "scoring.js")),
     ("js/report.js",        os.path.join(ROOT, "js",   "report.js")),
     ("js/app.js",           os.path.join(ROOT, "js",   "app.js")),
@@ -136,6 +138,8 @@ def bundle():
     css       = read(CSS_FILE)
     assessment_src  = read(os.path.join(ROOT, "data", "assessment.js"))
     report_data_src = read(os.path.join(ROOT, "data", "report_data.js"))
+    journey_src     = read(os.path.join(ROOT, "data", "journey.js"))
+    actions_src     = read(os.path.join(ROOT, "data", "milestone-actions.js"))
     scoring_src     = read(os.path.join(ROOT, "js",   "scoring.js"))
     report_src      = read(os.path.join(ROOT, "js",   "report.js"))
     app_src         = read(os.path.join(ROOT, "js",   "app.js"))
@@ -150,6 +154,12 @@ def bundle():
 
     parts.append("\n// ── data/report_data.js ───────────────────────────────────")
     parts.append(build_data_module(report_data_src, "reportData"))
+
+    parts.append("\n// ── data/journey.js ───────────────────────────────────────")
+    parts.append(build_data_module(journey_src, "journey"))
+
+    parts.append("\n// ── data/milestone-actions.js ─────────────────────────────")
+    parts.append(build_data_module(actions_src, "milestoneActions"))
 
     parts.append("\n// ── js/scoring.js ─────────────────────────────────────────")
     parts.append(build_logic_module(scoring_src))

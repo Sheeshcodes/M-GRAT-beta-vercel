@@ -18,13 +18,15 @@
   margin: 0;
   padding: 0;
   min-height: 100vh;
-  overflow-x: hidden;
+  /* clip, not hidden: hidden turns the body into a scroll container and every
+     position:sticky inside it (sidebar, hero, mobile bar) stops working. */
+  overflow-x: clip;
 }
 
 .report-hero {
   position: sticky;
   top: 0;
-  height: 200px;
+  height: clamp(120px, 14vw, 200px);
   background: #edf5ff;
   z-index: 0;
   overflow: hidden;
@@ -75,15 +77,51 @@
   flex-shrink: 0;
   position: sticky;
   top: 32px;
+  align-self: flex-start;      /* don't stretch — a full-height item can't stick */
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   display: flex;
   flex-direction: column;
   gap: 24px;
   padding-top: 16px;
 }
 
+/* No scrollbar chrome unless the column really is taller than the viewport. */
+.report-sidebar::-webkit-scrollbar { width: 6px; }
+.report-sidebar::-webkit-scrollbar-thumb { background: var(--cds-border-subtle); }
+
 .report-sidebar__icon {
   display: flex;
   align-items: center;
+}
+
+/* Carbon flips a tertiary button to a solid blue fill on hover/active, but our
+   icons are slotted light-DOM SVGs, so the shadow root's colour change never
+   reaches them and they stay blue on blue. Invert them from the host side. */
+cds-button[kind="tertiary"]:hover,
+cds-button[kind="tertiary"]:active,
+cds-button[kind="tertiary"]:focus,
+cds-menu-button[kind="tertiary"]:hover,
+cds-menu-button[kind="tertiary"]:active,
+cds-menu-button[kind="tertiary"]:focus {
+  color: var(--cds-text-on-color, #fff);
+}
+
+cds-button[kind="tertiary"]:hover svg,
+cds-button[kind="tertiary"]:active svg,
+cds-button[kind="tertiary"]:focus svg,
+cds-menu-button[kind="tertiary"]:hover svg,
+cds-menu-button[kind="tertiary"]:active svg,
+cds-menu-button[kind="tertiary"]:focus svg {
+  fill: var(--cds-text-on-color, #fff);
+  color: var(--cds-text-on-color, #fff);
+}
+
+/* Figma 607:3204 — the suite mark is 64x64 in the sidebar. */
+.report-sidebar__icon img {
+  width: 64px;
+  height: 64px;
 }
 
 .report-sidebar__title {
@@ -126,7 +164,8 @@
 
 .report-nav__item {
   display: block;
-  padding: 12px 16px;
+  /* 64px row (Figma 607:3210 — vertical tab items are 164x64) */
+  padding: 22px 16px;
   font-size: 14px;
   line-height: 1.4;
   color: var(--cds-text-secondary);
@@ -145,6 +184,25 @@
   color: var(--cds-text-primary);
   border-left-color: var(--cds-interactive);
   font-weight: 600;
+}
+
+/* Both CTAs share one width. Carbon's lg button carries a 12rem minimum it
+   will not shrink past, so 192px is the smallest size at which the primary
+   button and the Download menu button actually measure the same. */
+.report-sidebar__actions cds-button,
+.report-sidebar__actions cds-menu-button,
+.mobile-nav__actions cds-button,
+.mobile-nav__actions cds-menu-button,
+.report-end-actions cds-button,
+.report-end-actions cds-menu-button {
+  width: 192px;
+}
+
+.report-sidebar__version {
+  margin: 0;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--cds-text-secondary);
 }
 
 .report-sidebar__actions {
@@ -255,21 +313,31 @@
   background: var(--cds-button-primary);
   color: #fff;
   display: flex;
-  gap: 64px;
+  flex-wrap: wrap;
+  gap: 32px 130px;
   align-items: center;
-  padding: 16px 32px 16px;
-  padding-top: 16px;
-  min-height: 247px;
-  overflow: hidden;
+  padding: 47px 32px 32px;
+  min-height: 271px;
 }
 
-.maturity-score-cell {}
+.maturity-score-cell,
+.maturity-strengths-cell {
+  flex: 0 1 237px;
+  min-width: 0;
+}
+
+.maturity-score-cell {
+  display: flex;
+  flex-direction: column;
+  /* Equal spacing between headline, score and subline (Carbon spacing-05). */
+  gap: 16px;
+}
 
 .maturity-score-label {
   font-size: 16px;
   font-weight: 600;
   line-height: 22px;
-  margin: 0 0 8px;
+  margin: 0;
 }
 
 .maturity-score-value {
@@ -285,13 +353,13 @@
   font-size: 16px;
   font-weight: 700;
   line-height: 22px;
-  margin: 4px 0 0;
+  margin: 0;
 }
 
 .maturity-level-label {
   font-size: 16px;
   line-height: 22px;
-  margin: 0;
+  margin: -12px 0 0;   /* pulls back to 4px under "Level n" */
 }
 
 .maturity-strengths-cell {}
@@ -300,7 +368,7 @@
   font-size: 16px;
   font-weight: 700;
   line-height: 22px;
-  margin: 0 0 8px;
+  margin: 0 0 32px;
 }
 
 .maturity-strengths-list {
@@ -460,6 +528,8 @@
   flex-direction: column;
   gap: 2px;
 }
+
+.established-signals { max-width: 480px; }
 
 .established-signals li {
   font-size: 14px;
@@ -755,6 +825,8 @@
   line-height: 24px;
   color: var(--cds-text-primary);
   margin: 0;
+  /* Mock wraps this at ~420px inside the 720px padded card. */
+  max-width: 420px;
 }
 
 /* Potential outcomes */
@@ -783,7 +855,8 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  max-width: 200px;
+  /* Mock lays these out two per row: 245 + 48 gap = 293px column pitch. */
+  max-width: 245px;
 }
 
 .outcome-item__stat {
@@ -837,12 +910,24 @@
   padding: 32px 24px;
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  /* 32 + 110 (Step line + 4 description lines) + 48 + 22 + 32 = 244, the mock's card height */
+  gap: 48px;
+}
+
+/* Label above ranks 2 and 3 (mock: 14px semibold, 14px clear of the card). */
+.action-plan__next-label {
+  margin: 32px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: 0.16px;
+  color: var(--cds-text-primary);
 }
 
 .action-hero-card__header {
   display: flex;
-  gap: 24px;
+  /* 24 padding + 32 icon + 28 = text column starts 84px in, as in the mock */
+  gap: 28px;
   align-items: flex-start;
 }
 
@@ -858,6 +943,8 @@
   line-height: 22px;
   color: #fff;
   margin: 0;
+  /* Narrow measure, not full card width (mock wraps at 283-303px). */
+  max-width: 292px;
 }
 
 .action-hero-card__step-text strong {
@@ -956,7 +1043,7 @@
   padding: 32px 24px;
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 48px;
 }
 
 .bonus-block cds-button[kind="tertiary"] {
@@ -972,19 +1059,22 @@
   color: #fff;
   font-weight: 400;
   margin: 0;
+  max-width: 480px;
 }
 
 .bonus-resource {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 32px;
 }
 
 .bonus-resource__inner {
   display: flex;
-  gap: 24px;
+  gap: 26px;
   align-items: flex-start;
 }
+
+
 
 .bonus-resource__icon {
   width: 32px;
@@ -995,9 +1085,18 @@
 .bonus-resource__body {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  flex: 1;
+  /* Title and copy sit 16 apart; tags and the button 32 (Figma 607:3561). */
+  gap: 32px;
+  /* Figma 607:3561 — prose runs to 286, the pill row to 494. */
+  flex: 0 1 494px;
+  min-width: 0;
 }
+
+.bonus-resource__title,
+.bonus-resource__desc { max-width: 286px; }
+
+.bonus-resource__title + .bonus-resource__desc,
+.bonus-resource__title + p { margin-top: -16px; }
 
 .bonus-resource__title {
   font-size: 16px;
@@ -1008,6 +1107,9 @@
 }
 
 .bonus-resource__desc {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   font-size: 16px;
   line-height: 22px;
   color: #fff;
@@ -1015,27 +1117,40 @@
   max-width: 286px;
 }
 
+.bonus-resource__desc p { margin: 0; }
+
 .bonus-resource__how-to {
-  font-family: var(--font-condensed);
-  font-size: 12px;
-  line-height: 16px;
-  letter-spacing: 0.32px;
+  font-size: 16px;
+  line-height: 22px;
   color: #fff;
   margin: 0;
+  max-width: 286px;
 }
 
 .bonus-resource__how-to strong {
-  font-family: var(--font-condensed);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .bonus-resource__tags {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
+  /* Figma 607:3566 — the pill row is 494 wide, deliberately wider than the
+     286px text column above it, so the roles sit two to a line. */
+  width: 494px;
+  max-width: 100%;
+}
+
+/* Carbon caps a tag at 208px and ellipsises past it; these role labels are the
+   point of the pill, so let them size to their text. */
+.bonus-resource__tags cds-tag,
+.remediation-step__roles cds-tag {
+  max-width: 100%;
 }
 
 .bonus-divider {
+  width: 672px;
+  max-width: 100%;
   height: 1px;
   background: rgba(255, 255, 255, 0.3);
 }
@@ -1096,8 +1211,13 @@
 #action-plan-container {
   display: flex;
   flex-direction: column;
-  row-gap: 24px;
+  /* Mock stacks the step cards 17px apart; the wider gaps below are added
+     per-element so the rhythm matches (33 before the detail card, 49 before
+     the "Next steps" label). */
+  row-gap: 16px;
 }
+
+#action-plan-container > .action-details-card { margin-top: 16px; }
 
 /* --------------------------------------------------------------------------
    Roadmap table
@@ -1178,7 +1298,7 @@
     display: block;
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 200;
     background: #ffffff;
     width: 100%;
     max-width: 100vw;
@@ -1189,13 +1309,19 @@
     display: none;
   }
 
+  /* On a phone the CTAs belong to the menu and to the foot of the page, so the
+     copy sitting under the contact details is taken out of the flow. */
+  .report-sidebar__actions {
+    display: none;
+  }
+
   .report-section {
     scroll-margin-top: 56px;
   }
 
-  /* Hero scales proportionally on mobile — clamp keeps it between 80px and 200px */
+  /* Hero shrinks on a phone but keeps enough height to read as a banner. */
   .report-hero {
-    height: clamp(80px, 25vw, 200px);
+    height: clamp(96px, 28vw, 160px);
   }
 
   .report-layout {
@@ -1222,18 +1348,38 @@
     padding-top: 0;
   }
   .report-sidebar__icon img {
-    width: 24px;
-    height: 24px;
+    width: 32px;
+    height: 32px;
   }
   .report-sidebar__title {
     font-size: 40px;
     line-height: 1.1;
     margin: 0;
   }
+  /* Contact and organisation stay visible on mobile. */
   .report-sidebar__meta {
-    display: none;
+    display: block;
   }
-  .report-sidebar__actions {
+  /* Both CTAs share one width. Carbon's lg button carries a 12rem minimum it
+   will not shrink past, so 192px is the smallest size at which the primary
+   button and the Download menu button actually measure the same. */
+.report-sidebar__actions cds-button,
+.report-sidebar__actions cds-menu-button,
+.mobile-nav__actions cds-button,
+.mobile-nav__actions cds-menu-button,
+.report-end-actions cds-button,
+.report-end-actions cds-menu-button {
+  width: 192px;
+}
+
+.report-sidebar__version {
+  margin: 0;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--cds-text-secondary);
+}
+
+.report-sidebar__actions {
     width: 100%;
   }
   .report-content {
@@ -1300,7 +1446,11 @@
     display: none;
   }
 
-  /* Standard panel — back to normal flow, stacks vertically inside the card */
+  /* Standard panel — back to normal flow, stacks vertically inside the card.
+     The desktop rule that widens an open panel to 471px outweighs this one on
+     specificity, and at 471px inside a ~346px card the topline's status icon
+     is pushed off the right edge and clipped away, so it is reset here too. */
+  .stage-card.is-expanded .stage-card__standard { width: 100%; }
   .stage-card__standard {
     position: static;
     width: 100%;
@@ -1369,7 +1519,7 @@
     font-size: clamp(22px, 6vw, 32px);
   }
   .report-sidebar__title {
-    padding-bottom: 24px;
+    padding-bottom: 0;
   }
   .report-sidebar__actions cds-button,
   .report-sidebar__actions cds-menu-button {
@@ -1384,3 +1534,256 @@
   .stage-card__content-stack,
   .stage-card__details { transition: none; }
 }
+
+/* --------------------------------------------------------------------------
+   Help us improve (Figma 615:4208)
+   Section is 197 tall: 18 eyebrow + 32 + (24 question + 4 + 40 text) + 32 + 48 buttons.
+   -------------------------------------------------------------------------- */
+.feedback {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.feedback__question {
+  margin: 0;
+  max-width: 350px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  color: var(--cds-text-primary);
+}
+
+.feedback__text {
+  margin: 4px 0 0;
+  max-width: 350px;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0.16px;
+  color: var(--cds-text-secondary);
+}
+
+.feedback__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.feedback__thanks {
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0.16px;
+  color: var(--cds-support-success);
+}
+
+/* The last section needs room to scroll clear of the fold, or the nav link to
+   it can never land and the scroll-spy never reaches it. */
+.report-section:last-of-type {
+  padding-bottom: 96px;
+}
+
+.report-section {
+  scroll-margin-top: 32px;
+}
+
+/* --------------------------------------------------------------------------
+   Mobile navigation — hamburger + current section, panel holds the nav list
+   and the same two CTAs as the desktop sidebar.
+   -------------------------------------------------------------------------- */
+.mobile-nav__bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding-right: 16px;
+  border-bottom: 1px solid var(--cds-border-subtle);
+  background: var(--cds-background);
+}
+
+.mobile-nav__toggle {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--cds-icon-primary);
+  cursor: pointer;
+}
+
+.mobile-nav__toggle:hover { background: var(--cds-layer-hover); }
+.mobile-nav__toggle:focus-visible { outline: 2px solid var(--cds-focus); outline-offset: -2px; }
+
+.mobile-nav__icon--close { display: none; }
+.mobile-nav__toggle[aria-expanded="true"] .mobile-nav__icon--menu { display: none; }
+.mobile-nav__toggle[aria-expanded="true"] .mobile-nav__icon--close { display: block; }
+
+.mobile-nav__title {
+  margin: 0;
+  transition: opacity 160ms cubic-bezier(0.2, 0, 0.38, 0.9);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: 0.16px;
+  color: var(--cds-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mobile-nav__title.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.mobile-nav__panel {
+  border-bottom: 1px solid var(--cds-border-subtle);
+  background: var(--cds-layer);
+}
+
+.mobile-nav__panel[hidden] { display: none; }
+
+.mobile-nav__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mobile-nav__item {
+  display: block;
+  padding: 14px 16px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--cds-text-secondary);
+  text-decoration: none;
+  border-left: 3px solid transparent;
+}
+
+.mobile-nav__item:hover { background: var(--cds-layer-hover); color: var(--cds-text-primary); }
+
+.mobile-nav__item--active {
+  color: var(--cds-text-primary);
+  font-weight: 600;
+  border-left-color: var(--cds-interactive);
+}
+
+/* The CTAs repeated at the foot of the page. Desktop keeps them in the sticky
+   sidebar, so this block only exists on a phone (see the media query below). */
+.report-end-actions {
+  display: none;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-top: 8px;
+}
+
+.mobile-nav__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 16px;
+  border-top: 1px solid var(--cds-border-subtle);
+}
+
+
+/* Underlined in-report references — each scrolls to the section it names. */
+.report-inline-link {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.report-inline-link:hover { text-decoration-thickness: 2px; }
+.report-inline-link:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+
+/* A stage card jumped to from an inline reference flashes so the eye lands on
+   the right one in a rail of five. */
+.stage-card.is-jump-target {
+  outline: 2px solid var(--cds-interactive);
+  outline-offset: 2px;
+  animation: stage-jump-flash 1.4s ease-out;
+}
+@keyframes stage-jump-flash {
+  0%, 60% { outline-color: var(--cds-interactive); }
+  100%    { outline-color: transparent; }
+}
+
+/* --------------------------------------------------------------------------
+   Responsive hardening — nothing may scroll sideways on a phone.
+   -------------------------------------------------------------------------- */
+@media (max-width: 1100px) {
+  /* The foot-of-page CTAs only exist on a phone. */
+  .report-end-actions {
+    display: flex;
+  }
+
+  /* A collapsed stage column reads number-then-icon on mobile, matching the
+     open card: the number sits on the card's left edge and the status icon on
+     its right. row-reverse flips the DOM order (icon first) so space-between
+     lands them on the correct edges. */
+  .stage-card__compact {
+    flex-direction: row-reverse;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  /* Long words and inline code can't push a card wider than the screen. */
+  .report-body,
+  .report-layout,
+  .report-content,
+  .report-section {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .accelerate-card,
+  .accelerate-card__inner,
+  .accelerate-card__body,
+  .bonus-block,
+  .bonus-resource,
+  .bonus-resource__inner,
+  .bonus-resource__body,
+  .action-details-card,
+  .action-hero-card,
+  .expansion-card,
+  .maturity-banner {
+    max-width: 100%;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .accelerate-card__inner,
+  .bonus-resource__inner {
+    flex-wrap: wrap;
+  }
+
+  /* Buttons wrap instead of running off the edge. */
+  .accelerate-card cds-button,
+  .bonus-resource cds-button,
+  .expansion-card cds-button {
+    max-width: 100%;
+  }
+
+  .accelerate-card cds-button::part(button),
+  .bonus-resource cds-button::part(button),
+  .expansion-card cds-button::part(button) {
+    white-space: normal;
+    height: auto;
+    min-height: 48px;
+  }
+
+  /* The hero step measure is a desktop column; let it fill the card on phones. */
+  .action-hero-card__step-text,
+  .expansion-value__text,
+  .feedback__question,
+  .feedback__text {
+    max-width: 100%;
+  }
+}
+
+/* `clip` contains sideways overflow without creating a scroll container —
+   `hidden` here would silently break every `position: sticky` on the page. */
+html, body { overflow-x: clip; }

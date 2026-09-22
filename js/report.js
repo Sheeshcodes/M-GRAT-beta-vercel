@@ -6,13 +6,14 @@
  * is used so the page can be previewed standalone.
  *
  * All content comes from:
- *   - Logic/milestone_graph.json        (milestone nodes)
+ *   - data/report_data.js               (milestones, compiled from the register)
  *   - data/journey.js                   (APM / FSM journey stages)
  *   - data/milestone-actions.js         (remediation steps)
  *   - data/assessment.js                (follow-up questions)
  *   - sessionStorage key "scoringResult" (the scoring engine output)
  */
 
+import reportData from "../data/report_data.js";
 import journey from "../data/journey.js";
 import milestoneActions from "../data/milestone-actions.js";
 import assessment from "../data/assessment.js";
@@ -32,6 +33,15 @@ function escHtml(v) {
 }
 
 function pad2(n) { return String(n).padStart(2, "0"); }
+
+/* Capability names read badly when the last word drops alone onto a second
+   line ("Inspections and condition / capture"). Glue the final two words
+   together so the break falls one word earlier. */
+function keepTail(text) {
+  const words = String(text).split(" ");
+  if (words.length < 3) return text;
+  return words.slice(0, -2).join(" ") + " " + words.slice(-2).join("\u00a0");
+}
 
 /* --------------------------------------------------------------------------
    Mock scoring result — used when no sessionStorage entry is present.
@@ -84,19 +94,19 @@ const MOCK_RESULT = {
 };
 
 /* --------------------------------------------------------------------------
-   Load milestone graph
+   Milestones, keyed by id. Compiled from the Milestone Register, so this works
+   over file:// too — nothing is fetched at runtime.
    -------------------------------------------------------------------------- */
-let milestones = {};
-
-async function loadMilestones() {
-  const res = await fetch("Logic/milestone_graph.json");
-  const { nodes } = await res.json();
-  nodes.forEach(n => { milestones[n.id] = n; });
-}
+const milestones = Object.fromEntries(reportData.milestones.map(m => [m.id, m]));
 
 /* --------------------------------------------------------------------------
    Dimension status helpers
    -------------------------------------------------------------------------- */
+/**
+ * Pillar status bands: below 40% needs attention, 40–74% growing, 75%+ established.
+ * Both boundaries count upward — exactly 40 is Growing, exactly 75 is Established.
+ * 75 keeps "3 of 4 milestones met" reading as Established on the four-milestone pillars.
+ */
 function dimStatus(score) {
   if (score >= 75) return { label: "Established", color: "#24a148" };
   if (score >= 40) return { label: "Growing",     color: "#1192e8" };
@@ -106,6 +116,29 @@ function dimStatus(score) {
 /* --------------------------------------------------------------------------
    Icon SVGs (inline Carbon icons, no emoji)
    -------------------------------------------------------------------------- */
+const ICON_CHECK_FILLED = `
+  <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true">
+    <path d="M16 2a14 14 0 1014 14A14 14 0 0016 2zm-2 19.59l-5-5L10.59 15 14 18.41 21.41 11l1.596 1.586z"/>
+  </svg>`;
+
+const ICON_USER_SERVICE = `
+  <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true">
+    <path stroke-width="0" d="m23.019,10.4332c-.595.3514-1.2795.5668-2.019.5668-2.2056,0-4-1.7944-4-4,0-.3557.0615-.6943.1492-1.0228l2.4368,2.4368.0005-.0004c.3621.3621.8621.5864,1.4136.5864,1.103,0,2-.897,2-2,0-.5515-.2242-1.0515-.5864-1.4136l.0005-.0004-2.4368-2.4368c.3284-.0875.667-.1491,1.0227-.1491,2.2056,0,4,1.7944,4,4,0,.7396-.2155,1.4241-.5669,2.0191l5.5669,5.5668-1.4141,1.4141-5.5669-5.5668Z"/>
+    <path stroke-width="0" d="m16,30h-2v-5c-.0018-1.6561-1.3439-2.9982-3-3h-4c-1.6561.0018-2.9982,1.3439-3,3v5h-2v-5c.0033-2.7601,2.2399-4.9967,5-5h4c2.7601.0033,4.9967,2.2399,5,5v5Z"/>
+    <path stroke-width="0" d="m9,10c1.6569,0,3,1.3431,3,3s-1.3431,3-3,3-3-1.3431-3-3c.0019-1.6561,1.3439-2.9981,3-3m0-2c-2.7614,0-5,2.2386-5,5s2.2386,5,5,5,5-2.2386,5-5-2.2386-5-5-5Z"/>
+  </svg>`;
+
+const ICON_USER = `
+  <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true">
+    <path d="M16 4a5 5 0 11-5 5 5.006 5.006 0 015-5m0-2a7 7 0 107 7 7 7 0 00-7-7zM26 30h-2v-5a5.006 5.006 0 00-5-5h-6a5.006 5.006 0 00-5 5v5H6v-5a7.008 7.008 0 017-7h6a7.008 7.008 0 017 7z"/>
+  </svg>`;
+
+const ICON_USER_FOLLOW = `
+  <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true">
+    <path d="M32 14v-2h-4V8h-2v4h-4v2h4v4h2v-4h4z"/>
+    <path d="M12 16a5 5 0 115-5 5.006 5.006 0 01-5 5zm0-8a3 3 0 103 3 3.003 3.003 0 00-3-3zM22 30h-2v-5a5.006 5.006 0 00-5-5H9a5.006 5.006 0 00-5 5v5H2v-5a7.008 7.008 0 017-7h6a7.008 7.008 0 017 7z"/>
+  </svg>`;
+
 const ICON_CHECKMARK = `
   <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true">
     <path d="M13 24L4 15l1.41-1.41L13 21.17l13.59-13.59L28 9 13 24z"/>
@@ -185,7 +218,7 @@ function renderMaturityBanner(result) {
     <div class="maturity-strengths-cell">
       <p class="maturity-strengths-label">Your strongest capabilities</p>
       <ul class="maturity-strengths-list">
-        ${topDims.map(d => `<li>${escHtml(d.name)}</li>`).join("")}
+        ${topDims.map(d => `<li>${escHtml(keepTail(d.name))}</li>`).join("")}
       </ul>
     </div>`;
 }
@@ -202,7 +235,7 @@ function renderDimensionMeters(dimensions) {
     return `
       <div class="meter" data-score="${dim.score}" data-color="${escHtml(color)}">
         <div class="meter__header">
-          <span class="meter__name">${escHtml(dim.name)}</span>
+          <span class="meter__name">${escHtml(keepTail(dim.name))}</span>
           <span class="meter__status">${escHtml(label)}</span>
         </div>
         <div class="meter__track">
@@ -247,10 +280,7 @@ function renderEstablishedPractices(milestoneIds) {
   ).join("");
 
   const panelsHtml = nodes.map((n, i) => {
-    const signals = (n.signals || "")
-      .split("\n")
-      .map(s => s.replace(/^[•\-]\s*/, "").trim())
-      .filter(Boolean);
+    const signals = n.signals || [];
 
     return `
       <div
@@ -260,7 +290,7 @@ function renderEstablishedPractices(milestoneIds) {
         aria-labelledby="ep-tab-${escHtml(n.id)}"
         style="${i !== 0 ? 'display:none' : ''}"
       >
-        <p class="established-resp">${escHtml(n.resp_met)}</p>
+        <p class="established-resp">${escHtml(n.respMet)}</p>
         ${signals.length ? `
         <div class="established-sub-section">
           <p class="established-sub-label">You already have:</p>
@@ -268,15 +298,15 @@ function renderEstablishedPractices(milestoneIds) {
             ${signals.map(s => `<li>${escHtml(s)}</li>`).join("")}
           </ul>
         </div>` : ""}
-        ${n.touchpoints ? `
+        ${n.touchpoints?.length ? `
         <div class="established-sub-section">
           <p class="established-sub-label">Supporting applications:</p>
-          <p class="established-touchpoints">${escHtml(n.touchpoints)}</p>
+          <p class="established-touchpoints">${escHtml(n.touchpoints.join("\n"))}</p>
         </div>` : ""}
-        ${n.personas ? `
+        ${n.personas?.length ? `
         <div class="established-sub-section">
           <p class="established-sub-label">Roles involved:</p>
-          <p class="established-personas">${escHtml(n.personas)}</p>
+          <p class="established-personas">${escHtml(n.personas.join("; "))}</p>
         </div>` : ""}
       </div>`;
   }).join("");
@@ -335,16 +365,17 @@ function stageCardIcon(tone) {
 
 function renderStageRail(railEl, stages, currentIndex, targetIndex, mode = "button") {
   const isHover = mode === "hover";
-  // On hover/desktop: no card pre-selected (hover drives it).
-  // On button/mobile: default to current stage if >= 0, otherwise target stage (or stage 0).
-  const defaultIndex = currentIndex >= 0 ? currentIndex : targetIndex;
-  let active = isHover ? null : defaultIndex;
+  // No card is pre-selected in either mode: with nothing chosen, the current
+  // and target cards both render open (the CSS gives each of them 260px).
+  let active = null;
 
   // ── Initial render (once) ───────────────────────────────────────────────
   railEl.innerHTML = stages.map((s, i) => {
     const tone  = stageCardTone(i, currentIndex, targetIndex);
     const label = stageCardLabel(i, currentIndex, targetIndex);
-    const isInitiallyExpanded = i === defaultIndex;
+    // Nothing is pre-selected, so the current and target cards are the two that
+    // render open — that is what assistive tech should be told on first paint.
+    const isInitiallyExpanded = i === currentIndex || i === targetIndex;
 
     return `
       <article
@@ -357,8 +388,8 @@ function renderStageRail(railEl, stages, currentIndex, targetIndex, mode = "butt
       >
         <!-- Compact row: shown when card is collapsed (past/future/manually collapsed) -->
         <div class="stage-card__compact" aria-hidden="true">
-          <span>${pad2(i + 1)}</span>
           ${stageCardIcon(tone)}
+          <span>${pad2(i + 1)}</span>
         </div>
 
         <!-- Standard panel: shown when card is open -->
@@ -383,8 +414,8 @@ function renderStageRail(railEl, stages, currentIndex, targetIndex, mode = "butt
           </div>
         </div>
 
-        <div class="stage-card__details" aria-hidden="${!isInitiallyExpanded}">
-          <p>${escHtml(s.description)}</p>
+        <div class="stage-card__details" aria-hidden="${i !== currentIndex}">
+          <p>${escHtml(s.valueStatement || s.description)}</p>
         </div>
       </article>`;
   }).join("");
@@ -401,7 +432,9 @@ function renderStageRail(railEl, stages, currentIndex, targetIndex, mode = "butt
     cards.forEach((card, i) => {
       const tone = stageCardTone(i, currentIndex, targetIndex);
       const isExpanded  = active === i;
-      // On desktop: collapse all others when one is active; on mobile same logic
+      // One stage at a time: choosing any card collapses every other one,
+      // current and target included. With nothing chosen the CSS falls back to
+      // the default state — current and target open, the rest thin.
       const isCollapsed = active !== null && !isExpanded;
 
       card.classList.toggle("is-expanded",  isExpanded);
@@ -468,6 +501,12 @@ function renderStageRail(railEl, stages, currentIndex, targetIndex, mode = "butt
     railEl.addEventListener("mouseleave", () => { active = null; applyState(); });
   }
 
+  // Lets an inline reference elsewhere in the report open a named stage.
+  railEl.openStage = (i) => {
+    active = i;
+    applyState();
+  };
+
   railEl.addEventListener("keydown", (e) => {
     const card = e.target.closest("[data-rail-index]");
     if (!card) return;
@@ -503,7 +542,7 @@ function renderExpansionCard(containerId, track, trackResult) {
 
   // Products
   const tagsHtml = (targetStageData.products || []).map(p =>
-    `<cds-tag size="lg" type="${p.active ? "blue" : "outline"}">${escHtml(p.name)}</cds-tag>`
+    `<cds-tag size="md" type="${p.active ? "blue" : "outline"}">${escHtml(p.name)}</cds-tag>`
   ).join("");
 
   el.innerHTML = `
@@ -515,7 +554,7 @@ function renderExpansionCard(containerId, track, trackResult) {
 
     <div class="expansion-value">
       <p class="expansion-value__label">What it takes to achieve your target stage:</p>
-      <p class="expansion-value__text">${escHtml(targetStageData.valueStatement)}</p>
+      <p class="expansion-value__text">${escHtml(targetStageData.description)}</p>
     </div>
 
     <div class="potential-outcomes">
@@ -529,7 +568,10 @@ function renderExpansionCard(containerId, track, trackResult) {
     </div>
 
     <div>
-      <cds-button kind="tertiary" size="lg">Talk to a seller</cds-button>
+      <cds-button kind="tertiary" size="lg">
+        Talk to a seller
+        ${ICON_USER_SERVICE}
+      </cds-button>
     </div>`;
 
   const railEl = el.querySelector(".stage-rail");
@@ -546,8 +588,7 @@ function renderHeroCard(actionEntry) {
   if (!m) return "";
 
   const track = actionEntry.track;
-  const stageRef = track === "APM" ? m.apm_stage : m.fsm_stage;
-  const stageNum = parseInt((stageRef || "").replace(/\D/g, ""), 10) || 1;
+  const stageNum = actionEntry.stage || (track === "APM" ? m.apmStage : m.fsmStage) || 1;
   const stageName = journey[track.toLowerCase()]?.[stageNum - 1]?.name || `Stage ${pad2(stageNum)}`;
   const icon = trackIcon(track);
 
@@ -561,7 +602,12 @@ function renderHeroCard(actionEntry) {
         </p>
       </div>
       <p class="action-hero-card__prereq">
-        Foundational Pre-requisite for <u>${escHtml(track)} Stage ${stageNum} — ${escHtml(stageName)}</u>
+        Foundational pre-requisite for
+        <a class="report-inline-link"
+           href="#${track.toLowerCase()}-expansion-card"
+           data-section="act-roi"
+           data-stage-rail="#${track.toLowerCase()}-expansion-card"
+           data-stage-index="${stageNum - 1}">${escHtml(track)} Stage ${pad2(stageNum)} — ${escHtml(stageName)}</a>
       </p>
     </div>`;
 }
@@ -576,17 +622,17 @@ function renderDetailsCard(milestoneId) {
   const actions = milestoneActions[milestoneId] || [];
 
   // Parse touchpoints into product tags + text
-  const touchpointLines = (m.touchpoints || "").split("\n").filter(Boolean);
+  const touchpointLines = m.touchpoints || [];
   const productNames = [...new Set(touchpointLines.map(l => l.split("—")[0].trim()))];
   const productTagsHtml = productNames.map(p =>
-    `<cds-tag size="lg" type="blue">${escHtml(p)}</cds-tag>`
+    `<cds-tag size="lg" type="blue">${ICON_CHECK_FILLED}${escHtml(p)}</cds-tag>`
   ).join("");
 
   const remediationHtml = actions.map(a => `
     <div class="remediation-step">
       <p class="remediation-step__text"><strong>Step ${escHtml(a.step)}:</strong> ${escHtml(a.description)}</p>
       <div class="remediation-step__roles">
-        ${a.roles.map(r => `<cds-tag size="lg" type="green">${escHtml(r)}</cds-tag>`).join("")}
+        ${a.roles.map(r => `<cds-tag size="lg" type="green">${ICON_USER}${escHtml(r)}</cds-tag>`).join("")}
       </div>
     </div>`).join("");
 
@@ -594,7 +640,7 @@ function renderDetailsCard(milestoneId) {
     <div class="action-details-card">
       <div class="action-details-section">
         <p class="action-details-label">What does it unlock?</p>
-        <p class="action-details-text">${escHtml(m.value)}</p>
+        <p class="action-details-text">${escHtml(m.valueStatement)}</p>
       </div>
 
       <div class="action-details-section">
@@ -628,18 +674,31 @@ function renderActionPlan(actionPlan) {
 
   let html = "";
 
-  // Step 01 — hero + details
-  html += renderHeroCard(actionPlan.hero);
-  html += renderDetailsCard(actionPlan.hero.milestoneId);
+  if (actionPlan?.hero) {
+    // Step 01 — hero + details
+    html += renderHeroCard(actionPlan.hero);
+    html += renderDetailsCard(actionPlan.hero.milestoneId);
 
-  // Steps 02 + 03 — hero only
-  (actionPlan.secondary || []).forEach(entry => {
-    html += renderHeroCard(entry);
-  });
+    // Steps 02 + 03 — hero only, under their own label
+    const secondary = actionPlan.secondary || [];
+    if (secondary.length) {
+      html += `<p class="action-plan__next-label">Next steps on this path</p>`;
+      secondary.forEach(entry => { html += renderHeroCard(entry); });
+    }
+  } else {
+    // Every capability we asked about is already in place.
+    html += `
+      <div class="action-details-card">
+        <div class="action-details-section">
+          <p class="action-details-label">No immediate actions</p>
+          <p class="action-details-text">Every practice covered by this assessment is already in place. Talk to your IBM contact about the capabilities beyond it — the worksheet below lists the full set of milestones.</p>
+        </div>
+      </div>`;
+  }
 
   // Additional resources (bonus) — static content
   html += `
-    <div class="bonus-block">
+    <div class="bonus-block" id="act-resources">
       <h3 class="bonus-block__heading">Additional resources</h3>
 
       <div class="bonus-resource">
@@ -648,19 +707,18 @@ function renderActionPlan(actionPlan) {
           <div class="bonus-resource__body">
             <p class="bonus-resource__title">Complete checklist</p>
             <div class="bonus-resource__desc">
-              <p>Reach a 100% on your <u>maturity index score.</u></p>
-              <p style="margin-top:12px;">This roadmap shows the complete picture: all 60 milestones across every capability, so you can see the full journey ahead, not just the next move.</p>
+              <p>Reach a 100% on your <a class="report-inline-link" href="#act-today" data-section="act-today">maturity index score.</a></p>
+              <p>This roadmap shows the complete picture: all 60 milestones across APM and FSM, so you can see the full journey ahead, not only the next move.</p>
             </div>
             <div class="bonus-resource__tags">
-              <cds-tag size="lg" type="green">Reliability engineer</cds-tag>
-              <cds-tag size="lg" type="green">Maintenance planner/Scheduler</cds-tag>
-              <cds-tag size="lg" type="green">Operations Manager</cds-tag>
-              <cds-tag size="lg" type="green">IT / System Administrator</cds-tag>
+              <cds-tag size="lg" type="green">${ICON_USER}Reliability engineer</cds-tag>
+              <cds-tag size="lg" type="green">${ICON_USER}Maintenance planner/Scheduler</cds-tag>
+              <cds-tag size="lg" type="green">${ICON_USER}Operations Manager</cds-tag>
+              <cds-tag size="lg" type="green">${ICON_USER}IT / System Administrator</cds-tag>
             </div>
-            <p class="bonus-resource__how-to"><strong>How to use it:</strong><br><br>Share the worksheet below with your Operations Manager, Reliability Engineer, or Maintenance Planner. Work through it with your IBM contact to turn your assessment results into a sequenced plan — milestone by milestone.</p>
             <div>
               <cds-button kind="tertiary" size="lg">
-                Download worksheet
+                Download checklist
                 <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4z"/><path d="M26 14l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
               </cds-button>
             </div>
@@ -695,14 +753,63 @@ function renderActionPlan(actionPlan) {
         <p class="accelerate-card__title">Accelerate your Maximo Journey</p>
         <p class="accelerate-card__desc">Discuss these prioritized immediate actions and review the full roadmap with an IBM Maximo and APM specialist to estimate ROI, run scoping exercises, or schedule a deep-dive product demonstration.</p>
         <cds-button kind="tertiary" size="lg" href="https://www.ibm.com/products/maximo">
-          Schedule a Review with an IBM Specialist
-          <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M28 6H4a2 2 0 00-2 2v20a2 2 0 002 2h24a2 2 0 002-2V8a2 2 0 00-2-2zm0 22H4V14h24zm0-16H4V8h24z"/></svg>
+          Schedule a review with an IBM specialist
+          ${ICON_USER_SERVICE}
         </cds-button>
       </div>
     </div>
   </div>`;
 
   el.innerHTML = html;
+}
+
+/* --------------------------------------------------------------------------
+   Feedback buttons (Act 4)
+   -------------------------------------------------------------------------- */
+function wireFeedback() {
+  const el = $("#feedback-actions");
+  if (!el) return;
+
+  const initialActions = el.innerHTML;
+
+  const send = (value, comment) => {
+    document.dispatchEvent(new CustomEvent("report:feedback", { detail: { value, comment: comment || "" } }));
+    el.innerHTML = `<p class="feedback__thanks">Thanks — noted.</p>`;
+  };
+
+  // "No" asks what would make the report more useful before sending.
+  const askWhy = () => {
+    el.innerHTML = `
+      <div class="feedback__form">
+        <cds-textarea
+          id="feedback-comment"
+          label="What would have made this more useful?"
+          placeholder="Tell us what was missing, unclear, or wrong."
+          rows="4"
+        ></cds-textarea>
+        <div class="feedback__form-actions">
+          <cds-button kind="primary" size="lg" type="button" data-feedback-submit>Submit feedback</cds-button>
+          <cds-button kind="ghost" size="lg" type="button" data-feedback-cancel>Cancel</cds-button>
+        </div>
+      </div>`;
+    el.querySelector("cds-textarea")?.focus();
+  };
+
+  el.addEventListener("click", event => {
+    const choice = event.target.closest("cds-button[data-feedback]");
+    if (choice) {
+      if (choice.dataset.feedback === "no") askWhy();
+      else send("yes");
+      return;
+    }
+    if (event.target.closest("[data-feedback-submit]")) {
+      send("no", $("#feedback-comment")?.value);
+      return;
+    }
+    if (event.target.closest("[data-feedback-cancel]")) {
+      el.innerHTML = initialActions;
+    }
+  });
 }
 
 /* --------------------------------------------------------------------------
@@ -776,24 +883,50 @@ function renderFollowUp() {
    Scrollspy — update active nav item
    -------------------------------------------------------------------------- */
 function initScrollSpy() {
-  const sections = ["act-today", "act-roi", "act-plan", "act-improve"];
+  const sections = ["act-today", "act-roi", "act-plan", "act-resources", "act-improve"];
   const navItems = $$(".report-nav__item");
-  const mobileTabs = $$("cds-tab[data-section]");
-  const tabsEl = $("cds-tabs");
+  const mobileItems = $$(".mobile-nav__item");
+  const mobileTitle = $("#mobile-nav-title");
+  const toggle = $("#mobile-nav-toggle");
+  const panel = $("#mobile-nav-panel");
+
+  const setPanel = (open) => {
+    if (!toggle || !panel) return;
+    panel.hidden = !open;
+    toggle.setAttribute("aria-expanded", String(open));
+    toggle.setAttribute("aria-label", open ? "Close report navigation" : "Open report navigation");
+  };
+
+  // The bar carries no title while it is still over the banner; the current
+  // section appears once "Where you are today" has scrolled past it.
+  const firstHeading = $("#act-today .report-section__heading") || $("#act-today");
+  const bar = $(".mobile-nav__bar");
+  const syncTitleVisibility = () => {
+    if (!mobileTitle || !firstHeading || !bar) return;
+    const barBottom = bar.getBoundingClientRect().bottom;
+    const passed = firstHeading.getBoundingClientRect().bottom <= barBottom;
+    mobileTitle.classList.toggle("is-hidden", !passed);
+    // While hidden the observer can leave a stale label behind; park it on the
+    // first section so the right words are there when it fades in.
+    if (!passed) setActive(sections[0]);
+  };
+
+  const setActive = (sectionId) => {
+    navItems.forEach(item =>
+      item.classList.toggle("report-nav__item--active", item.dataset.section === sectionId)
+    );
+    mobileItems.forEach(item =>
+      item.classList.toggle("mobile-nav__item--active", item.dataset.section === sectionId)
+    );
+    // The bar always says which section you are in.
+    const label = mobileItems.find(i => i.dataset.section === sectionId)
+      || navItems.find(i => i.dataset.section === sectionId);
+    if (mobileTitle && label) mobileTitle.textContent = label.textContent.trim();
+  };
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const sectionId = entry.target.id;
-
-        // Update desktop nav
-        navItems.forEach(item => item.classList.remove("report-nav__item--active"));
-        const activeNav = navItems.find(item => item.dataset.section === sectionId);
-        if (activeNav) activeNav.classList.add("report-nav__item--active");
-
-        // Update mobile tabs
-        if (tabsEl) tabsEl.value = sectionId;
-      }
+      if (entry.isIntersecting) setActive(entry.target.id);
     });
   }, { rootMargin: "-30% 0px -60% 0px" });
 
@@ -802,23 +935,73 @@ function initScrollSpy() {
     if (el) observer.observe(el);
   });
 
-  // Smooth scroll on desktop nav click
-  navItems.forEach(item => {
+  // The last section sits at the foot of the page, so it can never reach the
+  // observer's band (30-40% of the viewport). Treat "scrolled to the bottom"
+  // as that section being active, otherwise its nav link never highlights.
+  const lastSection = sections[sections.length - 1];
+  const syncBottom = () => {
+    const doc = document.documentElement;
+    if (window.innerHeight + window.scrollY >= doc.scrollHeight - 4) setActive(lastSection);
+  };
+  window.addEventListener("scroll", syncBottom, { passive: true });
+  syncBottom();
+
+  window.addEventListener("scroll", syncTitleVisibility, { passive: true });
+  window.addEventListener("resize", syncTitleVisibility);
+  // Start on the first section so the label is right the moment it fades in,
+  // whatever the observer happened to report during the initial layout.
+  setActive(sections[0]);
+  syncTitleVisibility();
+
+  const goTo = (sectionId) => {
+    const target = $(`#${sectionId}`);
+    if (!target) return;
+    target.scrollIntoView({ behavior: "smooth" });
+    setActive(sectionId);
+  };
+
+  [...navItems, ...mobileItems].forEach(item => {
     item.addEventListener("click", e => {
       e.preventDefault();
-      const target = $(`#${item.dataset.section}`);
-      if (target) target.scrollIntoView({ behavior: "smooth" });
+      goTo(item.dataset.section);
+      setPanel(false); // a choice closes the mobile panel
     });
   });
 
-  // Smooth scroll on mobile tab selection
-  if (tabsEl) {
-    tabsEl.addEventListener("cds-tabs-selected", e => {
-      const sectionId = e.detail?.item?.dataset?.section;
-      if (sectionId) {
-        const target = $(`#${sectionId}`);
-        if (target) target.scrollIntoView({ behavior: "smooth" });
-      }
+  // Underlined references inside the report jump to what they name — a whole
+  // section, or, when the reference names a stage, that stage's card.
+  $$(".report-inline-link").forEach(link => {
+    link.addEventListener("click", e => {
+      e.preventDefault();
+      const railSel = link.dataset.stageRail;
+      const rail = railSel ? $(`${railSel} .stage-rail`) : null;
+      const index = Number(link.dataset.stageIndex);
+      const card = rail && Number.isInteger(index)
+        ? rail.querySelector(`[data-rail-index="${index}"]`)
+        : null;
+
+      if (!card) { goTo(link.dataset.section); return; }
+
+      rail.openStage?.(index);
+      setActive(link.dataset.section);
+      // The card changes size as it opens, so measure after that paint.
+      requestAnimationFrame(() =>
+        card.scrollIntoView({ behavior: "smooth", block: "center" }));
+      card.classList.add("is-jump-target");
+      setTimeout(() => card.classList.remove("is-jump-target"), 1400);
+    });
+  });
+
+  if (toggle && panel) {
+    toggle.addEventListener("click", () => setPanel(panel.hidden));
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape" && !panel.hidden) { setPanel(false); toggle.focus(); }
+    });
+    // Tapping the page behind the open panel closes it.
+    document.addEventListener("click", e => {
+      if (panel.hidden) return;
+      if (e.target.closest(".report-mobile-nav")) return;
+      setPanel(false);
     });
   }
 }
@@ -827,9 +1010,6 @@ function initScrollSpy() {
    Bootstrap
    -------------------------------------------------------------------------- */
 async function init() {
-  // Load milestone graph
-  await loadMilestones();
-
   // Load scoring result from sessionStorage, fall back to mock
   let result;
   try {
@@ -847,7 +1027,7 @@ async function init() {
   renderExpansionCard("apm-expansion-card", "APM", result.apm);
   renderExpansionCard("fsm-expansion-card", "FSM", result.fsm);
   renderActionPlan(result.actionPlan);
-  renderFollowUp();
+  wireFeedback();
   initScrollSpy();
 }
 

@@ -1,7 +1,8 @@
 /**
  * GENERATED FILE — do not edit by hand.
- * Built from Logic/Milestone_Register_Sep20.xlsx (Milestone Actions sheet).
- * Keyed by milestoneId -> array of { step, description, roles[] }
+ * Built from Logic/Milestone_Register_Sep20.xlsx by scripts/build_report_data.py.
+ * To change what the report says, edit the workbook and re-run that script.
+ * Keyed by milestoneId -> ordered [{ step, description, roles }].
  */
 export default {
   "AD-1-REG": [

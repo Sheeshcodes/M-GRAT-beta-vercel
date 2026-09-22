@@ -9,9 +9,12 @@ Serves the project folder with caching disabled, so a plain browser refresh
 always picks up edited JS/CSS/data (the stock `python3 -m http.server` lets the
 browser cache modules, which makes edits look like they didn't apply).
 
-It also watches Logic/Question_Binder*.xlsx and re-runs build_assessment.py
-whenever the workbook is saved, so editing the spreadsheet + refreshing the
-browser is all it takes to see new questions.
+It also watches both workbooks in Logic/ and re-runs the matching compiler
+whenever one is saved, so editing a spreadsheet + refreshing the browser is all
+it takes to see new content:
+
+    Question_Binder*.xlsx    -> build_assessment.py   (the questions)
+    Milestone_Register*.xlsx -> build_report_data.py  (everything the report says)
 """
 import glob
 import os
@@ -23,8 +26,13 @@ from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BUILD = os.path.join(ROOT, "scripts", "build_assessment.py")
-BINDER_GLOB = os.path.join(ROOT, "Logic", "Question_Binder*.xlsx")
+# (label, compiler, workbook glob)
+BUILDS = [
+    ("questions",   os.path.join(ROOT, "scripts", "build_assessment.py"),
+     os.path.join(ROOT, "Logic", "Question_Binder*.xlsx")),
+    ("report data", os.path.join(ROOT, "scripts", "build_report_data.py"),
+     os.path.join(ROOT, "Logic", "Milestone_Register*.xlsx")),
+]
 
 
 class NoCacheHandler(SimpleHTTPRequestHandler):
@@ -37,41 +45,44 @@ class NoCacheHandler(SimpleHTTPRequestHandler):
         pass
 
 
-def binder_stamp():
-    """Newest modification time across the binder workbooks (ignores Excel's ~$ lock files)."""
-    files = [f for f in glob.glob(BINDER_GLOB) if not os.path.basename(f).startswith("~$")]
+def workbook_stamp(pattern):
+    """Newest modification time for a workbook glob (ignores Excel's ~$ lock files)."""
+    files = [f for f in glob.glob(pattern) if not os.path.basename(f).startswith("~$")]
     return max((os.path.getmtime(f) for f in files), default=0)
 
 
-def run_build():
-    result = subprocess.run([sys.executable, BUILD], capture_output=True, text=True)
+def run_build(script):
+    result = subprocess.run([sys.executable, script], capture_output=True, text=True)
     stamp = time.strftime("%H:%M:%S")
     if result.returncode == 0:
-        print(f"[{stamp}] {result.stdout.strip()}")
+        for line in result.stdout.strip().splitlines():
+            print(f"[{stamp}] {line}")
     else:
         print(f"[{stamp}] build failed:\n{result.stderr.strip() or result.stdout.strip()}")
 
 
-def watch_binder(interval=1.0):
-    last = binder_stamp()
+def watch_workbooks(interval=1.0):
+    stamps = {label: workbook_stamp(pattern) for label, _, pattern in BUILDS}
     while True:
         time.sleep(interval)
-        current = binder_stamp()
-        if current != last:
-            last = current
-            time.sleep(0.5)  # let Excel finish writing the file
-            print("Question binder changed — rebuilding questions…")
-            run_build()
+        for label, script, pattern in BUILDS:
+            current = workbook_stamp(pattern)
+            if current != stamps[label]:
+                stamps[label] = current
+                time.sleep(0.5)  # let Excel finish writing the file
+                print(f"{label.capitalize()} workbook changed — rebuilding…")
+                run_build(script)
 
 
 def main():
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8765
-    run_build()  # start from whatever is in the workbook right now
-    threading.Thread(target=watch_binder, daemon=True).start()
+    for _, script, _ in BUILDS:  # start from whatever is in the workbooks right now
+        run_build(script)
+    threading.Thread(target=watch_workbooks, daemon=True).start()
     handler = partial(NoCacheHandler, directory=ROOT)
     with ThreadingHTTPServer(("127.0.0.1", port), handler) as httpd:
         print(f"Serving {ROOT} at http://127.0.0.1:{port}/  (Ctrl+C to stop)")
-        print("Watching Logic/Question_Binder*.xlsx — save the workbook, then refresh the browser.")
+        print("Watching Logic/*.xlsx — save a workbook, then refresh the browser.")
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
