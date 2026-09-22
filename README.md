@@ -1,6 +1,6 @@
 # M-GRAT — MAS Growth Readiness Assessment
 
-A static web assessment built with IBM Carbon Web Components. Questions come from the Question Binder spreadsheet. No build tooling, no `node_modules`.
+A static web assessment and personalised report built with IBM Carbon Web Components. Questions come from the Question Binder spreadsheet. No build tooling, no `node_modules`.
 
 ---
 
@@ -8,15 +8,22 @@ A static web assessment built with IBM Carbon Web Components. Questions come fro
 
 | Path | What it is | Edit? |
 |------|-----------|-------|
-| `index.html` | Page shell: sidebar banner, progress bar, empty `#sections`, Back/Next bar | Rarely |
-| `css/styles.css` | All styling — Carbon white-theme tokens, layout, tiles, matrix, breakpoints | Yes |
-| `js/app.js` | Renderer and behaviour: builds pages from data, captures answers, validates, pages, scroll logic | Yes |
+| `index.html` | Assessment page shell: sidebar banner, progress bar, empty `#sections`, Back/Next bar | Rarely |
+| `report.html` | Report page shell: sticky sidebar nav, section anchors, Carbon WC imports | Rarely |
+| `css/styles.css` | Shared styling — Carbon white-theme tokens, layout, tiles, matrix, breakpoints | Yes |
+| `css/report.css` | Report-specific styles — sidebar, expansion cards, stage rail, action plan, bonus block | Yes |
+| `js/app.js` | Assessment renderer and behaviour: builds pages from data, captures answers, scores, navigates | Yes |
+| `js/report.js` | Report renderer: reads `sessionStorage["scoringResult"]`, renders all report sections | Yes |
+| `js/scoring.js` | Scoring engine: 4-pass algorithm (milestone states → maturity score → target stages → action plan) | Yes |
 | `data/assessment.js` | Generated questions — **do not hand-edit** | No |
+| `data/journey.js` | APM and FSM journey stage definitions (names, value statements, outcomes, products) | Yes |
+| `data/milestone-actions.js` | Remediation step definitions keyed by milestone ID | Yes |
 | `scripts/build_assessment.py` | Compiler: reads the Question Binder workbook, writes `data/assessment.js` | Only if the binder gains a new column or type |
 | `scripts/serve.py` | Dev server on `127.0.0.1:8765` with caching off; watches the binder and recompiles on save | Rarely |
 | `Logic/Question_Binder_Sep20.xlsx` | **Source of truth** for all questions, options, milestone mapping, scoring metadata | Yes — this is how content changes |
-| `Logic/Milestone_Register_Sep20.xlsx` | Milestone definitions referenced by the binder (not yet read by code) | For the scoring step |
-| `assets/` | `ibm-logo.svg`, `sidebar-artwork.png` (2000×1128, transparent) | Only to swap art |
+| `Logic/Milestone_Register_Sep20.xlsx` | Milestone definitions and stage gating rules | For scoring changes |
+| `Logic/milestone_graph.json` | Compiled milestone graph consumed by the scoring engine | Generated — do not hand-edit |
+| `assets/` | Icons, pictograms, app icon, IBM Plex Math font | Only to swap art |
 
 ---
 
@@ -125,11 +132,46 @@ Only when:
 
 ---
 
+## Report page
+
+Open `http://127.0.0.1:8765/report.html` after completing the assessment. The report reads `sessionStorage["scoringResult"]` written by `js/app.js` when the user submits. In the absence of a real result it falls back to a representative mock so the page can be previewed standalone.
+
+### Report sections
+
+| Section | ID | What it shows |
+|---|---|---|
+| Where you are today | `#act-today` | Maturity index score, dimension breakdown, established milestones |
+| Opportunities to increase ROI | `#act-roi` | APM and FSM expansion path cards with interactive stage rail |
+| How to reach your target | `#act-plan` | Top 3 prioritised next steps + details + additional resources |
+| Help us improve | `#act-improve` | Follow-up feedback form |
+
+### Stage rail labels
+
+Each stage card in the APM/FSM expansion rail receives one of five labels derived from the scoring result:
+
+| Condition | Label |
+|---|---|
+| `index < currentIndex` | Completed stage |
+| `index === currentIndex` | Your current stage |
+| `currentIndex < index < targetIndex` | Transitional stage |
+| `index === targetIndex` | Your target stage |
+| `index > targetIndex` | Expansion stage |
+
+### Scoring engine passes
+
+| Pass | Input | Output |
+|---|---|---|
+| Pass 1 | Answers + question binder | Milestone states (MET / UNMET / UNKNOWN) |
+| Pass 2 | Milestone states | Maturity score, current APM/FSM stage |
+| Pass 3 | Selected objectives (Q-OBJ) | Target APM/FSM stage |
+| Pass 4 | All of the above | Top 3 prioritised action steps + roadmap table |
+
+---
+
 ## What isn't done yet
 
-In rough priority order. The first three are required before the assessment ships.
+In rough priority order.
 
-- [ ] **Scoring** — milestone status from answers (inputs are on the data objects; rules are in the binder's README and RULE rows)
 - [ ] **Submit destination** — `assessment:submit` fires with the answers object but sends them nowhere
 - [ ] **Follow-up gating** — the four Growth Appetite questions (`followUp: true`) should appear only after the report, when the user opts in
 - [ ] Skip conditions aren't evaluated (`skipCondition` field exists on questions but has no evaluator)

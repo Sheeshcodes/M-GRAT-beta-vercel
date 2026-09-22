@@ -89,6 +89,11 @@ p { margin: 0; }
   flex-direction: column;
   overflow: hidden;
 }
+.sidebar__icon {
+  display: block;
+  flex-shrink: 0;
+  margin-bottom: 16px;
+}
 .sidebar__head {
   display: flex;
   align-items: flex-start;
@@ -486,6 +491,7 @@ p { margin: 0; }
   .sidebar.is-compact .sidebar__product strong { font-weight: 600; }
   .sidebar.is-compact .sidebar__product br { display: none; }
   .sidebar.is-compact .sidebar__product strong::after { content: " · "; font-weight: 400; }
+  .sidebar.is-compact .sidebar__icon,
   .sidebar.is-compact .sidebar__version,
   .sidebar.is-compact .sidebar__logo { display: none; }
   .sidebar.is-compact .sidebar__hero {

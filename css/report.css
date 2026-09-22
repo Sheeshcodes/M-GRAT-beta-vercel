@@ -564,6 +564,7 @@
   overflow: hidden;
   transition: flex-basis 520ms cubic-bezier(.2, .8, .2, 1), width 520ms cubic-bezier(.2, .8, .2, 1);
 }
+.stage-card--past    { background: #e8e8e8; }
 .stage-card--current { background: #ffcf4e; }
 .stage-card--target  { background: #74e792; }
 .stage-card--future  { background: #fff; }
@@ -590,6 +591,7 @@
   visibility: visible;
   transition-delay: 0s;
 }
+.stage-card--past:not(.is-expanded) .stage-card__standard,
 .stage-card--future:not(.is-expanded) .stage-card__standard,
 .stage-card.is-collapsed .stage-card__standard {
   opacity: 0;
@@ -635,7 +637,7 @@
 .stage-card__number-label { padding: 0 4px; font-size: 16px; line-height: 22px; }
 .stage-card__number,
 .stage-card__compact span {
-  font-family: 'IBM Plex Math', 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: 'IBM Plex Math', 'IBM Plex Mono', ui-monospace, monospace;
   font-weight: 400;
 }
 .stage-card__number { font-size: 64px; line-height: 52px; letter-spacing: -3px; }
@@ -672,9 +674,11 @@
   pointer-events: none;
   transition: opacity 160ms ease;
 }
+.stage-card--past:not(.is-expanded) .stage-card__compact,
 .stage-card--future:not(.is-expanded) .stage-card__compact,
 .stage-card.is-collapsed .stage-card__compact { opacity: 1; }
 .stage-card__compact span { font-size: 28px; line-height: 36px; color: #a8a8a8; }
+.stage-card--past .stage-card__compact span { color: #525252; }
 .stage-card--current .stage-card__compact span,
 .stage-card--target .stage-card__compact span { color: #161616; }
 
@@ -775,6 +779,7 @@
 }
 
 .outcome-item__stat {
+  font-family: 'IBM Plex Math', 'IBM Plex Mono', ui-monospace, monospace;
   font-size: 28px;
   line-height: 36px;
   font-weight: 400;
@@ -946,6 +951,13 @@
   gap: 32px;
 }
 
+.bonus-block cds-button[kind="tertiary"] {
+  --cds-button-tertiary: #fff;
+  --cds-button-tertiary-hover: rgba(255,255,255,0.12);
+  --cds-button-tertiary-active: rgba(255,255,255,0.2);
+  --cds-text-on-color: #fff;
+}
+
 .bonus-block__heading {
   font-size: 28px;
   line-height: 36px;
@@ -1017,6 +1029,64 @@
 .bonus-divider {
   height: 1px;
   background: rgba(255, 255, 255, 0.3);
+}
+
+/* --------------------------------------------------------------------------
+   Accelerate card
+   -------------------------------------------------------------------------- */
+.accelerate-card {
+  background: var(--cds-button-primary);
+  padding: 32px 24px;
+}
+
+.accelerate-card__inner {
+  display: flex;
+  gap: 26px;
+  align-items: flex-start;
+}
+
+.accelerate-card__icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  color: #fff;
+}
+
+.accelerate-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.accelerate-card__title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 22px;
+  color: #fff;
+  margin: 0 0 16px;
+}
+
+.accelerate-card__desc {
+  font-size: 14px;
+  line-height: 18px;
+  color: #fff;
+  margin: 0;
+}
+
+.accelerate-card cds-button[kind="tertiary"] {
+  --cds-button-tertiary: #fff;
+  --cds-button-tertiary-hover: rgba(255,255,255,0.12);
+  --cds-button-tertiary-active: rgba(255,255,255,0.2);
+  --cds-text-on-color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+   Action plan — container
+   -------------------------------------------------------------------------- */
+#action-plan-container {
+  display: flex;
+  flex-direction: column;
+  row-gap: 24px;
 }
 
 /* --------------------------------------------------------------------------

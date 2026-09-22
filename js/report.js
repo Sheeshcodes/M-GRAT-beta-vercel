@@ -137,19 +137,9 @@ const PICTOGRAM_TECHNICIAN = `
     <polygon points="14 21.17 10 17.17 11.41 15.76 14 18.34 20.59 11.76 22 13.17 14 21.17"/>
   </svg>`;
 
-const PICTOGRAM_ASSESSMENT = `
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="currentColor" aria-hidden="true">
-    <path d="M26 6h-4V4h-2v2h-8V4h-2v2H6a2 2 0 00-2 2v18a2 2 0 002 2h20a2 2 0 002-2V8a2 2 0 00-2-2zm0 20H6V8h4v2h2V8h8v2h2V8h4z"/>
-    <path d="M10 15h12v2H10zm0 4h12v2H10zm0-8h12v2H10z"/>
-  </svg>`;
+const PICTOGRAM_ASSESSMENT = `<img src="assets/assessment-used.svg" width="32" height="32" aria-hidden="true" />`;
 
-const PICTOGRAM_QA = `
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="currentColor" aria-hidden="true">
-    <path d="M26 2H6a2 2 0 00-2 2v20a2 2 0 002 2h2v4l6-4h12a2 2 0 002-2V4a2 2 0 00-2-2zm0 22H14l-4 2.667V24H6V4h20z"/>
-    <circle cx="16" cy="16" r="2"/>
-    <circle cx="9" cy="16" r="2"/>
-    <circle cx="23" cy="16" r="2"/>
-  </svg>`;
+const PICTOGRAM_QA = `<img src="assets/question--and--answer.svg" width="32" height="32" aria-hidden="true" />`;
 
 const PICTOGRAM_SUPERVISOR = `
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="currentColor" aria-hidden="true">
@@ -159,7 +149,7 @@ const PICTOGRAM_SUPERVISOR = `
   </svg>`;
 
 function trackIcon(track) {
-  return track === "FSM" ? PICTOGRAM_TECHNICIAN : PICTOGRAM_ANALYZING;
+  return `<img src="assets/data--scientist-1.svg" width="32" height="32" aria-hidden="true" />`;
 }
 
 /* --------------------------------------------------------------------------
@@ -319,6 +309,7 @@ function renderEstablishedPractices(milestoneIds) {
    Render expansion path card (APM or FSM)
    -------------------------------------------------------------------------- */
 function stageCardLabel(index, currentIndex, targetIndex) {
+  if (index  < currentIndex) return "Completed stage";
   if (index === currentIndex) return "Your current stage";
   if (index === targetIndex)  return "Your target stage";
   if (index > currentIndex && index < targetIndex) return "Transitional stage";
@@ -326,13 +317,19 @@ function stageCardLabel(index, currentIndex, targetIndex) {
 }
 
 function stageCardTone(index, currentIndex, targetIndex) {
+  if (index  < currentIndex) return "past";
   if (index === currentIndex) return "current";
   if (index === targetIndex)  return "target";
   return "future";
 }
 
 function stageCardIcon(tone) {
-  const map = { current: "assets/73587.svg", target: "assets/e29a7.svg", future: "assets/48ac9.svg" };
+  const map = {
+    past:    "assets/73587.svg",
+    current: "assets/73587.svg",
+    target:  "assets/e29a7.svg",
+    future:  "assets/48ac9.svg",
+  };
   return `<img class="stage-icon" src="${map[tone]}" alt="" aria-hidden="true" />`;
 }
 
@@ -487,7 +484,6 @@ function renderExpansionCard(containerId, track, trackResult) {
   const targetIndex  = targetStage - 1;
   const targetStageData = journeyStages[targetIndex];
 
-  const icon = track === "APM" ? PICTOGRAM_ANALYZING : PICTOGRAM_TECHNICIAN;
   const trackLabel = track === "APM" ? "APM expansion path" : "FSM expansion path";
 
   // Potential outcomes
@@ -505,7 +501,6 @@ function renderExpansionCard(containerId, track, trackResult) {
   el.innerHTML = `
     <div class="expansion-card__header">
       <h3 class="expansion-card__title">${escHtml(trackLabel)}</h3>
-      <div class="expansion-card__icon">${icon}</div>
     </div>
 
     <div class="stage-rail" role="region" aria-label="${escHtml(trackLabel)} stages"></div>
@@ -542,6 +537,8 @@ function renderHeroCard(actionEntry) {
 
   const track = actionEntry.track;
   const stageRef = track === "APM" ? m.apm_stage : m.fsm_stage;
+  const stageNum = parseInt((stageRef || "").replace(/\D/g, ""), 10) || 1;
+  const stageName = journey[track.toLowerCase()]?.[stageNum - 1]?.name || `Stage ${pad2(stageNum)}`;
   const icon = trackIcon(track);
 
   return `
@@ -554,7 +551,7 @@ function renderHeroCard(actionEntry) {
         </p>
       </div>
       <p class="action-hero-card__prereq">
-        Foundational Pre-requisite for <u>${escHtml(track)} ${escHtml(stageRef || "Stage 01")}</u>
+        Foundational Pre-requisite for <u>${escHtml(track)} Stage ${stageNum} — ${escHtml(stageName)}</u>
       </p>
     </div>`;
 }
@@ -633,7 +630,7 @@ function renderActionPlan(actionPlan) {
   // Additional resources (bonus) — static content
   html += `
     <div class="bonus-block">
-      <h3 class="bonus-block__heading">Additional resources (Bonus)</h3>
+      <h3 class="bonus-block__heading">Additional resources</h3>
 
       <div class="bonus-resource">
         <div class="bonus-resource__inner">
@@ -680,24 +677,21 @@ function renderActionPlan(actionPlan) {
         </div>
       </div>
 
-      <div class="bonus-divider"></div>
+    </div>
 
-      <div class="bonus-resource">
-        <div class="bonus-resource__inner">
-          <div class="bonus-resource__icon">${PICTOGRAM_SUPERVISOR}</div>
-          <div class="bonus-resource__body">
-            <p class="bonus-resource__title">Accelerate your Maximo Journey</p>
-            <p class="bonus-resource__desc">Discuss these prioritized immediate actions and review the full roadmap with an IBM Maximo and APM specialist to estimate ROI, run scoping exercises, or schedule a deep-dive product demonstration.</p>
-            <div>
-              <cds-button kind="tertiary" size="lg" href="https://www.ibm.com/products/maximo">
-                Schedule a Review with an IBM Specialist
-                <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M28 6H4a2 2 0 00-2 2v20a2 2 0 002 2h24a2 2 0 002-2V8a2 2 0 00-2-2zm0 22H4V14h24zm0-16H4V8h24z"/></svg>
-              </cds-button>
-            </div>
-          </div>
-        </div>
+  <div class="accelerate-card">
+    <div class="accelerate-card__inner">
+      <div class="accelerate-card__icon"><img src="assets/supervisor-close--work.svg" width="32" height="32" aria-hidden="true" /></div>
+      <div class="accelerate-card__body">
+        <p class="accelerate-card__title">Accelerate your Maximo Journey</p>
+        <p class="accelerate-card__desc">Discuss these prioritized immediate actions and review the full roadmap with an IBM Maximo and APM specialist to estimate ROI, run scoping exercises, or schedule a deep-dive product demonstration.</p>
+        <cds-button kind="tertiary" size="lg" href="https://www.ibm.com/products/maximo">
+          Schedule a Review with an IBM Specialist
+          <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M28 6H4a2 2 0 00-2 2v20a2 2 0 002 2h24a2 2 0 002-2V8a2 2 0 00-2-2zm0 22H4V14h24zm0-16H4V8h24z"/></svg>
+        </cds-button>
       </div>
-    </div>`;
+    </div>
+  </div>`;
 
   el.innerHTML = html;
 }
