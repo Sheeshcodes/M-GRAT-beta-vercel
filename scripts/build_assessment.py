@@ -53,7 +53,7 @@ PAGES = [
     {"id": "goals", "title": "Your goals and priorities", "groups": ["GRP-GOALS"]},
     {"id": "maintenance-operations", "title": "Your maintenance operations", "groups": ["GRP-ASSET", "GRP-WM", "GRP-IC", "GRP-SC"]},
     {"id": "field-service", "title": "Your field service operations", "groups": ["GRP-SCHED", "GRP-AS", "GRP-WA"]},
-    {"id": "asset-performance", "title": "Your asset performance practice", "groups": ["GRP-RP", "GRP-CM"]},
+    {"id": "asset-performance", "title": "Your asset performance practice", "groups": ["GRP-RP", "GRP-CM", "GRP-CM-ADV"]},
     {"id": "follow-up", "title": "Your organisational appetite", "groups": ["GRP-APPETITE"], "followUp": True},
 ]
 
