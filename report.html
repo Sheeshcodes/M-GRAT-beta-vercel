@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Maximo Growth Roadmap — MAS Growth Readiness Assessment</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans+Condensed:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Serif:wght@300&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Carbon Web Components v2 -->
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/button.min.js"></script>
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/tabs.min.js"></script>
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/tag.min.js"></script>
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/tooltip.min.js"></script>
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/notification.min.js"></script>
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/menu-button.min.js"></script>
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/menu.min.js"></script>
+
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/report.css" />
+</head>
+<body class="report-page">
+
+  <!-- Hero graphics layer — sticky behind content -->
+  <div class="report-hero" aria-hidden="true">
+    <div class="report-hero__art">
+      <video class="report-hero__video" autoplay muted loop playsinline>
+        <source src="assets/Hero animation.mp4" type="video/mp4" />
+      </video>
+    </div>
+  </div>
+
+  <!-- Content layer — slides over hero on scroll -->
+  <div class="report-body">
+
+    <!-- Mobile sticky tab nav — hidden on desktop, shown at ≤ 1100px -->
+    <div class="report-mobile-nav">
+      <cds-tabs value="act-today">
+        <cds-tab id="tab-act-today" target="act-today" data-section="act-today">Where you are today</cds-tab>
+        <cds-tab id="tab-act-roi" target="act-roi" data-section="act-roi">Opportunities to increase ROI</cds-tab>
+        <cds-tab id="tab-act-plan" target="act-plan" data-section="act-plan">Your action plan</cds-tab>
+        <cds-tab id="tab-act-improve" target="act-improve" data-section="act-improve">Help us improve</cds-tab>
+      </cds-tabs>
+    </div>
+
+    <div class="report-layout">
+
+      <!-- Left sticky panel -->
+      <aside class="report-sidebar" id="report-sidebar">
+        <div class="report-sidebar__icon">
+          <img src="assets/IBM Maximo Application Suite.svg" alt="IBM Maximo Application Suite" width="32" height="32" />
+        </div>
+        <h1 class="report-sidebar__title">Your Maximo<br>growth roadmap</h1>
+        <div class="report-sidebar__meta" id="sidebar-meta">
+          <!-- injected by report.js -->
+        </div>
+        <nav class="report-nav" aria-label="Report sections">
+          <ul class="report-nav__list" id="report-nav-list">
+            <li><a class="report-nav__item report-nav__item--active" href="#act-today" data-section="act-today">Where you are today</a></li>
+            <li><a class="report-nav__item" href="#act-roi" data-section="act-roi">Opportunities to increase ROI</a></li>
+            <li><a class="report-nav__item" href="#act-plan" data-section="act-plan">Your action plan</a></li>
+            <li><a class="report-nav__item" href="#act-improve" data-section="act-improve">Help us improve</a></li>
+          </ul>
+        </nav>
+        <div class="report-sidebar__actions">
+          <cds-button kind="primary" size="lg" href="https://www.ibm.com/products/maximo">Talk to a seller</cds-button>
+          <cds-menu-button kind="tertiary" label="Actions" menu-alignment="bottom" size="lg">
+            <cds-menu>
+              <cds-menu-item label="Full PDF report"></cds-menu-item>
+              <cds-menu-item label="Worksheet"></cds-menu-item>
+              <cds-menu-item label="Your responses"></cds-menu-item>
+            </cds-menu>
+          </cds-menu-button>
+        </div>
+      </aside>
+
+      <!-- Right scrollable content -->
+      <main class="report-content" id="report-content">
+
+        <!-- ACT 1 ── Where you are today -->
+        <section id="act-today" class="report-section">
+          <div class="report-eyebrow-row">
+            <p class="report-eyebrow">Growth readiness snapshot</p>
+            <div class="report-rule" aria-hidden="true"></div>
+          </div>
+          <h2 class="report-section__heading">Where you are today</h2>
+
+          <!-- Maturity banner -->
+          <div class="maturity-banner" id="maturity-banner">
+            <!-- injected by report.js -->
+          </div>
+
+          <!-- Dimension meters -->
+          <p class="report-body-text" style="max-width:367px;margin-top:32px;">
+            Your strongest capabilities are creating value today, while several areas offer opportunities for growth.
+          </p>
+          <div class="dimension-grid" id="dimension-grid">
+            <!-- injected by report.js -->
+          </div>
+
+          <!-- Established practices -->
+          <div class="report-section__sub-heading-group" style="margin-top:32px;">
+            <h3 class="report-section__sub-heading">Established practices</h3>
+            <p class="report-body-text" style="max-width:367px;">The most advanced operational wins your organisation has successfully established:</p>
+          </div>
+          <div class="established-card" id="established-card">
+            <!-- injected by report.js -->
+          </div>
+        </section>
+
+        <!-- ACT 2 ── Opportunities to increase ROI -->
+        <section id="act-roi" class="report-section">
+          <div class="report-eyebrow-row">
+            <p class="report-eyebrow">Act 2 — Opportunities to increase ROI</p>
+            <div class="report-rule" aria-hidden="true"></div>
+          </div>
+          <h2 class="report-section__heading">Two expansion paths</h2>
+          <p class="report-body-text" style="max-width:367px;margin-top:0;">This section recommends an expansion path along two significant journeys.</p>
+
+          <!-- APM + FSM intro banner -->
+          <div class="expansion-intro">
+            <div class="expansion-intro__track">
+              <div class="expansion-intro__icon">
+                <img src="assets/data--scientist.svg" alt="" aria-hidden="true" width="32" height="32" />
+              </div>
+              <div>
+                <p class="expansion-intro__label"><strong>Asset Performance Management</strong></p>
+                <p class="expansion-intro__body">Asset Performance Management (APM) uses real-time monitoring and predictive analytics to eliminate unplanned downtime, cut maintenance costs, and extend asset life. It replaces rigid schedules with condition-driven actions, optimizing resource allocation, workplace safety, and long-term capital investments.</p>
+              </div>
+            </div>
+            <div class="expansion-intro__track">
+              <div class="expansion-intro__icon">
+                <img src="assets/supervisor-close--work.svg" alt="" aria-hidden="true" width="32" height="32" />
+              </div>
+              <div>
+                <p class="expansion-intro__label"><strong>Field Service Management</strong></p>
+                <p class="expansion-intro__body">Field Service Management (FSM) optimises how work is planned, assigned, and executed across your field workforce. It replaces reactive dispatch and manual scheduling with coordinated, data-driven operations — reducing technician travel time, improving first-time fix rates, and giving dispatchers real-time visibility across active jobs.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- APM expansion path card -->
+          <div class="expansion-card" id="apm-expansion-card">
+            <!-- injected by report.js -->
+          </div>
+
+          <!-- FSM expansion path card -->
+          <div class="expansion-card" id="fsm-expansion-card">
+            <!-- injected by report.js -->
+          </div>
+        </section>
+
+        <!-- ACT 3 ── Your action plan -->
+        <section id="act-plan" class="report-section">
+          <div class="report-eyebrow-row">
+            <p class="report-eyebrow">Act 3 — Your action plan</p>
+            <div class="report-rule" aria-hidden="true"></div>
+          </div>
+          <div class="report-section__heading-row">
+            <h2 class="report-section__heading" style="margin-bottom:0;">How to reach your target</h2>
+            <cds-tooltip align="bottom-start">
+              <button class="report-info-btn" slot="trigger" type="button" aria-label="About journey next steps">
+                <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M17 22V14h-4v2h2v6h-3v2h8v-2zM16 7a1.5 1.5 0 100 3 1.5 1.5 0 000-3z"/><path d="M16 2a14 14 0 100 28A14 14 0 0016 2zm0 26a12 12 0 110-24 12 12 0 010 24z"/></svg>
+              </button>
+              <span slot="body-text">Your top 3 prioritised next steps, selected based on your objectives and obstacles.</span>
+            </cds-tooltip>
+          </div>
+          <div id="action-plan-container">
+            <!-- injected by report.js -->
+          </div>
+        </section>
+
+        <!-- ACT 4 ── Help us improve -->
+        <section id="act-improve" class="report-section">
+          <div class="report-eyebrow-row">
+            <p class="report-eyebrow">Act 4 — Help us improve</p>
+            <div class="report-rule" aria-hidden="true"></div>
+          </div>
+          <h2 class="report-section__heading">Help us improve</h2>
+          <p class="report-body-text" style="max-width:480px;">Share a few details about your growth appetite to help us sharpen these recommendations over time. Takes under 2 minutes.</p>
+          <details class="followup-details">
+            <summary class="followup-summary">
+              <cds-button kind="tertiary" size="lg" type="button">Share feedback</cds-button>
+            </summary>
+            <div id="followup-form" class="followup-form">
+              <!-- injected by report.js -->
+            </div>
+          </details>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <script type="module" src="js/report.js"></script>
+</body>
+</html>

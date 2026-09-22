@@ -1,819 +1,853 @@
-import reportData from "../data/report_data.js";
-import assessmentData from "../data/assessment.js";
+/**
+ * report.js
+ * Renders the assessment results report page.
+ *
+ * In mock mode (no sessionStorage entry), a representative mock scoring result
+ * is used so the page can be previewed standalone.
+ *
+ * All content comes from:
+ *   - Logic/milestone_graph.json        (milestone nodes)
+ *   - data/journey.js                   (APM / FSM journey stages)
+ *   - data/milestone-actions.js         (remediation steps)
+ *   - data/assessment.js                (follow-up questions)
+ *   - sessionStorage key "scoringResult" (the scoring engine output)
+ */
 
-export function generateReportHtml(results, answers) {
-  const {
-    states,
-    dimensionScores,
-    overallMaturity,
-    valueTier,
-    currentAPMStageNum,
-    currentFSMStageNum,
-    apmTargetStageNum,
-    fsmTargetStageNum,
-    topStrengths,
-    heroAction,
-    secondaryActions,
-    remainingRoadmap,
-    propensityScore,
-    propensitySignals,
-    scoredCandidates
-  } = results;
+import journey from "../data/journey.js";
+import milestoneActions from "../data/milestone-actions.js";
+import assessment from "../data/assessment.js";
 
-  const formatDate = () => {
-    const d = new Date();
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const dd = String(d.getDate()).padStart(2, '0');
-    const yy = String(d.getFullYear()).slice(-2);
-    return `${mm}/${dd}/${yy}`;
-  };
+/* --------------------------------------------------------------------------
+   Helpers
+   -------------------------------------------------------------------------- */
+const $ = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 
-  // 1. Report Header & Metadata
-  const headerHtml = `
-    <header class="rep-header">
-      <div class="rep-header__logo">
-        <a href="https://www.ibm.com" aria-label="IBM">
-          <svg viewBox="0 0 54 20" width="54" height="20" fill="#0043ce">
-            <path d="M0,0 H54 V4 H0 Z M0,5 H54 V7 H0 Z M0,8 H54 V10 H0 Z M0,11 H54 V13 H0 Z M0,14 H54 V16 H0 Z M0,17 H54 V20 H0 Z"/>
-          </svg>
-        </a>
-      </div>
-      <div class="rep-header__titles">
-        <h1 class="rep-title">Maximo Growth Readiness Report</h1>
-        <p class="rep-subtitle">
-          Based on assessment results on ${formatDate()}
-        </p>
-        <div class="rep-meta-edit" id="meta-edit-container">
-          <div class="rep-meta-field">
-            <label for="rep-contact">Contact Name</label>
-            <input type="text" id="rep-contact" value="Asset Manager" placeholder="Your Name">
-          </div>
-          <div class="rep-meta-field">
-            <label for="rep-industry">Industry / Org</label>
-            <input type="text" id="rep-industry" value="Industrial Operations" placeholder="Your Industry">
-          </div>
-          <div class="rep-meta-badge">
-            <span class="rep-badge font-condensed">beta v3</span>
-          </div>
-        </div>
-      </div>
-    </header>
-  `;
+function escHtml(v) {
+  return String(v ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
 
-  // 2. Act 1: Progress & Baseline
-  const pillarList = Object.entries(dimensionScores).map(([name, dim]) => {
+function pad2(n) { return String(n).padStart(2, "0"); }
+
+/* --------------------------------------------------------------------------
+   Mock scoring result — used when no sessionStorage entry is present.
+   Reflects a realistic APM Stage 1 / FSM Stage 1 baseline with
+   objectives pointing to APM Stage 2 and FSM Stage 2.
+   -------------------------------------------------------------------------- */
+const MOCK_RESULT = {
+  contact: {
+    name: "Michael Scott",
+    industry: "Utilities & Energy",
+    date: new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })
+  },
+  maturity: {
+    score: 48,
+    level: 2,
+    levelLabel: "Core operations established"
+  },
+  dimensions: [
+    { id: "DIM-AD",  name: "Asset data",                      score: 75, track: "Shared" },
+    { id: "DIM-WM",  name: "Work management",                 score: 80, track: "Shared" },
+    { id: "DIM-IC",  name: "Inspections and condition capture",score: 30, track: "Shared" },
+    { id: "DIM-SC",  name: "Supply chain and inventory",       score: 55, track: "Shared" },
+    { id: "DIM-RP",  name: "Reliability practices",            score: 15, track: "APM" },
+    { id: "DIM-CM",  name: "Condition monitoring and prediction",score: 22,track: "APM" },
+    { id: "DIM-SCH", name: "Scheduling",                      score: 60, track: "FSM" },
+    { id: "DIM-AS",  name: "Assignment and dispatch",          score: 50, track: "FSM" }
+  ],
+  // Top 3 met milestone IDs (foundational strengths)
+  establishedMilestoneIds: ["AD-1-REG", "WM-1-JPBASIC", "SCH-1-DATES"],
+  apm: { currentStage: 1, targetStage: 2 },
+  fsm: { currentStage: 1, targetStage: 2 },
+  actionPlan: {
+    hero:      { milestoneId: "CM-1-LF",    track: "APM", step: 1 },
+    secondary: [
+      { milestoneId: "IC-1-PROG", track: "FSM", step: 2 },
+      { milestoneId: "RP-1-FC",   track: "APM", step: 3 }
+    ],
+    roadmapTable: [
+      { milestoneId: "AD-1-CRIT",  status: "UNMET" },
+      { milestoneId: "IC-2-INSB",  status: "UNMET" },
+      { milestoneId: "WM-2-JPNEEDS", status: "UNMET" },
+      { milestoneId: "SC-1-REG",   status: "UNMET" },
+      { milestoneId: "RP-2-RS",    status: "UNMET" },
+      { milestoneId: "CM-2-TRIG",  status: "UNMET" },
+      { milestoneId: "CM-2-HLTH",  status: "UNKNOWN" },
+      { milestoneId: "SCH-2-FWD",  status: "UNMET" },
+      { milestoneId: "AS-1-OWN",   status: "UNMET" }
+    ]
+  }
+};
+
+/* --------------------------------------------------------------------------
+   Load milestone graph
+   -------------------------------------------------------------------------- */
+let milestones = {};
+
+async function loadMilestones() {
+  const res = await fetch("Logic/milestone_graph.json");
+  const { nodes } = await res.json();
+  nodes.forEach(n => { milestones[n.id] = n; });
+}
+
+/* --------------------------------------------------------------------------
+   Dimension status helpers
+   -------------------------------------------------------------------------- */
+function dimStatus(score) {
+  if (score >= 75) return { label: "Established", color: "#24a148" };
+  if (score >= 40) return { label: "Growing",     color: "#1192e8" };
+  return               { label: "Needs attention",color: "#fa4d56" };
+}
+
+/* --------------------------------------------------------------------------
+   Icon SVGs (inline Carbon icons, no emoji)
+   -------------------------------------------------------------------------- */
+const ICON_CHECKMARK = `
+  <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true">
+    <path d="M13 24L4 15l1.41-1.41L13 21.17l13.59-13.59L28 9 13 24z"/>
+    <circle cx="16" cy="16" r="14" fill="none" stroke="currentColor" stroke-width="2"/>
+  </svg>`;
+
+const ICON_RADAR = `
+  <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true">
+    <path d="M16 2C8.268 2 2 8.268 2 16s6.268 14 14 14 14-6.268 14-14S23.732 2 16 2zm0 2c2.09 0 4.04.577 5.71 1.576L6.576 21.71A11.944 11.944 0 014 16C4 9.373 9.373 4 16 4zm0 24c-2.09 0-4.04-.577-5.71-1.576l15.134-15.134A11.944 11.944 0 0128 16c0 6.627-5.373 12-12 12z"/>
+  </svg>`;
+
+const ICON_CIRCLE_DASH = `
+  <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true">
+    <path d="M16 2a14 14 0 100 28A14 14 0 0016 2zm0 2c2.634 0 5.084.823 7.11 2.22L5.22 23.11A11.948 11.948 0 014 16C4 9.373 9.373 4 16 4zm0 24c-2.634 0-5.084-.823-7.11-2.22l17.89-17.89A11.948 11.948 0 0128 16c0 6.627-5.373 12-12 12z" opacity=".5"/>
+  </svg>`;
+
+/* Pictogram SVGs */
+const PICTOGRAM_ANALYZING = `
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="currentColor" aria-hidden="true">
+    <path d="M28 4H4a2 2 0 00-2 2v20a2 2 0 002 2h24a2 2 0 002-2V6a2 2 0 00-2-2zM4 26V6h24v20z"/>
+    <rect x="7" y="13" width="4" height="9"/>
+    <rect x="14" y="9" width="4" height="13"/>
+    <rect x="21" y="16" width="4" height="6"/>
+  </svg>`;
+
+const PICTOGRAM_TECHNICIAN = `
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="currentColor" aria-hidden="true">
+    <path d="M24 26H8a2 2 0 01-2-2V8a2 2 0 012-2h16a2 2 0 012 2v16a2 2 0 01-2 2zM8 8v16h16V8z"/>
+    <polygon points="14 21.17 10 17.17 11.41 15.76 14 18.34 20.59 11.76 22 13.17 14 21.17"/>
+  </svg>`;
+
+const PICTOGRAM_ASSESSMENT = `<img src="assets/assessment-used.svg" width="32" height="32" aria-hidden="true" />`;
+
+const PICTOGRAM_QA = `<img src="assets/question--and--answer.svg" width="32" height="32" aria-hidden="true" />`;
+
+const PICTOGRAM_SUPERVISOR = `
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="currentColor" aria-hidden="true">
+    <path d="M16 4a5 5 0 110 10A5 5 0 0116 4zm0 2a3 3 0 100 6 3 3 0 000-6z"/>
+    <path d="M26 28h-2v-3a5 5 0 00-5-5h-6a5 5 0 00-5 5v3H6v-3a7 7 0 017-7h6a7 7 0 017 7z"/>
+    <path d="M21 17l1.41 1.41L18 22.83l-2.41-2.42L17 19l1 1 3-3z"/>
+  </svg>`;
+
+function trackIcon(track) {
+  return `<img src="assets/data--scientist-1.svg" width="32" height="32" aria-hidden="true" />`;
+}
+
+/* --------------------------------------------------------------------------
+   Render sidebar meta
+   -------------------------------------------------------------------------- */
+function renderSidebarMeta(contact) {
+  const el = $("#sidebar-meta");
+  if (!el) return;
+  el.innerHTML = `
+    <p>Contact name: <strong>${escHtml(contact.name)}</strong><br>
+    Industry/Organization: <strong>${escHtml(contact.industry)}</strong></p>
+    <p class="meta-date">Based on assessment results on ${escHtml(contact.date)}</p>`;
+}
+
+/* --------------------------------------------------------------------------
+   Render maturity banner
+   -------------------------------------------------------------------------- */
+function renderMaturityBanner(result) {
+  const el = $("#maturity-banner");
+  if (!el) return;
+
+  const topDims = [...result.dimensions]
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3);
+
+  el.innerHTML = `
+    <div class="maturity-score-cell">
+      <p class="maturity-score-label">Your Maturity Index Score</p>
+      <p class="maturity-score-value">${escHtml(result.maturity.score)}/100</p>
+      <p class="maturity-level">Level ${escHtml(result.maturity.level)}</p>
+      <p class="maturity-level-label">${escHtml(result.maturity.levelLabel)}</p>
+    </div>
+    <div class="maturity-strengths-cell">
+      <p class="maturity-strengths-label">Your strongest capabilities</p>
+      <ul class="maturity-strengths-list">
+        ${topDims.map(d => `<li>${escHtml(d.name)}</li>`).join("")}
+      </ul>
+    </div>`;
+}
+
+/* --------------------------------------------------------------------------
+   Render dimension meters
+   -------------------------------------------------------------------------- */
+function renderDimensionMeters(dimensions) {
+  const el = $("#dimension-grid");
+  if (!el) return;
+
+  el.innerHTML = dimensions.map(dim => {
+    const { label, color } = dimStatus(dim.score);
     return `
-      <div class="pil-bar">
-        <div class="pil-bar__head">
-          <span class="pil-bar__name">${name}</span>
-          <span class="pil-bar__score">${dim.score}% (${dim.metCount}/${dim.totalCount})</span>
+      <div class="meter" data-score="${dim.score}" data-color="${escHtml(color)}">
+        <div class="meter__header">
+          <span class="meter__name">${escHtml(dim.name)}</span>
+          <span class="meter__status">${escHtml(label)}</span>
         </div>
-        <div class="pil-bar__track">
-          <div class="pil-bar__fill" style="width: ${dim.score}%"></div>
+        <div class="meter__track">
+          <div class="meter__bar" style="background:${escHtml(color)};"></div>
         </div>
-      </div>
-    `;
+      </div>`;
   }).join("");
 
-  // Top Strengths (Tabs & Cards)
-  let strengthsHtml = "";
-  if (topStrengths.length > 0) {
-    const tabs = topStrengths.map((s, idx) => `
-      <button class="str-tab${idx === 0 ? " is-active" : ""}" data-strength-tab="${s.id}">
-        ${s.name}
-      </button>
-    `).join("");
-
-    const cards = topStrengths.map((s, idx) => {
-      const signals = s.signals
-        ? s.signals.split("\n").map(sig => `<li>${sig.replace(/^\u2022\s*/, "")}</li>`).join("")
-        : "<li>No recorded verification signals</li>";
-
-      return `
-        <div class="str-card${idx === 0 ? " is-active" : ""}" data-strength-card="${s.id}">
-          <div class="str-card__body">
-            <div class="str-card__header">
-              <span class="str-card__pill font-condensed">${s.pillar}</span>
-              <span class="str-card__level font-condensed">${s.level}</span>
-            </div>
-            <h3 class="str-card__title">${s.name}</h3>
-            <p class="str-card__desc">${s.resp_met || "This capability has been successfully operationalized."}</p>
-            <div class="str-card__signals">
-              <h4 class="str-card__signals-title font-condensed">You already have:</h4>
-              <ul class="str-card__signals-list">
-                ${signals}
-              </ul>
-            </div>
-            <div class="str-card__meta">
-              <p><strong>Touchpoints:</strong> ${s.touchpoints ? s.touchpoints.replace(/\u2014/g, "—") : "N/A"}</p>
-              <p><strong>Personas:</strong> ${s.personas || "N/A"}</p>
-            </div>
-          </div>
-        </div>
-      `;
-    }).join("");
-
-    strengthsHtml = `
-      <div class="rep-card strengths">
-        <h2 class="rep-card__title">Verified Foundational Strengths</h2>
-        <p class="rep-card__desc">The most advanced operational wins your organization has successfully established:</p>
-        <div class="str-tabs">
-          ${tabs}
-        </div>
-        <div class="str-cards">
-          ${cards}
-        </div>
-      </div>
-    `;
-  } else {
-    strengthsHtml = `
-      <div class="rep-card strengths">
-        <h2 class="rep-card__title">Verified Foundational Strengths</h2>
-        <p class="rep-card__desc">No foundational strengths have been fully verified yet. Complete more milestones to unlock key strengths.</p>
-      </div>
-    `;
-  }
-
-  const act1Html = `
-    <section class="rep-section" id="act-1">
-      <div class="divider">
-        <p class="divider__label">Act 1: Where you are now</p>
-        <div class="divider__rule" role="presentation"></div>
-      </div>
-      
-      <div class="rep-grid">
-        <div class="rep-card index-card">
-          <span class="index-card__label font-condensed">Maturity Index</span>
-          <div class="index-card__value">${overallMaturity}%</div>
-          <span class="index-card__tier font-condensed">${valueTier}</span>
-        </div>
-        
-        <div class="rep-card pillars-card">
-          <h2 class="rep-card__title">Baseline Practice Pillars</h2>
-          <div class="pillars-grid">
-            ${pillarList}
-          </div>
-        </div>
-      </div>
-
-      ${strengthsHtml}
-    </section>
-  `;
-
-  // 3. Act 2: Journey Expansion Steppers
-  const renderJourneyCard = (track, current, target, stages) => {
-    const stepperPills = stages.map((s, idx) => {
-      const stageIdx = idx + 1;
-      let badge = "";
-      if (stageIdx === current) {
-        badge = `<span class="st-pill__badge st-pill__badge--current font-condensed">YOU ARE HERE</span>`;
-      } else if (stageIdx === target) {
-        badge = `<span class="st-pill__badge st-pill__badge--target font-condensed">YOUR TARGET</span>`;
+  // Animate bars in via IntersectionObserver
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const bar = entry.target.querySelector(".meter__bar");
+        if (bar) bar.style.width = entry.target.dataset.score + "%";
+        observer.unobserve(entry.target);
       }
+    });
+  }, { threshold: 0.2 });
 
-      const statusClass = stageIdx === current ? "is-current" : stageIdx === target ? "is-target" : stageIdx < current ? "is-achieved" : "is-future";
+  $$(".meter", el).forEach(m => observer.observe(m));
+}
 
-      return `
-        <button class="st-pill ${statusClass}" data-journey-tab="${track}-${stageIdx}">
-          <span class="st-pill__num font-condensed">Stage ${stageIdx}</span>
-          <span class="st-pill__name">${s.stageName}</span>
-          ${badge}
-        </button>
-      `;
-    }).join("");
+/* --------------------------------------------------------------------------
+   Render established practices tabs
+   -------------------------------------------------------------------------- */
+function renderEstablishedPractices(milestoneIds) {
+  const el = $("#established-card");
+  if (!el) return;
 
-    const stageDetailsCards = stages.map((s, idx) => {
-      const stageIdx = idx + 1;
-      const isVisible = stageIdx === target; // Default to target details
+  const nodes = milestoneIds.map(id => milestones[id]).filter(Boolean);
+  if (!nodes.length) { el.innerHTML = "<p>No established milestones found.</p>"; return; }
 
-      const outcomes = s.potentialOutcomes
-        ? s.potentialOutcomes.split("\n").map(o => `<li>${o.replace(/^\u2022\s*/, "")}</li>`).join("")
-        : "<li>No recorded outcome benchmarks</li>";
+  const tabsHtml = nodes.map((n, i) =>
+    `<button
+       class="ep-tab${i === 0 ? " ep-tab--selected" : ""}"
+       role="tab"
+       aria-selected="${i === 0 ? "true" : "false"}"
+       aria-controls="ep-panel-${escHtml(n.id)}"
+       id="ep-tab-${escHtml(n.id)}"
+       data-id="${escHtml(n.id)}"
+     >${escHtml(n.pillar)}</button>`
+  ).join("");
 
-      const products = s.masProducts
-        ? s.masProducts.split("\n").map(p => {
-            const isUnused = p.includes("Not in use");
-            const isEntry = p.includes("Entry") || p.includes("Low/Exploring") || p.includes("Limited");
-            const isStrong = p.includes("Strong") || p.includes("Core") || p.includes("Medium") || p.includes("Advanced") || p.includes("Full");
-            let badgeClass = "prod-badge--strong";
-            if (isUnused) badgeClass = "prod-badge--unused";
-            else if (isEntry) badgeClass = "prod-badge--entry";
-            return `<span class="prod-badge ${badgeClass}">${p}</span>`;
-          }).join("")
-        : "";
-
-      return `
-        <div class="st-detail${isVisible ? " is-active" : ""}" data-journey-card="${track}-${stageIdx}">
-          <div class="st-detail__grid">
-            <div class="st-detail__left">
-              <h4 class="st-detail__heading font-condensed">What it takes to achieve:</h4>
-              <p class="st-detail__desc">${s.description}</p>
-              <h4 class="st-detail__heading font-condensed">How this helps:</h4>
-              <p class="st-detail__desc">${s.valueStatement}</p>
-            </div>
-            <div class="st-detail__right">
-              <div class="st-detail__outcomes">
-                <h4 class="st-detail__heading font-condensed">Potential Outcomes:</h4>
-                <ul>
-                  ${outcomes}
-                </ul>
-              </div>
-              <div class="st-detail__products">
-                <h4 class="st-detail__heading font-condensed">What you're using & what you'll need:</h4>
-                <div class="prod-badges">
-                  ${products}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-    }).join("");
+  const panelsHtml = nodes.map((n, i) => {
+    const signals = (n.signals || "")
+      .split("\n")
+      .map(s => s.replace(/^[•\-]\s*/, "").trim())
+      .filter(Boolean);
 
     return `
-      <div class="rep-card journey">
-        <div class="journey__header">
-          <h3 class="journey__title">${track} Expansion Pathway</h3>
-          <p class="journey__status font-condensed">
-            Current Stage: <span class="txt-teal">Stage ${current}</span> · Target: <span class="txt-purple">Stage ${target}</span>
-          </p>
-        </div>
-        <div class="journey__stepper">
-          ${stepperPills}
-        </div>
-        <div class="journey__details">
-          ${stageDetailsCards}
-        </div>
-      </div>
-    `;
+      <div
+        class="established-panel"
+        role="tabpanel"
+        id="ep-panel-${escHtml(n.id)}"
+        aria-labelledby="ep-tab-${escHtml(n.id)}"
+        style="${i !== 0 ? 'display:none' : ''}"
+      >
+        <p class="established-resp">${escHtml(n.resp_met)}</p>
+        ${signals.length ? `
+        <div class="established-sub-section">
+          <p class="established-sub-label">You already have:</p>
+          <ul class="established-signals">
+            ${signals.map(s => `<li>${escHtml(s)}</li>`).join("")}
+          </ul>
+        </div>` : ""}
+        ${n.touchpoints ? `
+        <div class="established-sub-section">
+          <p class="established-sub-label">Supporting applications:</p>
+          <p class="established-touchpoints">${escHtml(n.touchpoints)}</p>
+        </div>` : ""}
+        ${n.personas ? `
+        <div class="established-sub-section">
+          <p class="established-sub-label">Roles involved:</p>
+          <p class="established-personas">${escHtml(n.personas)}</p>
+        </div>` : ""}
+      </div>`;
+  }).join("");
+
+  el.innerHTML = `
+    <div class="ep-tab-list" role="tablist" aria-label="Established practices">
+      ${tabsHtml}
+    </div>
+    <div class="ep-panels">
+      ${panelsHtml}
+    </div>`;
+
+  // Wire tab switching
+  el.querySelectorAll(".ep-tab").forEach(btn => {
+    btn.addEventListener("click", () => {
+      el.querySelectorAll(".ep-tab").forEach(b => {
+        b.classList.remove("ep-tab--selected");
+        b.setAttribute("aria-selected", "false");
+      });
+      el.querySelectorAll(".established-panel").forEach(p => { p.style.display = "none"; });
+      btn.classList.add("ep-tab--selected");
+      btn.setAttribute("aria-selected", "true");
+      const panel = el.querySelector(`#ep-panel-${btn.dataset.id}`);
+      if (panel) panel.style.display = "";
+    });
+  });
+}
+
+/* --------------------------------------------------------------------------
+   Render expansion path card (APM or FSM)
+   -------------------------------------------------------------------------- */
+function stageCardLabel(index, currentIndex, targetIndex) {
+  if (index  < currentIndex) return "Completed stage";
+  if (index === currentIndex) return "Your current stage";
+  if (index === targetIndex)  return "Your target stage";
+  if (index > currentIndex && index < targetIndex) return "Transitional stage";
+  return "Expansion stage";
+}
+
+function stageCardTone(index, currentIndex, targetIndex) {
+  if (index  < currentIndex) return "past";
+  if (index === currentIndex) return "current";
+  if (index === targetIndex)  return "target";
+  return "future";
+}
+
+function stageCardIcon(tone) {
+  const map = {
+    past:    "assets/73587.svg",
+    current: "assets/73587.svg",
+    target:  "assets/e29a7.svg",
+    future:  "assets/48ac9.svg",
   };
+  return `<img class="stage-icon" src="${map[tone]}" alt="" aria-hidden="true" />`;
+}
 
-  const act2Html = `
-    <section class="rep-section" id="act-2">
-      <div class="divider">
-        <p class="divider__label">Act 2: Opportunities to increase ROI</p>
-        <div class="divider__rule" role="presentation"></div>
-      </div>
-      
-      ${renderJourneyCard("APM", currentAPMStageNum, apmTargetStageNum, reportData.apmJourney)}
-      ${renderJourneyCard("FSM", currentFSMStageNum, fsmTargetStageNum, reportData.fsmJourney)}
-    </section>
-  `;
+function renderStageRail(railEl, stages, currentIndex, targetIndex, mode = "button") {
+  const isHover = mode === "hover";
+  // On hover/desktop: no card pre-selected (hover drives it).
+  // On button/mobile: current stage open by default.
+  let active = isHover ? null : currentIndex;
 
-  // 4. Act 3: Prioritized Action Roadmap
-  const renderActionSteps = (mid) => {
-    const steps = reportData.actions[mid];
-    if (!steps || steps.length === 0) {
-      return "<li>No specific remediation steps are currently assigned. Contact your IBM Specialist for a custom scoping workshop.</li>";
-    }
-    return steps.map(s => {
-      const roles = s.roles
-        ? s.roles.split(";").map(r => `<span class="role-badge font-condensed">${r.trim()}</span>`).join("")
-        : "";
-      return `
-        <li class="act-step">
-          <div class="act-step__content">
-            <span class="act-step__text">${s.description}</span>
-            <div class="act-step__roles">${roles}</div>
-          </div>
-        </li>
-      `;
-    }).join("");
-  };
+  // ── Initial render (once) ───────────────────────────────────────────────
+  railEl.innerHTML = stages.map((s, i) => {
+    const tone  = stageCardTone(i, currentIndex, targetIndex);
+    const label = stageCardLabel(i, currentIndex, targetIndex);
 
-  const renderTouchpoints = (mid) => {
-    const m = reportData.milestones.find(n => n.id === mid);
-    if (!m || !m.touchpoints) return "";
-    return m.touchpoints.split("\n").map(tp => {
-      return `<span class="tp-badge font-condensed">${tp.replace(/^\u2012\s*/, "").replace(/^\u2022\s*/, "").trim()}</span>`;
-    }).join("");
-  };
-
-  // #1 Hero Action Card
-  let heroCardHtml = "";
-  if (heroAction) {
-    const m = heroAction.milestone;
-    heroCardHtml = `
-      <div class="rep-card hero-action">
-        <div class="hero-action__header">
-          <span class="hero-action__badge font-condensed">IMMEDIATE PRIORITY — FIRST STEP</span>
-          <span class="hero-action__stage font-condensed">
-            ${m.apm_stage !== "—" ? "APM Stage " + m.apm_stage.replace(/\D/g, '') : ""}
-            ${m.apm_stage !== "—" && m.fsm_stage !== "—" ? " & " : ""}
-            ${m.fsm_stage !== "—" ? "FSM Stage " + m.fsm_stage.replace(/\D/g, '') : ""}
-          </span>
+    return `
+      <article
+        class="stage-card stage-card--${tone}"
+        data-rail-index="${i}"
+        tabindex="0"
+        role="button"
+        aria-expanded="${i === currentIndex}"
+        aria-label="${escHtml(label)}: ${escHtml(s.name)}"
+      >
+        <!-- Compact row: shown when card is collapsed (past/future/manually collapsed) -->
+        <div class="stage-card__compact" aria-hidden="true">
+          <span>${pad2(i + 1)}</span>
+          ${stageCardIcon(tone)}
         </div>
-        <h3 class="hero-action__title">${m.imperative || m.name}</h3>
-        <p class="hero-action__tag font-condensed"><svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" style="vertical-align: middle; margin-right: 4px;"><path d="M16 2a14 14 0 1 0 14 14A14 14 0 0 0 16 2zm0 26a12 12 0 1 1 12-12 12 12 0 0 0-12 12zm1-17h-2v2h2zm0 4h-2v8h2z"/></svg>${heroAction.attributionTag}</p>
-        
-        <div class="hero-action__body">
-          <div class="hero-action__left">
-            <h4 class="hero-action__section-title font-condensed">Value Statement (ROI Unlock):</h4>
-            <p class="hero-action__value-desc">${m.value || m.description}</p>
-            <h4 class="hero-action__section-title font-condensed">Required Maximo Modules:</h4>
-            <div class="hero-action__touchpoints">
-              ${renderTouchpoints(m.id)}
-            </div>
+
+        <!-- Standard panel: shown when card is open -->
+        <div class="stage-card__standard">
+          <div class="stage-card__topline">
+            <span class="stage-card__label">${escHtml(label)}</span>
+            ${stageCardIcon(tone)}
           </div>
-          <div class="hero-action__right">
-            <h4 class="hero-action__section-title font-condensed">Immediate Remediation Steps:</h4>
-            <ol class="hero-action__steps">
-              ${renderActionSteps(m.id)}
-            </ol>
+          <div class="stage-card__content-stack">
+            <div class="stage-card__content">
+              <span class="stage-card__number-label">Stage</span>
+              <span class="stage-card__number">${pad2(i + 1)}</span>
+              <span class="stage-card__title">${escHtml(s.name)}</span>
+            </div>
+            ${!isHover ? `<button
+              type="button"
+              class="stage-card__toggle"
+              data-rail-toggle="${i}"
+              aria-expanded="${i === currentIndex}"
+              aria-label="Expand ${escHtml(s.name)}"
+            ><img src="assets/3f8ce.svg" alt="" aria-hidden="true" /></button>` : ""}
           </div>
         </div>
-      </div>
-    `;
-  } else {
-    heroCardHtml = `
-      <div class="rep-card hero-action">
-        <h3 class="hero-action__title">Assessment Fully Achieved!</h3>
-        <p class="hero-action__value-desc">Congratulations! Your organization has fully operationalized all assessed Maximo maturity milestones. Work with your IBM specialist on strategic Asset Investment Planning (AIP) or generative AI co-pilots.</p>
-      </div>
-    `;
-  }
 
-  // #2 & #3 Secondary Actions Accordion
-  let secondaryHtml = "";
-  if (secondaryActions.length > 0) {
-    const rows = secondaryActions.map((c, sidx) => {
-      const idx = sidx + 2;
-      const m = c.milestone;
-      return `
-        <div class="sec-accordion">
-          <button class="sec-accordion__trigger" data-sec-trigger="${m.id}">
-            <div class="sec-accordion__left">
-              <span class="sec-accordion__num font-condensed">#${idx}</span>
-              <div class="sec-accordion__info">
-                <span class="sec-accordion__title">${m.imperative || m.name}</span>
-                <span class="sec-accordion__tag font-condensed">${c.attributionTag}</span>
-              </div>
-            </div>
-            <div class="sec-accordion__right">
-              <span class="sec-accordion__stage font-condensed">
-                ${m.apm_stage !== "—" ? "APM" + m.apm_stage.replace(/\D/g, '') : ""}
-                ${m.apm_stage !== "—" && m.fsm_stage !== "—" ? "/" : ""}
-                ${m.fsm_stage !== "—" ? "FSM" + m.fsm_stage.replace(/\D/g, '') : ""}
-              </span>
-              <svg class="sec-accordion__icon" viewBox="0 0 16 16" width="16" height="16"><path d="M8 11L3 6h10z"/></svg>
-            </div>
-          </button>
-          <div class="sec-accordion__content" data-sec-content="${m.id}">
-            <div class="sec-accordion__body">
-              <div class="sec-accordion__val">
-                <h4 class="sec-accordion__heading font-condensed">Value statement:</h4>
-                <p>${m.value || m.description}</p>
-                <h4 class="sec-accordion__heading font-condensed">Required Maximo Modules:</h4>
-                <div class="hero-action__touchpoints">
-                  ${renderTouchpoints(m.id)}
-                </div>
-              </div>
-              <div class="sec-accordion__steps-container">
-                <h4 class="sec-accordion__heading font-condensed">Immediate Remediation Steps:</h4>
-                <ol class="hero-action__steps">
-                  ${renderActionSteps(m.id)}
-                </ol>
-              </div>
-            </div>
-          </div>
+        <div class="stage-card__details" aria-hidden="${i !== currentIndex}">
+          <p>${escHtml(s.description)}</p>
         </div>
-      `;
-    }).join("");
+      </article>`;
+  }).join("");
 
-    secondaryHtml = `
-      <div class="secondary-actions-wrap">
-        <h3 class="secondary-title font-condensed">Next Steps on Your Journey</h3>
-        <div class="secondary-actions">
-          ${rows}
-        </div>
-      </div>
-    `;
-  }
+  const cards = [...railEl.querySelectorAll("[data-rail-index]")];
 
-  // Full Roadmap Matrix Grouped by Stage
-  const roadmapStagesHtml = [1, 2, 3, 4, 5].map(stage => {
-    const msInStage = reportData.milestones.filter(m => {
-      const apmLvl = m.apm_stage !== "—" ? parseInt(m.apm_stage.replace(/\D/g, '')) : 99;
-      const fsmLvl = m.fsm_stage !== "—" ? parseInt(m.fsm_stage.replace(/\D/g, '')) : 99;
-      return apmLvl === stage || fsmLvl === stage;
+  // Apply initial state without animation
+  railEl.classList.add("stage-rail--no-transition");
+  applyState();
+  requestAnimationFrame(() => railEl.classList.remove("stage-rail--no-transition"));
+
+  // ── Class-only update on state change (keeps DOM, enables CSS transitions) ─
+  function applyState(focus) {
+    cards.forEach((card, i) => {
+      const tone = stageCardTone(i, currentIndex, targetIndex);
+      const isExpanded  = active === i;
+      // On desktop: collapse all others when one is active; on mobile same logic
+      const isCollapsed = active !== null && !isExpanded;
+
+      card.classList.toggle("is-expanded",  isExpanded);
+      card.classList.toggle("is-collapsed", isCollapsed);
+      card.setAttribute("aria-expanded", isExpanded);
+      card.setAttribute("aria-label",
+        `${escHtml(stageCardLabel(i, currentIndex, targetIndex))}: ${escHtml(stages[i].name)}`);
+
+      if (!isHover) {
+        card.setAttribute("tabindex", "0");
+
+        // Update toggle button icon + aria state (desktop)
+        const toggleBtn = card.querySelector("[data-rail-toggle]");
+        if (toggleBtn) {
+          toggleBtn.setAttribute("aria-expanded", isExpanded);
+          toggleBtn.setAttribute("aria-label", `${isExpanded ? "Minimize" : "Expand"} ${escHtml(stages[i].name)}`);
+          toggleBtn.querySelector("img").src = `assets/${isExpanded ? "cb904" : "3f8ce"}.svg`;
+        }
+      } else {
+        card.setAttribute("tabindex", "0");
+      }
+
+      // Details aria-hidden
+      const details = card.querySelector(".stage-card__details");
+      if (details) details.setAttribute("aria-hidden", !isExpanded);
     });
 
-    if (msInStage.length === 0) return "";
+    if (focus != null) cards[focus]?.focus();
+  }
 
-    const rows = msInStage.map(m => {
-      const status = states[m.id];
-      let statusClass = "is-unachieved";
-      let statusLabel = "Unachieved";
-      let statusIcon = `<svg viewBox="0 0 32 32" width="16" height="16" class="rm-row__icon rm-row__icon--unmet"><path d="M16 2a14 14 0 1 0 14 14A14 14 0 0 0 16 2zm0 26a12 12 0 1 1 12-12 12 12 0 0 0-12 12zm5.4-16.6L17.4 15l4 4-1.4 1.4-4-4-4 4-1.4-1.4 4-4-4-4 1.4-1.4 4 4 4-4z"/></svg>`;
-      
-      if (status === "MET") {
-        statusClass = "is-achieved";
-        statusLabel = "Achieved";
-        statusIcon = `<svg viewBox="0 0 32 32" width="16" height="16" class="rm-row__icon rm-row__icon--met"><path d="M16 2a14 14 0 1 0 14 14A14 14 0 0 0 16 2zm0 26a12 12 0 1 1 12-12 12 12 0 0 0-12 12zm-2 6.8-5.4-5.4 1.4-1.4 4 4 10-10 1.4 1.4z"/></svg>`;
-      } else if (status === "UNKNOWN") {
-        statusClass = "is-unknown";
-        statusLabel = "Unknown";
-        statusIcon = `<svg viewBox="0 0 32 32" width="16" height="16" class="rm-row__icon rm-row__icon--unknown"><path d="M16 2a14 14 0 1 0 14 14A14 14 0 0 0 16 2zm0 26a12 12 0 1 1 12-12 12 12 0 0 0-12 12zm-1-17h2v2h-2zm0 4h2v8h-2z"/></svg>`;
+  function switchTo(next, focus) {
+    if (isHover) {
+      // Hover: always just open the hovered card, never toggle
+      active = next;
+    } else {
+      // Tap: toggle — tapping the open card closes it
+      active = active === next ? null : next;
+    }
+    applyState(focus);
+  }
+
+  // ── Event listeners ──────────────────────────────────────────────────────
+  if (!isHover) {
+    railEl.addEventListener("click", (e) => {
+      // Desktop: toggle button inside standard panel
+      const toggleBtn = e.target.closest("[data-rail-toggle]");
+      if (toggleBtn) {
+        const i = Number(toggleBtn.dataset.railToggle);
+        switchTo(i);
+        return;
       }
+      // Mobile: whole card is the tap target (compact row or standard panel topline)
+      const card = e.target.closest("[data-rail-index]");
+      if (card) {
+        const i = Number(card.dataset.railIndex);
+        switchTo(i);
+      }
+    });
+  } else {
+    railEl.addEventListener("mouseenter", (e) => {
+      const card = e.target.closest("[data-rail-index]");
+      if (card) switchTo(Number(card.dataset.railIndex));
+    }, true);
+    railEl.addEventListener("mouseleave", () => { active = null; applyState(); });
+  }
 
-      const desc = status === "MET" 
-        ? (m.resp_met || "This capability has been successfully operationalized.") 
-        : status === "UNMET"
-          ? (m.resp_unmet ? m.resp_unmet.replace(/\n/g, "<br>") : "This capability is not yet in place.")
-          : (m.resp_unknown || "It is currently unknown whether this capability is in place.");
+  railEl.addEventListener("keydown", (e) => {
+    const card = e.target.closest("[data-rail-index]");
+    if (!card) return;
+    const i = Number(card.dataset.railIndex);
+    const last = stages.length - 1;
+    const next =
+      e.key === "ArrowRight" ? Math.min(i + 1, last) :
+      e.key === "ArrowLeft"  ? Math.max(i - 1, 0)   :
+      e.key === "Home"       ? 0    :
+      e.key === "End"        ? last : null;
+    if (next !== null) { e.preventDefault(); switchTo(next, true); }
+  });
+}
 
-      return `
-        <div class="rm-row ${statusClass}" data-roadmap-row="${m.id}">
-          <button class="rm-row__header" data-roadmap-trigger="${m.id}">
-            <div class="rm-row__left">
-              ${statusIcon}
-              <div class="rm-row__info">
-                <span class="rm-row__id font-mono">${m.id}</span>
-                <span class="rm-row__name">${m.name}</span>
-              </div>
-            </div>
-            <div class="rm-row__right">
-              <span class="rm-row__pillar font-condensed">${m.pillar}</span>
-              <span class="rm-row__status rm-row__status--${status.toLowerCase()} font-condensed">${statusLabel}</span>
-              <svg class="rm-row__expand-icon" viewBox="0 0 16 16" width="16" height="16"><path d="M8 11L3 6h10z"/></svg>
-            </div>
-          </button>
-          <div class="rm-row__content" data-roadmap-content="${m.id}">
-            <div class="rm-row__body">
-              <p><strong>Practice Level:</strong> ${m.level}</p>
-              <div class="rm-row__narrative">
-                ${desc}
-              </div>
-              <div class="rm-row__touchpoints">
-                <strong>Required Modules:</strong> ${renderTouchpoints(m.id) || "None"}
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-    }).join("");
+function renderExpansionCard(containerId, track, trackResult) {
+  const el = $(`#${containerId}`);
+  if (!el) return;
 
-    return `
-      <div class="rm-stage-block">
-        <h4 class="rm-stage-title font-condensed">Journey Stage ${stage} Milestones</h4>
-        <div class="rm-stage-rows">
-          ${rows}
-        </div>
-      </div>
-    `;
-  }).join("");
+  const journeyStages = journey[track.toLowerCase()];
+  const { currentStage, targetStage } = trackResult;
+  const currentIndex = currentStage - 1;
+  const targetIndex  = targetStage - 1;
+  const targetStageData = journeyStages[targetIndex];
 
-  // Answers list compile
-  const answersListHtml = assessmentData.pages.map(p => {
-    const sections = p.sections.map(s => {
-      const qs = s.questions.map(q => {
-        let displayVal = "";
-        const ans = answers[q.id];
-        if (q.type === "matrix") {
-          const rowVals = q.rows.map(r => {
-            const rowVal = ans ? ans[r.id] : "unknown";
-            const col = q.columns.find(c => c.value === rowVal);
-            return `<li><strong>${r.label}:</strong> ${col ? col.label : "Unknown"}</li>`;
-          }).join("");
-          displayVal = `<ul>${rowVals}</ul>`;
-        } else if (q.type === "checkbox") {
-          if (Array.isArray(ans) && ans.length > 0) {
-            const list = ans.map(val => {
-              const opt = q.options.find(o => o.value === val);
-              return `<li>${opt ? opt.label : val}</li>`;
-            }).join("");
-            displayVal = `<ul>${list}</ul>`;
-          } else {
-            displayVal = "<p>None selected / unanswered</p>";
-          }
-        } else if (q.type === "radio") {
-          const opt = q.options.find(o => o.value === ans);
-          displayVal = `<p>${opt ? opt.label : "Unanswered"}</p>`;
-        }
+  const trackLabel = track === "APM" ? "APM expansion path" : "FSM expansion path";
 
-        return `
-          <div class="ans-item">
-            <h5 class="ans-item__q">${q.title}</h5>
-            <div class="ans-item__a">${displayVal}</div>
-          </div>
-        `;
-      }).join("");
+  // Potential outcomes
+  const outcomesHtml = (targetStageData.potentialOutcomes || []).map(o => `
+    <div class="outcome-item">
+      <p class="outcome-item__stat">${escHtml(o.stat)}</p>
+      <p class="outcome-item__label">${escHtml(o.label)}</p>
+    </div>`).join("");
 
-      return `
-        <div class="ans-section">
-          <h4 class="ans-section__title font-condensed">${s.label}</h4>
-          ${qs}
-        </div>
-      `;
-    }).join("");
+  // Products
+  const tagsHtml = (targetStageData.products || []).map(p =>
+    `<cds-tag size="lg" type="${p.active ? "blue" : "outline"}">${escHtml(p.name)}</cds-tag>`
+  ).join("");
 
-    return `
-      <div class="ans-page-block">
-        <h3 class="ans-page-title">${p.title}</h3>
-        ${sections}
-      </div>
-    `;
-  }).join("");
+  el.innerHTML = `
+    <div class="expansion-card__header">
+      <h3 class="expansion-card__title">${escHtml(trackLabel)}</h3>
+    </div>
 
-  const act3Html = `
-    <section class="rep-section" id="act-3">
-      <div class="divider">
-        <p class="divider__label">Act 3: Your action plan</p>
-        <div class="divider__rule" role="presentation"></div>
-      </div>
+    <div class="stage-rail" role="region" aria-label="${escHtml(trackLabel)} stages"></div>
 
-      ${heroCardHtml}
-      ${secondaryHtml}
-      
-      <!-- Complete Roadmap Drawer -->
-      <div class="roadmap-drawer-container">
-        <button class="roadmap-btn font-condensed" id="btn-toggle-roadmap">
-          <span class="roadmap-btn__text">View full action plan</span>
-          <svg class="roadmap-btn__icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor"><path d="M12 4V2H4a2 2 0 0 0-2 2v8h2V4zm18 8V4a2 2 0 0 0-2-2h-8v2h8v8zm-2 16h-8v2h8a2 2 0 0 0 2-2v-8h-2zm-24-8v8h8v2H4a2 2 0 0 0-2-2v-8z"/></svg>
-        </button>
-        
-        <div class="roadmap-drawer is-hidden" id="roadmap-drawer">
-          <div class="roadmap-drawer__header">
-            <h3 class="roadmap-drawer__title">Full 60-Milestone Growth Roadmap</h3>
-            <p class="roadmap-drawer__desc">The complete Maximo maturity matrix showing verified wins and remaining unachieved milestones across all practice pillars:</p>
-          </div>
-          <div class="roadmap-matrix">
-            ${roadmapStagesHtml}
-          </div>
-        </div>
-      </div>
+    <div class="expansion-value">
+      <p class="expansion-value__label">What it takes to achieve your target stage:</p>
+      <p class="expansion-value__text">${escHtml(targetStageData.valueStatement)}</p>
+    </div>
 
-      <!-- IBM CTA Card -->
-      <div class="cta-card">
-        <div class="cta-card__content">
-          <h3 class="cta-card__title">Accelerate Your Maximo Journey</h3>
-          <p class="cta-card__desc">
-            Discuss these prioritized immediate actions and review the full roadmap with an IBM Maximo and APM specialist to estimate ROI, run scoping exercises, or schedule a deep-dive product demonstration.
-          </p>
-          <div class="cta-card__actions">
-            <button class="ibm-btn ibm-btn--primary font-condensed" id="btn-cta-contact">
-              Schedule a Review with an IBM Specialist
-            </button>
-          </div>
-          <!-- Follow-up appetite questions — revealed only after CTA click -->
-          <div class="cta-followup is-hidden" id="cta-followup">
-            <div class="cta-followup__intro">
-              <h4 class="cta-followup__title font-condensed">A few quick questions to personalise your session</h4>
-              <p class="cta-followup__desc">These help our specialists prepare the right conversation for you.</p>
-            </div>
-            <div class="cta-followup__questions" id="cta-followup-questions"></div>
-            <div class="cta-followup__actions">
-              <button class="ibm-btn ibm-btn--primary font-condensed" id="btn-cta-submit">
-                Send my results to IBM
-              </button>
-            </div>
-          </div>
-          <div class="cta-success is-hidden" id="cta-contact-success">
-            <p><strong>Thank you!</strong> An IBM Maximo specialist will be in touch shortly to schedule your personalised readiness review.</p>
-          </div>
-        </div>
-      </div>
+    <div class="potential-outcomes">
+      <p class="potential-outcomes__label">Potential outcomes</p>
+      <div class="potential-outcomes__items">${outcomesHtml}</div>
+    </div>
 
-      <!-- See my responses accordion -->
-      <div class="ans-drawer-container">
-        <button class="ans-drawer-trigger font-condensed" id="btn-toggle-answers">
-          <span>See my responses (18 questions)</span>
-          <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><path d="M8 11L3 6h10z"/></svg>
-        </button>
-        <div class="ans-drawer is-hidden" id="ans-drawer">
-          ${answersListHtml}
+    <div class="expansion-products">
+      <p class="expansion-products__label">What capabilities are you using and which ones you'll need:</p>
+      <div class="expansion-products__tags">${tagsHtml}</div>
+    </div>
 
-          <!-- Seller intelligence — screen: hidden inside answers drawer; print: always visible -->
-          <div class="seller-intel">
-            <h4 class="seller-intel__title font-condensed">Seller Intelligence</h4>
-            <p class="seller-intel__note font-condensed">This section is for IBM use only. It does not appear in the customer-facing view.</p>
-            <div class="seller-intel__row">
-              <span class="seller-intel__label font-condensed">Propensity Score</span>
-              <span class="seller-intel__value"><strong>${propensityScore} / 8</strong></span>
-            </div>
-            ${propensitySignals.length > 0 ? `
-            <div class="seller-intel__signals">
-              ${propensitySignals.map(sig => `<span class="propensity-sig">${sig}</span>`).join("")}
-            </div>` : ""}
-          </div>
-        </div>
-      </div>
+    <div>
+      <cds-button kind="tertiary" size="lg">Talk to a seller</cds-button>
+    </div>`;
 
-      <!-- Help Us Improve feedback widget -->
-      <div class="feedback-widget">
-        <span class="feedback-widget__text">Was this growth readiness report useful?</span>
-        <div class="feedback-widget__buttons" id="feedback-buttons">
-          <button class="feedback-btn font-condensed" data-feedback="helpful">
-            Yes, helpful 👍
-          </button>
-          <button class="feedback-btn font-condensed" data-feedback="unhelpful">
-            No, not helpful 👎
-          </button>
-        </div>
-        <div class="feedback-widget__success is-hidden" id="feedback-success">
-          <span>Thank you for helping us improve our tools!</span>
-        </div>
-      </div>
-    </section>
-  `;
+  const railEl = el.querySelector(".stage-rail");
+  // Use hover mode on desktop, tap/button mode on mobile
+  const isMobile = window.matchMedia("(max-width: 1100px)").matches;
+  renderStageRail(railEl, journeyStages, currentIndex, targetIndex, isMobile ? "button" : "hover");
+}
 
-  // 5. Final Assembly & Footer
-  const footerHtml = `
-    <footer class="rep-footer">
-      <div class="rep-footer__rule"></div>
-      <p class="rep-footer__text">Made with IBM Bob</p>
-    </footer>
-  `;
+/* --------------------------------------------------------------------------
+   Render a single action hero card
+   -------------------------------------------------------------------------- */
+function renderHeroCard(actionEntry) {
+  const m = milestones[actionEntry.milestoneId];
+  if (!m) return "";
+
+  const track = actionEntry.track;
+  const stageRef = track === "APM" ? m.apm_stage : m.fsm_stage;
+  const stageNum = parseInt((stageRef || "").replace(/\D/g, ""), 10) || 1;
+  const stageName = journey[track.toLowerCase()]?.[stageNum - 1]?.name || `Stage ${pad2(stageNum)}`;
+  const icon = trackIcon(track);
 
   return `
-    <div class="rep-container">
-      ${headerHtml}
-      ${act1Html}
-      ${act2Html}
-      ${act3Html}
-      ${footerHtml}
+    <div class="action-hero-card">
+      <div class="action-hero-card__header">
+        <div class="action-hero-card__icon">${icon}</div>
+        <p class="action-hero-card__step-text">
+          <strong>Step ${pad2(actionEntry.step)}:</strong><br>
+          ${escHtml(m.imperative)}
+        </p>
+      </div>
+      <p class="action-hero-card__prereq">
+        Foundational Pre-requisite for <u>${escHtml(track)} Stage ${stageNum} — ${escHtml(stageName)}</u>
+      </p>
+    </div>`;
+}
+
+/* --------------------------------------------------------------------------
+   Render a single action details card
+   -------------------------------------------------------------------------- */
+function renderDetailsCard(milestoneId) {
+  const m = milestones[milestoneId];
+  if (!m) return "";
+
+  const actions = milestoneActions[milestoneId] || [];
+
+  // Parse touchpoints into product tags + text
+  const touchpointLines = (m.touchpoints || "").split("\n").filter(Boolean);
+  const productNames = [...new Set(touchpointLines.map(l => l.split("—")[0].trim()))];
+  const productTagsHtml = productNames.map(p =>
+    `<cds-tag size="lg" type="blue">${escHtml(p)}</cds-tag>`
+  ).join("");
+
+  const remediationHtml = actions.map(a => `
+    <div class="remediation-step">
+      <p class="remediation-step__text"><strong>Step ${escHtml(a.step)}:</strong> ${escHtml(a.description)}</p>
+      <div class="remediation-step__roles">
+        ${a.roles.map(r => `<cds-tag size="lg" type="green">${escHtml(r)}</cds-tag>`).join("")}
+      </div>
+    </div>`).join("");
+
+  return `
+    <div class="action-details-card">
+      <div class="action-details-section">
+        <p class="action-details-label">What does it unlock?</p>
+        <p class="action-details-text">${escHtml(m.value)}</p>
+      </div>
+
+      <div class="action-details-section">
+        <p class="action-details-label">Required Maximo modules</p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;">${productTagsHtml}</div>
+        <p class="action-details-touchpoints">${escHtml(touchpointLines.join("\n"))}</p>
+      </div>
+
+      ${actions.length ? `
+      <div class="action-details-section">
+        <div class="action-details-label-row">
+          <p class="action-details-label">Immediate remediation steps</p>
+          <cds-tooltip align="bottom-start">
+            <button class="report-info-btn" slot="trigger" type="button" aria-label="About remediation steps">
+              <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M17 22V14h-4v2h2v6h-3v2h8v-2zM16 7a1.5 1.5 0 100 3 1.5 1.5 0 000-3z"/><path d="M16 2a14 14 0 100 28A14 14 0 0016 2zm0 26a12 12 0 110-24 12 12 0 010 24z"/></svg>
+            </button>
+            <span slot="body-text">Steps are ordered by sequence. Each step lists the active roles who should lead it.</span>
+          </cds-tooltip>
+        </div>
+        <div class="remediation-steps">${remediationHtml}</div>
+      </div>` : ""}
+    </div>`;
+}
+
+/* --------------------------------------------------------------------------
+   Render action plan section
+   -------------------------------------------------------------------------- */
+function renderActionPlan(actionPlan) {
+  const el = $("#action-plan-container");
+  if (!el) return;
+
+  let html = "";
+
+  // Step 01 — hero + details
+  html += renderHeroCard(actionPlan.hero);
+  html += renderDetailsCard(actionPlan.hero.milestoneId);
+
+  // Steps 02 + 03 — hero only
+  (actionPlan.secondary || []).forEach(entry => {
+    html += renderHeroCard(entry);
+  });
+
+  // Additional resources (bonus) — static content
+  html += `
+    <div class="bonus-block">
+      <h3 class="bonus-block__heading">Additional resources</h3>
+
+      <div class="bonus-resource">
+        <div class="bonus-resource__inner">
+          <div class="bonus-resource__icon">${PICTOGRAM_ASSESSMENT}</div>
+          <div class="bonus-resource__body">
+            <p class="bonus-resource__title">60-milestones growth worksheet</p>
+            <div class="bonus-resource__desc">
+              <p>Reach a 100% on your <u>maturity index score.</u></p>
+              <p style="margin-top:12px;">The recommendations above are personalised to your results — your highest-priority next steps, right now.</p>
+              <p style="margin-top:12px;">This roadmap shows the complete picture: all 60 milestones across every capability, so you can see the full journey ahead, not just the next move.</p>
+            </div>
+            <div class="bonus-resource__tags">
+              <cds-tag size="lg" type="green">Reliability engineer</cds-tag>
+              <cds-tag size="lg" type="green">Maintenance planner/Scheduler</cds-tag>
+              <cds-tag size="lg" type="green">Operations Manager</cds-tag>
+              <cds-tag size="lg" type="green">IT / System Administrator</cds-tag>
+            </div>
+            <p class="bonus-resource__how-to"><strong>How to use it:</strong><br><br>Share the worksheet below with your Operations Manager, Reliability Engineer, or Maintenance Planner. Work through it with your IBM contact to turn your assessment results into a sequenced plan — milestone by milestone.</p>
+            <div>
+              <cds-button kind="tertiary" size="lg">
+                Download worksheet
+                <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4z"/><path d="M26 14l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
+              </cds-button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bonus-divider"></div>
+
+      <div class="bonus-resource">
+        <div class="bonus-resource__inner">
+          <div class="bonus-resource__icon">${PICTOGRAM_QA}</div>
+          <div class="bonus-resource__body">
+            <p class="bonus-resource__title">View your responses to the Assessment</p>
+            <p class="bonus-resource__desc">Keep a copy of your assessment answers to share with colleagues who weren't in the room, or to revisit your thinking before your next planning conversation.</p>
+            <div>
+              <cds-button kind="tertiary" size="lg">
+                Download responses
+                <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4z"/><path d="M26 14l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
+              </cds-button>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
-  `;
+
+  <div class="accelerate-card">
+    <div class="accelerate-card__inner">
+      <div class="accelerate-card__icon"><img src="assets/supervisor-close--work.svg" width="32" height="32" aria-hidden="true" /></div>
+      <div class="accelerate-card__body">
+        <p class="accelerate-card__title">Accelerate your Maximo Journey</p>
+        <p class="accelerate-card__desc">Discuss these prioritized immediate actions and review the full roadmap with an IBM Maximo and APM specialist to estimate ROI, run scoping exercises, or schedule a deep-dive product demonstration.</p>
+        <cds-button kind="tertiary" size="lg" href="https://www.ibm.com/products/maximo">
+          Schedule a Review with an IBM Specialist
+          <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M28 6H4a2 2 0 00-2 2v20a2 2 0 002 2h24a2 2 0 002-2V8a2 2 0 00-2-2zm0 22H4V14h24zm0-16H4V8h24z"/></svg>
+        </cds-button>
+      </div>
+    </div>
+  </div>`;
+
+  el.innerHTML = html;
 }
 
-export function wireReportEvents() {
-  const container = document.querySelector("#report-view");
-  if (!container) return;
+/* --------------------------------------------------------------------------
+   Render follow-up questions (Act 4)
+   -------------------------------------------------------------------------- */
+function renderFollowUp() {
+  const el = $("#followup-form");
+  if (!el) return;
 
-  // 1. Strengths Pillar Tabs
-  container.addEventListener("click", (e) => {
-    const tabBtn = e.target.closest("[data-strength-tab]");
-    if (tabBtn) {
-      const parent = tabBtn.closest(".strengths");
-      const targetId = tabBtn.dataset.strengthTab;
-
-      // Deactivate all tabs in this container
-      parent.querySelectorAll("[data-strength-tab]").forEach(btn => {
-        btn.classList.remove("is-active");
+  // Collect all followUp questions from all pages
+  const followUpQs = [];
+  (assessment.pages || []).forEach(page => {
+    (page.sections || []).forEach(section => {
+      (section.questions || []).forEach(q => {
+        if (q.followUp) followUpQs.push(q);
       });
-      // Activate clicked tab
-      tabBtn.classList.add("is-active");
-
-      // Show matching card, hide others
-      parent.querySelectorAll("[data-strength-card]").forEach(card => {
-        if (card.dataset.strengthCard === targetId) {
-          card.classList.add("is-active");
-        } else {
-          card.classList.remove("is-active");
-        }
-      });
-    }
+    });
   });
 
-  // 2. Journey Pathway Stage Steppers
-  container.addEventListener("click", (e) => {
-    const stepBtn = e.target.closest("[data-journey-tab]");
-    if (stepBtn) {
-      const parent = stepBtn.closest(".journey");
-      const targetKey = stepBtn.dataset.journeyTab;
+  if (!followUpQs.length) {
+    el.innerHTML = "<p>No follow-up questions found.</p>";
+    return;
+  }
 
-      // Deactivate siblings
-      parent.querySelectorAll("[data-journey-tab]").forEach(btn => {
-        btn.classList.remove("is-active");
+  let html = "";
+  followUpQs.forEach(q => {
+    html += `<div class="question" style="border-top:1px solid var(--cds-border-subtle);padding-top:24px;">`;
+    html += `<p style="font-size:16px;font-weight:600;line-height:22px;margin:0 0 12px;">${escHtml(q.title)}</p>`;
+
+    if (q.type === "checkbox") {
+      (q.options || []).forEach(opt => {
+        html += `
+          <div style="margin-bottom:8px;">
+            <cds-checkbox name="${escHtml(q.id)}" value="${escHtml(opt.value)}"
+              label-text="${escHtml(opt.label)}">
+            </cds-checkbox>
+          </div>`;
       });
-      stepBtn.classList.add("is-active");
-
-      // Show matching card
-      parent.querySelectorAll("[data-journey-card]").forEach(card => {
-        if (card.dataset.journeyCard === targetKey) {
-          card.classList.add("is-active");
-        } else {
-          card.classList.remove("is-active");
-        }
+    } else if (q.type === "radio" || q.type === "matrix") {
+      (q.options || q.rows || []).forEach(opt => {
+        html += `
+          <div style="margin-bottom:8px;">
+            <cds-radio-button name="${escHtml(q.id)}" value="${escHtml(opt.value || opt.id)}"
+              label-text="${escHtml(opt.label)}">
+            </cds-radio-button>
+          </div>`;
       });
     }
+
+    html += `</div>`;
   });
 
-  // 3. Secondary Actions Accordions
-  container.addEventListener("click", (e) => {
-    const trigger = e.target.closest("[data-sec-trigger]");
-    if (trigger) {
-      const parent = trigger.closest(".sec-accordion");
-      const content = parent.querySelector("[data-sec-content]");
-      
-      const isExpanded = trigger.classList.toggle("is-expanded");
-      content.classList.toggle("is-expanded", isExpanded);
-    }
-  });
+  html += `
+    <div style="margin-top:16px;">
+      <cds-button id="followup-submit" kind="primary" size="lg" type="button">Submit feedback</cds-button>
+    </div>`;
 
-  // 4. Roadmap Table Accordions
-  container.addEventListener("click", (e) => {
-    const trigger = e.target.closest("[data-roadmap-trigger]");
-    if (trigger) {
-      const parent = trigger.closest(".rm-row");
-      const content = parent.querySelector("[data-roadmap-content]");
-      
-      const isExpanded = trigger.classList.toggle("is-expanded");
-      content.classList.toggle("is-expanded", isExpanded);
-    }
-  });
+  el.innerHTML = html;
 
-  // 5. Toggle Roadmap Matrix Drawer
-  const toggleRoadmapBtn = container.querySelector("#btn-toggle-roadmap");
-  const roadmapDrawer = container.querySelector("#roadmap-drawer");
-  if (toggleRoadmapBtn && roadmapDrawer) {
-    toggleRoadmapBtn.addEventListener("click", () => {
-      const isHidden = roadmapDrawer.classList.toggle("is-hidden");
-      const textNode = toggleRoadmapBtn.querySelector(".roadmap-btn__text");
-      if (textNode) {
-        textNode.textContent = isHidden ? "View full action plan" : "Hide full action plan";
+  // Wire submit
+  const btn = $("#followup-submit");
+  if (btn) {
+    btn.addEventListener("click", () => {
+      document.dispatchEvent(new CustomEvent("followup:submit", { detail: {} }));
+      el.innerHTML = `<p style="color:var(--cds-support-success);font-weight:600;">Thank you for your feedback!</p>`;
+    });
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Scrollspy — update active nav item
+   -------------------------------------------------------------------------- */
+function initScrollSpy() {
+  const sections = ["act-today", "act-roi", "act-plan", "act-improve"];
+  const navItems = $$(".report-nav__item");
+  const mobileTabs = $$("cds-tab[data-section]");
+  const tabsEl = $("cds-tabs");
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const sectionId = entry.target.id;
+
+        // Update desktop nav
+        navItems.forEach(item => item.classList.remove("report-nav__item--active"));
+        const activeNav = navItems.find(item => item.dataset.section === sectionId);
+        if (activeNav) activeNav.classList.add("report-nav__item--active");
+
+        // Update mobile tabs
+        if (tabsEl) tabsEl.value = sectionId;
       }
     });
-  }
+  }, { rootMargin: "-30% 0px -60% 0px" });
 
-  // 6. See Answers Toggle Button
-  const toggleAnswersBtn = container.querySelector("#btn-toggle-answers");
-  const answersDrawer = container.querySelector("#ans-drawer");
-  if (toggleAnswersBtn && answersDrawer) {
-    toggleAnswersBtn.addEventListener("click", () => {
-      const isHidden = answersDrawer.classList.toggle("is-hidden");
-      toggleAnswersBtn.classList.toggle("is-active", !isHidden);
+  sections.forEach(id => {
+    const el = $(`#${id}`);
+    if (el) observer.observe(el);
+  });
+
+  // Smooth scroll on desktop nav click
+  navItems.forEach(item => {
+    item.addEventListener("click", e => {
+      e.preventDefault();
+      const target = $(`#${item.dataset.section}`);
+      if (target) target.scrollIntoView({ behavior: "smooth" });
     });
-  }
+  });
 
-  // 7. IBM Expert CTA Button — reveals follow-up appetite questions
-  const ctaBtn        = container.querySelector("#btn-cta-contact");
-  const ctaFollowup   = container.querySelector("#cta-followup");
-  const ctaQContainer = container.querySelector("#cta-followup-questions");
-  const ctaSubmitBtn  = container.querySelector("#btn-cta-submit");
-  const ctaSuccess    = container.querySelector("#cta-contact-success");
-
-  if (ctaBtn && ctaFollowup && ctaQContainer) {
-    // Render follow-up questions on first click
-    ctaBtn.addEventListener("click", () => {
-      ctaBtn.classList.add("is-hidden");
-
-      // Build the appetite questions from the follow-up page in assessmentData
-      const followUpPage = assessmentData.pages.find((p) => p.followUp);
-      if (followUpPage && ctaQContainer.childElementCount === 0) {
-        const questions = followUpPage.sections.flatMap((s) => s.questions);
-        ctaQContainer.innerHTML = questions.map((q) => {
-          const opts = q.options.map((o) => `
-            <label class="fu-option">
-              <input type="radio" name="fu-${q.id}" value="${o.value}">
-              <span class="fu-option__label">${o.label}</span>
-            </label>`).join("");
-          return `
-            <div class="fu-question" data-fu-question="${q.id}">
-              <p class="fu-question__title">${q.title}</p>
-              <div class="fu-options">${opts}</div>
-            </div>`;
-        }).join("");
-      }
-
-      ctaFollowup.classList.remove("is-hidden");
-      ctaFollowup.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-  }
-
-  if (ctaSubmitBtn && ctaFollowup && ctaSuccess) {
-    ctaSubmitBtn.addEventListener("click", () => {
-      // Collect appetite answers
-      const appetiteAnswers = {};
-      ctaQContainer.querySelectorAll("[data-fu-question]").forEach((block) => {
-        const qid = block.dataset.fuQuestion;
-        const checked = block.querySelector("input[type=radio]:checked");
-        if (checked) appetiteAnswers[qid] = checked.value;
-      });
-
-      // Build mailto with a plain-text summary
-      const contactName = document.querySelector("#rep-contact")?.value || "—";
-      const industry    = document.querySelector("#rep-industry")?.value || "—";
-      const body = [
-        `MAS Growth Readiness — Deep Dive Request`,
-        ``,
-        `Contact: ${contactName}`,
-        `Industry / Org: ${industry}`,
-        ``,
-        `Follow-up responses:`,
-        ...Object.entries(appetiteAnswers).map(([k, v]) => `  ${k}: ${v}`),
-        ``,
-        `(Full report PDF attached separately)`
-      ].join("\n");
-
-      const mailto = `mailto:maximo@ibm.com?subject=${encodeURIComponent("MAS Growth Readiness — Deep Dive Request")}&body=${encodeURIComponent(body)}`;
-      window.location.href = mailto;
-
-      ctaFollowup.classList.add("is-hidden");
-      ctaSuccess.classList.remove("is-hidden");
-    });
-  }
-
-  // 8. Feedback Widget Buttons
-  const feedbackButtons = container.querySelector("#feedback-buttons");
-  const feedbackSuccess = container.querySelector("#feedback-success");
-  if (feedbackButtons && feedbackSuccess) {
-    feedbackButtons.addEventListener("click", (e) => {
-      const btn = e.target.closest("[data-feedback]");
-      if (btn) {
-        feedbackButtons.classList.add("is-hidden");
-        feedbackSuccess.classList.remove("is-hidden");
+  // Smooth scroll on mobile tab selection
+  if (tabsEl) {
+    tabsEl.addEventListener("cds-tabs-selected", e => {
+      const sectionId = e.detail?.item?.dataset?.section;
+      if (sectionId) {
+        const target = $(`#${sectionId}`);
+        if (target) target.scrollIntoView({ behavior: "smooth" });
       }
     });
   }
 }
+
+/* --------------------------------------------------------------------------
+   Bootstrap
+   -------------------------------------------------------------------------- */
+async function init() {
+  // Load milestone graph
+  await loadMilestones();
+
+  // Load scoring result from sessionStorage, fall back to mock
+  let result;
+  try {
+    const stored = sessionStorage.getItem("scoringResult");
+    result = stored ? JSON.parse(stored) : MOCK_RESULT;
+  } catch {
+    result = MOCK_RESULT;
+  }
+
+  // Render all sections
+  renderSidebarMeta(result.contact);
+  renderMaturityBanner(result);
+  renderDimensionMeters(result.dimensions);
+  renderEstablishedPractices(result.establishedMilestoneIds || []);
+  renderExpansionCard("apm-expansion-card", "APM", result.apm);
+  renderExpansionCard("fsm-expansion-card", "FSM", result.fsm);
+  renderActionPlan(result.actionPlan);
+  renderFollowUp();
+  initScrollSpy();
+}
+
+init().catch(console.error);
