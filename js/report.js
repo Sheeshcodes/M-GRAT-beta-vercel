@@ -336,7 +336,8 @@ function stageCardIcon(tone) {
   return `<img class="stage-icon" src="${map[tone]}" alt="" aria-hidden="true" />`;
 }
 
-function renderStageRail(railEl, stages, currentIndex, targetIndex) {
+function renderStageRail(railEl, stages, currentIndex, targetIndex, mode = "button") {
+  const isHover = mode === "hover";
   let active = null;
 
   function draw() {
@@ -346,7 +347,7 @@ function renderStageRail(railEl, stages, currentIndex, targetIndex) {
       const isExpanded  = active === i;
       const isCollapsed = active !== null && !isExpanded;
       const isFuture    = tone === "future";
-      const showCompactToggle = !isExpanded && (isFuture || isCollapsed);
+      const showCompactToggle = !isHover && !isExpanded && (isFuture || isCollapsed);
 
       const toneClass     = `stage-card--${tone}`;
       const expandedClass = isExpanded  ? " is-expanded"  : "";
@@ -356,7 +357,7 @@ function renderStageRail(railEl, stages, currentIndex, targetIndex) {
         <article
           class="stage-card ${toneClass}${expandedClass}${collapseClass}"
           data-rail-index="${i}"
-          tabindex="${isExpanded ? "0" : "-1"}"
+          tabindex="${isHover ? "0" : isExpanded ? "0" : "-1"}"
           aria-label="${escHtml(label)}: ${escHtml(s.name)}"
         >
           <div class="stage-card__compact" aria-hidden="true">
@@ -383,13 +384,13 @@ function renderStageRail(railEl, stages, currentIndex, targetIndex) {
                 <span class="stage-card__number">${pad2(i + 1)}</span>
                 <span class="stage-card__title">${escHtml(s.name)}</span>
               </div>
-              <button
+              ${!isHover ? `<button
                 type="button"
                 class="stage-card__toggle"
                 data-rail-toggle="${i}"
                 aria-expanded="${isExpanded}"
                 aria-label="${isExpanded ? "Minimize" : "Expand"} ${escHtml(s.name)}"
-              ><img src="assets/${isExpanded ? "cb904" : "3f8ce"}.svg" alt="" aria-hidden="true" /></button>
+              ><img src="assets/${isExpanded ? "cb904" : "3f8ce"}.svg" alt="" aria-hidden="true" /></button>` : ""}
             </div>
           </div>
 
@@ -400,26 +401,34 @@ function renderStageRail(railEl, stages, currentIndex, targetIndex) {
     }).join("");
   }
 
-  function switchTo(next) {
+  function switchTo(next, focus) {
     active = next;
     draw();
-    if (next !== null) {
+    if (focus && next !== null) {
       railEl.querySelector(`[data-rail-index="${next}"]`)?.focus();
     }
   }
 
-  railEl.addEventListener("click", (e) => {
-    const toggleBtn = e.target.closest("[data-rail-toggle]");
-    if (toggleBtn) {
-      const i = Number(toggleBtn.dataset.railToggle);
-      switchTo(active === i ? null : i);
-      return;
-    }
-    const expandBtn = e.target.closest("[data-rail-expand]");
-    if (expandBtn) {
-      switchTo(Number(expandBtn.dataset.railExpand));
-    }
-  });
+  if (!isHover) {
+    railEl.addEventListener("click", (e) => {
+      const toggleBtn = e.target.closest("[data-rail-toggle]");
+      if (toggleBtn) {
+        const i = Number(toggleBtn.dataset.railToggle);
+        switchTo(active === i ? null : i);
+        return;
+      }
+      const expandBtn = e.target.closest("[data-rail-expand]");
+      if (expandBtn) {
+        switchTo(Number(expandBtn.dataset.railExpand));
+      }
+    });
+  } else {
+    railEl.addEventListener("mouseenter", (e) => {
+      const card = e.target.closest("[data-rail-index]");
+      if (card) switchTo(Number(card.dataset.railIndex));
+    }, true);
+    railEl.addEventListener("mouseleave", () => switchTo(null));
+  }
 
   railEl.addEventListener("keydown", (e) => {
     const card = e.target.closest("[data-rail-index]");
@@ -431,7 +440,7 @@ function renderStageRail(railEl, stages, currentIndex, targetIndex) {
       e.key === "ArrowLeft"  ? Math.max(i - 1, 0)   :
       e.key === "Home"       ? 0    :
       e.key === "End"        ? last : null;
-    if (next !== null) { e.preventDefault(); switchTo(next); }
+    if (next !== null) { e.preventDefault(); switchTo(next, true); }
   });
 
   draw();
@@ -490,7 +499,7 @@ function renderExpansionCard(containerId, track, trackResult) {
     </div>`;
 
   const railEl = el.querySelector(".stage-rail");
-  renderStageRail(railEl, journeyStages, currentIndex, targetIndex);
+  renderStageRail(railEl, journeyStages, currentIndex, targetIndex, "hover");
 }
 
 /* --------------------------------------------------------------------------

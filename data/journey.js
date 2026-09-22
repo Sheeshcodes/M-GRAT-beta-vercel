@@ -104,7 +104,7 @@ export default {
   fsm: [
     {
       id: "FSM1", stage: 1, name: "Reactive Execution",
-      description: "The organization operates in a reactive mode: work is logged but not systematically planned or dispatched. The data foundation for FSM is being established — labor records, craft classifications, calendar/shift definitions, and basic job plan templates.",
+      description: "The organization operates in a reactive mode: work is logged but not systematically planned or dispatched. The data foundation for FSM is being established — labor records, craft classifications, calendar/shift definitions, and basic job plan templates. Scheduled dates on work orders and the ownership-vs-assignment distinction are the defining Level 1 signals.",
       valueStatement: "Establishes baseline scheduling discipline and digital labor records — moving away from unstructured verbal dispatch to formal scheduled dates and distinct work assignments in Maximo Manage.",
       potentialOutcomes: [
         { stat: "Elimination", label: "of lost or unassigned work orders through formal Assignment records" },
@@ -119,7 +119,7 @@ export default {
     },
     {
       id: "FSM2", stage: 2, name: "Coordinated Operations",
-      description: "Work orders carry scheduled dates and a forward planning horizon is established (weekly to monthly). A centralized scheduler or dispatcher role is active and using Assignment Manager. Workforce availability data is enriched with exceptions.",
+      description: "Work orders carry scheduled dates and a forward planning horizon is established (weekly to monthly). A centralized scheduler or dispatcher role is active and using Assignment Manager. Workforce availability data is enriched with exceptions. Job plans are enriched with materials, tools, and classifications. HSE, Inspections, and Inventory management enter at this stage as parallel capability layers.",
       valueStatement: "Centralizes schedule coordination and field dispatch — providing single-pane visibility across labor and crew capacity, extending forward planning horizons, and deploying mobile work execution to eliminate paper delays.",
       potentialOutcomes: [
         { stat: "10–15%", label: "reduction in administrative dispatch overhead and phone coordination" },
@@ -135,7 +135,7 @@ export default {
     },
     {
       id: "FSM3", stage: 3, name: "Structured Scheduling",
-      description: "Forward planning extends to rolling windows with predecessor and hierarchy constraints. System-suggested dispatch based on effective availability is active. Job plans are scoped to asset classes, include hierarchies and predecessors, and are linked to asset data.",
+      description: "Forward planning extends to rolling windows with predecessor and hierarchy constraints. System-suggested dispatch based on effective availability is active. Job plans are scoped to asset classes, include hierarchies and predecessors, and are linked to asset data. Inspection results feed condition data and inventory is planned against work requirements.",
       valueStatement: "Optimizes crew productivity and work preparation — enriching job plans with planned materials and tool requirements, sequencing work by dependencies, and routing technicians by geographic proximity.",
       potentialOutcomes: [
         { stat: "15–25%", label: "reduction in technician travel time and return trips via proximity routing" },
@@ -152,7 +152,7 @@ export default {
     },
     {
       id: "FSM4", stage: 4, name: "Intelligent Field Coordination",
-      description: "The Optimizer runs automatically via cron-based scheduling. Assignments are system-generated based on constraints, skills, and optimized availability. Planning, Scheduling, and Dispatch dashboards are live with cost, resource, and compliance views.",
+      description: "The Optimizer runs automatically via cron-based scheduling. Assignments are system-generated based on constraints, skills, and optimized availability. Planning, Scheduling, and Dispatch dashboards are live with cost, resource, and compliance views. Condition-based inspection and optimized inventory management are active.",
       valueStatement: "Automates schedule optimization and exception handling — using constraint-based algorithms to match technicians by skill and location, dynamically inject emergency break-in work, and integrate storeroom inventory at the point of work.",
       potentialOutcomes: [
         { stat: "≥80%", label: "First-Time Fix Rate (FTFR) through automated skill- and parts-aware dispatch" },

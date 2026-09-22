@@ -713,6 +713,7 @@
 }
 
 .stage-card:focus-visible { outline: 3px solid #0f62fe; outline-offset: 2px; }
+.stage-rail .stage-card { cursor: pointer; }
 
 .expansion-value {
   display: flex;
