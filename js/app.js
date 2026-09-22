@@ -1,4 +1,5 @@
 import assessment from "../data/assessment.js";
+import { score } from "./scoring.js";
 
 /* ----------------------------------------------------------------------
    State
@@ -329,8 +330,24 @@ const handleNext = (event) => {
     return;
   }
   if (state.page === assessment.pages.length - 1) {
-    document.dispatchEvent(new CustomEvent("assessment:submit", { detail: structuredClone(state.answers) }));
-    console.log("Assessment submitted", state.answers);
+    const answers = structuredClone(state.answers);
+    document.dispatchEvent(new CustomEvent("assessment:submit", { detail: answers }));
+    // Run scoring engine and redirect to report page
+    els.btnNext.disabled = true;
+    score(answers, assessment)
+      .then(result => {
+        try {
+          sessionStorage.setItem("scoringResult", JSON.stringify(result));
+        } catch {
+          // sessionStorage quota exceeded — proceed anyway, report falls back to mock
+        }
+        window.location.href = "report.html";
+      })
+      .catch(err => {
+        console.error("Scoring failed:", err);
+        // Still redirect so the report page renders with mock data
+        window.location.href = "report.html";
+      });
     return;
   }
   goTo(state.page + 1);

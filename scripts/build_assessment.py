@@ -89,7 +89,9 @@ def read_workbook(path: str) -> dict[str, list[dict[str, str]]]:
     sheets: dict[str, list[dict[str, str]]] = {}
     for s in wb.find("m:sheets", NS):
         target = rels[s.get(f"{{{NS['r']}}}id")]
-        target = target if target.startswith("xl/") else "xl/" + target.lstrip("/")
+        target = target.lstrip("/")
+        if not target.startswith("xl/"):
+            target = "xl/" + target
         root = ET.fromstring(z.read(target))
         grid: list[dict[str, str]] = []
         for row in root.iter(f"{{{NS['m']}}}row"):
