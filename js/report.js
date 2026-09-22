@@ -309,17 +309,17 @@ function renderEstablishedPractices(milestoneIds) {
    Render expansion path card (APM or FSM)
    -------------------------------------------------------------------------- */
 function stageCardLabel(index, currentIndex, targetIndex) {
-  if (index  < currentIndex) return "Completed stage";
-  if (index === currentIndex) return "Your current stage";
-  if (index === targetIndex)  return "Your target stage";
-  if (index > currentIndex && index < targetIndex) return "Transitional stage";
+  if (currentIndex >= 0 && index < currentIndex) return "Completed stage";
+  if (currentIndex >= 0 && index === currentIndex) return "Your current stage";
+  if (index === targetIndex) return "Your target stage";
+  if (currentIndex >= 0 && index > currentIndex && index < targetIndex) return "Transitional stage";
   return "Expansion stage";
 }
 
 function stageCardTone(index, currentIndex, targetIndex) {
-  if (index  < currentIndex) return "past";
-  if (index === currentIndex) return "current";
-  if (index === targetIndex)  return "target";
+  if (currentIndex >= 0 && index < currentIndex) return "past";
+  if (currentIndex >= 0 && index === currentIndex) return "current";
+  if (index === targetIndex) return "target";
   return "future";
 }
 
@@ -336,13 +336,15 @@ function stageCardIcon(tone) {
 function renderStageRail(railEl, stages, currentIndex, targetIndex, mode = "button") {
   const isHover = mode === "hover";
   // On hover/desktop: no card pre-selected (hover drives it).
-  // On button/mobile: current stage open by default.
-  let active = isHover ? null : currentIndex;
+  // On button/mobile: default to current stage if >= 0, otherwise target stage (or stage 0).
+  const defaultIndex = currentIndex >= 0 ? currentIndex : targetIndex;
+  let active = isHover ? null : defaultIndex;
 
   // ── Initial render (once) ───────────────────────────────────────────────
   railEl.innerHTML = stages.map((s, i) => {
     const tone  = stageCardTone(i, currentIndex, targetIndex);
     const label = stageCardLabel(i, currentIndex, targetIndex);
+    const isInitiallyExpanded = i === defaultIndex;
 
     return `
       <article
@@ -350,7 +352,7 @@ function renderStageRail(railEl, stages, currentIndex, targetIndex, mode = "butt
         data-rail-index="${i}"
         tabindex="0"
         role="button"
-        aria-expanded="${i === currentIndex}"
+        aria-expanded="${isInitiallyExpanded}"
         aria-label="${escHtml(label)}: ${escHtml(s.name)}"
       >
         <!-- Compact row: shown when card is collapsed (past/future/manually collapsed) -->
@@ -375,13 +377,13 @@ function renderStageRail(railEl, stages, currentIndex, targetIndex, mode = "butt
               type="button"
               class="stage-card__toggle"
               data-rail-toggle="${i}"
-              aria-expanded="${i === currentIndex}"
+              aria-expanded="${isInitiallyExpanded}"
               aria-label="Expand ${escHtml(s.name)}"
             ><img src="assets/3f8ce.svg" alt="" aria-hidden="true" /></button>` : ""}
           </div>
         </div>
 
-        <div class="stage-card__details" aria-hidden="${i !== currentIndex}">
+        <div class="stage-card__details" aria-hidden="${!isInitiallyExpanded}">
           <p>${escHtml(s.description)}</p>
         </div>
       </article>`;
@@ -644,10 +646,9 @@ function renderActionPlan(actionPlan) {
         <div class="bonus-resource__inner">
           <div class="bonus-resource__icon">${PICTOGRAM_ASSESSMENT}</div>
           <div class="bonus-resource__body">
-            <p class="bonus-resource__title">60-milestones growth worksheet</p>
+            <p class="bonus-resource__title">Complete checklist</p>
             <div class="bonus-resource__desc">
               <p>Reach a 100% on your <u>maturity index score.</u></p>
-              <p style="margin-top:12px;">The recommendations above are personalised to your results — your highest-priority next steps, right now.</p>
               <p style="margin-top:12px;">This roadmap shows the complete picture: all 60 milestones across every capability, so you can see the full journey ahead, not just the next move.</p>
             </div>
             <div class="bonus-resource__tags">
