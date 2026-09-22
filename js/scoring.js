@@ -175,22 +175,27 @@ function scorePass2(milestoneStates, answers, assessment, milestoneGraph) {
   }
   const { level, label: levelLabel_ } = levelLabel(maturityScore);
 
-  // Current APM/FSM stage — highest stage where no gating milestone is explicitly UNMET.
-  // UNKNOWN milestones (unasked in the questionnaire, e.g. WE-* and HS-* dimensions
-  // which are marked "Unassessed in questionnaire" in the handover guide) do not block
-  // stage progression — only a definitive UNMET answer does.
+  // Current APM/FSM stage — highest contiguous stage (starting from Stage 1)
+  // where ALL gating milestones assessable/active are MET.
+  // A stage is attained only if all required milestones for that stage are MET,
+  // excluding unassessed/under-review milestones.
   function currentStage(track) {
-    for (let s = 5; s >= 1; s--) {
+    let attained = 0;
+    for (let s = 1; s <= 5; s++) {
       const stageKey = `${track}${s}`;
       const gatingMilestones = milestoneGraph.nodes.filter(n => {
         const stageField = track === "APM" ? n.apm_stage : n.fsm_stage;
-        return stageField === stageKey;
+        return stageField === stageKey && !n.is_under_review;
       });
-      if (gatingMilestones.length === 0) continue;
-      const noneUnmet = gatingMilestones.every(n => milestoneStates[n.id] !== "UNMET");
-      if (noneUnmet) return s;
+      if (gatingMilestones.length === 0) break;
+      const allMet = gatingMilestones.every(n => milestoneStates[n.id] === "MET");
+      if (allMet) {
+        attained = s;
+      } else {
+        break;
+      }
     }
-    return 1; // floor at 1
+    return attained;
   }
 
   // Top 3 met milestones by "depth" (how many milestones in their dimension are MET)
@@ -362,9 +367,9 @@ export async function score(answers, assessment) {
   // Pass 3 — target stages from objectives
   const pass3 = targetStagesPass3(answers, assessment);
 
-  // Ensure target >= current
-  const targetAPMStage = Math.max(pass3.targetAPMStage, pass2.currentAPMStage);
-  const targetFSMStage = Math.max(pass3.targetFSMStage, pass2.currentFSMStage);
+  // Ensure target >= current, and at minimum Stage 1
+  const targetAPMStage = Math.max(pass3.targetAPMStage, pass2.currentAPMStage, 1);
+  const targetFSMStage = Math.max(pass3.targetFSMStage, pass2.currentFSMStage, 1);
 
   // Pass 4 — prioritise top 3 actions
   const actionPlan = prioritisePass4(
