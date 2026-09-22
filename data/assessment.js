@@ -133,7 +133,7 @@ export default {
                   "value": "critical-asset-failures-disrupt-operations",
                   "label": "Critical asset failures disrupt operations",
                   "milestoneId": "RP-1-FC",
-                  "secondaryMilestoneId": "CM-2-HLTH"
+                  "secondaryMilestoneId": "CM-2-TRIG"
                 },
                 {
                   "value": "inventory-shortages-delay-work-execution",
@@ -301,8 +301,8 @@ export default {
                   "milestoneId": "IC-2-INSB"
                 },
                 {
-                  "value": "meter-readings-are-logged-in-maximo-and-trigger-condition-based-pm-work-orders",
-                  "label": "Meter readings are logged in Maximo and trigger condition-based PM work orders",
+                  "value": "meter-readings-hours-cycles-pressure-temperature-are-logged-in-maximo-and-tracked-against-asset-records",
+                  "label": "Meter readings (hours, cycles, pressure, temperature) are logged in Maximo and tracked against asset records",
                   "milestoneId": "IC-3-METB"
                 },
                 {
@@ -522,43 +522,101 @@ export default {
           "label": "Reliability practices",
           "questions": [
             {
-              "id": "Q-RP-MULTI",
+              "id": "grp-rp",
+              "type": "matrix",
+              "title": "Reliability practices",
+              "guidance": null,
+              "rowHeader": "Themes",
+              "columns": [
+                {
+                  "value": "met",
+                  "label": "Consistently in place"
+                },
+                {
+                  "value": "unmet",
+                  "label": "Not / partially in place"
+                },
+                {
+                  "value": "unknown",
+                  "label": "Unknown"
+                }
+              ],
+              "rows": [
+                {
+                  "id": "Q-RP1",
+                  "label": "Failure Data Capture — structured failure codes on closed WOs",
+                  "description": "Problem-Cause-Remedy hierarchy enforced on 75%+ of closed work orders for critical assets.",
+                  "milestoneId": "RP-1-FC",
+                  "scope": "APM"
+                },
+                {
+                  "id": "Q-RP2",
+                  "label": "Strategy protection — strategies associated to critical assets, job plans linked to failure codes",
+                  "description": "Standard maintenance strategies and job plans are formally linked to specific equipment failure modes.",
+                  "milestoneId": "RP-2-RS",
+                  "scope": "APM"
+                },
+                {
+                  "id": "Q-RP3",
+                  "label": "FMEA-Driven Maintenance — FMEA mapped for at least critical asset classes, custom strategies derived, driving PMs",
+                  "description": "Failure Modes and Effects Analysis (FMEA) mapped for critical equipment, directly determining PM frequency and scope.",
+                  "milestoneId": "RP-3-FMEA",
+                  "scope": "APM"
+                },
+                {
+                  "id": "Q-RP4",
+                  "label": "FMEA Governance — FMEA records are reviewed on a regular, defined cycle, with version history maintained",
+                  "description": "FMEA records, failure mode linkages, and strategy effectiveness are continuously reviewed on a structured governance schedule.",
+                  "milestoneId": "RP-5-FGOV",
+                  "scope": "APM"
+                }
+              ],
+              "required": true,
+              "skipCondition": null
+            }
+          ]
+        },
+        {
+          "id": "grp-cm",
+          "label": "Condition monitoring & health scoring",
+          "questions": [
+            {
+              "id": "Q-CM-CORE",
               "type": "checkbox",
-              "title": "Which of the following are in place for your reliability practice? (Select all that apply)",
+              "title": "Which of the following condition monitoring and health scoring capabilities are active in your environment? (Select all that apply)",
               "guidance": {
-                "body": "Select every practice that is genuinely active in Maximo today."
+                "body": "Data must be integrated with Maximo or an accessible maintenance database—not trapped on isolated local control screens."
               },
               "options": [
                 {
-                  "value": "failure-codes-are-captured-on-75-of-closed-work-orders-for-critical-assets",
-                  "label": "Failure codes are captured on 75%+ of closed work orders for critical assets",
-                  "milestoneId": "RP-1-FC"
+                  "value": "low-frequency-condition-capture-manual-readings-csv-imports-periodic-logging-captured-and-visible-against-critical-assets",
+                  "label": "Low-Frequency Condition Capture — manual readings, CSV imports, periodic logging captured and visible against critical assets",
+                  "milestoneId": "CM-1-LF"
                 },
                 {
-                  "value": "reliability-strategies-are-activated-job-plans-are-formally-linked-to-failure-modes",
-                  "label": "Reliability Strategies are activated — job plans are formally linked to failure modes",
-                  "milestoneId": "RP-2-RS"
+                  "value": "real-time-condition-monitoring-live-continuous-condition-telemetry-scada-plcs-historians-like-osisoft-pi-aveva-or-iot-gateways-streaming-into-a-platform-accessible-by-maximo-and-mapped-to-assets",
+                  "label": "Real-Time Condition Monitoring — live, continuous condition telemetry (SCADA, PLCs, historians like OSIsoft PI/AVEVA, or IoT gateways) streaming into a platform accessible by Maximo and mapped to assets",
+                  "milestoneId": "CM-3-IOT"
                 },
                 {
-                  "value": "fmea-is-mapped-for-at-least-one-critical-asset-class-and-driving-preventive-maintenance-in-maximo",
-                  "label": "FMEA is mapped for at least one critical asset class and driving preventive maintenance in Maximo",
-                  "milestoneId": "RP-3-FMEA"
+                  "value": "condition-driven-action-condition-monitoring-points-or-meter-thresholds-automatically-trigger-alerts-work-orders-or-pm-adjustments-on-limit-breach",
+                  "label": "Condition-Driven Action — condition monitoring points or meter thresholds automatically trigger alerts, work orders, or PM adjustments on limit breach",
+                  "milestoneId": "CM-2-TRIG"
                 },
                 {
-                  "value": "fmea-records-are-updated-from-operational-signals-rcbf-investigations-or-predict-output",
-                  "label": "FMEA records are updated from operational signals — RCBF investigations or Predict output",
-                  "milestoneId": "RP-4-RCBF"
+                  "value": "foundational-health-scoring-health-scores-configured-in-maximo-health-for-at-least-one-critical-asset-class-drawing-from-at-least-3-data-sources",
+                  "label": "Foundational Health Scoring — health scores configured in Maximo Health for at least one critical asset class, drawing from at least 3 data sources",
+                  "milestoneId": "CM-2-HLTH"
                 },
                 {
-                  "value": "fmea-governance-is-continuous-regular-review-cycles-with-version-history-and-job-plan-updates-triggered",
-                  "label": "FMEA governance is continuous — regular review cycles with version history and job plan updates triggered",
-                  "milestoneId": "RP-5-FGOV"
+                  "value": "advanced-health-scoring-health-score-draws-from-4-operational-factors-including-real-time-data-and-its-thresholds-actively-drive-work-order-generation-or-pm-interval-changes",
+                  "label": "Advanced Health Scoring — health score draws from 4+ operational factors (including real-time data) and its thresholds actively drive work order generation or PM interval changes",
+                  "milestoneId": "CM-3-MVAR"
                 },
                 {
                   "value": "none-of-the-above",
                   "label": "None of the above",
-                  "milestoneId": null,
-                  "exclusive": true
+                  "milestoneId": null
                 }
               ],
               "unansweredBehavior": "All Unknown",
@@ -570,67 +628,46 @@ export default {
           ]
         },
         {
-          "id": "grp-cm",
-          "label": "Condition monitoring & prediction",
+          "id": "grp-cm-adv",
+          "label": "Advanced reliability & lifecycle practices (optional)",
           "questions": [
             {
-              "id": "Q-CM-MULTI",
+              "id": "Q-CM-ADV",
               "type": "checkbox",
-              "title": "Which of the following are live in your Maximo environment? (Select all that apply)",
+              "title": "Which of the following advanced practices are in place? (Optional — Select all that apply)",
               "guidance": {
-                "body": "Select only what is genuinely active in production — not piloted, configured-but-unused, or planned."
+                "body": "Select any advanced practice that is actively operationalized across your critical assets."
               },
               "options": [
                 {
-                  "value": "low-frequency-condition-data-manual-readings-periodic-imports-or-threshold-alerts-is-captured-and-actively-triggers-or-informs-maintenance-actions-for-critical-assets",
-                  "label": "Low-frequency condition data (manual readings, periodic imports, or threshold alerts) is captured and actively triggers or informs maintenance actions for critical assets",
-                  "milestoneId": "CM-1-LF"
-                },
-                {
-                  "value": "foundational-health-scores-are-configured-and-live-for-at-least-one-critical-asset-class-in-maximo-health-drawing-from-multiple-data-sources",
-                  "label": "Foundational health scores are configured and live for at least one critical asset class in Maximo Health, drawing from multiple data sources",
-                  "milestoneId": "CM-2-HLTH"
-                },
-                {
-                  "value": "condition-data-is-flowing-into-maximo-monitor-file-upload-rest-api-or-historian-extract",
-                  "label": "Condition data is flowing into Maximo Monitor (file upload, REST API, or historian extract)",
-                  "milestoneId": "CM-2-MON"
-                },
-                {
-                  "value": "live-ot-iot-streaming-is-active-in-monitor-and-mapped-to-asset-records-and-health-score-factors",
-                  "label": "Live OT/IoT streaming is active in Monitor and mapped to asset records and health score factors",
-                  "milestoneId": "CM-3-IOT"
-                },
-                {
-                  "value": "health-scores-draw-from-4-or-more-factors-including-ot-iot-data-and-score-thresholds-actively-drive-work-order-generation-or-pm-interval-adjustments",
-                  "label": "Health scores draw from 4 or more factors including OT/IoT data, and score thresholds actively drive work order generation or PM interval adjustments",
-                  "milestoneId": "CM-3-MVAR"
-                },
-                {
-                  "value": "predictive-failure-models-are-live-in-production-work-orders-service-requests-or-pm-adjustments-are-generated-based-on-forward-looking-risk-predictions-not-just-current-condition-or-fixed-schedules",
-                  "label": "Predictive failure models are live in production — work orders, service requests, or PM adjustments are generated based on forward-looking risk predictions, not just current condition or fixed schedules",
+                  "value": "predictive-risk-based-action-work-orders-service-requests-created-or-pm-schedules-adjusted-based-on-forward-looking-risk-predictions-via-any-method-statistical-modeling-or-machine-learning-software-not-just-current-condition-or-fixed-schedules",
+                  "label": "Predictive Risk-Based Action — work orders, service requests created or PM schedules adjusted based on forward-looking risk predictions (via any method — statistical modeling or machine learning software), not just current condition or fixed schedules",
                   "milestoneId": "CM-4-PRED"
                 },
                 {
-                  "value": "rcbf-practice-is-established-health-or-predict-alerts-routinely-trigger-engineering-investigation-before-failure",
-                  "label": "RCBF practice is established — Health or Predict alerts routinely trigger engineering investigation before failure",
+                  "value": "root-cause-feedback-loop-root-cause-investigations-are-triggered-proactively-from-early-risk-signals-with-findings-fed-back-into-fmea-records-and-job-plans",
+                  "label": "Root-Cause Feedback Loop — root-cause investigations are triggered proactively from early risk signals, with findings fed back into FMEA records and job plans",
                   "milestoneId": "CM-5-RCBF"
                 },
                 {
-                  "value": "operational-failure-evidence-formally-shapes-asset-specifications-procurement-decisions-or-oem-vendor-conversations-closing-the-loop-from-operations-back-into-design",
-                  "label": "Operational failure evidence formally shapes asset specifications, procurement decisions, or OEM/vendor conversations — closing the loop from operations back into design",
+                  "value": "predictive-inventory-optimisation-spare-parts-reorder-points-and-stock-levels-reflect-predicted-failure-risk-not-just-historical-usage-or-fixed-thresholds",
+                  "label": "Predictive Inventory Optimisation — spare parts reorder points and stock levels reflect predicted failure risk, not just historical usage or fixed thresholds",
+                  "milestoneId": "SC-4-OPT"
+                },
+                {
+                  "value": "design-feedback-loop-operational-failure-evidence-formally-shapes-future-asset-specifications-procurement-decisions-or-oem-vendor-conversations",
+                  "label": "Design Feedback Loop — operational failure evidence formally shapes future asset specifications, procurement decisions, or OEM/vendor conversations",
                   "milestoneId": "CM-6-LCFDBK"
                 },
                 {
                   "value": "none-of-the-above",
                   "label": "None of the above",
-                  "milestoneId": null,
-                  "exclusive": true
+                  "milestoneId": "CM-3-MVAR"
                 }
               ],
               "unansweredBehavior": "All Unknown",
-              "required": true,
-              "skipCondition": "Skip if Health / Monitor / Predict not licensed",
+              "required": false,
+              "skipCondition": null,
               "binderType": "milestone-multiselect",
               "scope": "APM"
             }
