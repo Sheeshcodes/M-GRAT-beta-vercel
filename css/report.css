@@ -1653,6 +1653,7 @@ cds-menu-button[kind="tertiary"]:focus svg {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  cursor: pointer;
 }
 
 .mobile-nav__title.is-hidden {

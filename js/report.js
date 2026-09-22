@@ -1018,6 +1018,7 @@ function initScrollSpy() {
 
   if (toggle && panel) {
     toggle.addEventListener("click", () => setPanel(panel.hidden));
+    if (mobileTitle) mobileTitle.addEventListener("click", () => setPanel(panel.hidden));
     document.addEventListener("keydown", e => {
       if (e.key === "Escape" && !panel.hidden) { setPanel(false); toggle.focus(); }
     });
