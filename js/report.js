@@ -1071,6 +1071,34 @@ function fitMenuButtons() {
 }
 
 /* --------------------------------------------------------------------------
+   Tooltip dismiss — close any open cds-tooltip when clicking outside it or
+   its trigger button, or when clicking the trigger while it is already open.
+   -------------------------------------------------------------------------- */
+function closeTooltipsOnOutsideClick() {
+  document.addEventListener("click", e => {
+    $$("cds-tooltip").forEach(tip => {
+      if (!tip.hasAttribute("open")) return;
+      // If the click is inside this tooltip or on its trigger, let Carbon handle it
+      if (tip.contains(e.target)) return;
+      const trigger = tip.querySelector("[slot='trigger']");
+      if (trigger && trigger.contains(e.target)) return;
+      tip.removeAttribute("open");
+    });
+  }, true);
+
+  // Also close when the trigger is clicked while tooltip is already open
+  document.addEventListener("click", e => {
+    const trigger = e.target.closest("[slot='trigger']");
+    if (!trigger) return;
+    const tip = trigger.closest("cds-tooltip");
+    if (tip && tip.hasAttribute("open")) {
+      // let the event finish then close, so Carbon's own open handler runs first
+      requestAnimationFrame(() => tip.removeAttribute("open"));
+    }
+  });
+}
+
+/* --------------------------------------------------------------------------
    Bootstrap
    -------------------------------------------------------------------------- */
 async function init() {
@@ -1094,6 +1122,7 @@ async function init() {
   wireFeedback();
   initScrollSpy();
   fitMenuButtons();
+  closeTooltipsOnOutsideClick();
 }
 
 init().catch(console.error);

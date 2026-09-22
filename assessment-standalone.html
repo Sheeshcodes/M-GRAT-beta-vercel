@@ -9782,6 +9782,28 @@ async function init() {
   renderActionPlan(result.actionPlan);
   renderFollowUp();
   initScrollSpy();
+  closeTooltipsOnOutsideClick();
+}
+
+function closeTooltipsOnOutsideClick() {
+  document.addEventListener("click", e => {
+    document.querySelectorAll("cds-tooltip").forEach(tip => {
+      if (!tip.hasAttribute("open")) return;
+      if (tip.contains(e.target)) return;
+      const trigger = tip.querySelector("[slot='trigger']");
+      if (trigger && trigger.contains(e.target)) return;
+      tip.removeAttribute("open");
+    });
+  }, true);
+
+  document.addEventListener("click", e => {
+    const trigger = e.target.closest("[slot='trigger']");
+    if (!trigger) return;
+    const tip = trigger.closest("cds-tooltip");
+    if (tip && tip.hasAttribute("open")) {
+      requestAnimationFrame(() => tip.removeAttribute("open"));
+    }
+  });
 }
 
 init().catch(console.error);
