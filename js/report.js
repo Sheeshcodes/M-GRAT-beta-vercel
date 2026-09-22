@@ -659,40 +659,6 @@ function renderActionPlan(actionPlan) {
       </div>
     </div>`;
 
-  // Roadmap table
-  if (actionPlan.roadmapTable?.length) {
-    const rows = actionPlan.roadmapTable.map(entry => {
-      const m = milestones[entry.milestoneId];
-      if (!m) return "";
-      const statusClass = entry.status === "UNKNOWN" ? "roadmap-status roadmap-status--unknown" : "roadmap-status";
-      return `
-        <tr>
-          <td><strong>${escHtml(m.name)}</strong></td>
-          <td>${escHtml(m.pillar)}</td>
-          <td>${escHtml(m.level)}</td>
-          <td>${escHtml(m.apm_stage && m.fsm_stage ? "Shared" : m.apm_stage ? "APM" : "FSM")}</td>
-          <td><span class="${statusClass}">${escHtml(entry.status)}</span></td>
-        </tr>`;
-    }).join("");
-
-    html += `
-      <h3 class="report-section__sub-heading" style="font-size:20px;font-weight:600;margin-top:8px;">Further roadmap milestones</h3>
-      <div class="roadmap-table-wrap">
-        <table class="roadmap-table">
-          <thead>
-            <tr>
-              <th>Milestone</th>
-              <th>Pillar</th>
-              <th>Level</th>
-              <th>Track</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>`;
-  }
-
   el.innerHTML = html;
 }
 
