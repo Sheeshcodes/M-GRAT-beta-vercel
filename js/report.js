@@ -340,75 +340,110 @@ function renderStageRail(railEl, stages, currentIndex, targetIndex, mode = "butt
   const isHover = mode === "hover";
   let active = null;
 
-  function draw() {
-    railEl.innerHTML = stages.map((s, i) => {
-      const tone        = stageCardTone(i, currentIndex, targetIndex);
-      const label       = stageCardLabel(i, currentIndex, targetIndex);
+  // ── Initial render (once) ───────────────────────────────────────────────
+  railEl.innerHTML = stages.map((s, i) => {
+    const tone  = stageCardTone(i, currentIndex, targetIndex);
+    const label = stageCardLabel(i, currentIndex, targetIndex);
+    const isCurrent = tone === "current";
+    const isTarget  = tone === "target";
+    const isFuture  = tone === "future";
+    // Default wide state for current/target when nothing is active
+    const defaultWide = isCurrent || isTarget;
+
+    return `
+      <article
+        class="stage-card stage-card--${tone}${defaultWide ? "" : ""}"
+        data-rail-index="${i}"
+        tabindex="${isHover ? "0" : "-1"}"
+        aria-label="${escHtml(label)}: ${escHtml(s.name)}"
+      >
+        <div class="stage-card__compact" aria-hidden="true">
+          ${stageCardIcon(tone)}
+          <span>${pad2(i + 1)}</span>
+        </div>
+
+        ${!isHover ? `<button
+          type="button"
+          class="stage-card__compact-toggle"
+          data-rail-expand="${i}"
+          aria-label="Expand ${escHtml(s.name)}"
+          style="display:none"
+        ><img src="assets/3f8ce.svg" alt="" aria-hidden="true" /></button>` : ""}
+
+        <div class="stage-card__standard">
+          <div class="stage-card__topline">
+            <span class="stage-card__label">${escHtml(label)}</span>
+            ${stageCardIcon(tone)}
+          </div>
+          <div class="stage-card__content-stack">
+            <div class="stage-card__content">
+              <span class="stage-card__number-label">Stage</span>
+              <span class="stage-card__number">${pad2(i + 1)}</span>
+              <span class="stage-card__title">${escHtml(s.name)}</span>
+            </div>
+            ${!isHover ? `<button
+              type="button"
+              class="stage-card__toggle"
+              data-rail-toggle="${i}"
+              aria-expanded="false"
+              aria-label="Expand ${escHtml(s.name)}"
+            ><img src="assets/3f8ce.svg" alt="" aria-hidden="true" /></button>` : ""}
+          </div>
+        </div>
+
+        <div class="stage-card__details" aria-hidden="true">
+          <p>${escHtml(s.description)}</p>
+        </div>
+      </article>`;
+  }).join("");
+
+  const cards = [...railEl.querySelectorAll("[data-rail-index]")];
+
+  // ── Class-only update on state change (keeps DOM, enables CSS transitions) ─
+  function switchTo(next, focus) {
+    const prev = active;
+    active = next;
+
+    cards.forEach((card, i) => {
+      const tone = stageCardTone(i, currentIndex, targetIndex);
       const isExpanded  = active === i;
       const isCollapsed = active !== null && !isExpanded;
       const isFuture    = tone === "future";
-      const showCompactToggle = !isHover && !isExpanded && (isFuture || isCollapsed);
 
-      const toneClass     = `stage-card--${tone}`;
-      const expandedClass = isExpanded  ? " is-expanded"  : "";
-      const collapseClass = isCollapsed ? " is-collapsed" : "";
+      card.classList.toggle("is-expanded",  isExpanded);
+      card.classList.toggle("is-collapsed", isCollapsed);
+      card.setAttribute("aria-label",
+        `${escHtml(stageCardLabel(i, currentIndex, targetIndex))}: ${escHtml(stages[i].name)}`);
 
-      return `
-        <article
-          class="stage-card ${toneClass}${expandedClass}${collapseClass}"
-          data-rail-index="${i}"
-          tabindex="${isHover ? "0" : isExpanded ? "0" : "-1"}"
-          aria-label="${escHtml(label)}: ${escHtml(s.name)}"
-        >
-          <div class="stage-card__compact" aria-hidden="true">
-            ${stageCardIcon(tone)}
-            <span>${pad2(i + 1)}</span>
-          </div>
+      if (isHover) {
+        card.setAttribute("tabindex", "0");
+      } else {
+        card.setAttribute("tabindex", isExpanded ? "0" : "-1");
 
-          ${showCompactToggle ? `
-          <button
-            type="button"
-            class="stage-card__compact-toggle"
-            data-rail-expand="${i}"
-            aria-label="Expand ${escHtml(s.name)}"
-          ><img src="assets/3f8ce.svg" alt="" aria-hidden="true" /></button>` : ""}
+        // Update toggle button icon + aria state
+        const toggleBtn = card.querySelector("[data-rail-toggle]");
+        if (toggleBtn) {
+          toggleBtn.setAttribute("aria-expanded", isExpanded);
+          toggleBtn.setAttribute("aria-label", `${isExpanded ? "Minimize" : "Expand"} ${escHtml(stages[i].name)}`);
+          toggleBtn.querySelector("img").src = `assets/${isExpanded ? "cb904" : "3f8ce"}.svg`;
+        }
 
-          <div class="stage-card__standard">
-            <div class="stage-card__topline">
-              <span class="stage-card__label">${escHtml(label)}</span>
-              ${stageCardIcon(tone)}
-            </div>
-            <div class="stage-card__content-stack">
-              <div class="stage-card__content">
-                <span class="stage-card__number-label">Stage</span>
-                <span class="stage-card__number">${pad2(i + 1)}</span>
-                <span class="stage-card__title">${escHtml(s.name)}</span>
-              </div>
-              ${!isHover ? `<button
-                type="button"
-                class="stage-card__toggle"
-                data-rail-toggle="${i}"
-                aria-expanded="${isExpanded}"
-                aria-label="${isExpanded ? "Minimize" : "Expand"} ${escHtml(s.name)}"
-              ><img src="assets/${isExpanded ? "cb904" : "3f8ce"}.svg" alt="" aria-hidden="true" /></button>` : ""}
-            </div>
-          </div>
+        // Show/hide compact-toggle for collapsed/future cards
+        const compactBtn = card.querySelector("[data-rail-expand]");
+        if (compactBtn) {
+          compactBtn.style.display = (!isExpanded && (isFuture || isCollapsed)) ? "" : "none";
+        }
+      }
 
-          <div class="stage-card__details" aria-hidden="${!isExpanded}">
-            <p>${escHtml(s.description)}</p>
-          </div>
-        </article>`;
-    }).join("");
+      // Details aria-hidden
+      const details = card.querySelector(".stage-card__details");
+      if (details) details.setAttribute("aria-hidden", !isExpanded);
+    });
+
+    if (focus && next !== null) cards[next]?.focus();
   }
 
-  function switchTo(next, focus) {
-    active = next;
-    draw();
-    if (focus && next !== null) {
-      railEl.querySelector(`[data-rail-index="${next}"]`)?.focus();
-    }
-  }
-
+  // ── Event listeners ──────────────────────────────────────────────────────
   if (!isHover) {
     railEl.addEventListener("click", (e) => {
       const toggleBtn = e.target.closest("[data-rail-toggle]");
@@ -418,9 +453,7 @@ function renderStageRail(railEl, stages, currentIndex, targetIndex, mode = "butt
         return;
       }
       const expandBtn = e.target.closest("[data-rail-expand]");
-      if (expandBtn) {
-        switchTo(Number(expandBtn.dataset.railExpand));
-      }
+      if (expandBtn) switchTo(Number(expandBtn.dataset.railExpand));
     });
   } else {
     railEl.addEventListener("mouseenter", (e) => {
@@ -442,8 +475,6 @@ function renderStageRail(railEl, stages, currentIndex, targetIndex, mode = "butt
       e.key === "End"        ? last : null;
     if (next !== null) { e.preventDefault(); switchTo(next, true); }
   });
-
-  draw();
 }
 
 function renderExpansionCard(containerId, track, trackResult) {
