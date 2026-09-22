@@ -335,38 +335,31 @@ function stageCardIcon(tone) {
 
 function renderStageRail(railEl, stages, currentIndex, targetIndex, mode = "button") {
   const isHover = mode === "hover";
-  let active = null;
+  // On hover/desktop: no card pre-selected (hover drives it).
+  // On button/mobile: current stage open by default.
+  let active = isHover ? null : currentIndex;
 
   // ── Initial render (once) ───────────────────────────────────────────────
   railEl.innerHTML = stages.map((s, i) => {
     const tone  = stageCardTone(i, currentIndex, targetIndex);
     const label = stageCardLabel(i, currentIndex, targetIndex);
-    const isCurrent = tone === "current";
-    const isTarget  = tone === "target";
-    const isFuture  = tone === "future";
-    // Default wide state for current/target when nothing is active
-    const defaultWide = isCurrent || isTarget;
 
     return `
       <article
-        class="stage-card stage-card--${tone}${defaultWide ? "" : ""}"
+        class="stage-card stage-card--${tone}"
         data-rail-index="${i}"
-        tabindex="${isHover ? "0" : "-1"}"
+        tabindex="0"
+        role="button"
+        aria-expanded="${i === currentIndex}"
         aria-label="${escHtml(label)}: ${escHtml(s.name)}"
       >
+        <!-- Compact row: shown when card is collapsed (past/future/manually collapsed) -->
         <div class="stage-card__compact" aria-hidden="true">
-          ${stageCardIcon(tone)}
           <span>${pad2(i + 1)}</span>
+          ${stageCardIcon(tone)}
         </div>
 
-        ${!isHover ? `<button
-          type="button"
-          class="stage-card__compact-toggle"
-          data-rail-expand="${i}"
-          aria-label="Expand ${escHtml(s.name)}"
-          style="display:none"
-        ><img src="assets/3f8ce.svg" alt="" aria-hidden="true" /></button>` : ""}
-
+        <!-- Standard panel: shown when card is open -->
         <div class="stage-card__standard">
           <div class="stage-card__topline">
             <span class="stage-card__label">${escHtml(label)}</span>
@@ -382,13 +375,13 @@ function renderStageRail(railEl, stages, currentIndex, targetIndex, mode = "butt
               type="button"
               class="stage-card__toggle"
               data-rail-toggle="${i}"
-              aria-expanded="false"
+              aria-expanded="${i === currentIndex}"
               aria-label="Expand ${escHtml(s.name)}"
             ><img src="assets/3f8ce.svg" alt="" aria-hidden="true" /></button>` : ""}
           </div>
         </div>
 
-        <div class="stage-card__details" aria-hidden="true">
+        <div class="stage-card__details" aria-hidden="${i !== currentIndex}">
           <p>${escHtml(s.description)}</p>
         </div>
       </article>`;
@@ -396,40 +389,37 @@ function renderStageRail(railEl, stages, currentIndex, targetIndex, mode = "butt
 
   const cards = [...railEl.querySelectorAll("[data-rail-index]")];
 
-  // ── Class-only update on state change (keeps DOM, enables CSS transitions) ─
-  function switchTo(next, focus) {
-    const prev = active;
-    active = next;
+  // Apply initial state without animation
+  railEl.classList.add("stage-rail--no-transition");
+  applyState();
+  requestAnimationFrame(() => railEl.classList.remove("stage-rail--no-transition"));
 
+  // ── Class-only update on state change (keeps DOM, enables CSS transitions) ─
+  function applyState(focus) {
     cards.forEach((card, i) => {
       const tone = stageCardTone(i, currentIndex, targetIndex);
       const isExpanded  = active === i;
+      // On desktop: collapse all others when one is active; on mobile same logic
       const isCollapsed = active !== null && !isExpanded;
-      const isFuture    = tone === "future";
 
       card.classList.toggle("is-expanded",  isExpanded);
       card.classList.toggle("is-collapsed", isCollapsed);
+      card.setAttribute("aria-expanded", isExpanded);
       card.setAttribute("aria-label",
         `${escHtml(stageCardLabel(i, currentIndex, targetIndex))}: ${escHtml(stages[i].name)}`);
 
-      if (isHover) {
+      if (!isHover) {
         card.setAttribute("tabindex", "0");
-      } else {
-        card.setAttribute("tabindex", isExpanded ? "0" : "-1");
 
-        // Update toggle button icon + aria state
+        // Update toggle button icon + aria state (desktop)
         const toggleBtn = card.querySelector("[data-rail-toggle]");
         if (toggleBtn) {
           toggleBtn.setAttribute("aria-expanded", isExpanded);
           toggleBtn.setAttribute("aria-label", `${isExpanded ? "Minimize" : "Expand"} ${escHtml(stages[i].name)}`);
           toggleBtn.querySelector("img").src = `assets/${isExpanded ? "cb904" : "3f8ce"}.svg`;
         }
-
-        // Show/hide compact-toggle for collapsed/future cards
-        const compactBtn = card.querySelector("[data-rail-expand]");
-        if (compactBtn) {
-          compactBtn.style.display = (!isExpanded && (isFuture || isCollapsed)) ? "" : "none";
-        }
+      } else {
+        card.setAttribute("tabindex", "0");
       }
 
       // Details aria-hidden
@@ -437,27 +427,43 @@ function renderStageRail(railEl, stages, currentIndex, targetIndex, mode = "butt
       if (details) details.setAttribute("aria-hidden", !isExpanded);
     });
 
-    if (focus && next !== null) cards[next]?.focus();
+    if (focus != null) cards[focus]?.focus();
+  }
+
+  function switchTo(next, focus) {
+    if (isHover) {
+      // Hover: always just open the hovered card, never toggle
+      active = next;
+    } else {
+      // Tap: toggle — tapping the open card closes it
+      active = active === next ? null : next;
+    }
+    applyState(focus);
   }
 
   // ── Event listeners ──────────────────────────────────────────────────────
   if (!isHover) {
     railEl.addEventListener("click", (e) => {
+      // Desktop: toggle button inside standard panel
       const toggleBtn = e.target.closest("[data-rail-toggle]");
       if (toggleBtn) {
         const i = Number(toggleBtn.dataset.railToggle);
-        switchTo(active === i ? null : i);
+        switchTo(i);
         return;
       }
-      const expandBtn = e.target.closest("[data-rail-expand]");
-      if (expandBtn) switchTo(Number(expandBtn.dataset.railExpand));
+      // Mobile: whole card is the tap target (compact row or standard panel topline)
+      const card = e.target.closest("[data-rail-index]");
+      if (card) {
+        const i = Number(card.dataset.railIndex);
+        switchTo(i);
+      }
     });
   } else {
     railEl.addEventListener("mouseenter", (e) => {
       const card = e.target.closest("[data-rail-index]");
       if (card) switchTo(Number(card.dataset.railIndex));
     }, true);
-    railEl.addEventListener("mouseleave", () => switchTo(null));
+    railEl.addEventListener("mouseleave", () => { active = null; applyState(); });
   }
 
   railEl.addEventListener("keydown", (e) => {
@@ -525,7 +531,9 @@ function renderExpansionCard(containerId, track, trackResult) {
     </div>`;
 
   const railEl = el.querySelector(".stage-rail");
-  renderStageRail(railEl, journeyStages, currentIndex, targetIndex, "hover");
+  // Use hover mode on desktop, tap/button mode on mobile
+  const isMobile = window.matchMedia("(max-width: 1100px)").matches;
+  renderStageRail(railEl, journeyStages, currentIndex, targetIndex, isMobile ? "button" : "hover");
 }
 
 /* --------------------------------------------------------------------------
@@ -769,13 +777,21 @@ function renderFollowUp() {
 function initScrollSpy() {
   const sections = ["act-today", "act-roi", "act-plan", "act-improve"];
   const navItems = $$(".report-nav__item");
+  const mobileTabs = $$("cds-tab[data-section]");
+  const tabsEl = $("cds-tabs");
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
+        const sectionId = entry.target.id;
+
+        // Update desktop nav
         navItems.forEach(item => item.classList.remove("report-nav__item--active"));
-        const active = navItems.find(item => item.dataset.section === entry.target.id);
-        if (active) active.classList.add("report-nav__item--active");
+        const activeNav = navItems.find(item => item.dataset.section === sectionId);
+        if (activeNav) activeNav.classList.add("report-nav__item--active");
+
+        // Update mobile tabs
+        if (tabsEl) tabsEl.value = sectionId;
       }
     });
   }, { rootMargin: "-30% 0px -60% 0px" });
@@ -785,7 +801,7 @@ function initScrollSpy() {
     if (el) observer.observe(el);
   });
 
-  // Smooth scroll on nav click
+  // Smooth scroll on desktop nav click
   navItems.forEach(item => {
     item.addEventListener("click", e => {
       e.preventDefault();
@@ -793,6 +809,17 @@ function initScrollSpy() {
       if (target) target.scrollIntoView({ behavior: "smooth" });
     });
   });
+
+  // Smooth scroll on mobile tab selection
+  if (tabsEl) {
+    tabsEl.addEventListener("cds-tabs-selected", e => {
+      const sectionId = e.detail?.item?.dataset?.section;
+      if (sectionId) {
+        const target = $(`#${sectionId}`);
+        if (target) target.scrollIntoView({ behavior: "smooth" });
+      }
+    });
+  }
 }
 
 /* --------------------------------------------------------------------------

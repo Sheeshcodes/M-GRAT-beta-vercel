@@ -37,6 +37,17 @@
 
   <!-- Content layer — slides over hero on scroll -->
   <div class="report-body">
+
+    <!-- Mobile sticky tab nav — hidden on desktop, shown at ≤ 1100px -->
+    <div class="report-mobile-nav">
+      <cds-tabs value="act-today">
+        <cds-tab id="tab-act-today" target="act-today" data-section="act-today">Where you are today</cds-tab>
+        <cds-tab id="tab-act-roi" target="act-roi" data-section="act-roi">Opportunities to increase ROI</cds-tab>
+        <cds-tab id="tab-act-plan" target="act-plan" data-section="act-plan">Your action plan</cds-tab>
+        <cds-tab id="tab-act-improve" target="act-improve" data-section="act-improve">Help us improve</cds-tab>
+      </cds-tabs>
+    </div>
+
     <div class="report-layout">
 
       <!-- Left sticky panel -->

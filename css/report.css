@@ -51,6 +51,7 @@
   background: #ffffff;
   box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.1);
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 /* --------------------------------------------------------------------------
@@ -256,7 +257,7 @@
   display: flex;
   gap: 64px;
   align-items: center;
-  padding: 47px 32px 16px;
+  padding: 16px 32px 16px;
   min-height: 247px;
   overflow: hidden;
 }
@@ -555,6 +556,11 @@
   width: max-content;
   min-height: 380px;
 }
+/* Suppress transitions during initial paint */
+.stage-rail--no-transition .stage-card,
+.stage-rail--no-transition .stage-card__standard,
+.stage-rail--no-transition .stage-card__details,
+.stage-rail--no-transition .stage-card__compact { transition: none !important; }
 
 .stage-card {
   position: relative;
@@ -1005,6 +1011,7 @@
   line-height: 22px;
   color: #fff;
   margin: 0;
+  max-width: 286px;
 }
 
 .bonus-resource__how-to {
@@ -1068,10 +1075,11 @@
 }
 
 .accelerate-card__desc {
-  font-size: 14px;
-  line-height: 18px;
+  font-size: 16px;
+  line-height: 22px;
   color: #fff;
   margin: 0;
+  max-width: 286px;
 }
 
 .accelerate-card cds-button[kind="tertiary"] {
@@ -1156,16 +1164,75 @@
   gap: 32px;
 }
 
+/* Mobile sticky tab nav — hidden by default (desktop) */
+.report-mobile-nav {
+  display: none;
+}
+
 /* --------------------------------------------------------------------------
    Responsive
    -------------------------------------------------------------------------- */
 @media (max-width: 1100px) {
+  .report-mobile-nav {
+    display: block;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #ffffff;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
+  .report-nav {
+    display: none;
+  }
+
+  .report-section {
+    scroll-margin-top: 56px;
+  }
+
+  /* Hero scales proportionally on mobile — clamp keeps it between 80px and 200px */
+  .report-hero {
+    height: clamp(80px, 25vw, 200px);
+  }
+
   .report-layout {
     flex-direction: column;
-    padding: 32px 24px 64px;
+    padding: 24px 24px 64px;
   }
+
+  /* Maturity banner: stack score + strengths vertically on mobile */
+  .maturity-banner {
+    flex-direction: column;
+    gap: 24px;
+    align-items: flex-start;
+    padding: 32px 24px 24px;
+    min-height: 0;
+  }
+
+  /* Sidebar header on mobile: icon stacked above title, then actions below */
   .report-sidebar {
     position: static;
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding-top: 0;
+  }
+  .report-sidebar__icon img {
+    width: 24px;
+    height: 24px;
+  }
+  .report-sidebar__title {
+    font-size: 40px;
+    line-height: 1.1;
+    margin: 0;
+  }
+  .report-sidebar__meta {
+    display: none;
+  }
+  .report-sidebar__actions {
     width: 100%;
   }
   .report-content {
@@ -1178,16 +1245,135 @@
     flex-direction: column;
   }
   .stage-rail { flex-direction: column; width: 100%; min-height: 0; gap: 8px; }
+
+  /* ── Stage card: vertical accordion ──────────────────────────────────────
+     All desktop absolute-positioned children become normal document flow.
+     The card is a vertical flex container; max-height drives open/close animation.
+     The whole card is the tap target — no internal toggle buttons on mobile.
+  */
+  /* Reset ALL desktop fixed widths on card and children */
   .stage-card,
+  .stage-card.is-collapsed,
+  .stage-card.is-expanded,
   .stage-card--current:not(.is-collapsed):not(.is-expanded),
-  .stage-card--target:not(.is-collapsed):not(.is-expanded),
-  .stage-card.is-expanded { flex: 0 0 auto; width: 100%; height: 72px; }
+  .stage-card--target:not(.is-collapsed):not(.is-expanded) {
+    flex: 0 0 auto;
+    flex-direction: column;
+    width: 100%;
+    height: auto;
+  }
+
+  /* max-height drives the accordion open/close */
+  .stage-card                                                              { max-height: 48px; }
+  .stage-card.is-collapsed                                                 { max-height: 48px; }
+  .stage-card.is-expanded                                                  { max-height: 700px; }
   .stage-card--current:not(.is-collapsed):not(.is-expanded),
-  .stage-card--target:not(.is-collapsed):not(.is-expanded) { height: 380px; }
-  .stage-card.is-collapsed { height: 72px; }
-  .stage-card.is-expanded { height: 430px; }
-  .stage-card.is-expanded .stage-card__standard { width: 100%; }
-  .stage-card__details { top: 60px; left: 188px; width: calc(100% - 204px); height: 350px; }
+  .stage-card--target:not(.is-collapsed):not(.is-expanded)                 { max-height: 700px; }
+
+  /* These all need overflow hidden and the transition for animation to work */
+  .stage-card { overflow: hidden; cursor: pointer; transition: max-height 520ms cubic-bezier(.2, .8, .2, 1); }
+
+  /* Compact row — full-width horizontal, number left / icon right, 48px tall */
+  .stage-card__compact {
+    position: static;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 48px;
+    padding: 14px 16px 16px;
+    box-sizing: border-box;
+    opacity: 1;
+    pointer-events: auto;
+    transition: none;
+  }
+  .stage-card__compact span {
+    font-size: 28px;
+    line-height: 36px;
+  }
+  /* Hide compact row when the card is in its open state (standard panel showing) */
+  .stage-card--current:not(.is-collapsed):not(.is-expanded) .stage-card__compact,
+  .stage-card--target:not(.is-collapsed):not(.is-expanded) .stage-card__compact,
+  .stage-card.is-expanded .stage-card__compact {
+    display: none;
+  }
+
+  /* Standard panel — back to normal flow, stacks vertically inside the card */
+  .stage-card__standard {
+    position: static;
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px 16px 0;
+    box-sizing: border-box;
+    opacity: 1;
+    visibility: visible;
+    transition: none;
+  }
+  /* Collapsed/past/future cards: hide standard panel, show compact row instead */
+  .stage-card--past:not(.is-expanded) .stage-card__standard,
+  .stage-card--future:not(.is-expanded) .stage-card__standard,
+  .stage-card.is-collapsed .stage-card__standard {
+    display: none;
+  }
+
+  /* Content stack — reset desktop 228px/152px fixed widths */
+  .stage-card__content-stack,
+  .stage-card.is-expanded .stage-card__content-stack { width: 100%; gap: 16px; }
+  .stage-card__content { height: auto; min-height: 0; }
+
+  /* Hide the desktop toggle button — whole card is tap target on mobile */
+  .stage-card__toggle { display: none; }
+
+  /* Details panel — static flow, reset desktop absolute dimensions */
+  .stage-card__details {
+    position: static;
+    width: 100%;
+    height: auto;
+    padding: 0 16px 16px;
+    margin-top: 16px;
+    box-sizing: border-box;
+    opacity: 0;
+    transform: translateY(8px);
+    pointer-events: none;
+    transition: opacity 200ms ease, transform 440ms cubic-bezier(.2, .8, .2, 1);
+  }
+  .stage-card--current:not(.is-collapsed):not(.is-expanded) .stage-card__details,
+  .stage-card--target:not(.is-collapsed):not(.is-expanded) .stage-card__details,
+  .stage-card.is-expanded .stage-card__details {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  /* Hide the desktop-only compact-toggle button entirely on mobile */
+  .stage-card__compact-toggle { display: none; }
+}
+
+/* --------------------------------------------------------------------------
+   Small phone breakpoint
+   -------------------------------------------------------------------------- */
+@media (max-width: 640px) {
+  .report-layout {
+    padding: 16px 16px 48px;
+    gap: 24px;
+  }
+  .report-content {
+    gap: 40px;
+  }
+  .report-section__heading {
+    font-size: clamp(22px, 6vw, 32px);
+  }
+  .report-sidebar__title {
+    padding-bottom: 24px;
+  }
+  .report-sidebar__actions cds-button,
+  .report-sidebar__actions cds-menu-button {
+    --cds-button-height: 40px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
