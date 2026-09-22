@@ -416,7 +416,7 @@ function renderStageRail(railEl, stages, currentIndex, targetIndex, mode = "butt
             <div class="stage-card__content">
               <span class="stage-card__number-label">Stage</span>
               <span class="stage-card__number">${pad2(i + 1)}</span>
-              <span class="stage-card__title">${s.name === 'APM Foundation' ? 'APM<br>Foundation' : escHtml(s.name)}</span>
+              <span class="stage-card__title">${s.name === 'APM Foundation' ? 'APM<span class="stage-card__title-break"><br>Foundation</span><span class="stage-card__title-inline"> Foundation</span>' : escHtml(s.name)}</span>
             </div>
             ${!isHover ? `<button
               type="button"

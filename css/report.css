@@ -730,6 +730,12 @@ cds-menu-button[kind="tertiary"]:focus svg {
 }
 .stage-card__number { font-size: 64px; line-height: 52px; letter-spacing: -3px; }
 .stage-card__title   { margin-top: 6px; font-size: 20px; line-height: 28px; }
+.stage-card__title-break  { display: inline; }
+.stage-card__title-inline { display: none; }
+@media (max-width: 671px) {
+  .stage-card__title-break  { display: none; }
+  .stage-card__title-inline { display: inline; }
+}
 
 .stage-card__toggle {
   position: absolute;
