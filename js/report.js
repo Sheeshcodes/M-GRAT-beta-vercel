@@ -766,7 +766,7 @@ function renderActionPlan(actionPlan) {
       <div class="accelerate-card__body">
         <p class="accelerate-card__title">Accelerate your Maximo Journey</p>
         <p class="accelerate-card__desc">Discuss these prioritized immediate actions and review the full roadmap with an IBM Maximo and APM specialist to estimate ROI, run scoping exercises, or schedule a deep-dive product demonstration.</p>
-        <cds-button kind="tertiary" size="lg" href="https://www.ibm.com/products/maximo">
+        <cds-button kind="tertiary" size="lg">
           Schedule a review with an IBM specialist
           ${ICON_USER_SERVICE}
         </cds-button>
