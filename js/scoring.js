@@ -175,7 +175,10 @@ function scorePass2(milestoneStates, answers, assessment, milestoneGraph) {
   }
   const { level, label: levelLabel_ } = levelLabel(maturityScore);
 
-  // Current APM stage — highest stage where ALL gating milestones are MET
+  // Current APM/FSM stage — highest stage where no gating milestone is explicitly UNMET.
+  // UNKNOWN milestones (unasked in the questionnaire, e.g. WE-* and HS-* dimensions
+  // which are marked "Unassessed in questionnaire" in the handover guide) do not block
+  // stage progression — only a definitive UNMET answer does.
   function currentStage(track) {
     for (let s = 5; s >= 1; s--) {
       const stageKey = `${track}${s}`;
@@ -184,8 +187,8 @@ function scorePass2(milestoneStates, answers, assessment, milestoneGraph) {
         return stageField === stageKey;
       });
       if (gatingMilestones.length === 0) continue;
-      const allMet = gatingMilestones.every(n => milestoneStates[n.id] === "MET");
-      if (allMet) return s;
+      const noneUnmet = gatingMilestones.every(n => milestoneStates[n.id] !== "UNMET");
+      if (noneUnmet) return s;
     }
     return 1; // floor at 1
   }

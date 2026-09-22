@@ -166,6 +166,19 @@ Each stage card in the APM/FSM expansion rail receives one of five labels derive
 | Pass 3 | Selected objectives (Q-OBJ) | Target APM/FSM stage |
 | Pass 4 | All of the above | Top 3 prioritised action steps + roadmap table |
 
+### Stage gating rule (Pass 2)
+
+Current stage = highest stage `s` where **no gating milestone is explicitly `UNMET`**.
+
+`UNKNOWN` milestones — those belonging to unassessed dimensions (`DIM-WE`, `DIM-HS`, `DIM-AIP`) that have no corresponding question in the questionnaire — do **not** block stage progression. Only a definitive `UNMET` answer from a question the user actually answered will prevent a stage from being reached.
+
+```
+// js/scoring.js — currentStage()
+noneUnmet = gatingMilestones.every(n => milestoneStates[n.id] !== "UNMET")
+```
+
+This aligns with the handover guide which marks `DIM-WE` (Work Execution) as *"Unassessed in questionnaire"* and `DIM-HS` (Safety) as *"Incomplete milestone set"*.
+
 ---
 
 ## What isn't done yet
