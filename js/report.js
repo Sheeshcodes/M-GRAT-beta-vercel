@@ -210,7 +210,7 @@ function renderMaturityBanner(result) {
 
   el.innerHTML = `
     <div class="maturity-score-cell">
-      <p class="maturity-score-label">Your Maturity Index Score</p>
+      <p class="maturity-score-label">Your Maturity index score</p>
       <p class="maturity-score-value">${escHtml(result.maturity.score)}/100</p>
       <p class="maturity-level">Level ${escHtml(result.maturity.level)}</p>
       <p class="maturity-level-label">${escHtml(result.maturity.levelLabel)}</p>
@@ -320,8 +320,22 @@ function renderEstablishedPractices(milestoneIds) {
     </div>`;
 
   // Wire tab switching
+  const tabList = el.querySelector(".ep-tab-list");
+
+  /* Bring the chosen tab to the middle of the strip, so whatever was hidden
+     past either edge comes into view. Scrolls the strip only — never the page,
+     which is why this measures instead of calling scrollIntoView. */
+  const centreTab = (tab) => {
+    if (!tabList) return;
+    const list = tabList.getBoundingClientRect();
+    const rect = tab.getBoundingClientRect();
+    const delta = (rect.left - list.left) - (list.width - rect.width) / 2;
+    tabList.scrollTo({ left: tabList.scrollLeft + delta, behavior: "smooth" });
+  };
+
   el.querySelectorAll(".ep-tab").forEach(btn => {
     btn.addEventListener("click", () => {
+      centreTab(btn);
       el.querySelectorAll(".ep-tab").forEach(b => {
         b.classList.remove("ep-tab--selected");
         b.setAttribute("aria-selected", "false");
@@ -639,7 +653,7 @@ function renderDetailsCard(milestoneId) {
   return `
     <div class="action-details-card">
       <div class="action-details-section">
-        <p class="action-details-label">What does it unlock?</p>
+        <p class="action-details-label">What this enables</p>
         <p class="action-details-text">${escHtml(m.valueStatement)}</p>
       </div>
 
@@ -1007,6 +1021,45 @@ function initScrollSpy() {
 }
 
 /* --------------------------------------------------------------------------
+   Carbon's menu button sizes the trigger inside its shadow root to its own
+   label, so a width set on the host leaves that trigger sticking out past it —
+   visible wherever the Download button has to match a neighbour or share a row.
+   Push the host's measured width through as an explicit value.
+   -------------------------------------------------------------------------- */
+function fitMenuButtons() {
+  const sheetFor = (mb) => {
+    const root = mb.shadowRoot;
+    if (!root) return null;
+    let sheet = root.querySelector("style[data-fit-width]");
+    if (!sheet) {
+      sheet = document.createElement("style");
+      sheet.setAttribute("data-fit-width", "");
+      root.append(sheet);
+    }
+    return sheet;
+  };
+
+  const sync = () => {
+    $$("cds-menu-button").forEach(mb => {
+      const sheet = sheetFor(mb);
+      // A menu button inside the closed nav panel measures 0; it is pinned to a
+      // width its label already fills, so there is nothing to correct there.
+      const width = Math.round(mb.getBoundingClientRect().width);
+      if (!sheet || !width) return;
+      // !important is needed: Carbon's own shadow styles otherwise win.
+      sheet.textContent =
+        `cds-button { min-inline-size: 0 !important; inline-size: ${width}px !important; }` +
+        `cds-button::part(button) { min-inline-size: 0 !important; inline-size: ${width}px !important; }`;
+    });
+  };
+
+  customElements.whenDefined("cds-menu-button").then(() => {
+    requestAnimationFrame(sync);
+    window.addEventListener("resize", sync);
+  });
+}
+
+/* --------------------------------------------------------------------------
    Bootstrap
    -------------------------------------------------------------------------- */
 async function init() {
@@ -1029,6 +1082,7 @@ async function init() {
   renderActionPlan(result.actionPlan);
   wireFeedback();
   initScrollSpy();
+  fitMenuButtons();
 }
 
 init().catch(console.error);

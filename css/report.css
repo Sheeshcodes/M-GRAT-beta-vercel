@@ -192,9 +192,7 @@ cds-menu-button[kind="tertiary"]:focus svg {
 .report-sidebar__actions cds-button,
 .report-sidebar__actions cds-menu-button,
 .mobile-nav__actions cds-button,
-.mobile-nav__actions cds-menu-button,
-.report-end-actions cds-button,
-.report-end-actions cds-menu-button {
+.mobile-nav__actions cds-menu-button {
   width: 192px;
 }
 
@@ -454,7 +452,13 @@ cds-menu-button[kind="tertiary"]:focus svg {
   flex-direction: row;
   border-bottom: 1px solid var(--cds-border-subtle);
   gap: 0;
+  /* The strip slides sideways only: no vertical scrolling inside it, and a
+     sideways overscroll stops here instead of dragging the page with it. */
   overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 .ep-tab {
@@ -577,7 +581,7 @@ cds-menu-button[kind="tertiary"]:focus svg {
   font-weight: 700;
   line-height: 22px;
   color: #fff;
-  margin: 0 0 12px;
+  margin: 0 0 16px;
 }
 
 .expansion-intro__body {
@@ -585,6 +589,12 @@ cds-menu-button[kind="tertiary"]:focus svg {
   line-height: 22px;
   color: #fff;
   margin: 0;
+}
+
+/* The track copy runs as two paragraphs with a clear blank line between them,
+   the way the mock sets it — one full line box, not a nudge. */
+.expansion-intro__body + .expansion-intro__body {
+  margin-top: 22px;
 }
 
 /* --------------------------------------------------------------------------
@@ -1046,11 +1056,17 @@ cds-menu-button[kind="tertiary"]:focus svg {
   gap: 48px;
 }
 
+/* On the green block the tertiary button is white-on-green, so Carbon fills it
+   solid white on hover/focus/active. Its label colour comes from text-inverse,
+   which is also white by default — clicking turned the button into a blank
+   white slab. Point both label tokens at the block's green instead, so the
+   filled state reads as a proper inverse rather than disappearing. */
 .bonus-block cds-button[kind="tertiary"] {
   --cds-button-tertiary: #fff;
-  --cds-button-tertiary-hover: rgba(255,255,255,0.12);
-  --cds-button-tertiary-active: rgba(255,255,255,0.2);
-  --cds-text-on-color: #fff;
+  --cds-button-tertiary-hover: #fff;
+  --cds-button-tertiary-active: #e8f5ec;
+  --cds-text-inverse: #198038;
+  --cds-text-on-color: #198038;
 }
 
 .bonus-block__heading {
@@ -1366,9 +1382,7 @@ cds-menu-button[kind="tertiary"]:focus svg {
 .report-sidebar__actions cds-button,
 .report-sidebar__actions cds-menu-button,
 .mobile-nav__actions cds-button,
-.mobile-nav__actions cds-menu-button,
-.report-end-actions cds-button,
-.report-end-actions cds-menu-button {
+.mobile-nav__actions cds-menu-button {
   width: 192px;
 }
 
@@ -1673,9 +1687,21 @@ cds-menu-button[kind="tertiary"]:focus svg {
    sidebar, so this block only exists on a phone (see the media query below). */
 .report-end-actions {
   display: none;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  justify-content: space-between;
   gap: 16px;
   padding-top: 8px;
+}
+
+/* The pair shares the row evenly and sits flush to its left and right edges,
+   rather than stacking. Carbon's lg button will not shrink below its label
+   width on its own, so fitMenuButtons() pushes the measured column width into
+   the Download button's shadow root. */
+.report-end-actions cds-button,
+.report-end-actions cds-menu-button {
+  flex: 1 1 0;
+  min-width: 0;
+  width: auto;
 }
 
 .mobile-nav__actions {
