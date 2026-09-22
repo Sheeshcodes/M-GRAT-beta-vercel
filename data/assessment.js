@@ -524,7 +524,7 @@ export default {
             {
               "id": "grp-rp",
               "type": "matrix",
-              "title": "Reliability practices",
+              "title": "Organisational appetite",
               "guidance": null,
               "rowHeader": "Themes",
               "columns": [
@@ -621,52 +621,6 @@ export default {
               ],
               "unansweredBehavior": "All Unknown",
               "required": true,
-              "skipCondition": null,
-              "binderType": "milestone-multiselect",
-              "scope": "APM"
-            }
-          ]
-        },
-        {
-          "id": "grp-cm-adv",
-          "label": "Advanced reliability & lifecycle practices (optional)",
-          "questions": [
-            {
-              "id": "Q-CM-ADV",
-              "type": "checkbox",
-              "title": "Which of the following advanced practices are in place? (Optional — Select all that apply)",
-              "guidance": {
-                "body": "Select any advanced practice that is actively operationalized across your critical assets."
-              },
-              "options": [
-                {
-                  "value": "predictive-risk-based-action-work-orders-service-requests-created-or-pm-schedules-adjusted-based-on-forward-looking-risk-predictions-via-any-method-statistical-modeling-or-machine-learning-software-not-just-current-condition-or-fixed-schedules",
-                  "label": "Predictive Risk-Based Action — work orders, service requests created or PM schedules adjusted based on forward-looking risk predictions (via any method — statistical modeling or machine learning software), not just current condition or fixed schedules",
-                  "milestoneId": "CM-4-PRED"
-                },
-                {
-                  "value": "root-cause-feedback-loop-root-cause-investigations-are-triggered-proactively-from-early-risk-signals-with-findings-fed-back-into-fmea-records-and-job-plans",
-                  "label": "Root-Cause Feedback Loop — root-cause investigations are triggered proactively from early risk signals, with findings fed back into FMEA records and job plans",
-                  "milestoneId": "CM-5-RCBF"
-                },
-                {
-                  "value": "predictive-inventory-optimisation-spare-parts-reorder-points-and-stock-levels-reflect-predicted-failure-risk-not-just-historical-usage-or-fixed-thresholds",
-                  "label": "Predictive Inventory Optimisation — spare parts reorder points and stock levels reflect predicted failure risk, not just historical usage or fixed thresholds",
-                  "milestoneId": "SC-4-OPT"
-                },
-                {
-                  "value": "design-feedback-loop-operational-failure-evidence-formally-shapes-future-asset-specifications-procurement-decisions-or-oem-vendor-conversations",
-                  "label": "Design Feedback Loop — operational failure evidence formally shapes future asset specifications, procurement decisions, or OEM/vendor conversations",
-                  "milestoneId": "CM-6-LCFDBK"
-                },
-                {
-                  "value": "none-of-the-above",
-                  "label": "None of the above",
-                  "milestoneId": "CM-3-MVAR"
-                }
-              ],
-              "unansweredBehavior": "All Unknown",
-              "required": false,
               "skipCondition": null,
               "binderType": "milestone-multiselect",
               "scope": "APM"
@@ -815,6 +769,58 @@ export default {
         }
       ],
       "followUp": true
+    },
+    {
+      "id": "auto-apm",
+      "title": "APM",
+      "sections": [
+        {
+          "id": "grp-cm-adv",
+          "label": "Advanced reliability & lifecycle practices (optional)",
+          "questions": [
+            {
+              "id": "Q-CM-ADV",
+              "type": "checkbox",
+              "title": "Which of the following advanced practices are in place? (Optional — Select all that apply)",
+              "guidance": {
+                "body": "Select any advanced practice that is actively operationalized across your critical assets."
+              },
+              "options": [
+                {
+                  "value": "predictive-risk-based-action-work-orders-service-requests-created-or-pm-schedules-adjusted-based-on-forward-looking-risk-predictions-via-any-method-statistical-modeling-or-machine-learning-software-not-just-current-condition-or-fixed-schedules",
+                  "label": "Predictive Risk-Based Action — work orders, service requests created or PM schedules adjusted based on forward-looking risk predictions (via any method — statistical modeling or machine learning software), not just current condition or fixed schedules",
+                  "milestoneId": "CM-4-PRED"
+                },
+                {
+                  "value": "root-cause-feedback-loop-root-cause-investigations-are-triggered-proactively-from-early-risk-signals-with-findings-fed-back-into-fmea-records-and-job-plans",
+                  "label": "Root-Cause Feedback Loop — root-cause investigations are triggered proactively from early risk signals, with findings fed back into FMEA records and job plans",
+                  "milestoneId": "CM-5-RCBF"
+                },
+                {
+                  "value": "predictive-inventory-optimisation-spare-parts-reorder-points-and-stock-levels-reflect-predicted-failure-risk-not-just-historical-usage-or-fixed-thresholds",
+                  "label": "Predictive Inventory Optimisation — spare parts reorder points and stock levels reflect predicted failure risk, not just historical usage or fixed thresholds",
+                  "milestoneId": "SC-4-OPT"
+                },
+                {
+                  "value": "design-feedback-loop-operational-failure-evidence-formally-shapes-future-asset-specifications-procurement-decisions-or-oem-vendor-conversations",
+                  "label": "Design Feedback Loop — operational failure evidence formally shapes future asset specifications, procurement decisions, or OEM/vendor conversations",
+                  "milestoneId": "CM-6-LCFDBK"
+                },
+                {
+                  "value": "none-of-the-above",
+                  "label": "None of the above",
+                  "milestoneId": "CM-3-MVAR"
+                }
+              ],
+              "unansweredBehavior": "All Unknown",
+              "required": false,
+              "skipCondition": null,
+              "binderType": "milestone-multiselect",
+              "scope": "APM"
+            }
+          ]
+        }
+      ]
     }
   ]
 };

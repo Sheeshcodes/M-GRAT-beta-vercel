@@ -1,6 +1,5 @@
 import assessment from "../data/assessment.js";
-import { runScoringEngine } from "./scoring.js";
-import { generateReportHtml, wireReportEvents } from "./report.js";
+import { score } from "./scoring.js";
 
 /* ----------------------------------------------------------------------
    State
@@ -140,16 +139,13 @@ const sectionTemplate = (s) => `
 /* ----------------------------------------------------------------------
    Rendering
    ---------------------------------------------------------------------- */
-// Main questionnaire pages — excludes any page flagged as followUp
-const mainPages = assessment.pages.filter((p) => !p.followUp);
-
-const currentPage = () => mainPages[state.page];
+const currentPage = () => assessment.pages[state.page];
 const questionsOnPage = () => currentPage().sections.flatMap((s) => s.questions);
 const questionById = (id) => questionsOnPage().find((q) => q.id === id);
 
 const render = () => {
   const page = currentPage();
-  const total = mainPages.length;
+  const total = assessment.pages.length;
 
   els.pageTitle.textContent = page.title;
   els.pageCounter.textContent = `Page ${state.page + 1} of ${total}`;
@@ -314,7 +310,7 @@ const findFirstInvalid = (mark = true) => {
    Navigation
    ---------------------------------------------------------------------- */
 const goTo = (index) => {
-  state.page = Math.max(0, Math.min(mainPages.length - 1, index));
+  state.page = Math.max(0, Math.min(assessment.pages.length - 1, index));
   render();
   // Jump (not smooth-scroll) so the new page always opens on its first question.
   window.scrollTo({ top: 0, behavior: "instant" });
@@ -333,9 +329,25 @@ const handleNext = (event) => {
     firstInvalid.querySelector("cds-radio-button, cds-checkbox")?.focus();
     return;
   }
-  if (state.page === mainPages.length - 1) {
-    document.dispatchEvent(new CustomEvent("assessment:submit", { detail: structuredClone(state.answers) }));
-    console.log("Assessment submitted", state.answers);
+  if (state.page === assessment.pages.length - 1) {
+    const answers = structuredClone(state.answers);
+    document.dispatchEvent(new CustomEvent("assessment:submit", { detail: answers }));
+    // Run scoring engine and redirect to report page
+    els.btnNext.disabled = true;
+    score(answers, assessment)
+      .then(result => {
+        try {
+          sessionStorage.setItem("scoringResult", JSON.stringify(result));
+        } catch {
+          // sessionStorage quota exceeded — proceed anyway, report falls back to mock
+        }
+        window.location.href = "report.html";
+      })
+      .catch(err => {
+        console.error("Scoring failed:", err);
+        // Still redirect so the report page renders with mock data
+        window.location.href = "report.html";
+      });
     return;
   }
   goTo(state.page + 1);
@@ -425,26 +437,3 @@ await Promise.all(
 render();
 updateProgressOffset();
 updateScrollState(true);
-
-/* ----------------------------------------------------------------------
-   Report Submission Handler
-   ---------------------------------------------------------------------- */
-document.addEventListener("assessment:submit", (event) => {
-  const answers = event.detail;
-  const results = runScoringEngine(answers);
-  
-  const reportContainer = document.querySelector("#report-view");
-  if (reportContainer) {
-    reportContainer.innerHTML = generateReportHtml(results, answers);
-    reportContainer.style.display = "block";
-  }
-  
-  const pageContainer = document.querySelector(".page");
-  if (pageContainer) {
-    pageContainer.style.display = "none";
-  }
-  
-  wireReportEvents();
-  
-  window.scrollTo({ top: 0, behavior: "instant" });
-});
