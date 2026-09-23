@@ -130,6 +130,29 @@ body.splash-active #actions-bar { display: none; }
   pointer-events: none;
 }
 
+/* A <video> box paints black until its first frame decodes, so any hiccup in
+   delivery shows as a black slab behind the banner. Hold each clip invisible
+   until it actually has a frame — app.js adds .is-ready on loadeddata — and the
+   page's own background shows through in the meantime. */
+.splash-hero__illustration video,
+.splash-media-container video {
+  background: transparent;
+  opacity: 0;
+  transition: opacity 240ms ease;
+}
+
+.splash-hero__illustration video.is-ready,
+.splash-media-container video.is-ready {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .splash-hero__illustration video,
+  .splash-media-container video {
+    transition: none;
+  }
+}
+
 .splash-hero__illustration video {
   /* scale to fit the available space, no cropping */
   max-width: 100%;

@@ -36,10 +36,76 @@ BUILDS = [
 
 
 class NoCacheHandler(SimpleHTTPRequestHandler):
+    # Chromium asks for a byte range before it will decode a video. The stdlib
+    # handler ignores Range and answers 200 with the whole file over HTTP/1.0,
+    # which the media pipeline rejects as a format error — the splash videos
+    # then sit there as black boxes. Speak HTTP/1.1 and honour Range.
+    protocol_version = "HTTP/1.1"
+
     def end_headers(self):
         self.send_header("Cache-Control", "no-store, must-revalidate")
         self.send_header("Expires", "0")
+        self.send_header("Accept-Ranges", "bytes")
         super().end_headers()
+
+    def send_head(self):
+        rng = self.headers.get("Range")
+        if not rng or not rng.startswith("bytes="):
+            return super().send_head()
+
+        path = self.translate_path(self.path)
+        if os.path.isdir(path):
+            return super().send_head()
+        try:
+            f = open(path, "rb")
+        except OSError:
+            self.send_error(404, "File not found")
+            return None
+
+        size = os.fstat(f.fileno()).st_size
+        first, _, last = rng[len("bytes="):].partition("-")
+        try:
+            start = int(first) if first else 0
+            end = int(last) if last else size - 1
+        except ValueError:
+            f.close()
+            return super().send_head()
+        end = min(end, size - 1)
+        if start > end:
+            f.close()
+            self.send_response(416)
+            self.send_header("Content-Range", f"bytes */{size}")
+            self.send_header("Content-Length", "0")
+            self.end_headers()
+            return None
+
+        self.send_response(206)
+        self.send_header("Content-Type", self.guess_type(path))
+        self.send_header("Content-Range", f"bytes {start}-{end}/{size}")
+        self.send_header("Content-Length", str(end - start + 1))
+        self.end_headers()
+        f.seek(start)
+        return _RangeReader(f, end - start + 1)
+
+
+class _RangeReader:
+    """Hands copyfile() exactly the requested slice and nothing more."""
+
+    def __init__(self, fileobj, remaining):
+        self._f = fileobj
+        self._remaining = remaining
+
+    def read(self, amount=-1):
+        if self._remaining <= 0:
+            return b""
+        if amount is None or amount < 0:
+            amount = self._remaining
+        chunk = self._f.read(min(amount, self._remaining))
+        self._remaining -= len(chunk)
+        return chunk
+
+    def close(self):
+        self._f.close()
 
     def log_message(self, fmt, *args):  # keep the terminal quiet
         pass

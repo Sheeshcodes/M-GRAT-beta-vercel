@@ -1,5 +1,6 @@
 import assessment from "../data/assessment.js";
-import { score } from "./scoring.js";
+// scoring.js pulls in the full milestone register (~220KB). Nobody needs it
+// until the assessment is submitted, so it is imported on demand below.
 
 /* ----------------------------------------------------------------------
    State
@@ -43,9 +44,21 @@ const hideSplash = () => {
 
 window.startAssessment = () => {
   hideSplash();
+  loadAssessmentArtwork();
   render();
   window.scrollTo({ top: 0, behavior: "instant" });
 };
+
+/* The sidebar artwork is ~580KB and belongs to the assessment, which nobody is
+   looking at while the splash is up. `loading="lazy"` does not help here —
+   Chromium fetches a lazy image inside a display:none container immediately —
+   so the src is withheld in the markup and attached on the way in. */
+function loadAssessmentArtwork() {
+  document.querySelectorAll("img[data-src]").forEach((img) => {
+    img.src = img.dataset.src;
+    img.removeAttribute("data-src");
+  });
+}
 
 const ICON_INFO = `
   <svg slot="trigger" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
@@ -276,6 +289,38 @@ const onControlChanged = (event) => {
 els.sections.addEventListener("cds-checkbox-changed", onControlChanged);
 els.sections.addEventListener("cds-radio-button-changed", onControlChanged);
 
+// Every splash clip starts transparent so a slow or failed load never shows as
+// a black slab; reveal each one once it has a frame. `loop` keeps them running,
+// but a clip that ends without looping (a decode hiccup, a stalled range) is
+// nudged back to the start so the banner never freezes on its last frame.
+document.querySelectorAll(".splash-screen video").forEach((video) => {
+  const reveal = () => video.classList.add("is-ready");
+  if (video.readyState >= 2) reveal();
+  video.addEventListener("loadeddata", reveal);
+  video.addEventListener("ended", () => {
+    video.currentTime = 0;
+    video.play().catch(() => {});
+  });
+});
+
+// The card videos carry preload="none" so they cost nothing on first paint.
+// Load and play each one as it comes into view, and stop it again on the way
+// out so a long splash scroll is not decoding three clips at once.
+const lazyVideos = document.querySelectorAll("video[data-lazy-video]");
+if (lazyVideos.length) {
+  const videoObserver = new IntersectionObserver((entries) => {
+    entries.forEach(({ target, isIntersecting }) => {
+      if (isIntersecting) {
+        if (target.preload === "none") target.preload = "auto";
+        target.play().catch(() => {}); // autoplay can be refused; not fatal
+      } else {
+        target.pause();
+      }
+    });
+  }, { rootMargin: "200px 0px" });
+  lazyVideos.forEach((v) => videoObserver.observe(v));
+}
+
 // Carbon's toggletip only closes from its own button or the Escape key, so on a
 // phone the guidance panel stays up after you tap somewhere else. Close any open
 // one when a tap lands outside it. composedPath is what sees through the shadow
@@ -370,7 +415,8 @@ const handleNext = (event) => {
     document.dispatchEvent(new CustomEvent("assessment:submit", { detail: answers }));
     // Run scoring engine and redirect to report page
     els.btnNext.disabled = true;
-    score(answers, assessment)
+    import("./scoring.js")
+      .then(({ score }) => score(answers, assessment))
       .then(result => {
         try {
           sessionStorage.setItem("scoringResult", JSON.stringify(result));
