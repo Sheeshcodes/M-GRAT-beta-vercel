@@ -543,8 +543,11 @@ body.splash-active #actions-bar { display: none; }
     min-height: 0;
   }
 
+  /* 19.5px is the threshold at which "The" joins the first line — at 20px it
+     drops to line two and leaves a run-out after "achieve." Half a pixel below
+     this and the block reflows from four lines to three. */
   .splash-quote__text {
-    font-size: 20px;
+    font-size: 19.5px;
   }
 
   /* Hide scroll-down arrow on mobile */
