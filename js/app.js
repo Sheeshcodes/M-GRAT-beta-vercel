@@ -25,6 +25,28 @@ const els = {
   form: $("#assessment-form"),
 };
 
+/* ----------------------------------------------------------------------
+   Splash screen show / hide
+   ---------------------------------------------------------------------- */
+const splashEl = document.getElementById("splash-screen");
+
+const showSplash = () => {
+  document.body.classList.add("splash-active");
+  splashEl.hidden = false;
+  window.scrollTo({ top: 0, behavior: "instant" });
+};
+
+const hideSplash = () => {
+  document.body.classList.remove("splash-active");
+  splashEl.hidden = true;
+};
+
+window.startAssessment = () => {
+  hideSplash();
+  render();
+  window.scrollTo({ top: 0, behavior: "instant" });
+};
+
 const ICON_INFO = `
   <svg slot="trigger" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
     <path d="M17 22 17 14 13 14 13 16 15 16 15 22 12 22 12 24 20 24 20 22 17 22z"/>
@@ -150,7 +172,7 @@ const render = () => {
   els.pageTitle.textContent = page.title;
   els.pageCounter.textContent = `Page ${state.page + 1} of ${total}`;
   els.progress.value = Math.round(((state.page + 1) / total) * 100);
-  els.btnBack.disabled = state.page === 0;
+  els.btnBack.disabled = false;
   nextLabel.textContent = state.page === total - 1 ? "Submit" : "Next";
   els.formError.hidden = true;
 
@@ -369,7 +391,13 @@ const handleNext = (event) => {
 
 els.btnNext.addEventListener("click", handleNext);
 els.form.addEventListener("submit", handleNext);
-els.btnBack.addEventListener("click", () => goTo(state.page - 1));
+els.btnBack.addEventListener("click", () => {
+  if (state.page === 0) {
+    showSplash();
+  } else {
+    goTo(state.page - 1);
+  }
+});
 
 /* ----------------------------------------------------------------------
    Scroll behaviour

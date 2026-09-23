@@ -21,10 +21,145 @@
   <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/notification.min.js"></script>
 
   <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/splash.css" />
 
 </head>
-<body>
+<body class="splash-active">
   <div class="page">
+    <!-- ============================================================ -->
+    <!-- Splash screen                                                 -->
+    <!-- ============================================================ -->
+    <div id="splash-screen" class="splash-screen">
+      <section class="splash-hero">
+        <div class="splash-hero__content">
+          <img src="assets/IBM Maximo Application Suite.svg" alt="IBM Maximo Application Suite" class="splash-hero__icon" width="64" height="64" />
+          <h1 class="splash-hero__headline">
+            <span class="splash-hero__headline--black">Find your best path to greater value</span>
+            <span class="splash-hero__headline--purple">from Maximo</span>
+          </h1>
+          <p class="splash-hero__body">Identify where your capabilities are strong, where improvement could have the greatest impact, and what to prioritize next.</p>
+          <div class="splash-hero__cta">
+            <div class="splash-hero__btn-row">
+              <cds-button kind="primary" size="lg" onclick="startAssessment()">
+                Start assessment
+                <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18 6L16.57 7.393 26.188 17H2v2h24.188L16.57 28.573 18 30l12-12L18 6z"/></svg>
+              </cds-button>
+              <div class="splash-hero__clock">
+                <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M16 2a14 14 0 1 0 14 14A14 14 0 0 0 16 2zm0 26a12 12 0 1 1 12-12 12 12 0 0 1-12 12z"/><path d="M20.59 22L15 16.41V7h2v8.58l5 5.01L20.59 22z"/></svg>
+                <em>Approx 10 minutes</em>
+              </div>
+            </div>
+            <p class="splash-hero__helper">Your answers are used to personalize your recommendations.</p>
+          </div>
+        </div>
+        <div class="splash-hero__illustration" aria-hidden="true">
+          <video src="assets/mgrat splash anim.webm" autoplay muted loop playsinline></video>
+        </div>
+      </section>
+      <section class="splash-quote">
+        <div class="splash-quote__box">
+          <p class="splash-quote__text">You have goals to achieve. The challenge is knowing which improvement will create the <strong>biggest business impact.</strong></p>
+          <div class="splash-quote__scroll">
+            <p>Scroll down to learn more about the assessment</p>
+            <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M24.59 16.59L17 24.17V4h-2v20.17l-7.59-7.58L6 18l10 10 10-10-1.41-1.41z"/></svg>
+          </div>
+        </div>
+      </section>
+      <section class="splash-value">
+        <div class="splash-value__header">
+          <h2 class="splash-value__heading">Turn assessment<br>insights into action</h2>
+          <p class="splash-value__desc">See what you're doing well, uncover the biggest opportunities to create value, and get a practical roadmap to achieve your goals.</p>
+        </div>
+        <div class="splash-value__grid">
+          <!-- Card 1 -->
+          <!-- Mobile connector: Card 1 → Card 2 -->
+          <div class="splash-connector splash-connector--card1" aria-hidden="true">
+            <svg viewBox="0 0 2 35" width="2" height="35" fill="none"><line x1="1" y1="0" x2="1" y2="35" stroke="#c6c6c6" stroke-width="1.5"/></svg>
+          </div>
+          <div class="splash-value__card splash-value__card--1">
+            <div class="splash-pictogram">
+              <img src="assets/Pictogram.svg" alt="" width="48" height="48" />
+            </div>
+            <p class="splash-value__card-label">Know your strengths and opportunities</p>
+            <div class="splash-media-container">
+              <video src="assets/Videoprogress-ezgif.com-video-to-webm-converter.webm" autoplay muted loop playsinline></video>
+            </div>
+            <!-- Desktop connector: Card 1 → Card 2 (anchored to Card 1 center-right) -->
+            <div class="splash-connector--desktop splash-connector--h" aria-hidden="true">
+              <svg width="32" height="24" viewBox="0 0 32 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- horizontal line straight across from left to right -->
+                <line x1="0" y1="12" x2="26" y2="12" stroke="#c6c6c6" stroke-width="1.5"/>
+                <!-- arrowhead pointing right -->
+                <path d="M21 7 L28 12 L21 17" stroke="#c6c6c6" stroke-width="1.5" fill="none" stroke-linejoin="round"/>
+                <!-- circle dot at start -->
+                <circle cx="2" cy="12" r="3" fill="#c6c6c6"/>
+              </svg>
+            </div>
+          </div>
+          <!-- Right column: Card 2 + Card 3 stacked -->
+          <div class="splash-value__right">
+            <div class="splash-value__card splash-value__card--2">
+              <div class="splash-pictogram">
+                <img src="assets/Pictogram-1.svg" alt="" width="48" height="48" />
+              </div>
+              <p class="splash-value__card-label">Prioritize your next move</p>
+              <div class="splash-media-container">
+                <video src="assets/ezgif-483bccd0bfe55579.webm" autoplay muted loop playsinline></video>
+              </div>
+            </div>
+            <!-- Mobile connector: Card 2 → Card 3 -->
+            <div class="splash-connector" aria-hidden="true">
+              <svg viewBox="0 0 2 35" width="2" height="35" fill="none"><line x1="1" y1="0" x2="1" y2="35" stroke="#c6c6c6" stroke-width="1.5"/></svg>
+            </div>
+            <!-- Desktop connector: Card 2 → Card 3 (bottom-center of Card 2 to top-center of Card 3) -->
+            <div class="splash-connector--desktop splash-connector--v" aria-hidden="true">
+              <svg width="24" height="40" viewBox="0 0 24 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- vertical line straight down from top-center to bottom -->
+                <line x1="12" y1="0" x2="12" y2="34" stroke="#c6c6c6" stroke-width="1.5"/>
+                <!-- arrowhead pointing down -->
+                <path d="M7 29 L12 36 L17 29" stroke="#c6c6c6" stroke-width="1.5" fill="none" stroke-linejoin="round"/>
+                <!-- circle dot at start -->
+                <circle cx="12" cy="2" r="3" fill="#c6c6c6"/>
+              </svg>
+            </div>
+            <div class="splash-value__card splash-value__card--3">
+              <div class="splash-pictogram">
+                <img src="assets/Pictogram-2.svg" alt="" width="48" height="48" />
+              </div>
+              <p class="splash-value__card-label">Take action with confidence</p>
+              <div class="splash-media-container">
+                <video src="assets/Cards%20anim.webm" autoplay muted loop playsinline></video>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+      <section class="splash-cta">
+        <div class="splash-cta__inner">
+          <img class="splash-cta__illustration" src="assets/What%27s%20on%20supervisor%27s%20mind_.svg" alt="" width="275" />
+          <div class="splash-cta__content">
+            <div class="splash-cta__copy">
+              <p class="splash-cta__heading">Get more value from Maximo</p>
+              <p class="splash-cta__desc">Answer a few questions to get a personalized view of where you are today, where to focus next, and the recommended steps for moving forward.</p>
+            </div>
+            <div class="splash-cta__actions">
+              <div class="splash-cta__btn-row">
+                <cds-button kind="primary" size="lg" onclick="startAssessment()">
+                  Start assessment
+                  <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18 6L16.57 7.393 26.188 17H2v2h24.188L16.57 28.573 18 30l12-12L18 6z"/></svg>
+                </cds-button>
+                <div class="splash-hero__clock">
+                  <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M16 2a14 14 0 1 0 14 14A14 14 0 0 0 16 2zm0 26a12 12 0 1 1 12-12 12 12 0 0 1-12 12z"/><path d="M20.59 22L15 16.41V7h2v8.58l5 5.01L20.59 22z"/></svg>
+                  <em>Approx 10 minutes</em>
+                </div>
+              </div>
+              <p class="splash-hero__helper">Your answers are used to personalize your recommendations.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
     <!-- ============================================================ -->
     <!-- Sidebar                                                       -->
     <!-- ============================================================ -->
