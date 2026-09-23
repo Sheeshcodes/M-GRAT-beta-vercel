@@ -543,11 +543,15 @@ body.splash-active #actions-bar { display: none; }
     min-height: 0;
   }
 
-  /* 19.5px is the threshold at which "The" joins the first line — at 20px it
-     drops to line two and leaves a run-out after "achieve." Half a pixel below
-     this and the block reflows from four lines to three. */
+  /* Keep "You have goals to achieve. The" whole on the first line at every
+     phone width. A fixed size only holds at one viewport: 19.5px fits 390px but
+     still breaks after "achieve." at 360px, and worse at 320px. IBM Plex Mono
+     advances 0.6em per character and loses 0.32px to letter-spacing, so those
+     30 characters need `fs <= (column + 9.6) / 18`, where the column is the
+     viewport less the box's 20px gutters — hence 5.5vw - 1.7px, capped at the
+     20px the mock asks for once there is room for it. */
   .splash-quote__text {
-    font-size: 19.5px;
+    font-size: clamp(14px, calc(5.5vw - 1.7px), 20px);
   }
 
   /* Hide scroll-down arrow on mobile */
