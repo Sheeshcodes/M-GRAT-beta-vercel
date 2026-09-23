@@ -1,0 +1,23 @@
+name: Sync from IBM GitHub
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'  # every 10 minutes
+  workflow_dispatch:         # also allows manual trigger
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout mirror
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull from IBM and push to mirror
+        run: |
+          git remote add ibm https://${{ secrets.IBM_GH_TOKEN }}@github.ibm.com/ALM-Consumability/M-GRAT.git
+          git fetch ibm main
+          git reset --hard ibm/main
+          git push origin main --force
