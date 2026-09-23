@@ -194,6 +194,13 @@ body.splash-active #actions-bar { display: none; }
   font-weight: 600;
 }
 
+/* "The" opens the second sentence, so on a phone it starts its own line rather
+   than hanging off the end of the first. A <br> set to display:none produces no
+   break, which is how this stays desktop-clean. */
+.splash-quote__break {
+  display: none;
+}
+
 .splash-quote__scroll {
   margin-top: 24px;
   display: flex;
@@ -543,15 +550,15 @@ body.splash-active #actions-bar { display: none; }
     min-height: 0;
   }
 
-  /* Keep "You have goals to achieve. The" whole on the first line at every
-     phone width. A fixed size only holds at one viewport: 19.5px fits 390px but
-     still breaks after "achieve." at 360px, and worse at 320px. IBM Plex Mono
-     advances 0.6em per character and loses 0.32px to letter-spacing, so those
-     30 characters need `fs <= (column + 9.6) / 18`, where the column is the
-     viewport less the box's 20px gutters — hence 5.5vw - 1.7px, capped at the
-     20px the mock asks for once there is room for it. */
+  /* Matches the 16px of .splash-value__desc. The sentence break after
+     "achieve." is forced rather than left to the wrap, so it lands in the same
+     place on a 320px phone as on a 430px one. */
   .splash-quote__text {
-    font-size: clamp(14px, calc(5.5vw - 1.7px), 20px);
+    font-size: 16px;
+  }
+
+  .splash-quote__break {
+    display: inline;
   }
 
   /* Hide scroll-down arrow on mobile */
