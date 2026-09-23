@@ -1,0 +1,20 @@
+name: Mirror to GitHub.com
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push to mirror
+        run: |
+          git remote add mirror https://x-access-token:${{ secrets.PERSONAL_GITHUB_TOKEN }}@github.com/Sheeshcodes/M-GRAT-beta-vercel.git
+          git push mirror main --force
