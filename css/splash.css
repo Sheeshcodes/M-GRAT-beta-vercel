@@ -223,6 +223,7 @@ body.splash-active #actions-bar { display: none; }
 }
 
 .splash-value__header {
+  max-width: 960px;
   margin-bottom: 48px;
 }
 
@@ -246,7 +247,14 @@ body.splash-active #actions-bar { display: none; }
 
 .splash-value__grid {
   display: grid;
-  grid-template-columns: minmax(320px, 640px) minmax(300px, 1fr);
+  /* Both tracks share one size, so the single card on the left and the pair on
+     the right are always exactly as wide as each other — which is what makes
+     the three videos render at the same scale. The old
+     `minmax(320px,640px) minmax(300px,1fr)` capped the left column but let the
+     right one keep growing, so the two sides drifted apart as the window
+     widened. The cap keeps the set from becoming over-large on a big screen. */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 960px;
   gap: 32px;
   align-items: start;
   position: relative;
