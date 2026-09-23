@@ -254,6 +254,20 @@ const onControlChanged = (event) => {
 els.sections.addEventListener("cds-checkbox-changed", onControlChanged);
 els.sections.addEventListener("cds-radio-button-changed", onControlChanged);
 
+// Carbon's toggletip only closes from its own button or the Escape key, so on a
+// phone the guidance panel stays up after you tap somewhere else. Close any open
+// one when a tap lands outside it. composedPath is what sees through the shadow
+// root — a tap on the toggletip's own button would otherwise read as "outside"
+// and close the panel in the same gesture that opens it.
+document.addEventListener("pointerdown", (event) => {
+  const open = document.querySelectorAll("cds-toggletip[open]");
+  if (!open.length) return;
+  const path = event.composedPath();
+  open.forEach((tip) => {
+    if (!path.includes(tip)) tip.open = false;
+  });
+});
+
 // Whole-tile click: forward to the control's own <input> so the component runs
 // its normal logic (radio group exclusivity, events, focus) instead of us
 // poking `checked` from the outside.

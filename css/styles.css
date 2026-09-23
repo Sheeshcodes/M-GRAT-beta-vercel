@@ -457,16 +457,20 @@ p { margin: 0; }
 @media (max-width: 767px) {
   /* The section label is nowrap so the rule can sit beside it on desktop. On a
      phone that pushes long labels ("Advanced reliability & lifecycle practices
-     (optional)") off the screen, so let it wrap and shrink the rule to a stub. */
+     (optional)") off the screen, so it wraps here instead. The label takes only
+     the width it needs, capped so it can never swallow the row, and the rule
+     fills whatever is left — long label, short line; short label, long line. */
   .divider {
     align-items: center;
   }
   .divider__label {
-    flex: 1 1 auto;
+    flex: 0 1 auto;
+    max-width: calc(100% - 72px);
     white-space: normal;
   }
   .divider__rule {
-    flex: 0 0 24px;
+    flex: 1 1 auto;
+    min-width: 48px;
   }
 
   .page { flex-direction: column; }
