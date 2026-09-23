@@ -1,0 +1,598 @@
+/*
+ * css/splash.css
+ * Splash screen styles — extends the Carbon design tokens defined in css/styles.css.
+ * This file handles:
+ *   1. Chrome-hiding rules: hides the assessment UI (sidebar, progress, actions bar)
+ *      while body.splash-active is set.
+ *   2. Section stub rules for the splash screen layout (filled in subsequent sub-tasks).
+ */
+
+/* ============================================================
+   Chrome-hiding — hides assessment UI while splash is active
+   ============================================================ */
+
+body.splash-active .sidebar,
+body.splash-active .main,
+body.splash-active #actions-bar { display: none; }
+
+/* ============================================================
+   Hero section
+   ============================================================ */
+
+.splash-screen {
+  width: 100vw;
+  min-height: 100vh;
+  background: #fff;
+  overflow-x: hidden;
+}
+
+.splash-hero {
+  display: flex;
+  position: relative;
+  background: linear-gradient(180deg, #f4f4f4 29.648%, #edf5ff 100%);
+  padding: 120px 0 96px 232px;
+  overflow: hidden;
+  min-height: 500px;
+}
+
+.splash-hero__content {
+  flex: 0 0 440px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  position: relative;
+  z-index: 1;
+  /* ensure content is never overlapped by the illustration */
+  isolation: isolate;
+}
+
+.splash-hero__icon {
+  display: block;
+  flex-shrink: 0;
+}
+
+.splash-hero__headline {
+  font-family: var(--font-serif);
+  font-size: 48px;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.splash-hero__headline--black {
+  display: block;
+  font-weight: 300;
+  color: #161616;
+}
+
+.splash-hero__headline--purple {
+  display: block;
+  font-weight: 500;
+  color: #8a3ffc;
+}
+
+.splash-hero__body {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 22px;
+  color: var(--cds-text-primary);
+  max-width: 600px;
+  margin: 0;
+}
+
+.splash-hero__cta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.splash-hero__btn-row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.splash-hero__clock {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.splash-hero__clock em {
+  font-family: var(--font-sans);
+  font-style: italic;
+  font-size: 16px;
+  line-height: 22px;
+  color: var(--cds-text-primary);
+  white-space: nowrap;
+}
+
+.splash-hero__helper {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--cds-text-secondary);
+  letter-spacing: 0.32px;
+  margin: 0;
+}
+
+.splash-hero__illustration {
+  /* sit in the flex row alongside the content — not absolute */
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  max-height: 560px;
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.splash-hero__illustration video {
+  /* scale to fit the available space, no cropping */
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  display: block;
+}
+
+/* ============================================================
+   Quote banner section
+   ============================================================ */
+
+.splash-quote {
+  padding: 0 0 64px;
+}
+
+.splash-quote__box {
+  background: #edf5ff;
+  border-radius: 0;
+  padding: 32px 232px;
+  min-height: 269px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.splash-quote__text {
+  font-family: var(--font-mono);
+  font-style: italic;
+  font-size: 32px;
+  line-height: 1.18;
+  color: var(--cds-link-primary);
+  letter-spacing: -0.32px;
+  margin: 0;
+}
+
+.splash-quote__text strong {
+  font-weight: 600;
+}
+
+.splash-quote__scroll {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.splash-quote__scroll p {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 18px;
+  color: var(--cds-text-secondary);
+  margin: 0;
+  letter-spacing: 0.16px;
+}
+
+/* ============================================================
+   Remaining section stubs
+   ============================================================ */
+
+/* ============================================================
+   Value section — "Turn assessment insights into action"
+   ============================================================ */
+
+.splash-value {
+  padding: 64px 232px 64px;
+}
+
+.splash-value__header {
+  margin-bottom: 48px;
+}
+
+.splash-value__heading {
+  font-family: var(--font-sans);
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 40px;
+  color: #161616;
+  margin: 0 0 8px;
+}
+
+.splash-value__desc {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--cds-text-secondary);
+  margin: 0;
+  max-width: 387px;
+}
+
+.splash-value__grid {
+  display: grid;
+  grid-template-columns: minmax(320px, 640px) minmax(300px, 1fr);
+  gap: 32px;
+  align-items: start;
+  position: relative;
+}
+
+.splash-value__right {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.splash-value__card {
+  background: #f4f4f4;
+  border: 1px solid #dde1e6;
+  border-radius: 4px;
+  padding: 24px;
+  flex: 1;
+}
+
+.splash-value__card--1 {
+  position: relative;
+}
+
+/* Desktop connectors base */
+.splash-connector--desktop {
+  pointer-events: none;
+}
+
+/* Connector 1: from Card 1 vertical center (right edge) across the 32px grid gap */
+.splash-connector--h {
+  display: block;
+  position: absolute;
+  right: -32px;
+  width: 32px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 24px;
+}
+
+/* Connector 2: bridges between Card 2 and Card 3 in the right column (center to center) */
+.splash-connector--v {
+  position: static !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.splash-connector--v svg {
+  display: block;
+  margin: 0 auto;
+}
+
+.splash-pictogram {
+  width: 84px;
+  height: 84px;
+  background: #393939;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.splash-value__card-label {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--cds-text-primary);
+  margin: 16px 0 0;
+}
+
+.splash-media-container {
+  margin-top: 28px;
+  width: 100%;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.splash-media-container video {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.splash-media-placeholder {
+  border: 2px dashed #c6c6c6;
+  background: #fff;
+  min-height: 332px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a8a8a8;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  border-radius: 4px;
+  margin-top: 28px;
+}
+
+/* Mobile connector — hidden on desktop */
+.splash-connector {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 0;
+}
+
+/* Desktop connectors — hidden on mobile */
+.splash-connector--h.splash-connector--desktop {
+  display: block;
+}
+.splash-connector--v.splash-connector--desktop {
+  display: flex;
+}
+
+/* ============================================================
+   Bottom CTA section
+   ============================================================ */
+
+.splash-cta {
+  padding: 64px 0 96px;
+}
+
+.splash-cta__inner {
+  background: #f4f4f4;
+  border-radius: 4px;
+  margin: 0 232px;
+  padding: 32px 24px;
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.splash-cta__illustration {
+  width: 275px;
+  flex-shrink: 0;
+  display: block;
+}
+
+.splash-cta__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.splash-cta__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.splash-cta__heading {
+  font-family: var(--font-sans);
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 36px;
+  color: #161616;
+  margin: 0;
+}
+
+.splash-cta__desc {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 22.5px;
+  color: var(--cds-text-secondary);
+  margin: 0;
+  max-width: 600px;
+}
+
+.splash-cta__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.splash-cta__btn-row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+/* ============================================================
+   Tablet / Intermediate responsive — max-width: 1200px
+   Allows smooth scaling of section margins and grid
+   ============================================================ */
+
+@media (max-width: 1200px) {
+  .splash-hero {
+    padding-left: clamp(24px, 6vw, 232px);
+  }
+
+  .splash-quote__box {
+    padding-left: clamp(24px, 6vw, 232px);
+    padding-right: clamp(24px, 6vw, 232px);
+  }
+
+  .splash-value {
+    padding-left: clamp(24px, 6vw, 232px);
+    padding-right: clamp(24px, 6vw, 232px);
+  }
+
+  .splash-cta__inner {
+    margin-left: clamp(24px, 6vw, 232px);
+    margin-right: clamp(24px, 6vw, 232px);
+  }
+}
+
+/* ============================================================
+   Mobile responsive — max-width: 767px
+   Matches Figma mobile frame (390px wide)
+   ============================================================ */
+
+@media (max-width: 767px) {
+
+  /* --- Hero --- */
+  .splash-hero {
+    flex-direction: column-reverse;
+    padding: 0;
+    min-height: 0;
+    /* single continuous gradient top-to-bottom across both panes */
+    background: linear-gradient(180deg, #f4f4f4 0%, #edf5ff 100%);
+  }
+
+  .splash-hero__illustration {
+    flex: none;
+    width: 100%;
+    height: 200px;
+    justify-content: center;
+    background: transparent;
+  }
+
+  .splash-hero__illustration video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+  }
+
+  .splash-hero__content {
+    flex: unset;
+    padding: 32px 24px 24px;
+    gap: 16px;
+    /* transparent so hero gradient continues through text area */
+    background: transparent;
+  }
+
+  .splash-hero__headline {
+    font-size: 40px;
+  }
+
+  /* Add trailing period on "from Maximo" on mobile */
+  .splash-hero__headline--purple::after {
+    content: '.';
+  }
+
+  /* Hide body copy and clock row on mobile */
+  .splash-hero__body,
+  .splash-hero__clock {
+    display: none;
+  }
+
+  /* --- Quote --- */
+  .splash-quote {
+    padding: 0;
+  }
+
+  .splash-quote__box {
+    border-radius: 0;
+    padding: 24px 20px;
+    min-height: 0;
+  }
+
+  .splash-quote__text {
+    font-size: 20px;
+  }
+
+  /* Hide scroll-down arrow on mobile */
+  .splash-quote__scroll {
+    display: none;
+  }
+
+  /* --- Value section --- */
+  .splash-value {
+    padding: 48px 24px 32px;
+  }
+
+  /* Hide desktop connectors on mobile */
+  .splash-connector--desktop,
+  .splash-connector--h.splash-connector--desktop,
+  .splash-connector--v.splash-connector--desktop {
+    display: none !important;
+  }
+
+  .splash-value__grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  .splash-value__card {
+    width: 100%;
+  }
+
+  /* Flex ordering: Card1 (0) → connector-card1 (1) → right-column (2) */
+  .splash-value__grid > .splash-value__card {
+    order: 0;
+  }
+
+  .splash-connector--card1 {
+    order: 1;
+  }
+
+  .splash-value__right {
+    order: 2;
+    width: 100%;
+    gap: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Connector between Card 2 and Card 3 inside the right column */
+  .splash-connector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 35px;
+    width: 100%;
+  }
+
+  .splash-connector svg {
+    display: block;
+  }
+
+  .splash-media-placeholder {
+    min-height: 174px;
+  }
+
+  /* --- Bottom CTA --- */
+  .splash-cta {
+    padding: 24px;
+  }
+
+  .splash-cta__inner {
+    flex-direction: column;
+    margin: 0;
+    background: linear-gradient(180deg, #f4f4f4 80%, #edf5ff 88%);
+    border: 1px solid #dde1e6;
+  }
+
+  .splash-cta__illustration {
+    display: none;
+  }
+
+  .splash-cta__heading {
+    font-size: 20px;
+    line-height: 1.18;
+  }
+
+  .splash-cta__desc {
+    font-size: 13px;
+    line-height: 1.45;
+  }
+}
