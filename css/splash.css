@@ -481,6 +481,15 @@ body.splash-active #actions-bar { display: none; }
     font-size: 40px;
   }
 
+  /* The mock sets the headline over four lines — "Find your / best path to /
+     greater value / from Maximo." A measure narrower than the column produces
+     those breaks; the usable range is 240-262px, so this sits in the middle of
+     it and will not tip onto a different break. Only the black span is capped:
+     "from Maximo." needs the full column to stay on one line. */
+  .splash-hero__headline--black {
+    max-width: 252px;
+  }
+
   /* Add trailing period on "from Maximo" on mobile */
   .splash-hero__headline--purple::after {
     content: '.';
