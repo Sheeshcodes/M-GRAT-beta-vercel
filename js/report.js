@@ -1071,6 +1071,26 @@ function fitMenuButtons() {
 }
 
 /* --------------------------------------------------------------------------
+   Fix cds-menu-button requiring two taps to open on mobile. Carbon registers
+   a focus step on first tap before opening — intercept touchend on the host
+   and fire a synthetic click on the internal trigger button so the menu opens
+   on the very first touch.
+   -------------------------------------------------------------------------- */
+function fixMenuButtonMobileTap() {
+  customElements.whenDefined("cds-menu-button").then(() => {
+    $$("cds-menu-button").forEach(mb => {
+      mb.addEventListener("touchend", e => {
+        // Only act when the menu is currently closed
+        if (mb.hasAttribute("open")) return;
+        e.preventDefault();
+        const btn = mb.shadowRoot?.querySelector("button");
+        if (btn) btn.click();
+      }, { passive: false });
+    });
+  });
+}
+
+/* --------------------------------------------------------------------------
    Tooltip dismiss — close any open cds-tooltip when clicking outside it or
    its trigger button, or when clicking the trigger while it is already open.
    -------------------------------------------------------------------------- */
@@ -1122,6 +1142,7 @@ async function init() {
   wireFeedback();
   initScrollSpy();
   fitMenuButtons();
+  fixMenuButtonMobileTap();
   closeTooltipsOnOutsideClick();
 }
 
