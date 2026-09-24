@@ -118,6 +118,11 @@ cds-menu-button[kind="tertiary"]:focus svg {
   color: var(--cds-text-on-color, #fff);
 }
 
+cds-menu-item::part(list-item) {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
 /* Figma 607:3204 — the suite mark is 64x64 in the sidebar. */
 .report-sidebar__icon img {
   width: 64px;
