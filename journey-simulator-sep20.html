@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M-GRAT Journey Simulator — Sep20</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,"Segoe UI",system-ui,sans-serif;font-size:14px;background:#f4f6fa;color:#1f2328;line-height:1.5}
+header{background:#1f2328;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:12px}
+header h1{font-size:16px;font-weight:600;letter-spacing:.02em}
+header span{font-size:12px;color:#aaa;margin-left:auto}
+.app{display:grid;grid-template-columns:320px 1fr;min-height:calc(100vh - 48px)}
+/* ── LEFT PANEL ── */
+.left{background:#fff;border-right:1px solid #e5e7eb;display:flex;flex-direction:column;overflow:hidden}
+.left-tabs{display:flex;border-bottom:1px solid #e5e7eb}
+.left-tabs button{flex:1;padding:10px 6px;font-size:12px;font-weight:600;border:none;background:none;cursor:pointer;color:#57606a;border-bottom:2px solid transparent}
+.left-tabs button.active{color:#3b82d4;border-bottom-color:#3b82d4;background:#f7f8fa}
+.left-scroll{flex:1;overflow-y:auto;padding:12px}
+/* question groups */
+.q-group{margin-bottom:16px}
+.q-group-header{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#57606a;padding:6px 0 4px;border-bottom:1px solid #e5e7eb;margin-bottom:8px}
+.q-block{margin-bottom:10px;background:#f7f8fa;border-radius:6px;border:1px solid #e5e7eb;padding:10px}
+.q-block.apm-only{border-left:3px solid #6366f1}
+.q-block.fsm-only{border-left:3px solid #f59e0b}
+.q-block.shared{border-left:3px solid #10b981}
+.q-label{font-size:12px;font-weight:600;margin-bottom:6px;color:#1f2328}
+.q-help{font-size:11px;color:#57606a;margin-bottom:7px;font-style:italic}
+.q-track-badge{display:inline-block;font-size:10px;font-weight:700;padding:1px 5px;border-radius:3px;margin-bottom:5px}
+.badge-shared{background:#d1fae5;color:#065f46}
+.badge-apm{background:#ede9fe;color:#4c1d95}
+.badge-fsm{background:#fef3c7;color:#92400e}
+/* milestone-group sub-questions */
+.sub-q{display:flex;align-items:center;gap:6px;margin-bottom:5px;font-size:12px}
+.sub-q label{flex:1}
+.sub-q select{font-size:11px;padding:2px 4px;border:1px solid #d1d5db;border-radius:4px;background:#fff}
+/* multiselect */
+.ms-option{display:flex;align-items:flex-start;gap:6px;margin-bottom:4px;font-size:12px}
+.ms-option input[type=checkbox]{margin-top:2px;flex-shrink:0}
+/* ladder */
+.ladder-option{display:flex;align-items:flex-start;gap:6px;margin-bottom:4px;font-size:12px}
+.ladder-option input[type=radio]{margin-top:2px;flex-shrink:0}
+/* ── RIGHT PANEL ── */
+.right{overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:16px}
+/* summary cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:14px;text-align:center}
+.card-label{font-size:11px;color:#57606a;margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.card-value{font-size:26px;font-weight:700;color:#1f2328}
+.card-sub{font-size:11px;color:#57606a;margin-top:3px}
+.card-bar{height:6px;border-radius:3px;background:#e5e7eb;margin-top:8px;overflow:hidden}
+.card-bar-fill{height:100%;border-radius:3px;transition:width .4s}
+/* stage badges */
+.stage-pill{display:inline-block;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:700;margin-top:4px}
+.stage-1{background:#fee2e2;color:#991b1b}
+.stage-2{background:#fef3c7;color:#92400e}
+.stage-3{background:#dbeafe;color:#1e40af}
+.stage-4{background:#d1fae5;color:#065f46}
+.stage-5{background:#ede9fe;color:#4c1d95}
+/* milestone dependency graph */
+.section-title{font-size:13px;font-weight:700;color:#1f2328;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.section-title span{font-size:11px;font-weight:400;color:#57606a}
+.dep-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.ms-tile{background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:10px;font-size:11px;cursor:default;transition:box-shadow .15s}
+.ms-tile:hover{box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.ms-tile.met{border-color:#10b981;background:#f0fdf4}
+.ms-tile.unmet{border-color:#ef4444;background:#fef2f2}
+.ms-tile.unknown{border-color:#e5e7eb;background:#f9fafb}
+.ms-tile-id{font-weight:700;font-size:12px;margin-bottom:3px}
+.ms-tile-name{color:#374151;margin-bottom:4px}
+.ms-tile-status{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.status-met{color:#10b981}
+.status-unmet{color:#ef4444}
+.status-unknown{color:#9ca3af}
+.ms-tile-prereqs{margin-top:5px;font-size:10px;color:#57606a}
+.prereq-tag{display:inline-block;padding:1px 5px;border-radius:3px;margin:1px;font-size:10px;font-weight:600}
+.prereq-met{background:#d1fae5;color:#065f46}
+.prereq-unmet{background:#fee2e2;color:#991b1b}
+.prereq-unknown{background:#f3f4f6;color:#6b7280}
+/* pillar tabs */
+.pillar-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.pillar-tab{padding:5px 10px;font-size:11px;font-weight:600;border:1px solid #e5e7eb;border-radius:14px;cursor:pointer;background:#fff;color:#57606a;transition:all .15s}
+.pillar-tab.active{background:#1f2328;color:#fff;border-color:#1f2328}
+/* actions panel */
+.action-card{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:14px;margin-bottom:8px}
+.action-card.primary{border-left:4px solid #3b82d4}
+.action-card.secondary{border-left:4px solid #10b981}
+.action-rank{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#57606a;margin-bottom:4px}
+.action-name{font-size:14px;font-weight:700;margin-bottom:4px}
+.action-imperative{font-size:12px;color:#374151;margin-bottom:6px}
+.action-why{font-size:11px;padding:6px 8px;background:#f7f8fa;border-radius:4px;border-left:3px solid #3b82d4;color:#57606a}
+/* dimensions bar chart */
+.dim-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.dim-label{width:160px;font-size:11px;font-weight:600;flex-shrink:0}
+.dim-bar-wrap{flex:1;height:16px;background:#e5e7eb;border-radius:4px;overflow:hidden}
+.dim-bar-fill{height:100%;border-radius:4px;transition:width .4s}
+.dim-pct{width:36px;text-align:right;font-size:11px;font-weight:700;flex-shrink:0}
+/* reset */
+.btn-reset{padding:7px 14px;font-size:12px;font-weight:600;background:#f3f4f6;border:1px solid #d1d5db;border-radius:6px;cursor:pointer;color:#374151}
+.btn-reset:hover{background:#e5e7eb}
+/* objectives/obstacles */
+.obj-option{display:flex;align-items:flex-start;gap:6px;margin-bottom:5px;font-size:12px}
+.obj-option input{margin-top:2px;flex-shrink:0}
+/* growth appetite */
+.ga-option{display:flex;align-items:flex-start;gap:6px;margin-bottom:4px;font-size:12px}
+.ga-option input{margin-top:2px;flex-shrink:0}
+/* tooltip */
+.tt{position:relative;display:inline-block}
+.tt .tttext{visibility:hidden;width:220px;background:#1f2328;color:#fff;font-size:11px;padding:6px 8px;border-radius:5px;position:absolute;z-index:99;left:0;top:120%;opacity:0;transition:opacity .2s;pointer-events:none;line-height:1.4}
+.tt:hover .tttext{visibility:visible;opacity:1}
+.section-box{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:16px}
+</style>
+</head>
+<body>
+<header>
+  <h1>M-GRAT Journey Simulator</h1>
+  <span>Sep20 — Question Binder &amp; Milestone Register</span>
+  <button class="btn-reset" onclick="resetAll()" style="margin-left:12px">↺ Reset</button>
+</header>
+<div class="app">
+  <div class="left">
+    <div class="left-tabs">
+      <button class="active" onclick="showTab('questions')" id="tab-questions">Questions</button>
+      <button onclick="showTab('milestones')" id="tab-milestones">Milestone Detail</button>
+    </div>
+    <div class="left-scroll" id="panel-questions"></div>
+    <div class="left-scroll" id="panel-milestones" style="display:none"></div>
+  </div>
+  <div class="right" id="right-panel"></div>
+</div>
+<script>
+// ─── DATA ──────────────────────────────────────────────────────────────────
+const MILESTONES = {
+  "AD-1-REG":  {id:"AD-1-REG", pillar:"Asset Data", level:1, fsmStage:"FSM1", apmStage:"APM1", name:"Standardized Asset Registry", prereqs:[], prereqType:"—", imperative:"Establish a governed, duplicate-free asset registry with defined naming conventions and location hierarchies."},
+  "AD-1-CRIT": {id:"AD-1-CRIT",pillar:"Asset Data", level:1, fsmStage:"FSM2", apmStage:"APM1", name:"Equipment Criticality Scored", prereqs:["AD-1-REG"], prereqType:"Soft functional", imperative:"Classify all maintainable assets into defined criticality tiers using a repeatable scoring methodology."},
+  "AD-2-CLAS": {id:"AD-2-CLAS",pillar:"Asset Data", level:2, fsmStage:"FSM2", apmStage:"APM2", name:"Asset Classification", prereqs:["AD-1-REG"], prereqType:"Hard sequential", imperative:"Implement a standardized asset classification hierarchy with attribute specifications to enable reusable job plans and reporting."},
+  "AD-2-HIER": {id:"AD-2-HIER",pillar:"Asset Data", level:2, fsmStage:"FSM3", apmStage:"APM3", name:"Asset Hierarchy", prereqs:["AD-1-REG"], prereqType:"Hard sequential", imperative:"Define parent-child asset relationships and location structures to enable component-level tracking and cost rollups."},
+  "AD-3-REL":  {id:"AD-3-REL", pillar:"Asset Data", level:3, fsmStage:"FSM3", apmStage:"APM3", name:"Asset Relationships", prereqs:["AD-2-HIER"], prereqType:"Soft functional", imperative:"Map technical dependencies and linear connections between assets and systems to support coordinated shutdown and outage planning."},
+  "WM-1-JPBASIC":{id:"WM-1-JPBASIC",pillar:"Work Management",level:1,fsmStage:"FSM1",apmStage:"—",name:"Job Plans — Basics",prereqs:[],prereqType:"—",imperative:"Create standardized job plan templates with estimated durations and required craft or crew types for recurring work."},
+  "WM-2-JPNEEDS":{id:"WM-2-JPNEEDS",pillar:"Work Management",level:2,fsmStage:"FSM2",apmStage:"—",name:"Job Plans — Needs",prereqs:["WM-1-JPBASIC"],prereqType:"Hard sequential",imperative:"Enrich job plans with planned materials, tools, services, and work classifications to support resource forecasting."},
+  "WM-3-JPAR":   {id:"WM-3-JPAR",  pillar:"Work Management",level:3,fsmStage:"FSM3",apmStage:"—",name:"Job Plans — Asset Relationships",prereqs:["WM-2-JPNEEDS","AD-2-CLAS"],prereqType:"Soft functional",imperative:"Build asset-specific job plans with nested hierarchies and explicit operational safety and downtime constraints."},
+  "WM-3-WSO":    {id:"WM-3-WSO",   pillar:"Work Management",level:3,fsmStage:"FSM3",apmStage:"—",name:"Workforce Schedule Optimization",prereqs:["WM-1-JPBASIC","AD-1-CRIT","AS-2-CENT","WA-3-EFF"],prereqType:"Soft functional",imperative:"Drive technician scheduling and crew dispatch using asset criticality, condition urgency, and technician skill match."},
+  "WM-3-PMLC":   {id:"WM-3-PMLC",  pillar:"Work Management",level:3,fsmStage:"FSM3",apmStage:"APM3",name:"PM Lifecycle Optimized",prereqs:["WM-1-JPBASIC","CM-2-HLTH","RP-1-FC"],prereqType:"Soft functional",imperative:"Dynamically adjust preventive maintenance intervals and trigger thresholds based on operating condition and health scores."},
+  "WM-4-DASH":   {id:"WM-4-DASH",  pillar:"Work Management",level:4,fsmStage:"FSM4",apmStage:"—",name:"Planning Dashboard",prereqs:["SCH-1-DATES","WM-1-JPBASIC","WA-1-BAS"],prereqType:"Soft functional",imperative:"Deploy operational planning dashboards to actively monitor cost, resource capacity, and schedule compliance metrics."},
+  "WM-4-JPAIP":  {id:"WM-4-JPAIP", pillar:"Work Management",level:4,fsmStage:"FSM5",apmStage:"APM4",name:"Job Plans — AIP Connection",prereqs:["WM-3-JPAR","CM-6-LCFDBK"],prereqType:"Soft functional",imperative:"Connect long-term asset investment planning outputs and condition forecasts directly into job plan definitions."},
+  "WM-5-GENAI":  {id:"WM-5-GENAI", pillar:"Work Management",level:5,fsmStage:"FSM5",apmStage:"APM5",name:"GenAI Prescriptive Recommendations",prereqs:["WM-2-JPNEEDS","CM-4-PRED","RP-3-FMEA"],prereqType:"Soft functional",imperative:"Deploy AI-powered prescriptive guidance to recommend optimal work actions, parts, and execution sequences for critical assets."},
+  "IC-1-PROG":{id:"IC-1-PROG",pillar:"Inspections & Condition Capture",level:1,fsmStage:"FSM1",apmStage:"—",name:"Inspection Program Active",prereqs:[],prereqType:"—",imperative:"Establish a documented, repeatable inspection route program with standardized frequencies for critical assets."},
+  "IC-2-INSB":{id:"IC-2-INSB",pillar:"Inspections & Condition Capture",level:2,fsmStage:"FSM2",apmStage:"—",name:"Inspections — Basic",prereqs:["IC-1-PROG","AD-1-REG"],prereqType:"Soft functional",imperative:"Digitize inspection forms in Maximo to capture field inspection results directly against asset records."},
+  "IC-3-METB":{id:"IC-3-METB",pillar:"Inspections & Condition Capture",level:3,fsmStage:"FSM3",apmStage:"APM3",name:"Inspections — Meter Reading Capture",prereqs:["IC-2-INSB","AD-1-REG"],prereqType:"Soft functional",imperative:"Capture routine meter and condition readings in Maximo against asset records."},
+  "IC-3-MVI": {id:"IC-3-MVI", pillar:"Inspections & Condition Capture",level:3,fsmStage:"FSM3",apmStage:"APM3",name:"Inspections — Visual / MVI",prereqs:["IC-2-INSB"],prereqType:"Soft functional",imperative:"Deploy automated visual defect inspection using AI vision models linked directly to asset records and work creation."},
+  "SCH-1-DATES":{id:"SCH-1-DATES",pillar:"Scheduling",level:1,fsmStage:"FSM1",apmStage:"—",name:"Scheduling — Scheduled Dates",prereqs:[],prereqType:"—",imperative:"Assign explicit scheduled start and finish dates to active work orders to establish a clear execution baseline."},
+  "SCH-2-FWD":  {id:"SCH-2-FWD",  pillar:"Scheduling",level:2,fsmStage:"FSM2",apmStage:"—",name:"Scheduling — Forward Planning",prereqs:["SCH-1-DATES","WA-1-BAS"],prereqType:"Hard sequential",imperative:"Build and manage rolling multi-week forward schedules to balance near-term execution with future backlog."},
+  "SCH-3-CONS": {id:"SCH-3-CONS", pillar:"Scheduling",level:3,fsmStage:"FSM3",apmStage:"—",name:"Scheduling — Constraint-Based",prereqs:["SCH-2-FWD","WM-1-JPBASIC"],prereqType:"Hard sequential",imperative:"Sequence work orders using parent-child hierarchies, predecessor dependencies, and operational constraints across a rolling horizon."},
+  "SCH-4-OPT":  {id:"SCH-4-OPT",  pillar:"Scheduling",level:4,fsmStage:"FSM4",apmStage:"—",name:"Scheduling — Automated Optimization",prereqs:["SCH-3-CONS","WA-3-EFF","AS-3-BEST"],prereqType:"Hard sequential",imperative:"Configure and execute automated schedule optimization to resolve work order constraints and resource allocations."},
+  "SCH-5-AUTO": {id:"SCH-5-AUTO", pillar:"Scheduling",level:5,fsmStage:"FSM5",apmStage:"—",name:"Scheduling — Fully Automated",prereqs:["SCH-4-OPT"],prereqType:"Soft functional",imperative:"Fully automate multi-horizon schedule generation and constraint solving, shifting planners to exception handling and approval."},
+  "AS-1-OWN": {id:"AS-1-OWN", pillar:"Assignment & Dispatch",level:1,fsmStage:"FSM1",apmStage:"—",name:"Assignment — Ownership Resolved",prereqs:[],prereqType:"—",imperative:"Allocate work using standard Maximo Assignment records rather than static record ownership or person groups."},
+  "AS-2-CENT":{id:"AS-2-CENT",pillar:"Assignment & Dispatch",level:2,fsmStage:"FSM2",apmStage:"—",name:"Assignment — Centrally Managed",prereqs:["AS-1-OWN","WA-1-BAS"],prereqType:"Hard sequential",imperative:"Manage work assignments centrally through Assignment Manager to provide single-pane visibility across labor and crews."},
+  "AS-3-BEST":{id:"AS-3-BEST",pillar:"Assignment & Dispatch",level:3,fsmStage:"FSM3",apmStage:"—",name:"Assignment — Best Option",prereqs:["AS-2-CENT","WA-3-EFF"],prereqType:"Hard sequential",imperative:"Leverage system-suggested labor and crew assignments based on craft match, qualifications, and effective availability."},
+  "AS-4-AUTO":{id:"AS-4-AUTO",pillar:"Assignment & Dispatch",level:4,fsmStage:"FSM4",apmStage:"—",name:"Assignment — Automated Dispatch",prereqs:["AS-3-BEST","SCH-4-OPT"],prereqType:"Soft functional",imperative:"Automate daily labor and crew dispatch using optimization algorithms, focusing dispatchers on managing exceptions."},
+  "AS-5-FULL":{id:"AS-5-FULL",pillar:"Assignment & Dispatch",level:5,fsmStage:"FSM5",apmStage:"—",name:"Assignment — Fully Automated",prereqs:["AS-4-AUTO","SCH-5-AUTO"],prereqType:"Soft functional",imperative:"Deploy autonomous dispatch and real-time schedule re-optimization across the entire field workforce."},
+  "WA-1-BAS":{id:"WA-1-BAS",pillar:"Workforce Availability",level:1,fsmStage:"FSM1",apmStage:"—",name:"Workforce Basics",prereqs:[],prereqType:"—",imperative:"Maintain baseline labor records in Maximo populated with active calendars, shifts, and assigned crafts."},
+  "WA-2-ACT":{id:"WA-2-ACT",pillar:"Workforce Availability",level:2,fsmStage:"FSM2",apmStage:"—",name:"Workforce — Actual Availability",prereqs:["WA-1-BAS"],prereqType:"Hard sequential",imperative:"Actively record availability exceptions—including leaves, training, and overtime—to maintain an accurate capacity view."},
+  "WA-3-EFF":{id:"WA-3-EFF",pillar:"Workforce Availability",level:3,fsmStage:"FSM3",apmStage:"—",name:"Workforce — Effective Availability",prereqs:["WA-2-ACT","AS-1-OWN"],prereqType:"Hard sequential",imperative:"Calculate real-time effective labor capacity by automatically deducting active work order commitments from net availability."},
+  "CM-1-LF":    {id:"CM-1-LF",    pillar:"Condition Monitoring & Prediction",level:1,fsmStage:"—",  apmStage:"APM1",name:"Condition Monitoring — Low Frequency",prereqs:["AD-1-REG"],prereqType:"Soft functional",imperative:"Collect periodic condition readings in Maximo Manage to trigger maintenance work when predefined operating limits are breached."},
+  "CM-2-HLTH":  {id:"CM-2-HLTH",  pillar:"Condition Monitoring & Prediction",level:2,fsmStage:"—",  apmStage:"APM2",name:"Foundational Health Scores",prereqs:["AD-1-REG","AD-1-CRIT","IC-2-INSB"],prereqType:"Soft functional",imperative:"Activate out-of-the-box asset health scoring in Maximo Health for at least one critical asset class."},
+  "CM-2-MON":   {id:"CM-2-MON",   pillar:"Condition Monitoring & Prediction",level:2,fsmStage:"—",  apmStage:"APM2",name:"Monitor — Lightweight Ingestion",prereqs:["AD-1-REG"],prereqType:"Soft functional",imperative:"Ingest periodic operational condition data into Maximo Monitor using lightweight interfaces, APIs, or historian extracts."},
+  "CM-2-TRIG":  {id:"CM-2-TRIG",  pillar:"Condition Monitoring & Prediction",level:2,fsmStage:"FSM3",apmStage:"APM3",name:"Condition-Based Maintenance (CBM) Triggers",prereqs:["IC-3-METB","CM-1-LF","WM-1-JPBASIC"],prereqType:"Soft functional",imperative:"Configure condition monitoring points and meter alarm limits in Maximo to automatically trigger work orders on threshold breaches."},
+  "CM-3-IOT":   {id:"CM-3-IOT",   pillar:"Condition Monitoring & Prediction",level:3,fsmStage:"—",  apmStage:"APM3",name:"OT/IoT Data Integrated",prereqs:["CM-2-MON","AD-2-CLAS"],prereqType:"Hard sequential",imperative:"Stream real-time OT and IoT sensor telemetry into Maximo Monitor mapped to asset hierarchy and failure modes."},
+  "CM-3-MVAR":  {id:"CM-3-MVAR",  pillar:"Condition Monitoring & Prediction",level:3,fsmStage:"—",  apmStage:"APM3",name:"Multivariable Health Score",prereqs:["CM-2-HLTH","CM-3-IOT","IC-2-INSB"],prereqType:"Hard sequential",imperative:"Implement weighted, multivariable health scores combining sensor telemetry, inspection findings, and historical work data."},
+  "CM-4-PRED":  {id:"CM-4-PRED",  pillar:"Condition Monitoring & Prediction",level:4,fsmStage:"—",  apmStage:"APM4",name:"Predict / Prescribe Activated",prereqs:["CM-3-MVAR","RP-1-FC"],prereqType:"Hard sequential",imperative:"Deploy multivariate machine learning models in Maximo Predict to generate failure probabilities and estimated time-to-failure."},
+  "CM-5-RCBF":  {id:"CM-5-RCBF",  pillar:"Condition Monitoring & Prediction",level:5,fsmStage:"—",  apmStage:"APM4",name:"Condition-Driven RCBF",prereqs:["CM-4-PRED","RP-3-FMEA"],prereqType:"Hard sequential",imperative:"Establish a root-cause-before-failure workflow to investigate early degradation alerts and update FMEA strategies before breakdown."},
+  "CM-6-LCFDBK":{id:"CM-6-LCFDBK",pillar:"Condition Monitoring & Prediction",level:6,fsmStage:"—",  apmStage:"APM4",name:"Asset Lifecycle Feedback Loop",prereqs:["CM-5-RCBF","RP-4-RCBF"],prereqType:"Soft functional",imperative:"Feed operational condition and failure trends back into engineering design, procurement, and asset replacement planning."},
+  "SC-1-REG":   {id:"SC-1-REG",   pillar:"Supply Chain & Inventory",level:1,fsmStage:"FSM1",apmStage:"—",name:"Parts Registry Exists",prereqs:[],prereqType:"—",imperative:"Establish an identified, standardized registry of maintenance spare parts, item numbers, and primary stocking locations."},
+  "SC-2-BASICS":{id:"SC-2-BASICS",pillar:"Supply Chain & Inventory",level:2,fsmStage:"FSM2",apmStage:"—",name:"Inventory — Basics",prereqs:["SC-1-REG"],prereqType:"Soft functional",imperative:"Track spare parts and stock levels in Maximo storerooms with defined reorder points and work order issue tracking."},
+  "SC-3-PLAN":  {id:"SC-3-PLAN",  pillar:"Supply Chain & Inventory",level:3,fsmStage:"FSM3",apmStage:"—",name:"Inventory — Planned Materials",prereqs:["SC-2-BASICS","WM-2-JPNEEDS"],prereqType:"Soft functional",imperative:"Reserve and kit required spare parts during the work planning stage to identify potential stockouts before scheduling."},
+  "SC-4-OPT":   {id:"SC-4-OPT",   pillar:"Supply Chain & Inventory",level:4,fsmStage:"FSM4",apmStage:"APM3",name:"Inventory — Optimized",prereqs:["SC-3-PLAN","AD-1-CRIT"],prereqType:"Soft functional",imperative:"Optimize stocking levels and reorder policies for critical spares based on consumption history, risk, and lead-time variability."},
+  "SC-5-STRAT": {id:"SC-5-STRAT", pillar:"Supply Chain & Inventory",level:5,fsmStage:"FSM5",apmStage:"APM4",name:"Inventory — Strategic",prereqs:["SC-4-OPT","CM-4-PRED"],prereqType:"Soft functional",imperative:"Align spares stocking strategies with asset lifecycle forecasts, operational criticality, and strategic supplier agreements."},
+  "RP-1-FC":  {id:"RP-1-FC",  pillar:"Reliability Practices",level:1,fsmStage:"—",apmStage:"APM1",name:"Failure Codes Active",prereqs:[],prereqType:"—",imperative:"Standardize and enforce the capture of Problem-Cause-Remedy failure hierarchies on closed work orders for critical assets."},
+  "RP-2-RS":  {id:"RP-2-RS",  pillar:"Reliability Practices",level:2,fsmStage:"—",apmStage:"APM2",name:"Reliability Strategies Activated",prereqs:["RP-1-FC","AD-2-CLAS","WM-1-JPBASIC"],prereqType:"Soft functional",imperative:"Activate library-based Reliability Strategies to align preventive maintenance tasks and job plans directly with known failure modes."},
+  "RP-3-FMEA":{id:"RP-3-FMEA",pillar:"Reliability Practices",level:3,fsmStage:"—",apmStage:"APM2",name:"FMEA Baseline Mapped",prereqs:["RP-2-RS","AD-1-CRIT"],prereqType:"Soft functional",imperative:"Conduct and document baseline Failure Modes and Effects Analyses (FMEA) for all critical asset classes in Maximo."},
+  "RP-4-RCBF":{id:"RP-4-RCBF",pillar:"Reliability Practices",level:4,fsmStage:"—",apmStage:"APM4",name:"FMEA — Condition Data Feedback",prereqs:["RP-3-FMEA","CM-5-RCBF"],prereqType:"Soft functional",imperative:"Continuously refine FMEA mitigation strategies using real-world operational health signals and investigation findings."},
+  "RP-5-FGOV":{id:"RP-5-FGOV",pillar:"Reliability Practices",level:5,fsmStage:"—",apmStage:"APM5",name:"FMEA Governance at Scale",prereqs:["RP-4-RCBF"],prereqType:"Soft functional",imperative:"Establish a formalized governance process to regularly audit, benchmark, and update failure mitigation strategies across the fleet."},
+  "HS-2-JPS":{id:"HS-2-JPS",pillar:"Safety & HSE",level:2,fsmStage:"FSM2",apmStage:"—",name:"Job Plans — Safety",prereqs:["WM-1-JPBASIC"],prereqType:"Soft functional",imperative:"Embed required hazard controls, lockout/tagout procedures, and permit-to-work requirements directly into job plans."},
+  "HS-2-INC":{id:"HS-2-INC",pillar:"Safety & HSE",level:2,fsmStage:"FSM2",apmStage:"—",name:"Incidents",prereqs:["AD-1-REG"],prereqType:"Soft functional",imperative:"Log and track workplace safety incidents, near misses, and hazards in Maximo to drive formal corrective action investigations."},
+};
+
+const OBJECTIVES = [
+  {text:"Reduce unplanned downtime",        apm:"APM 2/3/4", fsm:"—"},
+  {text:"Reduce maintenance costs",          apm:"APM 2/3",   fsm:"FSM 2/3"},
+  {text:"Improve technician productivity",  apm:"—",          fsm:"FSM 2/3/4"},
+  {text:"Improve MRO inventory efficiency", apm:"APM 3/4",    fsm:"FSM 3/4"},
+  {text:"Extend asset lifespan",            apm:"APM 4",      fsm:"—"},
+  {text:"Reduce compliance and safety risk",apm:"APM 2",      fsm:"FSM 2"},
+  {text:"Improve production quality/yield", apm:"APM 3/4",    fsm:"—"},
+  {text:"Meet service level commitments",   apm:"—",          fsm:"FSM 3/4"},
+  {text:"Improve operational visibility",   apm:"APM 2",      fsm:"FSM 2"},
+];
+
+const OBSTACLES = [
+  {text:"We lack visibility into asset health",        primary:"CM-2-HLTH",  secondary:"CM-1-LF"},
+  {text:"Too much work is reactive",                   primary:"RP-1-FC",    secondary:"CM-1-LF"},
+  {text:"Maintenance costs continue to rise",          primary:"WM-1-JPBASIC",secondary:"SC-2-BASICS"},
+  {text:"We struggle to plan and schedule work",       primary:"SCH-2-FWD",  secondary:"WM-1-JPBASIC"},
+  {text:"Resource availability is difficult to manage",primary:"WA-2-ACT",   secondary:"AS-2-CENT"},
+  {text:"Critical asset failures disrupt operations",  primary:"RP-1-FC",    secondary:"CM-2-TRIG"},
+  {text:"Inventory shortages delay work execution",    primary:"SC-2-BASICS",secondary:"SC-3-PLAN"},
+  {text:"Data quality is inconsistent",               primary:"AD-1-REG",   secondary:"AD-1-CRIT"},
+  {text:"We struggle to prioritise improvement initiatives",primary:"AD-1-CRIT",secondary:"RP-2-RS"},
+];
+
+const DIMENSIONS = [
+  {id:"DIM-AD", name:"Asset Data",               track:"Shared",weight:0.15, questionIds:["Q-AD1","Q-AD2","Q-AD3","Q-AD4"],         milestoneIds:["AD-1-REG","AD-1-CRIT","AD-2-CLAS","AD-2-HIER"], ladder:false},
+  {id:"DIM-WM", name:"Work Management",           track:"Shared",weight:0.15, questionIds:["Q-WM1","Q-WM2","Q-WM3"],                  milestoneIds:["WM-1-JPBASIC","WM-2-JPNEEDS","WM-3-JPAR"],       ladder:false},
+  {id:"DIM-IC", name:"Inspections & Cond. Capture",track:"Shared",weight:0.10,questionIds:["Q-IC-MULTI"],                              milestoneIds:["IC-1-PROG","IC-2-INSB","IC-3-METB"],             ladder:false},
+  {id:"DIM-SC", name:"Supply Chain & Inventory",  track:"Shared",weight:0.10, questionIds:["Q-SC-MULTI"],                              milestoneIds:["SC-1-REG","SC-2-BASICS","SC-3-PLAN","SC-4-OPT"],  ladder:false},
+  {id:"DIM-RP", name:"Reliability Practices",     track:"APM",   weight:0.15, questionIds:["Q-RP1","Q-RP2","Q-RP3","Q-RP4"],          milestoneIds:["RP-1-FC","RP-2-RS","RP-3-FMEA","RP-5-FGOV"],     ladder:false},
+  {id:"DIM-CM", name:"Condition Monitoring",      track:"APM",   weight:0.15, questionIds:["Q-CM-CORE","Q-CM-ADV"],                    milestoneIds:["CM-1-LF","CM-3-IOT","CM-2-TRIG","CM-2-HLTH","CM-3-MVAR","CM-4-PRED","CM-5-RCBF","CM-6-LCFDBK"], ladder:false},
+  {id:"DIM-SCH",name:"Scheduling",                track:"FSM",   weight:0.10, questionIds:["Q-FSM-SCH"],                               milestoneIds:["SCH-1-DATES","SCH-2-FWD","SCH-3-CONS"],          ladder:true},
+  {id:"DIM-AS", name:"Assignment & Dispatch",     track:"FSM",   weight:0.10, questionIds:["Q-FSM-AS"],                                milestoneIds:["AS-1-OWN","AS-2-CENT","AS-3-BEST"],              ladder:true},
+];
+
+// APM stage gating
+const APM_GATES = {
+  1:["AD-1-REG","AD-1-CRIT","CM-1-LF","RP-1-FC"],
+  2:["AD-2-CLAS","CM-2-HLTH","CM-2-MON","RP-2-RS","RP-3-FMEA"],
+  3:["AD-2-HIER","IC-3-METB","CM-2-TRIG","CM-3-IOT","CM-3-MVAR","SC-4-OPT"],
+  4:["CM-4-PRED","CM-5-RCBF","CM-6-LCFDBK","RP-4-RCBF"],
+  5:["RP-5-FGOV"]
+};
+// FSM stage gating
+const FSM_GATES = {
+  1:["AD-1-REG","WM-1-JPBASIC","IC-1-PROG","SCH-1-DATES","AS-1-OWN","SC-1-REG","WA-1-BAS"],
+  2:["AD-1-CRIT","AD-2-CLAS","WM-2-JPNEEDS","IC-2-INSB","SCH-2-FWD","AS-2-CENT","WA-2-ACT","SC-2-BASICS"],
+  3:["AD-2-HIER","WM-3-JPAR","IC-3-METB","CM-2-TRIG","SCH-3-CONS","AS-3-BEST","WA-3-EFF","SC-3-PLAN"],
+  4:["SC-4-OPT"],
+  5:[]
+};
+
+const STAGE_NAMES = {
+  apm:{1:"Digital Foundation",2:"APM Foundation",3:"CBM+",4:"Predictive",5:"Prescriptive"},
+  fsm:{1:"Reactive Execution",2:"Coordinated Operations",3:"Structured Scheduling",4:"Intelligent Field Coord.",5:"Optimized Field Ops"}
+};
+
+// ─── STATE ──────────────────────────────────────────────────────────────────
+let answers = {}; // questionId -> value/array
+let selectedObjs = [];
+let selectedObs  = [];
+let activePillar = "All";
+let leftTab = "questions";
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+function init(){
+  buildQuestionPanel();
+  buildMilestonePanel();
+  recompute();
+}
+
+// ─── QUESTION PANEL ──────────────────────────────────────────────────────────
+function buildQuestionPanel(){
+  const el = document.getElementById('panel-questions');
+  el.innerHTML = `
+  <div class="q-group">
+    <div class="q-group-header">Goals &amp; Priorities</div>
+    <div class="q-block shared">
+      <span class="q-track-badge badge-shared">Shared</span>
+      <div class="q-label">What are your top strategic business objectives? (choose up to 3)</div>
+      <div class="q-help">Select the outcomes that matter most to your organisation.</div>
+      ${OBJECTIVES.map((o,i)=>`<div class="obj-option"><input type="checkbox" id="obj${i}" onchange="toggleObj(${i})" ${selectedObjs.includes(i)?'checked':''}><label for="obj${i}">${o.text}</label></div>`).join('')}
+    </div>
+    <div class="q-block shared">
+      <span class="q-track-badge badge-shared">Shared</span>
+      <div class="q-label">What are your organisation's biggest obstacles? (select all that apply)</div>
+      <div class="q-help">Select every obstacle that genuinely applies today.</div>
+      ${OBSTACLES.map((o,i)=>`<div class="obj-option"><input type="checkbox" id="obs${i}" onchange="toggleObs(${i})" ${selectedObs.includes(i)?'checked':''}><label for="obs${i}">${o.text}</label></div>`).join('')}
+    </div>
+  </div>
+
+  <div class="q-group">
+    <div class="q-group-header">Asset Data — which do you consistently put in practice?</div>
+    <div class="q-block shared">
+      <span class="q-track-badge badge-shared">Shared</span>
+      ${buildGroupSub('Q-AD1','AD-1-CRIT','Asset criticality ranking','Formally rated by business impact (safety, compliance, downtime cost).')}
+      ${buildGroupSub('Q-AD2','AD-2-HIER','Assets in a hierarchy','Structured parent-child links across locations, assets, and components.')}
+      ${buildGroupSub('Q-AD3','AD-2-CLAS','Classification and specifications','Standardised classes with technical attributes.')}
+      ${buildGroupSub('Q-AD4','AD-1-REG','Standardised asset registry','Consistent naming conventions, unique asset records, and governance workflow.')}
+    </div>
+  </div>
+
+  <div class="q-group">
+    <div class="q-group-header">Work Management Basics</div>
+    <div class="q-block shared">
+      <span class="q-track-badge badge-shared">Shared</span>
+      ${buildGroupSub('Q-WM1','WM-1-JPBASIC','Reusable job plans — basics','Job plans linked to work orders and PMs with estimated duration and craft type.')}
+      ${buildGroupSub('Q-WM2','WM-2-JPNEEDS','Job plans — materials, tools, and work type','Job plans enriched with materials, tools, services, and work type classification.')}
+      ${buildGroupSub('Q-WM3','WM-3-JPAR','Job plans — asset relationships','Job plans use native Maximo structure with sub-job plans auto-generating child work orders.')}
+    </div>
+  </div>
+
+  <div class="q-group">
+    <div class="q-group-header">Inspections &amp; Condition Capture</div>
+    <div class="q-block shared">
+      <span class="q-track-badge badge-shared">Shared</span>
+      <div class="q-label">Which describe your inspection and condition capture practice? (Select all that apply)</div>
+      <div class="q-help">A paper inspection program counts for the first option.</div>
+      ${buildMultiselect('Q-IC-MULTI',[
+        {text:'A repeatable inspection program exists for critical assets, even if not yet in Maximo',  mid:'IC-1-PROG'},
+        {text:'Digital inspection records are captured in Maximo and linked to asset records',          mid:'IC-2-INSB'},
+        {text:'Meter readings (hours, cycles, pressure, temperature) are logged in Maximo against asset records', mid:'IC-3-METB'},
+        {text:'None of the above', mid:'', none:true}
+      ])}
+    </div>
+  </div>
+
+  <div class="q-group">
+    <div class="q-group-header">Spare Parts &amp; Inventory</div>
+    <div class="q-block shared">
+      <span class="q-track-badge badge-shared">Shared</span>
+      <div class="q-label">Which describe your spare parts and inventory practice? (Select all that apply)</div>
+      <div class="q-help">The first option counts even if parts are tracked outside Maximo.</div>
+      ${buildMultiselect('Q-SC-MULTI',[
+        {text:'Spare parts needed for maintenance are identified and tracked somewhere, even outside Maximo', mid:'SC-1-REG'},
+        {text:'Spare parts are tracked in Maximo storerooms with stock levels and reorder points active',     mid:'SC-2-BASICS'},
+        {text:'Materials are planned and reserved against work orders before scheduling begins',              mid:'SC-3-PLAN'},
+        {text:'Inventory reorder points reflect predicted failure risk — stock driven by condition data',     mid:'SC-4-OPT'},
+        {text:'None of the above', mid:'', none:true}
+      ])}
+    </div>
+  </div>
+
+  <div class="q-group">
+    <div class="q-group-header">FSM — Scheduling</div>
+    <div class="q-block fsm-only">
+      <span class="q-track-badge badge-fsm">FSM</span>
+      <div class="q-label">How far has your scheduling practice developed? (Select the most advanced state that applies)</div>
+      <div class="q-help">Each option includes everything below it.</div>
+      ${buildLadder('Q-FSM-SCH',[
+        {order:0,text:'Scheduled dates are not consistently used on active work orders', mid:''},
+        {order:1,text:'Active work orders carry scheduled start and finish dates — this is the normal practice', mid:'SCH-1-DATES'},
+        {order:2,text:'A forward planning horizon of 2 or more weeks is actively maintained', mid:'SCH-2-FWD'},
+        {order:3,text:'Constraint-based scheduling is active — predecessor relationships and rolling schedules in use', mid:'SCH-3-CONS'},
+      ])}
+    </div>
+  </div>
+
+  <div class="q-group">
+    <div class="q-group-header">FSM — Assignment &amp; Dispatch</div>
+    <div class="q-block fsm-only">
+      <span class="q-track-badge badge-fsm">FSM</span>
+      <div class="q-label">How far has your assignment and dispatch practice developed? (Select the most advanced state that applies)</div>
+      <div class="q-help">Each option includes everything below it.</div>
+      ${buildLadder('Q-FSM-AS',[
+        {order:0,text:'Work is assigned using the owner field or person group — not Maximo assignment records', mid:''},
+        {order:1,text:'Maximo assignment records are used rather than the owner field to indicate who does the work', mid:'AS-1-OWN'},
+        {order:2,text:'Assignment and dispatch are centrally managed by a scheduler or dispatcher using Maximo tools', mid:'AS-2-CENT'},
+        {order:3,text:'The system proposes the best available resource and dispatchers select from those proposals', mid:'AS-3-BEST'},
+      ])}
+    </div>
+  </div>
+
+  <div class="q-group">
+    <div class="q-group-header">FSM — Workforce Availability</div>
+    <div class="q-block fsm-only">
+      <span class="q-track-badge badge-fsm">FSM</span>
+      <div class="q-label">How do you manage workforce availability in Maximo? (Select the most advanced state that applies)</div>
+      <div class="q-help">Each option includes everything below it.</div>
+      ${buildLadder('Q-FSM-WA',[
+        {order:0,text:'Labor or crew records are not set up in Maximo', mid:''},
+        {order:1,text:'Labor records include craft, calendar, and shift — the basics needed for scheduling', mid:'WA-1-BAS'},
+        {order:2,text:'Availability exceptions are tracked and current — vacation, training, and non-working time', mid:'WA-2-ACT'},
+        {order:3,text:'Effective availability is calculated — assignment load deducts from capacity for a true remaining-availability view', mid:'WA-3-EFF'},
+      ])}
+    </div>
+  </div>
+
+  <div class="q-group">
+    <div class="q-group-header">APM — Reliability Practices</div>
+    <div class="q-block apm-only">
+      <span class="q-track-badge badge-apm">APM</span>
+      ${buildGroupSub('Q-RP1','RP-1-FC','Failure Data Capture — structured failure codes on closed WOs','Problem-Cause-Remedy hierarchy enforced on 75%+ of closed work orders for critical assets.')}
+      ${buildGroupSub('Q-RP2','RP-2-RS','Strategy protection — strategies associated to critical assets, job plans linked to failure codes','Standard maintenance strategies and job plans are formally linked to specific equipment failure modes.')}
+      ${buildGroupSub('Q-RP3','RP-3-FMEA','FMEA-Driven Maintenance — FMEA mapped for at least critical asset classes, custom strategies derived, driving PMs','Failure Modes and Effects Analysis (FMEA) mapped for critical equipment, directly determining PM frequency and scope.')}
+      ${buildGroupSub('Q-RP4','RP-5-FGOV','FMEA Governance — FMEA records are reviewed on a regular, defined cycle, with version history maintained','FMEA records, failure mode linkages, and strategy effectiveness are continuously reviewed.')}
+    </div>
+  </div>
+
+  <div class="q-group">
+    <div class="q-group-header">APM — Condition Monitoring &amp; Health Scoring</div>
+    <div class="q-block apm-only">
+      <span class="q-track-badge badge-apm">APM</span>
+      <div class="q-label">Which condition monitoring and health scoring capabilities are active? (Select all that apply)</div>
+      <div class="q-help">Data must be integrated with Maximo or an accessible maintenance database.</div>
+      ${buildMultiselect('Q-CM-CORE',[
+        {text:'Low-Frequency Condition Capture — manual readings, CSV imports, periodic logging captured and visible against critical assets', mid:'CM-1-LF'},
+        {text:'Real-Time Condition Monitoring — live, continuous condition telemetry (SCADA, PLCs, historians) streaming into a Maximo-accessible platform', mid:'CM-3-IOT'},
+        {text:'Condition-Driven Action — condition monitoring points or meter thresholds automatically trigger alerts, work orders, or PM adjustments on limit breach', mid:'CM-2-TRIG'},
+        {text:'Foundational Health Scoring — health scores configured in Maximo Health for at least one critical asset class, drawing from at least 3 data sources', mid:'CM-2-HLTH'},
+        {text:'Advanced Health Scoring — health score draws from 4+ operational factors including real-time data, actively driving work order generation or PM interval changes', mid:'CM-3-MVAR'},
+        {text:'None of the above', mid:'', none:true}
+      ])}
+    </div>
+    <div class="q-block apm-only">
+      <span class="q-track-badge badge-apm">APM</span>
+      <div class="q-label">Which advanced practices are in place? (Optional — Select all that apply)</div>
+      <div class="q-help">Select any advanced practice that is actively operationalized.</div>
+      ${buildMultiselect('Q-CM-ADV',[
+        {text:'Predictive Risk-Based Action — work orders or PM schedules adjusted based on forward-looking risk predictions (statistical or ML models)', mid:'CM-4-PRED'},
+        {text:'Root-Cause Feedback Loop — root-cause investigations triggered proactively from early risk signals, findings fed back into FMEA records and job plans', mid:'CM-5-RCBF'},
+        {text:'Predictive Inventory Optimisation — spare parts reorder points and stock levels reflect predicted failure risk, not just historical usage', mid:'SC-4-OPT'},
+        {text:'Design Feedback Loop — operational failure evidence formally shapes future asset specifications, procurement decisions, or OEM/vendor conversations', mid:'CM-6-LCFDBK'},
+        {text:'None of the above', mid:'CM-3-MVAR', none:true}
+      ])}
+    </div>
+  </div>
+
+  <div class="q-group">
+    <div class="q-group-header">Follow-Up — Organisational Appetite (Optional)</div>
+    <div class="q-block" style="border-left:3px solid #9ca3af">
+      <span class="q-track-badge" style="background:#f3f4f6;color:#6b7280">Optional</span>
+      <div class="q-label">Do you have budget allocated for Maximo expansion this fiscal year?</div>
+      ${buildGrowth('Q-BUDGET',[
+        {text:'Yes — budget is committed for this fiscal year',score:2},
+        {text:'Maybe — budget is under discussion or pending approval',score:1},
+        {text:'No — no budget identified yet',score:0},
+      ])}
+      <div class="q-label" style="margin-top:10px">Does an executive sponsor actively support this initiative?</div>
+      ${buildGrowth('Q-SPONSOR',[
+        {text:'Yes — a senior leader is actively sponsoring this',score:2},
+        {text:'Working on it — interest exists but no formal sponsor yet',score:1},
+        {text:'No — no leadership commitment yet',score:0},
+      ])}
+      <div class="q-label" style="margin-top:10px">Are there active expansion plans for Maximo in the next 12 months?</div>
+      ${buildGrowth('Q-PLANS',[
+        {text:'Yes — a project or initiative is underway or formally scoped',score:2},
+        {text:'Informally — discussions are happening but nothing is formalised',score:1},
+        {text:'No — no active plans at this time',score:0},
+      ])}
+      <div class="q-label" style="margin-top:10px">What is your typical planning horizon for technology investment?</div>
+      ${buildGrowth('Q-HORIZON',[
+        {text:'Within 6 months — we move fast when we see the value',score:2},
+        {text:'6–18 months — planned investment cycle',score:1},
+        {text:'18+ months — longer strategic cycle',score:0},
+      ])}
+    </div>
+  </div>`;
+}
+
+function buildGroupSub(qid,mid,label,help){
+  const val = answers[qid]||'unknown';
+  return `<div class="sub-q">
+    <label><b>${label}</b><br><span style="color:#57606a;font-size:10px">${help}</span></label>
+    <select onchange="setGroupAnswer('${qid}','${mid}',this.value)">
+      <option value="unknown" ${val==='unknown'?'selected':''}>Unknown</option>
+      <option value="met"     ${val==='met'?'selected':''}>Consistently in place</option>
+      <option value="unmet"   ${val==='unmet'?'selected':''}>Partially / not in place</option>
+    </select>
+  </div>`;
+}
+
+function buildMultiselect(qid,opts){
+  if(!answers[qid]) answers[qid]=[];
+  return opts.map((o,i)=>`<div class="ms-option"><input type="checkbox" id="${qid}_${i}" ${answers[qid].includes(i)?'checked':''} onchange="toggleMulti('${qid}',${i},${o.none?'true':'false'},'${o.mid}')"><label for="${qid}_${i}">${o.text}</label></div>`).join('');
+}
+
+function buildLadder(qid,opts){
+  const val = answers[qid]!=null ? answers[qid] : -1;
+  return opts.map(o=>`<div class="ladder-option"><input type="radio" name="${qid}" id="${qid}_${o.order}" value="${o.order}" ${val==o.order?'checked':''} onchange="setLadder('${qid}',${o.order})"><label for="${qid}_${o.order}">${o.text}</label></div>`).join('');
+}
+
+function buildGrowth(qid,opts){
+  const val = answers[qid];
+  return opts.map((o,i)=>`<div class="ga-option"><input type="radio" name="${qid}" id="${qid}_${i}" value="${o.score}" ${val===o.score?'checked':''} onchange="setGrowth('${qid}',${o.score})"><label for="${qid}_${i}">${o.text}</label></div>`).join('');
+}
+
+// ─── MILESTONE PANEL ─────────────────────────────────────────────────────────
+function buildMilestonePanel(){
+  const el = document.getElementById('panel-milestones');
+  el.innerHTML = '<div style="padding:8px 0;font-size:12px;color:#57606a">Click any milestone tile on the right panel to see its details here.</div>';
+}
+function showMilestoneDetail(id){
+  const m = MILESTONES[id]; if(!m) return;
+  const st = getMilestoneStatus(id);
+  const el = document.getElementById('panel-milestones');
+  const prereqHTML = m.prereqs.length ? m.prereqs.map(p=>{
+    const ps = getMilestoneStatus(p);
+    return `<span class="prereq-tag prereq-${ps}">${p}</span>`;
+  }).join('') : '<em>None</em>';
+  const downstreamIds = Object.values(MILESTONES).filter(x=>x.prereqs.includes(id)).map(x=>x.id);
+  const downHTML = downstreamIds.length ? downstreamIds.map(d=>{
+    const ds = getMilestoneStatus(d);
+    return `<span class="prereq-tag prereq-${ds}">${d}</span>`;
+  }).join('') : '<em>None</em>';
+  el.innerHTML = `
+  <div style="margin-bottom:12px">
+    <div style="font-size:11px;color:#57606a;margin-bottom:4px">${m.pillar} · Level ${m.level}</div>
+    <div style="font-size:15px;font-weight:700;margin-bottom:6px">${m.id} — ${m.name}</div>
+    <div class="ms-tile-status status-${st}" style="font-size:13px;margin-bottom:8px">${st.toUpperCase()}</div>
+    <div style="font-size:11px;font-weight:600;color:#57606a;margin-bottom:3px">STAGES</div>
+    <div style="font-size:12px;margin-bottom:10px">APM: <b>${m.apmStage}</b> &nbsp;|&nbsp; FSM: <b>${m.fsmStage}</b></div>
+    <div style="font-size:11px;font-weight:600;color:#57606a;margin-bottom:3px">CUSTOMER IMPERATIVE</div>
+    <div style="font-size:12px;margin-bottom:10px">${m.imperative}</div>
+    <div style="font-size:11px;font-weight:600;color:#57606a;margin-bottom:3px">PREREQUISITES <span style="font-weight:400">(${m.prereqType})</span></div>
+    <div style="margin-bottom:10px">${prereqHTML}</div>
+    <div style="font-size:11px;font-weight:600;color:#57606a;margin-bottom:3px">UNLOCKS (downstream)</div>
+    <div>${downHTML}</div>
+  </div>`;
+  showTab('milestones');
+}
+
+// ─── EVENT HANDLERS ───────────────────────────────────────────────────────────
+function toggleObj(i){
+  if(selectedObjs.includes(i)) selectedObjs=selectedObjs.filter(x=>x!==i);
+  else if(selectedObjs.length<3) selectedObjs.push(i);
+  else { document.getElementById('obj'+i).checked=false; return; }
+  recompute();
+}
+function toggleObs(i){
+  if(selectedObs.includes(i)) selectedObs=selectedObs.filter(x=>x!==i);
+  else selectedObs.push(i);
+  recompute();
+}
+function setGroupAnswer(qid,mid,val){
+  answers[qid]=val;
+  recompute();
+}
+function toggleMulti(qid,idx,isNone,mid){
+  if(!answers[qid]) answers[qid]=[];
+  const checked = document.getElementById(qid+'_'+idx).checked;
+  if(isNone){
+    // uncheck all others
+    answers[qid] = checked ? [idx] : answers[qid].filter(x=>x!==idx);
+  } else {
+    // uncheck "none" option (always last)
+    if(checked) answers[qid].push(idx);
+    else answers[qid] = answers[qid].filter(x=>x!==idx);
+  }
+  recompute();
+  buildQuestionPanel(); // re-render to reflect state
+}
+function setLadder(qid,order){
+  answers[qid]=order;
+  recompute();
+}
+function setGrowth(qid,score){
+  answers[qid]=score;
+  recompute();
+}
+function showTab(tab){
+  leftTab=tab;
+  document.getElementById('panel-questions').style.display=tab==='questions'?'block':'none';
+  document.getElementById('panel-milestones').style.display=tab==='milestones'?'block':'none';
+  document.getElementById('tab-questions').className=tab==='questions'?'active':'';
+  document.getElementById('tab-milestones').className=tab==='milestones'?'active':'';
+}
+function resetAll(){
+  answers={};selectedObjs=[];selectedObs=[];activePillar='All';
+  buildQuestionPanel();recompute();
+}
+function filterPillar(p){activePillar=p;renderRight();}
+
+// ─── SCORING ENGINE ───────────────────────────────────────────────────────────
+const Q_TO_MID = {
+  'Q-AD1':'AD-1-CRIT','Q-AD2':'AD-2-HIER','Q-AD3':'AD-2-CLAS','Q-AD4':'AD-1-REG',
+  'Q-WM1':'WM-1-JPBASIC','Q-WM2':'WM-2-JPNEEDS','Q-WM3':'WM-3-JPAR',
+  'Q-RP1':'RP-1-FC','Q-RP2':'RP-2-RS','Q-RP3':'RP-3-FMEA','Q-RP4':'RP-5-FGOV',
+};
+const MULTI_Q = {
+  'Q-IC-MULTI':['IC-1-PROG','IC-2-INSB','IC-3-METB'],
+  'Q-SC-MULTI':['SC-1-REG','SC-2-BASICS','SC-3-PLAN','SC-4-OPT'],
+  'Q-CM-CORE': ['CM-1-LF','CM-3-IOT','CM-2-TRIG','CM-2-HLTH','CM-3-MVAR'],
+  'Q-CM-ADV':  ['CM-4-PRED','CM-5-RCBF','SC-4-OPT','CM-6-LCFDBK'],
+};
+const MULTI_Q_OPTS = {
+  'Q-IC-MULTI':['IC-1-PROG','IC-2-INSB','IC-3-METB',''],
+  'Q-SC-MULTI':['SC-1-REG','SC-2-BASICS','SC-3-PLAN','SC-4-OPT',''],
+  'Q-CM-CORE': ['CM-1-LF','CM-3-IOT','CM-2-TRIG','CM-2-HLTH','CM-3-MVAR',''],
+  'Q-CM-ADV':  ['CM-4-PRED','CM-5-RCBF','SC-4-OPT','CM-6-LCFDBK','CM-3-MVAR'],
+};
+const MULTI_NONE_IDX = {'Q-IC-MULTI':3,'Q-SC-MULTI':4,'Q-CM-CORE':5,'Q-CM-ADV':4};
+const LADDER_Q = {
+  'Q-FSM-SCH':{opts:['','SCH-1-DATES','SCH-2-FWD','SCH-3-CONS'],all:['SCH-1-DATES','SCH-2-FWD','SCH-3-CONS']},
+  'Q-FSM-AS': {opts:['','AS-1-OWN','AS-2-CENT','AS-3-BEST'],all:['AS-1-OWN','AS-2-CENT','AS-3-BEST']},
+  'Q-FSM-WA': {opts:['','WA-1-BAS','WA-2-ACT','WA-3-EFF'],all:['WA-1-BAS','WA-2-ACT','WA-3-EFF']},
+};
+
+let milestoneStatus = {}; // id -> 'met'|'unmet'|'unknown'
+
+function computeMilestoneStatuses(){
+  const s = {};
+  // init all unknown
+  Object.keys(MILESTONES).forEach(id=>s[id]='unknown');
+
+  // group questions
+  Object.entries(Q_TO_MID).forEach(([qid,mid])=>{
+    const v = answers[qid];
+    if(v==='met') s[mid]='met';
+    else if(v==='unmet') s[mid]='unmet';
+    // unknown stays unknown
+  });
+
+  // multiselect questions
+  Object.entries(MULTI_Q_OPTS).forEach(([qid,optMids])=>{
+    const sel = answers[qid]||[];
+    const noneIdx = MULTI_NONE_IDX[qid];
+    if(sel.length===0) return; // unanswered -> all unknown
+    if(sel.includes(noneIdx)){
+      // none selected -> all Unmet
+      optMids.forEach(mid=>{ if(mid && mid!=='CM-3-MVAR') s[mid]='unmet'; });
+      return;
+    }
+    optMids.forEach((mid,i)=>{
+      if(!mid) return;
+      if(sel.includes(i)) s[mid]='met';
+      else s[mid]='unmet';
+    });
+  });
+
+  // ladder questions
+  Object.entries(LADDER_Q).forEach(([qid,{opts,all}])=>{
+    const v = answers[qid];
+    if(v==null||v<0) return; // unanswered
+    if(v===0){ all.forEach(mid=>s[mid]='unmet'); return; }
+    opts.forEach((mid,order)=>{
+      if(!mid) return;
+      if(order<=v) s[mid]='met';
+      else s[mid]='unmet';
+    });
+  });
+
+  milestoneStatus = s;
+}
+
+function getMilestoneStatus(id){
+  return milestoneStatus[id]||'unknown';
+}
+
+function computeStage(gates){
+  let stage = 0;
+  for(let n=1;n<=5;n++){
+    const g = gates[n]||[];
+    if(g.length===0){ stage=n; continue; }
+    const allMet = g.every(id=>getMilestoneStatus(id)==='met');
+    if(allMet) stage=n;
+    else break;
+  }
+  return Math.max(stage,1);
+}
+
+function computeDimScore(dim){
+  const ids = dim.milestoneIds;
+  const met = ids.filter(id=>getMilestoneStatus(id)==='met').length;
+  return ids.length>0 ? (met/ids.length)*100 : 0;
+}
+
+function computeOverallMaturity(){
+  let score=0;
+  DIMENSIONS.forEach(d=>{ score += computeDimScore(d)*d.weight; });
+  return score;
+}
+
+function computePropensity(){
+  let score=0;
+  ['Q-BUDGET','Q-SPONSOR','Q-PLANS','Q-HORIZON'].forEach(q=>{
+    if(answers[q]!=null) score+=answers[q];
+  });
+  return score;
+}
+
+function getTargetStage(track){
+  // derive from selected objectives
+  let maxStage=0;
+  selectedObjs.forEach(i=>{
+    const o = OBJECTIVES[i];
+    const stageStr = track==='apm' ? o.apm : o.fsm;
+    if(stageStr==='—') return;
+    const nums = stageStr.replace('APM ','').replace('FSM ','').split('/').map(Number).filter(n=>!isNaN(n));
+    if(nums.length) maxStage = Math.max(maxStage,...nums);
+  });
+  return maxStage>0 ? maxStage : null;
+}
+
+function computeActions(){
+  computeMilestoneStatuses();
+  const apmStage = computeStage(APM_GATES);
+  const fsmStage = computeStage(FSM_GATES);
+  const apmTarget = getTargetStage('apm') || Math.min(apmStage+1,5);
+  const fsmTarget = getTargetStage('fsm') || Math.min(fsmStage+1,5);
+
+  const candidates = [];
+  Object.values(MILESTONES).forEach(m=>{
+    if(getMilestoneStatus(m.id)==='met') return;
+    const pillar = m.pillar;
+    // exclude unassessed pillars
+    if(['Safety & HSE'].includes(pillar)) return;
+    const inAPM = m.apmStage!=='—' && parseInt(m.apmStage.replace('APM',''))<=apmTarget;
+    const inFSM = m.fsmStage!=='—' && parseInt(m.fsmStage.replace('FSM',''))<=fsmTarget;
+    if(!inAPM && !inFSM) return;
+
+    let base = 50;
+    // gating for next stage?
+    const apmNext = APM_GATES[apmStage+1]||[];
+    const fsmNext = FSM_GATES[fsmStage+1]||[];
+    if(apmNext.includes(m.id)||fsmNext.includes(m.id)) base=100;
+
+    let obstacleBst=0;
+    selectedObs.forEach(i=>{
+      if(OBSTACLES[i].primary===m.id) obstacleBst=Math.max(obstacleBst,25);
+      else if(OBSTACLES[i].secondary===m.id) obstacleBst=Math.max(obstacleBst,15);
+    });
+    let objectiveBst=0;
+    selectedObjs.forEach(i=>{
+      const o=OBJECTIVES[i];
+      const apmStr=o.apm,fsmStr=o.fsm;
+      if(m.apmStage!=='—'&&apmStr!=='—') objectiveBst=10;
+      if(m.fsmStage!=='—'&&fsmStr!=='—') objectiveBst=10;
+    });
+    const levelPenalty = m.level*5;
+    const score = base - levelPenalty + obstacleBst + objectiveBst;
+    candidates.push({m, score, obstacleBst, objectiveBst, base});
+  });
+
+  candidates.sort((a,b)=>b.score-a.score || b.obstacleBst-a.obstacleBst || a.m.level-b.m.level);
+  return candidates;
+}
+
+function getActionWhy(item){
+  if(item.obstacleBst>0){
+    const obs = OBSTACLES.filter((_,i)=>selectedObs.includes(i)).find(o=>o.primary===item.m.id||o.secondary===item.m.id);
+    if(obs) return 'Overcomes stated obstacle: "'+obs.text+'"';
+  }
+  if(item.objectiveBst>0){
+    const obj = OBJECTIVES.filter((_,i)=>selectedObjs.includes(i))[0];
+    if(obj) return 'Directly unlocks goal: "'+obj.text+'"';
+  }
+  return 'Essential prerequisite for advancing your maturity stage';
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+function recompute(){
+  computeMilestoneStatuses();
+  renderRight();
+}
+
+function renderRight(){
+  const el = document.getElementById('right-panel');
+  const apmStage = computeStage(APM_GATES);
+  const fsmStage = computeStage(FSM_GATES);
+  const maturity = computeOverallMaturity();
+  const propensity = computePropensity();
+  const actions = computeActions();
+  const apmTarget = getTargetStage('apm');
+  const fsmTarget = getTargetStage('fsm');
+
+  const matTier = maturity<25?'Reactive':maturity<50?'Core / Baseline':maturity<75?'Condition-Informed':maturity<90?'Predictive / Optimized':'Prescriptive & Automated';
+  const matColor = maturity<25?'#ef4444':maturity<50?'#f59e0b':maturity<75?'#3b82f6':maturity<90?'#10b981':'#7c5cd8';
+
+  const metCount = Object.values(milestoneStatus).filter(v=>v==='met').length;
+  const unmetCount = Object.values(milestoneStatus).filter(v=>v==='unmet').length;
+  const totalScored = metCount+unmetCount;
+
+  const propLabel = propensity>=6?'High':propensity>=3?'Medium':'Low';
+  const propColor = propensity>=6?'#10b981':propensity>=3?'#f59e0b':'#ef4444';
+
+  // pillars list
+  const pillars = [...new Set(Object.values(MILESTONES).map(m=>m.pillar))];
+
+  // build HTML
+  let html = `
+  <div class="section-box">
+    <div class="section-title">Assessment Summary</div>
+    <div class="cards">
+      <div class="card">
+        <div class="card-label">Overall Maturity</div>
+        <div class="card-value" style="color:${matColor}">${Math.round(maturity)}%</div>
+        <div class="card-sub">${matTier}</div>
+        <div class="card-bar"><div class="card-bar-fill" style="width:${maturity}%;background:${matColor}"></div></div>
+      </div>
+      <div class="card">
+        <div class="card-label">APM Stage</div>
+        <div class="card-value">${apmStage}</div>
+        <div class="card-sub">${STAGE_NAMES.apm[apmStage]}</div>
+        ${apmTarget?`<div style="font-size:10px;color:#57606a;margin-top:4px">Target: Stage ${apmTarget}</div>`:''}
+        <span class="stage-pill stage-${apmStage}">APM ${apmStage}</span>
+      </div>
+      <div class="card">
+        <div class="card-label">FSM Stage</div>
+        <div class="card-value">${fsmStage}</div>
+        <div class="card-sub">${STAGE_NAMES.fsm[fsmStage]}</div>
+        ${fsmTarget?`<div style="font-size:10px;color:#57606a;margin-top:4px">Target: Stage ${fsmTarget}</div>`:''}
+        <span class="stage-pill stage-${fsmStage}">FSM ${fsmStage}</span>
+      </div>
+      <div class="card">
+        <div class="card-label">Milestones Met</div>
+        <div class="card-value" style="color:#10b981">${metCount}</div>
+        <div class="card-sub">of ${totalScored>0?totalScored:Object.keys(MILESTONES).length} assessed</div>
+        <div class="card-bar"><div class="card-bar-fill" style="width:${totalScored>0?(metCount/totalScored)*100:0}%;background:#10b981"></div></div>
+      </div>
+      <div class="card">
+        <div class="card-label">Org. Readiness</div>
+        <div class="card-value" style="color:${propColor}">${propLabel}</div>
+        <div class="card-sub">Score: ${propensity}/8</div>
+        <div class="card-bar"><div class="card-bar-fill" style="width:${(propensity/8)*100}%;background:${propColor}"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-box">
+    <div class="section-title">Dimension Scores</div>
+    ${DIMENSIONS.map(d=>{
+      const sc=computeDimScore(d);
+      const tc=d.track==='APM'?'#6366f1':d.track==='FSM'?'#f59e0b':'#10b981';
+      return `<div class="dim-row">
+        <div class="dim-label">${d.name} <span style="font-size:9px;color:${tc};font-weight:700">${d.track}</span></div>
+        <div class="dim-bar-wrap"><div class="dim-bar-fill" style="width:${sc}%;background:${tc}"></div></div>
+        <div class="dim-pct">${Math.round(sc)}%</div>
+      </div>`;
+    }).join('')}
+  </div>
+
+  <div class="section-box">
+    <div class="section-title">Top Recommended Actions <span>(based on your answers, objectives &amp; obstacles)</span></div>
+    ${actions.slice(0,3).map((item,i)=>`
+    <div class="action-card ${i===0?'primary':'secondary'}">
+      <div class="action-rank">#${i+1} ${i===0?'Primary Action':'Next Action'}</div>
+      <div class="action-name">${item.m.id} — ${item.m.name}</div>
+      <div class="action-imperative">${item.m.imperative}</div>
+      <div class="action-why">${getActionWhy(item)}</div>
+    </div>`).join('')}
+    ${actions.length===0?'<div style="color:#57606a;font-size:13px">All assessed milestones are met — excellent foundation!</div>':''}
+  </div>
+
+  <div class="section-box">
+    <div class="section-title">Milestone Dependency Graph <span>(click a tile to see details)</span></div>
+    <div class="pillar-tabs">
+      <div class="pillar-tab ${activePillar==='All'?'active':''}" onclick="filterPillar('All')">All</div>
+      ${pillars.map(p=>`<div class="pillar-tab ${activePillar===p?'active':''}" onclick="filterPillar('${p.replace(/'/g,"\\'")}')">${p}</div>`).join('')}
+    </div>
+    <div class="dep-grid">
+      ${Object.values(MILESTONES)
+        .filter(m=>activePillar==='All'||m.pillar===activePillar)
+        .sort((a,b)=>a.level-b.level||a.id.localeCompare(b.id))
+        .map(m=>{
+          const st=getMilestoneStatus(m.id);
+          const prereqHTML=m.prereqs.map(p=>`<span class="prereq-tag prereq-${getMilestoneStatus(p)}">${p}</span>`).join('');
+          const tc = m.apmStage!=='—'&&m.fsmStage!=='—'?'#6b7280':m.apmStage!=='—'?'#6366f1':'#f59e0b';
+          return `<div class="ms-tile ${st}" onclick="showMilestoneDetail('${m.id}')">
+            <div class="ms-tile-id" style="color:${tc}">${m.id}</div>
+            <div class="ms-tile-name">${m.name}</div>
+            <div class="ms-tile-status status-${st}">${st.toUpperCase()}</div>
+            <div style="font-size:10px;color:#9ca3af;margin-top:3px">Lv.${m.level} · APM:${m.apmStage} · FSM:${m.fsmStage}</div>
+            ${m.prereqs.length?`<div class="ms-tile-prereqs">Prereqs: ${prereqHTML}</div>`:''}
+          </div>`;
+        }).join('')}
+    </div>
+  </div>`;
+
+  el.innerHTML = html;
+}
+
+init();
+</script>
+</body>
+</html>
