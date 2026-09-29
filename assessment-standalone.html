@@ -13,6 +13,14 @@
   />
 
   <!-- Carbon Web Components (v2) -->
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/tabs.min.js"></script>
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/tag.min.js"></script>
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/tooltip.min.js"></script>
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/menu-button.min.js"></script>
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/menu.min.js"></script>
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/textarea.min.js"></script>
+  <link rel="preconnect" href="https://1.www.s81c.com" crossorigin>
+  <link rel="dns-prefetch" href="https://1.www.s81c.com">
   <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/button.min.js"></script>
   <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/checkbox.min.js"></script>
   <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/radio-button.min.js"></script>
@@ -478,6 +486,24 @@ p { margin: 0; }
    Responsive
    ------------------------------------------------------------------ */
 @media (max-width: 767px) {
+  /* The section label is nowrap so the rule can sit beside it on desktop. On a
+     phone that pushes long labels ("Advanced reliability & lifecycle practices
+     (optional)") off the screen, so it wraps here instead. The label takes only
+     the width it needs, capped so it can never swallow the row, and the rule
+     fills whatever is left — long label, short line; short label, long line. */
+  .divider {
+    align-items: center;
+  }
+  .divider__label {
+    flex: 0 1 auto;
+    max-width: calc(100% - 72px);
+    white-space: normal;
+  }
+  .divider__rule {
+    flex: 1 1 auto;
+    min-width: 48px;
+  }
+
   .page { flex-direction: column; }
   /* The banner is fixed and the main column is padded by the banner's
      EXPANDED height, so collapsing it never reflows the page (and never
@@ -1750,10 +1776,799 @@ p { margin: 0; }
 }
 
 </style>
+  <style>
+/*
+ * css/splash.css
+ * Splash screen styles — extends the Carbon design tokens defined in css/styles.css.
+ * This file handles:
+ *   1. Chrome-hiding rules: hides the assessment UI (sidebar, progress, actions bar)
+ *      while body.splash-active is set.
+ *   2. Section stub rules for the splash screen layout (filled in subsequent sub-tasks).
+ */
+
+/* ============================================================
+   Chrome-hiding — hides assessment UI while splash is active
+   ============================================================ */
+
+body.splash-active .sidebar,
+body.splash-active .main,
+body.splash-active #actions-bar { display: none; }
+
+/* ============================================================
+   Hero section
+   ============================================================ */
+
+.splash-screen {
+  width: 100vw;
+  min-height: 100vh;
+  background: #fff;
+  overflow-x: hidden;
+}
+
+.splash-hero {
+  display: flex;
+  position: relative;
+  background: linear-gradient(180deg, #f4f4f4 29.648%, #edf5ff 100%);
+  padding: 120px 0 96px 232px;
+  overflow: hidden;
+  min-height: 500px;
+}
+
+.splash-hero__content {
+  flex: 0 0 440px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  position: relative;
+  z-index: 1;
+  /* ensure content is never overlapped by the illustration */
+  isolation: isolate;
+}
+
+.splash-hero__icon {
+  display: block;
+  flex-shrink: 0;
+}
+
+.splash-hero__headline {
+  font-family: var(--font-serif);
+  font-size: 48px;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.splash-hero__headline--black {
+  display: block;
+  font-weight: 300;
+  color: #161616;
+}
+
+.splash-hero__headline--purple {
+  display: block;
+  font-weight: 500;
+  color: #8a3ffc;
+}
+
+.splash-hero__body {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 22px;
+  color: var(--cds-text-primary);
+  max-width: 600px;
+  margin: 0;
+}
+
+.splash-hero__cta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.splash-hero__btn-row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.splash-hero__clock {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.splash-hero__clock em {
+  font-family: var(--font-sans);
+  font-style: italic;
+  font-size: 16px;
+  line-height: 22px;
+  color: var(--cds-text-primary);
+  white-space: nowrap;
+}
+
+.splash-hero__helper {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--cds-text-secondary);
+  letter-spacing: 0.32px;
+  margin: 0;
+}
+
+.splash-hero__illustration {
+  /* sit in the flex row alongside the content — not absolute */
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  max-height: 560px;
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* A <video> box paints black until its first frame decodes, so any hiccup in
+   delivery shows as a black slab behind the banner. Hold each clip invisible
+   until it actually has a frame — app.js adds .is-ready on loadeddata — and the
+   page's own background shows through in the meantime. */
+.splash-hero__illustration video,
+.splash-media-container video {
+  background: transparent;
+  opacity: 0;
+  transition: opacity 240ms ease;
+}
+
+.splash-hero__illustration video.is-ready,
+.splash-media-container video.is-ready {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .splash-hero__illustration video,
+  .splash-media-container video {
+    transition: none;
+  }
+}
+
+.splash-hero__illustration video {
+  /* scale to fit the available space, no cropping */
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  display: block;
+}
+
+/* ============================================================
+   Quote banner section
+   ============================================================ */
+
+.splash-quote {
+  padding: 0 0 64px;
+}
+
+.splash-quote__box {
+  background: #edf5ff;
+  border-radius: 0;
+  padding: 32px 232px;
+  min-height: 269px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.splash-quote__text {
+  font-family: var(--font-mono);
+  font-style: italic;
+  font-size: 32px;
+  line-height: 1.18;
+  color: var(--cds-link-primary);
+  letter-spacing: -0.32px;
+  margin: 0;
+}
+
+.splash-quote__text strong {
+  font-weight: 600;
+}
+
+/* "The" opens the second sentence, so on a phone it starts its own line rather
+   than hanging off the end of the first. A <br> set to display:none produces no
+   break, which is how this stays desktop-clean. */
+.splash-quote__break {
+  display: none;
+}
+
+.splash-quote__scroll {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.splash-quote__scroll p {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 18px;
+  color: var(--cds-text-secondary);
+  margin: 0;
+  letter-spacing: 0.16px;
+}
+
+/* ============================================================
+   Remaining section stubs
+   ============================================================ */
+
+/* ============================================================
+   Value section — "Turn assessment insights into action"
+   ============================================================ */
+
+.splash-value {
+  padding: 64px 232px 64px;
+}
+
+.splash-value__header {
+  max-width: 960px;
+  margin-bottom: 48px;
+}
+
+.splash-value__heading {
+  font-family: var(--font-sans);
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 40px;
+  color: #161616;
+  margin: 0 0 8px;
+}
+
+.splash-value__desc {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--cds-text-secondary);
+  margin: 0;
+  max-width: 387px;
+}
+
+.splash-value__grid {
+  display: grid;
+  /* Both tracks share one size, so the single card on the left and the pair on
+     the right are always exactly as wide as each other — which is what makes
+     the three videos render at the same scale. The old
+     `minmax(320px,640px) minmax(300px,1fr)` capped the left column but let the
+     right one keep growing, so the two sides drifted apart as the window
+     widened. The cap keeps the set from becoming over-large on a big screen. */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 960px;
+  gap: 32px;
+  align-items: start;
+  position: relative;
+}
+
+.splash-value__right {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.splash-value__card {
+  background: #f4f4f4;
+  border: 1px solid #dde1e6;
+  border-radius: 4px;
+  padding: 24px;
+  flex: 1;
+}
+
+.splash-value__card--1 {
+  position: relative;
+}
+
+/* Desktop connectors base */
+.splash-connector--desktop {
+  pointer-events: none;
+}
+
+/* Connector 1: from Card 1 vertical center (right edge) across the 32px grid gap */
+.splash-connector--h {
+  display: block;
+  position: absolute;
+  right: -32px;
+  width: 32px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 24px;
+}
+
+/* Connector 2: bridges between Card 2 and Card 3 in the right column (center to center) */
+.splash-connector--v {
+  position: static !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.splash-connector--v svg {
+  display: block;
+  margin: 0 auto;
+}
+
+.splash-pictogram {
+  width: 84px;
+  height: 84px;
+  background: #393939;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.splash-value__card-label {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--cds-text-primary);
+  margin: 16px 0 0;
+}
+
+.splash-media-container {
+  margin-top: 28px;
+  width: 100%;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.splash-media-container video {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.splash-media-placeholder {
+  border: 2px dashed #c6c6c6;
+  background: #fff;
+  min-height: 332px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a8a8a8;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  border-radius: 4px;
+  margin-top: 28px;
+}
+
+/* Mobile connector — hidden on desktop */
+.splash-connector {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 0;
+}
+
+/* Desktop connectors — hidden on mobile */
+.splash-connector--h.splash-connector--desktop {
+  display: block;
+}
+.splash-connector--v.splash-connector--desktop {
+  display: flex;
+}
+
+/* ============================================================
+   Bottom CTA section
+   ============================================================ */
+
+.splash-cta {
+  padding: 64px 0 96px;
+}
+
+.splash-cta__inner {
+  background: #f4f4f4;
+  border-radius: 4px;
+  margin: 0 232px;
+  padding: 32px 24px;
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.splash-cta__illustration {
+  width: 275px;
+  flex-shrink: 0;
+  display: block;
+}
+
+.splash-cta__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.splash-cta__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.splash-cta__heading {
+  font-family: var(--font-sans);
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 36px;
+  color: #161616;
+  margin: 0;
+}
+
+.splash-cta__desc {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 22.5px;
+  color: var(--cds-text-secondary);
+  margin: 0;
+  max-width: 600px;
+}
+
+.splash-cta__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.splash-cta__btn-row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+/* ============================================================
+   Tablet / Intermediate responsive — max-width: 1200px
+   Allows smooth scaling of section margins and grid
+   ============================================================ */
+
+@media (max-width: 1200px) {
+  .splash-hero {
+    padding-left: clamp(24px, 6vw, 232px);
+  }
+
+  .splash-quote__box {
+    padding-left: clamp(24px, 6vw, 232px);
+    padding-right: clamp(24px, 6vw, 232px);
+  }
+
+  .splash-value {
+    padding-left: clamp(24px, 6vw, 232px);
+    padding-right: clamp(24px, 6vw, 232px);
+  }
+
+  .splash-cta__inner {
+    margin-left: clamp(24px, 6vw, 232px);
+    margin-right: clamp(24px, 6vw, 232px);
+  }
+}
+
+/* ============================================================
+   Mobile responsive — max-width: 767px
+   Matches Figma mobile frame (390px wide)
+   ============================================================ */
+
+@media (max-width: 767px) {
+
+  /* --- Hero --- */
+  .splash-hero {
+    flex-direction: column-reverse;
+    padding: 0;
+    min-height: 0;
+    /* single continuous gradient top-to-bottom across both panes */
+    background: linear-gradient(180deg, #f4f4f4 0%, #edf5ff 100%);
+  }
+
+  .splash-hero__illustration {
+    flex: none;
+    width: 100%;
+    height: 200px;
+    justify-content: center;
+    background: transparent;
+  }
+
+  .splash-hero__illustration video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+  }
+
+  .splash-hero__content {
+    flex: unset;
+    padding: 32px 24px 24px;
+    gap: 16px;
+    /* transparent so hero gradient continues through text area */
+    background: transparent;
+  }
+
+  .splash-hero__headline {
+    font-size: 40px;
+  }
+
+  /* The mock sets the headline over four lines — "Find your / best path to /
+     greater value / from Maximo." A measure narrower than the column produces
+     those breaks; the usable range is 240-262px, so this sits in the middle of
+     it and will not tip onto a different break. Only the black span is capped:
+     "from Maximo." needs the full column to stay on one line. */
+  .splash-hero__headline--black {
+    max-width: 252px;
+  }
+
+  /* Add trailing period on "from Maximo" on mobile */
+  .splash-hero__headline--purple::after {
+    content: '.';
+  }
+
+  /* Hide body copy and clock row on mobile */
+  .splash-hero__body,
+  .splash-hero__clock {
+    display: none;
+  }
+
+  /* --- Quote --- */
+  .splash-quote {
+    padding: 0;
+  }
+
+  .splash-quote__box {
+    border-radius: 0;
+    padding: 24px 20px;
+    min-height: 0;
+  }
+
+  /* Matches the 16px of .splash-value__desc. The sentence break after
+     "achieve." is forced rather than left to the wrap, so it lands in the same
+     place on a 320px phone as on a 430px one. */
+  .splash-quote__text {
+    font-size: 16px;
+  }
+
+  .splash-quote__break {
+    display: inline;
+  }
+
+  /* Hide scroll-down arrow on mobile */
+  .splash-quote__scroll {
+    display: none;
+  }
+
+  /* --- Value section --- */
+  .splash-value {
+    padding: 48px 24px 32px;
+  }
+
+  /* Hide desktop connectors on mobile */
+  .splash-connector--desktop,
+  .splash-connector--h.splash-connector--desktop,
+  .splash-connector--v.splash-connector--desktop {
+    display: none !important;
+  }
+
+  .splash-value__grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  .splash-value__card {
+    width: 100%;
+  }
+
+  /* Flex ordering: Card1 (0) → connector-card1 (1) → right-column (2) */
+  .splash-value__grid > .splash-value__card {
+    order: 0;
+  }
+
+  .splash-connector--card1 {
+    order: 1;
+  }
+
+  .splash-value__right {
+    order: 2;
+    width: 100%;
+    gap: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Connector between Card 2 and Card 3 inside the right column */
+  .splash-connector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 35px;
+    width: 100%;
+  }
+
+  .splash-connector svg {
+    display: block;
+  }
+
+  .splash-media-placeholder {
+    min-height: 174px;
+  }
+
+  /* --- Bottom CTA --- */
+  .splash-cta {
+    padding: 24px;
+  }
+
+  .splash-cta__inner {
+    flex-direction: column;
+    margin: 0;
+    background: linear-gradient(180deg, #f4f4f4 80%, #edf5ff 88%);
+    border: 1px solid #dde1e6;
+  }
+
+  .splash-cta__illustration {
+    display: none;
+  }
+
+  .splash-cta__heading {
+    font-size: 20px;
+    line-height: 1.18;
+  }
+
+  .splash-cta__desc {
+    font-size: 13px;
+    line-height: 1.45;
+  }
+}
+
+</style>
 
 </head>
-<body>
+<body class="splash-active">
   <div class="page">
+    <!-- ============================================================ -->
+    <!-- Splash screen                                                 -->
+    <!-- ============================================================ -->
+    <div id="splash-screen" class="splash-screen">
+      <section class="splash-hero">
+        <div class="splash-hero__content">
+          <img src="assets/IBM Maximo Application Suite.svg" alt="IBM Maximo Application Suite" class="splash-hero__icon" width="64" height="64" />
+          <h1 class="splash-hero__headline">
+            <span class="splash-hero__headline--black">Find your best path to greater value</span>
+            <span class="splash-hero__headline--purple">from Maximo</span>
+          </h1>
+          <p class="splash-hero__body">Identify where your capabilities are strong, where improvement could have the greatest impact, and what to prioritize next.</p>
+          <div class="splash-hero__cta">
+            <div class="splash-hero__btn-row">
+              <cds-button kind="primary" size="lg" onclick="startAssessment()">
+                Start assessment
+                <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18 6L16.57 7.393 26.188 17H2v2h24.188L16.57 28.573 18 30l12-12L18 6z"/></svg>
+              </cds-button>
+              <div class="splash-hero__clock">
+                <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M16 2a14 14 0 1 0 14 14A14 14 0 0 0 16 2zm0 26a12 12 0 1 1 12-12 12 12 0 0 1-12 12z"/><path d="M20.59 22L15 16.41V7h2v8.58l5 5.01L20.59 22z"/></svg>
+                <em>Approx 10 minutes</em>
+              </div>
+            </div>
+            <p class="splash-hero__helper">Your answers are used to personalize your recommendations.</p>
+          </div>
+        </div>
+        <div class="splash-hero__illustration" aria-hidden="true">
+          <video src="assets/mgrat-splash-anim.mp4" autoplay muted loop playsinline></video>
+        </div>
+      </section>
+      <section class="splash-quote">
+        <div class="splash-quote__box">
+          <p class="splash-quote__text">You have goals to achieve.<br class="splash-quote__break"> The challenge is knowing which improvement will create the <strong>biggest business impact.</strong></p>
+          <div class="splash-quote__scroll">
+            <p>Scroll down to learn more about the assessment</p>
+            <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M24.59 16.59L17 24.17V4h-2v20.17l-7.59-7.58L6 18l10 10 10-10-1.41-1.41z"/></svg>
+          </div>
+        </div>
+      </section>
+      <section class="splash-value">
+        <div class="splash-value__header">
+          <h2 class="splash-value__heading">Turn assessment<br>insights into action</h2>
+          <p class="splash-value__desc">See what you're doing well, uncover the biggest opportunities to create value, and get a practical roadmap to achieve your goals.</p>
+        </div>
+        <div class="splash-value__grid">
+          <!-- Card 1 -->
+          <!-- Mobile connector: Card 1 → Card 2 -->
+          <div class="splash-connector splash-connector--card1" aria-hidden="true">
+            <svg viewBox="0 0 2 35" width="2" height="35" fill="none"><line x1="1" y1="0" x2="1" y2="35" stroke="#c6c6c6" stroke-width="1.5"/></svg>
+          </div>
+          <div class="splash-value__card splash-value__card--1">
+            <div class="splash-pictogram">
+              <img src="assets/Pictogram.svg" loading="lazy" decoding="async" alt="" width="48" height="48" />
+            </div>
+            <p class="splash-value__card-label">Know your strengths and opportunities</p>
+            <div class="splash-media-container">
+              <video src="assets/progress-anim.mp4" muted loop playsinline preload="none" data-lazy-video></video>
+            </div>
+            <!-- Desktop connector: Card 1 → Card 2 (anchored to Card 1 center-right) -->
+            <div class="splash-connector--desktop splash-connector--h" aria-hidden="true">
+              <svg width="32" height="24" viewBox="0 0 32 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- horizontal line straight across from left to right -->
+                <line x1="0" y1="12" x2="26" y2="12" stroke="#c6c6c6" stroke-width="1.5"/>
+                <!-- arrowhead pointing right -->
+                <path d="M21 7 L28 12 L21 17" stroke="#c6c6c6" stroke-width="1.5" fill="none" stroke-linejoin="round"/>
+                <!-- circle dot at start -->
+                <circle cx="2" cy="12" r="3" fill="#c6c6c6"/>
+              </svg>
+            </div>
+          </div>
+          <!-- Right column: Card 2 + Card 3 stacked -->
+          <div class="splash-value__right">
+            <div class="splash-value__card splash-value__card--2">
+              <div class="splash-pictogram">
+                <img src="assets/Pictogram-1.svg" loading="lazy" decoding="async" alt="" width="48" height="48" />
+              </div>
+              <p class="splash-value__card-label">Prioritize your next move</p>
+              <div class="splash-media-container">
+                <video src="assets/steps-anim.mp4" muted loop playsinline preload="none" data-lazy-video></video>
+              </div>
+            </div>
+            <!-- Mobile connector: Card 2 → Card 3 -->
+            <div class="splash-connector" aria-hidden="true">
+              <svg viewBox="0 0 2 35" width="2" height="35" fill="none"><line x1="1" y1="0" x2="1" y2="35" stroke="#c6c6c6" stroke-width="1.5"/></svg>
+            </div>
+            <!-- Desktop connector: Card 2 → Card 3 (bottom-center of Card 2 to top-center of Card 3) -->
+            <div class="splash-connector--desktop splash-connector--v" aria-hidden="true">
+              <svg width="24" height="40" viewBox="0 0 24 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- vertical line straight down from top-center to bottom -->
+                <line x1="12" y1="0" x2="12" y2="34" stroke="#c6c6c6" stroke-width="1.5"/>
+                <!-- arrowhead pointing down -->
+                <path d="M7 29 L12 36 L17 29" stroke="#c6c6c6" stroke-width="1.5" fill="none" stroke-linejoin="round"/>
+                <!-- circle dot at start -->
+                <circle cx="12" cy="2" r="3" fill="#c6c6c6"/>
+              </svg>
+            </div>
+            <div class="splash-value__card splash-value__card--3">
+              <div class="splash-pictogram">
+                <img src="assets/Pictogram-2.svg" loading="lazy" decoding="async" alt="" width="48" height="48" />
+              </div>
+              <p class="splash-value__card-label">Take action with confidence</p>
+              <div class="splash-media-container">
+                <video src="assets/cards-anim.mp4" muted loop playsinline preload="none" data-lazy-video></video>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+      <section class="splash-cta">
+        <div class="splash-cta__inner">
+          <img class="splash-cta__illustration" src="assets/What%27s%20on%20supervisor%27s%20mind_.svg" loading="lazy" decoding="async" alt="" width="275" />
+          <div class="splash-cta__content">
+            <div class="splash-cta__copy">
+              <p class="splash-cta__heading">Get more value from Maximo</p>
+              <p class="splash-cta__desc">Answer a few questions to get a personalized view of where you are today, where to focus next, and the recommended steps for moving forward.</p>
+            </div>
+            <div class="splash-cta__actions">
+              <div class="splash-cta__btn-row">
+                <cds-button kind="primary" size="lg" onclick="startAssessment()">
+                  Start assessment
+                  <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18 6L16.57 7.393 26.188 17H2v2h24.188L16.57 28.573 18 30l12-12L18 6z"/></svg>
+                </cds-button>
+                <div class="splash-hero__clock">
+                  <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M16 2a14 14 0 1 0 14 14A14 14 0 0 0 16 2zm0 26a12 12 0 1 1 12-12 12 12 0 0 1-12 12z"/><path d="M20.59 22L15 16.41V7h2v8.58l5 5.01L20.59 22z"/></svg>
+                  <em>Approx 10 minutes</em>
+                </div>
+              </div>
+              <p class="splash-hero__helper">Your answers are used to personalize your recommendations.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
     <!-- ============================================================ -->
     <!-- Sidebar                                                       -->
     <!-- ============================================================ -->
@@ -1773,10 +2588,10 @@ p { margin: 0; }
       </div>
 
       <a class="sidebar__logo" href="https://www.ibm.com" aria-label="IBM">
-        <img src="assets/ibm-logo.svg" alt="IBM" width="54" height="20" />
+        <img src="assets/ibm-logo.svg" loading="lazy" decoding="async" alt="IBM" width="54" height="20" />
       </a>
       <div class="sidebar__art" aria-hidden="true">
-        <img src="assets/sidebar-artwork.png" alt="" />
+        <img data-src="assets/sidebar-artwork.png" decoding="async" alt="" />
       </div>
     </aside>
 
@@ -1824,7 +2639,2071 @@ p { margin: 0; }
     </main>
   </div>
 
-  <div class="report-view" id="report-view" style="display: none;"></div>
+  <div class="report-view" id="report-view" style="display: none;">
+<style>
+/* ==========================================================================
+   Report page styles
+   Extends css/styles.css — do not duplicate tokens defined there.
+   ========================================================================== */
+
+@font-face {
+  font-family: 'IBM Plex Math';
+  src: url('../assets/IBMPlexMath-Regular.otf') format('opentype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+/* --------------------------------------------------------------------------
+   Scroll layering — hero behind, content on top
+   -------------------------------------------------------------------------- */
+.report-page {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  /* clip, not hidden: hidden turns the body into a scroll container and every
+     position:sticky inside it (sidebar, hero, mobile bar) stops working. */
+  overflow-x: clip;
+}
+
+.report-hero {
+  position: sticky;
+  top: 0;
+  height: clamp(120px, 14vw, 200px);
+  background: #edf5ff;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.report-hero__art {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+}
+
+.report-hero__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.report-body {
+  position: relative;
+  z-index: 1;
+  background: #ffffff;
+  box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.1);
+  min-height: 100vh;
+  overflow-x: clip; /* clip unlike hidden does not create a scroll container, so position:sticky still works */
+}
+
+/* --------------------------------------------------------------------------
+   Two-column layout
+   -------------------------------------------------------------------------- */
+.report-layout {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 48px 32px 96px;
+  gap: 32px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* --------------------------------------------------------------------------
+   Left sticky sidebar
+   -------------------------------------------------------------------------- */
+.report-sidebar {
+  width: 407px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 32px;
+  align-self: flex-start;      /* don't stretch — a full-height item can't stick */
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-top: 16px;
+}
+
+/* No scrollbar chrome unless the column really is taller than the viewport. */
+.report-sidebar::-webkit-scrollbar { width: 6px; }
+.report-sidebar::-webkit-scrollbar-thumb { background: var(--cds-border-subtle); }
+
+.report-sidebar__icon {
+  display: flex;
+  align-items: center;
+}
+
+/* Carbon flips a tertiary button to a solid blue fill on hover/active, but our
+   icons are slotted light-DOM SVGs, so the shadow root's colour change never
+   reaches them and they stay blue on blue. Invert them from the host side. */
+cds-button[kind="tertiary"]:hover,
+cds-button[kind="tertiary"]:active,
+cds-button[kind="tertiary"]:focus,
+cds-menu-button[kind="tertiary"]:hover,
+cds-menu-button[kind="tertiary"]:active,
+cds-menu-button[kind="tertiary"]:focus {
+  color: var(--cds-text-on-color, #fff);
+}
+
+cds-button[kind="tertiary"]:hover svg,
+cds-button[kind="tertiary"]:active svg,
+cds-button[kind="tertiary"]:focus svg,
+cds-menu-button[kind="tertiary"]:hover svg,
+cds-menu-button[kind="tertiary"]:active svg,
+cds-menu-button[kind="tertiary"]:focus svg {
+  fill: var(--cds-text-on-color, #fff);
+  color: var(--cds-text-on-color, #fff);
+}
+
+cds-menu-item::part(list-item) {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Figma 607:3204 — the suite mark is 64x64 in the sidebar. */
+.report-sidebar__icon img {
+  width: 64px;
+  height: 64px;
+}
+
+.report-sidebar__title {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: 40px;
+  line-height: 1.1;
+  color: #000;
+  margin: 0;
+}
+
+.report-sidebar__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.report-sidebar__meta p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--cds-text-primary);
+}
+
+.report-sidebar__meta .meta-date {
+  opacity: 0.5;
+  font-size: 14px;
+  line-height: 18px;
+  letter-spacing: 0.16px;
+}
+
+/* --------------------------------------------------------------------------
+   Vertical navigation
+   -------------------------------------------------------------------------- */
+.report-nav__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-left: 1px solid var(--cds-border-subtle);
+}
+
+.report-nav__item {
+  display: block;
+  /* 64px row (Figma 607:3210 — vertical tab items are 164x64) */
+  padding: 22px 16px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--cds-text-secondary);
+  text-decoration: none;
+  border-left: 3px solid transparent;
+  margin-left: -1px;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.report-nav__item:hover {
+  color: var(--cds-text-primary);
+  background: var(--cds-layer-hover);
+}
+
+.report-nav__item--active {
+  color: var(--cds-text-primary);
+  border-left-color: var(--cds-interactive);
+  font-weight: 600;
+}
+
+/* Both CTAs share one width. Carbon's lg button carries a 12rem minimum it
+   will not shrink past, so 192px is the smallest size at which the primary
+   button and the Download menu button actually measure the same. */
+.report-sidebar__actions cds-button,
+.report-sidebar__actions cds-menu-button,
+.mobile-nav__actions cds-button,
+.mobile-nav__actions cds-menu-button {
+  width: 192px;
+}
+
+.report-sidebar__version {
+  margin: 0;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--cds-text-secondary);
+}
+
+.report-sidebar__actions {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* --------------------------------------------------------------------------
+   Right content column
+   -------------------------------------------------------------------------- */
+.report-content {
+  flex: 1;
+  min-width: 0;
+  max-width: 768px;
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+  padding-top: 24px;
+  padding-bottom: 8px;
+}
+
+/* --------------------------------------------------------------------------
+   Section anatomy
+   -------------------------------------------------------------------------- */
+.report-section {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.report-eyebrow-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.report-eyebrow {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 11px;
+  line-height: 1.6;
+  letter-spacing: 1.76px;
+  text-transform: uppercase;
+  color: var(--page-blue);
+  white-space: nowrap;
+  margin: 0;
+}
+
+.report-rule {
+  flex: 1;
+  height: 1px;
+  background: #e4e4e4;
+}
+
+.report-section__heading {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 36px;
+  color: var(--cds-text-primary);
+  margin: 0;
+}
+
+.report-section__heading-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.report-section__sub-heading {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 36px;
+  color: var(--cds-text-primary);
+  margin: 0;
+}
+
+.report-section__sub-heading-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.report-body-text {
+  font-size: 16px;
+  line-height: 22px;
+  color: var(--cds-text-primary);
+  margin: 0;
+}
+
+.report-info-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--cds-text-secondary);
+  padding: 2px;
+  display: flex;
+  align-items: center;
+}
+
+/* --------------------------------------------------------------------------
+   Maturity banner
+   -------------------------------------------------------------------------- */
+.maturity-banner {
+  background: var(--cds-button-primary);
+  color: #fff;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px 130px;
+  align-items: center;
+  padding: 47px 32px 32px;
+  min-height: 271px;
+}
+
+.maturity-score-cell,
+.maturity-strengths-cell {
+  flex: 0 1 237px;
+  min-width: 0;
+}
+
+.maturity-score-cell {
+  display: flex;
+  flex-direction: column;
+  /* Equal spacing between headline, score and subline (Carbon spacing-05). */
+  gap: 16px;
+}
+
+.maturity-score-label {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 22px;
+  margin: 0;
+}
+
+.maturity-score-value {
+  font-family: 'IBM Plex Math', 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 64px;
+  font-weight: 400;
+  line-height: 1;
+  margin: 0;
+  mix-blend-mode: luminosity;
+}
+
+.maturity-level {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 22px;
+  margin: 0;
+}
+
+.maturity-level-label {
+  font-size: 16px;
+  line-height: 22px;
+  margin: -12px 0 0;   /* pulls back to 4px under "Level n" */
+}
+
+.maturity-strengths-cell {}
+
+.maturity-strengths-label {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 22px;
+  margin: 0 0 32px;
+}
+
+.maturity-strengths-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.maturity-strengths-list li {
+  font-size: 16px;
+  line-height: 22px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #a6c8ff;
+}
+
+/* --------------------------------------------------------------------------
+   Dimension meters
+   -------------------------------------------------------------------------- */
+.dimension-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 32px;
+}
+
+.meter {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 8px;
+}
+
+.meter__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  font-size: 16px;
+  line-height: 22px;
+}
+
+.meter__name {
+  font-weight: 600;
+  color: var(--cds-text-primary);
+}
+
+.meter__status {
+  font-size: 16px;
+  color: var(--cds-text-secondary);
+  white-space: nowrap;
+  margin-left: 8px;
+}
+
+.meter__track {
+  background: var(--cds-layer);
+  height: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.meter__bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 0%;
+  transition: width 0.8s ease-out;
+}
+
+/* --------------------------------------------------------------------------
+   Established practices (tabbed card)
+   -------------------------------------------------------------------------- */
+.established-card {
+  border: 1px solid var(--cds-border-subtle);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Tab bar */
+.ep-tab-list {
+  display: flex;
+  flex-direction: row;
+  border-bottom: 1px solid var(--cds-border-subtle);
+  gap: 0;
+  /* The strip slides sideways only: no vertical scrolling inside it, and a
+     sideways overscroll stops here instead of dragging the page with it. */
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ep-tab {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 12px 16px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 14px;
+  line-height: 18px;
+  letter-spacing: 0.16px;
+  color: var(--cds-text-secondary);
+  cursor: pointer;
+  margin-bottom: -1px;
+  transition: color 0.1s, border-color 0.1s;
+}
+
+.ep-tab:hover {
+  color: var(--cds-text-primary);
+  background: var(--cds-layer-hover);
+}
+
+.ep-tab--selected {
+  color: var(--cds-text-primary);
+  border-bottom-color: var(--cds-interactive);
+  font-weight: 600;
+}
+
+/* Panel area */
+.ep-panels {
+  flex: 1;
+}
+
+.established-panel {
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.established-resp {
+  font-size: 16px;
+  line-height: 22px;
+  color: var(--cds-text-primary);
+  max-width: 431px;
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+.established-sub-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.established-sub-label {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: 0.16px;
+  color: var(--cds-text-primary);
+  margin: 0;
+}
+
+.established-signals {
+  list-style: disc;
+  margin: 0;
+  padding-left: 21px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.established-signals { max-width: 480px; }
+
+.established-signals li {
+  font-size: 14px;
+  line-height: 18px;
+  letter-spacing: 0.16px;
+  color: var(--cds-text-secondary);
+}
+
+.established-touchpoints,
+.established-personas {
+  font-size: 14px;
+  line-height: 18px;
+  letter-spacing: 0.16px;
+  color: var(--cds-text-secondary);
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Expansion intro banner
+   -------------------------------------------------------------------------- */
+.expansion-intro {
+  background: var(--cds-button-primary);
+  display: flex;
+  gap: 48px;
+  padding: 32px 24px;
+  overflow: hidden;
+}
+
+.expansion-intro__track {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.expansion-intro__icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+}
+
+.expansion-intro__label {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 22px;
+  color: #fff;
+  margin: 0 0 16px;
+}
+
+.expansion-intro__body {
+  font-size: 16px;
+  line-height: 22px;
+  color: #fff;
+  margin: 0;
+}
+
+/* The track copy runs as two paragraphs with a clear blank line between them,
+   the way the mock sets it — one full line box, not a nudge. */
+.expansion-intro__body + .expansion-intro__body {
+  margin-top: 22px;
+}
+
+/* --------------------------------------------------------------------------
+   Expansion path card
+   -------------------------------------------------------------------------- */
+.expansion-card {
+  background: var(--cds-layer);
+  border-radius: 8px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.expansion-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.expansion-card__title {
+  font-size: 28px;
+  line-height: 36px;
+  color: #0043ce;
+  font-weight: 400;
+  margin: 0;
+}
+
+.expansion-card__icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+/* Interactive stage rail */
+.stage-rail {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  width: max-content;
+  min-height: 380px;
+}
+/* Suppress transitions during initial paint */
+.stage-rail--no-transition .stage-card,
+.stage-rail--no-transition .stage-card__standard,
+.stage-rail--no-transition .stage-card__details,
+.stage-rail--no-transition .stage-card__compact { transition: none !important; }
+
+.stage-card {
+  position: relative;
+  display: flex;
+  flex: 0 0 49px;
+  width: 49px;
+  height: 380px;
+  overflow: hidden;
+  transition: flex-basis 520ms cubic-bezier(.2, .8, .2, 1), width 520ms cubic-bezier(.2, .8, .2, 1);
+}
+.stage-card--past    { background: #e8e8e8; }
+.stage-card--current { background: #ffcf4e; }
+.stage-card--target  { background: #74e792; }
+.stage-card--future  { background: #fff; }
+
+.stage-card--current:not(.is-collapsed):not(.is-expanded),
+.stage-card--target:not(.is-collapsed):not(.is-expanded) { flex-basis: 260px; width: 260px; }
+.stage-card.is-collapsed { flex-basis: 49px; width: 49px; }
+.stage-card.is-expanded  { flex-basis: 471px; width: 471px; }
+
+.stage-card__standard {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  box-sizing: border-box;
+  width: 260px;
+  padding: 12px 16px;
+  transition: width 520ms cubic-bezier(.2, .8, .2, 1), opacity 220ms ease, visibility 0s linear 220ms;
+}
+.stage-card.is-expanded .stage-card__standard {
+  width: 471px;
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s;
+}
+.stage-card--past:not(.is-expanded) .stage-card__standard,
+.stage-card--future:not(.is-expanded) .stage-card__standard,
+.stage-card.is-collapsed .stage-card__standard {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.stage-card__topline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+}
+.stage-card__label {
+  font-size: 14px;
+  line-height: 18px;
+  letter-spacing: .16px;
+  white-space: nowrap;
+}
+.stage-icon {
+  display: block;
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+}
+
+.stage-card__content-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  width: 228px;
+  transition: width 520ms cubic-bezier(.2, .8, .2, 1), gap 360ms ease;
+}
+.stage-card.is-expanded .stage-card__content-stack { gap: 16px; width: 152px; }
+
+.stage-card__content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  height: 208px;
+}
+.stage-card__number-label { padding: 0 4px; font-size: 16px; line-height: 22px; }
+.stage-card__number,
+.stage-card__compact span {
+  font-family: 'IBM Plex Math', 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 400;
+}
+.stage-card__number { font-size: 64px; line-height: 52px; letter-spacing: -3px; }
+.stage-card__title   { margin-top: 6px; font-size: 20px; line-height: 28px; }
+.stage-card__title-break  { display: inline; }
+.stage-card__title-inline { display: none; }
+@media (max-width: 671px) {
+  .stage-card__title-break  { display: none; }
+  .stage-card__title-inline { display: inline; }
+}
+
+.stage-card__toggle {
+  position: absolute;
+  z-index: 4;
+  top: 298px;
+  left: 16px;
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 60px;
+  background: #f4f4f4;
+  cursor: pointer;
+}
+.stage-card__toggle img { width: 16px; height: 16px; }
+.stage-card__toggle:focus-visible { outline: 3px solid #0f62fe; outline-offset: 2px; }
+
+.stage-card__compact {
+  position: absolute;
+  z-index: 2;
+  inset: 14px 16px auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 17px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms ease;
+}
+.stage-card--past:not(.is-expanded) .stage-card__compact,
+.stage-card--future:not(.is-expanded) .stage-card__compact,
+.stage-card.is-collapsed .stage-card__compact { opacity: 1; }
+.stage-card__compact span { font-size: 28px; line-height: 36px; color: #a8a8a8; }
+.stage-card--past .stage-card__compact span { color: #525252; }
+.stage-card--current .stage-card__compact span,
+.stage-card--target .stage-card__compact span { color: #161616; }
+
+.stage-card__compact-toggle {
+  position: absolute;
+  z-index: 3;
+  top: 298px;
+  left: calc(50% - 24px);
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: #f4f4f4;
+  cursor: pointer;
+}
+.stage-card__compact-toggle img { width: 16px; height: 16px; }
+.stage-card__compact-toggle:focus-visible { outline: 3px solid #0f62fe; outline-offset: 2px; }
+
+.stage-card__details {
+  position: absolute;
+  top: 60px;
+  left: 172px;
+  width: 267px;
+  height: 302px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(18px);
+  transition: opacity 200ms ease, transform 440ms cubic-bezier(.2, .8, .2, 1);
+}
+.stage-card.is-expanded .stage-card__details {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+.stage-card__details p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 18px;
+  letter-spacing: .16px;
+  white-space: pre-line;
+}
+
+.stage-card:focus-visible { outline: 3px solid #0f62fe; outline-offset: 2px; }
+.stage-rail .stage-card { cursor: pointer; }
+
+.expansion-value {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.expansion-value__label {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: 0.16px;
+  color: var(--cds-text-primary);
+  margin: 0;
+}
+
+.expansion-value__text {
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--cds-text-primary);
+  margin: 0;
+  /* Mock wraps this at ~420px inside the 720px padded card. */
+  max-width: 420px;
+}
+
+/* Potential outcomes */
+.potential-outcomes {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.potential-outcomes__label {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: 0.16px;
+  color: var(--cds-text-primary);
+  margin: 0;
+}
+
+.potential-outcomes__items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 48px;
+}
+
+.outcome-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  /* Mock lays these out two per row: 245 + 48 gap = 293px column pitch. */
+  max-width: 245px;
+}
+
+.outcome-item__stat {
+  font-family: 'IBM Plex Math', 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 400;
+  background: linear-gradient(to top, #8a3ffc, #be95ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  margin: 0;
+}
+
+.outcome-item__label {
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.32px;
+  color: var(--cds-text-primary);
+  margin: 0;
+}
+
+/* Products tags section */
+.expansion-products {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.expansion-products__label {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--cds-text-primary);
+  margin: 0;
+}
+
+.expansion-products__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* --------------------------------------------------------------------------
+   Action plan — hero card
+   -------------------------------------------------------------------------- */
+.action-hero-card {
+  background: var(--cds-button-primary);
+  color: #fff;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  /* 32 + 110 (Step line + 4 description lines) + 48 + 22 + 32 = 244, the mock's card height */
+  gap: 48px;
+}
+
+/* Label above ranks 2 and 3 (mock: 14px semibold, 14px clear of the card). */
+.action-plan__next-label {
+  margin: 32px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: 0.16px;
+  color: var(--cds-text-primary);
+}
+
+.action-hero-card__header {
+  display: flex;
+  /* 24 padding + 32 icon + 28 = text column starts 84px in, as in the mock */
+  gap: 28px;
+  align-items: flex-start;
+}
+
+.action-hero-card__icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  color: #fff;
+}
+
+.action-hero-card__step-text {
+  font-size: 16px;
+  line-height: 22px;
+  color: #fff;
+  margin: 0;
+  /* Narrow measure, not full card width (mock wraps at 283-303px). */
+  max-width: 292px;
+}
+
+.action-hero-card__step-text strong {
+  font-weight: 600;
+}
+
+.action-hero-card__prereq {
+  font-size: 16px;
+  line-height: 22px;
+  color: #fff;
+  margin: 0;
+}
+
+.action-hero-card__prereq u {
+  text-underline-offset: 3px;
+}
+
+/* --------------------------------------------------------------------------
+   Action plan — details card
+   -------------------------------------------------------------------------- */
+.action-details-card {
+  background: var(--cds-layer);
+  border-radius: 8px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.action-details-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.action-details-label {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: 0.16px;
+  color: var(--cds-text-primary);
+  margin: 0;
+}
+
+.action-details-label-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.action-details-text {
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--cds-text-primary);
+  margin: 0;
+}
+
+.action-details-touchpoints {
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--cds-text-primary);
+  margin: 8px 0 0;
+  white-space: pre-line;
+}
+
+.remediation-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.remediation-step {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.remediation-step__text {
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--cds-text-primary);
+  margin: 0;
+}
+
+.remediation-step__roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* --------------------------------------------------------------------------
+   Additional resources (bonus) block
+   -------------------------------------------------------------------------- */
+.bonus-block {
+  /* Not a .report-section, so it needs its own landing offset for #hash links. */
+  scroll-margin-top: 32px;
+  background: #198038;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+/* On the green block the tertiary button is white-on-green, so Carbon fills it
+   solid white on hover/focus/active. Its label colour comes from text-inverse,
+   which is also white by default — clicking turned the button into a blank
+   white slab. Point both label tokens at the block's green instead, so the
+   filled state reads as a proper inverse rather than disappearing. */
+.bonus-block cds-button[kind="tertiary"] {
+  --cds-button-tertiary: #fff;
+  --cds-button-tertiary-hover: #fff;
+  --cds-button-tertiary-active: #e8f5ec;
+  --cds-text-inverse: #198038;
+  --cds-text-on-color: #198038;
+}
+
+.bonus-block__heading {
+  font-size: 28px;
+  line-height: 36px;
+  color: #fff;
+  font-weight: 400;
+  margin: 0;
+  max-width: 480px;
+}
+
+.bonus-resource {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.bonus-resource__inner {
+  display: flex;
+  gap: 26px;
+  align-items: flex-start;
+}
+
+
+
+.bonus-resource__icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.bonus-resource__body {
+  display: flex;
+  flex-direction: column;
+  /* Title and copy sit 16 apart; tags and the button 32 (Figma 607:3561). */
+  gap: 32px;
+  /* Figma 607:3561 — prose runs to 286, the pill row to 494. */
+  flex: 0 1 494px;
+  min-width: 0;
+}
+
+.bonus-resource__title,
+.bonus-resource__desc { max-width: 286px; }
+
+.bonus-resource__title + .bonus-resource__desc,
+.bonus-resource__title + p { margin-top: -16px; }
+
+.bonus-resource__title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 22px;
+  color: #fff;
+  margin: 0;
+}
+
+.bonus-resource__desc {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  font-size: 16px;
+  line-height: 22px;
+  color: #fff;
+  margin: 0;
+  max-width: 286px;
+}
+
+.bonus-resource__desc p { margin: 0; }
+
+.bonus-resource__how-to {
+  font-size: 16px;
+  line-height: 22px;
+  color: #fff;
+  margin: 0;
+  max-width: 286px;
+}
+
+.bonus-resource__how-to strong {
+  font-weight: 600;
+}
+
+.bonus-resource__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  /* Figma 607:3566 — the pill row is 494 wide, deliberately wider than the
+     286px text column above it, so the roles sit two to a line. */
+  width: 494px;
+  max-width: 100%;
+}
+
+/* Carbon caps a tag at 208px and ellipsises past it; these role labels are the
+   point of the pill, so let them size to their text. */
+.bonus-resource__tags cds-tag,
+.remediation-step__roles cds-tag {
+  max-width: 100%;
+}
+
+.bonus-divider {
+  width: 672px;
+  max-width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* --------------------------------------------------------------------------
+   Accelerate card
+   -------------------------------------------------------------------------- */
+.accelerate-card {
+  background: var(--cds-button-primary);
+  padding: 32px 24px;
+}
+
+.accelerate-card__inner {
+  display: flex;
+  gap: 26px;
+  align-items: flex-start;
+}
+
+.accelerate-card__icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  color: #fff;
+}
+
+.accelerate-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.accelerate-card__title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 22px;
+  color: #fff;
+  margin: 0;
+}
+
+.accelerate-card__title + .accelerate-card__desc { margin-top: -16px; }
+
+.accelerate-card__desc {
+  font-size: 16px;
+  line-height: 22px;
+  color: #fff;
+  margin: 0;
+  max-width: 286px;
+}
+
+.accelerate-card cds-button[kind="tertiary"] {
+  --cds-button-tertiary: #fff;
+  --cds-button-tertiary-hover: rgba(255,255,255,0.12);
+  --cds-button-tertiary-active: rgba(255,255,255,0.2);
+  --cds-text-on-color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+   Action plan — container
+   -------------------------------------------------------------------------- */
+#action-plan-container {
+  display: flex;
+  flex-direction: column;
+  /* Mock stacks the step cards 17px apart; the wider gaps below are added
+     per-element so the rhythm matches (33 before the detail card, 49 before
+     the "Next steps" label). */
+  row-gap: 16px;
+}
+
+#action-plan-container > .action-details-card { margin-top: 16px; }
+
+/* --------------------------------------------------------------------------
+   Roadmap table
+   -------------------------------------------------------------------------- */
+.roadmap-table-wrap {
+  overflow-x: auto;
+}
+
+.roadmap-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  line-height: 18px;
+}
+
+.roadmap-table th {
+  background: var(--cds-layer-selected);
+  font-weight: 600;
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 2px solid var(--cds-border-strong);
+  white-space: nowrap;
+}
+
+.roadmap-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--cds-border-subtle);
+  vertical-align: top;
+  color: var(--cds-text-primary);
+}
+
+.roadmap-table tr:hover td {
+  background: var(--cds-layer-hover);
+}
+
+.roadmap-status {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #fa4d56;
+  color: #fff;
+}
+
+.roadmap-status--unknown {
+  background: var(--cds-layer-accent);
+  color: var(--cds-text-primary);
+}
+
+/* --------------------------------------------------------------------------
+   Follow-up form
+   -------------------------------------------------------------------------- */
+.followup-details summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.followup-details summary::-webkit-details-marker { display: none; }
+
+.followup-form {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Mobile sticky tab nav — hidden by default (desktop) */
+.report-mobile-nav {
+  display: none;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
+@media (max-width: 1100px) {
+  .report-mobile-nav {
+    display: block;
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    background: #ffffff;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
+  .report-nav {
+    display: none;
+  }
+
+  /* On a phone the CTAs belong to the menu and to the foot of the page, so the
+     copy sitting under the contact details is taken out of the flow. */
+  .report-sidebar__actions {
+    display: none;
+  }
+
+  .report-section {
+    scroll-margin-top: 56px;
+  }
+
+  /* Hero shrinks on a phone but keeps enough height to read as a banner. */
+  .report-hero {
+    height: clamp(96px, 28vw, 160px);
+  }
+
+  .report-layout {
+    flex-direction: column;
+    padding: 24px 24px 64px;
+  }
+
+  /* Maturity banner: stack score + strengths vertically on mobile */
+  .maturity-banner {
+    flex-direction: column;
+    gap: 24px;
+    align-items: flex-start;
+    padding: 32px 24px 24px;
+    min-height: 0;
+  }
+
+  /* Sidebar header on mobile: icon stacked above title, then actions below */
+  .report-sidebar {
+    position: static;
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding-top: 0;
+  }
+  .report-sidebar__icon img {
+    width: 32px;
+    height: 32px;
+  }
+  .report-sidebar__title {
+    font-size: 40px;
+    line-height: 1.1;
+    margin: 0;
+  }
+  /* Contact and organisation stay visible on mobile. */
+  .report-sidebar__meta {
+    display: block;
+  }
+  /* Both CTAs share one width. Carbon's lg button carries a 12rem minimum it
+   will not shrink past, so 192px is the smallest size at which the primary
+   button and the Download menu button actually measure the same. */
+.report-sidebar__actions cds-button,
+.report-sidebar__actions cds-menu-button,
+.mobile-nav__actions cds-button,
+.mobile-nav__actions cds-menu-button {
+  width: 192px;
+}
+
+.report-sidebar__version {
+  margin: 0;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--cds-text-secondary);
+}
+
+.report-sidebar__actions {
+    width: 100%;
+  }
+  .report-content {
+    max-width: 100%;
+  }
+  .dimension-grid {
+    grid-template-columns: 1fr;
+  }
+  .expansion-intro {
+    flex-direction: column;
+  }
+  .stage-rail { flex-direction: column; width: 100%; min-height: 0; gap: 8px; }
+
+  /* ── Stage card: vertical accordion ──────────────────────────────────────
+     All desktop absolute-positioned children become normal document flow.
+     The card is a vertical flex container; max-height drives open/close animation.
+     The whole card is the tap target — no internal toggle buttons on mobile.
+  */
+  /* Reset ALL desktop fixed widths on card and children */
+  .stage-card,
+  .stage-card.is-collapsed,
+  .stage-card.is-expanded,
+  .stage-card--current:not(.is-collapsed):not(.is-expanded),
+  .stage-card--target:not(.is-collapsed):not(.is-expanded) {
+    flex: 0 0 auto;
+    flex-direction: column;
+    width: 100%;
+    height: auto;
+  }
+
+  /* max-height drives the accordion open/close */
+  .stage-card                                                              { max-height: 48px; }
+  .stage-card.is-collapsed                                                 { max-height: 48px; }
+  .stage-card.is-expanded                                                  { max-height: 700px; }
+  .stage-card--current:not(.is-collapsed):not(.is-expanded),
+  .stage-card--target:not(.is-collapsed):not(.is-expanded)                 { max-height: 700px; }
+
+  /* These all need overflow hidden and the transition for animation to work */
+  .stage-card { overflow: hidden; cursor: pointer; transition: max-height 520ms cubic-bezier(.2, .8, .2, 1); }
+
+  /* Compact row — full-width horizontal, number left / icon right, 48px tall */
+  .stage-card__compact {
+    position: static;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 48px;
+    padding: 14px 16px 16px;
+    box-sizing: border-box;
+    opacity: 1;
+    pointer-events: auto;
+    transition: none;
+  }
+  .stage-card__compact span {
+    font-size: 28px;
+    line-height: 36px;
+  }
+  /* Hide compact row when the card is in its open state (standard panel showing) */
+  .stage-card--current:not(.is-collapsed):not(.is-expanded) .stage-card__compact,
+  .stage-card--target:not(.is-collapsed):not(.is-expanded) .stage-card__compact,
+  .stage-card.is-expanded .stage-card__compact {
+    display: none;
+  }
+
+  /* Standard panel — back to normal flow, stacks vertically inside the card.
+     The desktop rule that widens an open panel to 471px outweighs this one on
+     specificity, and at 471px inside a ~346px card the topline's status icon
+     is pushed off the right edge and clipped away, so it is reset here too. */
+  .stage-card.is-expanded .stage-card__standard { width: 100%; }
+  .stage-card__standard {
+    position: static;
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px 16px 0;
+    box-sizing: border-box;
+    opacity: 1;
+    visibility: visible;
+    transition: none;
+  }
+  /* Collapsed/past/future cards: hide standard panel, show compact row instead */
+  .stage-card--past:not(.is-expanded) .stage-card__standard,
+  .stage-card--future:not(.is-expanded) .stage-card__standard,
+  .stage-card.is-collapsed .stage-card__standard {
+    display: none;
+  }
+
+  /* Content stack — reset desktop 228px/152px fixed widths */
+  .stage-card__content-stack,
+  .stage-card.is-expanded .stage-card__content-stack { width: 100%; gap: 16px; }
+  .stage-card__content { height: auto; min-height: 0; }
+
+  /* Hide the desktop toggle button — whole card is tap target on mobile */
+  .stage-card__toggle { display: none; }
+
+  /* Details panel — static flow, reset desktop absolute dimensions */
+  .stage-card__details {
+    position: static;
+    width: 100%;
+    height: auto;
+    padding: 0 16px 16px;
+    margin-top: 16px;
+    box-sizing: border-box;
+    opacity: 0;
+    transform: translateY(8px);
+    pointer-events: none;
+    transition: opacity 200ms ease, transform 440ms cubic-bezier(.2, .8, .2, 1);
+  }
+  .stage-card--current:not(.is-collapsed):not(.is-expanded) .stage-card__details,
+  .stage-card--target:not(.is-collapsed):not(.is-expanded) .stage-card__details,
+  .stage-card.is-expanded .stage-card__details {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  /* Hide the desktop-only compact-toggle button entirely on mobile */
+  .stage-card__compact-toggle { display: none; }
+}
+
+/* --------------------------------------------------------------------------
+   Small phone breakpoint
+   -------------------------------------------------------------------------- */
+@media (max-width: 640px) {
+  .report-layout {
+    padding: 16px 16px 48px;
+    gap: 24px;
+  }
+  .report-content {
+    gap: 40px;
+  }
+  .report-section__heading {
+    font-size: clamp(22px, 6vw, 32px);
+  }
+  .report-sidebar__title {
+    padding-bottom: 0;
+  }
+  .report-sidebar__actions cds-button,
+  .report-sidebar__actions cds-menu-button {
+    --cds-button-height: 40px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage-card,
+  .stage-card__standard,
+  .stage-card__compact,
+  .stage-card__content-stack,
+  .stage-card__details { transition: none; }
+}
+
+/* --------------------------------------------------------------------------
+   Help us improve (Figma 615:4208)
+   Section is 197 tall: 18 eyebrow + 32 + (24 question + 4 + 40 text) + 32 + 48 buttons.
+   -------------------------------------------------------------------------- */
+.feedback {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.feedback__question {
+  margin: 0;
+  max-width: 350px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  color: var(--cds-text-primary);
+}
+
+.feedback__text {
+  margin: 4px 0 0;
+  max-width: 350px;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0.16px;
+  color: var(--cds-text-secondary);
+}
+
+.feedback__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.feedback__thanks {
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0.16px;
+  color: var(--cds-support-success);
+}
+
+/* The last section needs room to scroll clear of the fold, or the nav link to
+   it can never land and the scroll-spy never reaches it. */
+.report-section:last-of-type {
+  padding-bottom: 96px;
+}
+
+.report-section {
+  scroll-margin-top: 32px;
+}
+
+/* --------------------------------------------------------------------------
+   Mobile navigation — hamburger + current section, panel holds the nav list
+   and the same two CTAs as the desktop sidebar.
+   -------------------------------------------------------------------------- */
+.mobile-nav__bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding-right: 16px;
+  border-bottom: 1px solid var(--cds-border-subtle);
+  background: var(--cds-background);
+}
+
+.mobile-nav__toggle {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--cds-icon-primary);
+  cursor: pointer;
+}
+
+.mobile-nav__toggle:hover { background: var(--cds-layer-hover); }
+.mobile-nav__toggle:focus-visible { outline: 2px solid var(--cds-focus); outline-offset: -2px; }
+
+.mobile-nav__icon--close { display: none; }
+.mobile-nav__toggle[aria-expanded="true"] .mobile-nav__icon--menu { display: none; }
+.mobile-nav__toggle[aria-expanded="true"] .mobile-nav__icon--close { display: block; }
+
+.mobile-nav__title {
+  margin: 0;
+  transition: opacity 160ms cubic-bezier(0.2, 0, 0.38, 0.9);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: 0.16px;
+  color: var(--cds-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.mobile-nav__title.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.mobile-nav__panel {
+  border-bottom: 1px solid var(--cds-border-subtle);
+  background: var(--cds-layer);
+}
+
+.mobile-nav__panel[hidden] { display: none; }
+
+.mobile-nav__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mobile-nav__item {
+  display: block;
+  padding: 14px 16px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--cds-text-secondary);
+  text-decoration: none;
+  border-left: 3px solid transparent;
+}
+
+.mobile-nav__item:hover { background: var(--cds-layer-hover); color: var(--cds-text-primary); }
+
+.mobile-nav__item--active {
+  color: var(--cds-text-primary);
+  font-weight: 600;
+  border-left-color: var(--cds-interactive);
+}
+
+/* The CTAs repeated at the foot of the page. Desktop keeps them in the sticky
+   sidebar, so this block only exists on a phone (see the media query below). */
+.report-end-actions {
+  display: none;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  gap: 4px;
+  padding-top: 8px;
+}
+
+/* The pair shares the row evenly and sits flush to its left and right edges,
+   rather than stacking. Carbon's lg button will not shrink below its label
+   width on its own, so fitMenuButtons() pushes the measured column width into
+   the Download button's shadow root. */
+.report-end-actions cds-button,
+.report-end-actions cds-menu-button {
+  flex: 1 1 0;
+  min-width: 0;
+  width: auto;
+}
+
+.mobile-nav__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 16px;
+  border-top: 1px solid var(--cds-border-subtle);
+}
+
+
+/* Underlined in-report references — each scrolls to the section it names. */
+.report-inline-link {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.report-inline-link:hover { text-decoration-thickness: 2px; }
+.report-inline-link:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+
+/* A stage card jumped to from an inline reference flashes so the eye lands on
+   the right one in a rail of five. */
+.stage-card.is-jump-target {
+  outline: 2px solid var(--cds-interactive);
+  outline-offset: 2px;
+  animation: stage-jump-flash 1.4s ease-out;
+}
+@keyframes stage-jump-flash {
+  0%, 60% { outline-color: var(--cds-interactive); }
+  100%    { outline-color: transparent; }
+}
+
+/* --------------------------------------------------------------------------
+   Responsive hardening — nothing may scroll sideways on a phone.
+   -------------------------------------------------------------------------- */
+@media (max-width: 1100px) {
+  /* The foot-of-page CTAs only exist on a phone. */
+  .report-end-actions {
+    display: flex;
+  }
+
+  /* A collapsed stage column reads number-then-icon on mobile, matching the
+     open card: the number sits on the card's left edge and the status icon on
+     its right. row-reverse flips the DOM order (icon first) so space-between
+     lands them on the correct edges. */
+  .stage-card__compact {
+    flex-direction: row-reverse;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  /* Long words and inline code can't push a card wider than the screen. */
+  .report-body,
+  .report-layout,
+  .report-content,
+  .report-section {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .accelerate-card,
+  .accelerate-card__inner,
+  .accelerate-card__body,
+  .bonus-block,
+  .bonus-resource,
+  .bonus-resource__inner,
+  .bonus-resource__body,
+  .action-details-card,
+  .action-hero-card,
+  .expansion-card,
+  .maturity-banner {
+    max-width: 100%;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .accelerate-card__inner,
+  .bonus-resource__inner {
+    flex-wrap: wrap;
+  }
+
+  /* Buttons wrap instead of running off the edge. */
+  .accelerate-card cds-button,
+  .bonus-resource cds-button,
+  .expansion-card cds-button {
+    max-width: 100%;
+  }
+
+  .accelerate-card cds-button::part(button),
+  .bonus-resource cds-button::part(button),
+  .expansion-card cds-button::part(button) {
+    white-space: normal;
+    height: auto;
+    min-height: 48px;
+  }
+
+  /* The hero step measure is a desktop column; let it fill the card on phones. */
+  .action-hero-card__step-text,
+  .expansion-value__text,
+  .feedback__question,
+  .feedback__text {
+    max-width: 100%;
+  }
+}
+
+/* `clip` contains sideways overflow without creating a scroll container —
+   `hidden` here would silently break every `position: sticky` on the page. */
+html, body { overflow-x: clip; }
+
+</style>
+<!-- Mobile sticky nav — hamburger + current section, hidden on desktop -->
+  <div class="report-mobile-nav">
+    <div class="mobile-nav__bar">
+      <button
+        type="button"
+        class="mobile-nav__toggle"
+        id="mobile-nav-toggle"
+        aria-expanded="false"
+        aria-controls="mobile-nav-panel"
+        aria-label="Open report navigation"
+      >
+        <svg class="mobile-nav__icon mobile-nav__icon--menu" viewBox="0 0 32 32" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M4 6H28V8H4z"/><path d="M4 12H28V14H4z"/><path d="M4 18H28V20H4z"/><path d="M4 24H28V26H4z"/></svg>
+        <svg class="mobile-nav__icon mobile-nav__icon--close" viewBox="0 0 32 32" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M17.4141 16 24 9.4141 22.5859 8 16 14.5859 9.4143 8 8 9.4141 14.5859 16 8 22.5859 9.4143 24 16 17.4141 22.5859 24 24 22.5859 17.4141 16z"/></svg>
+      </button>
+      <p class="mobile-nav__title" id="mobile-nav-title">Where you are today</p>
+    </div>
+
+    <div class="mobile-nav__panel" id="mobile-nav-panel" hidden>
+      <ul class="mobile-nav__list">
+        <li><a class="mobile-nav__item mobile-nav__item--active" href="#act-today" data-section="act-today">Where you are today</a></li>
+        <li><a class="mobile-nav__item" href="#act-roi" data-section="act-roi">Paths to greater value</a></li>
+        <li><a class="mobile-nav__item" href="#act-plan" data-section="act-plan">How to reach your target</a></li>
+        <li><a class="mobile-nav__item" href="#act-resources" data-section="act-resources">Additional resources</a></li>
+        <li><a class="mobile-nav__item" href="#act-improve" data-section="act-improve">Help us improve</a></li>
+      </ul>
+      <div class="mobile-nav__actions">
+        <cds-button kind="primary" size="lg">Talk to a seller
+          <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M25.334,11.95l1.2055-1.206a1.178,1.178,0,0,1,1.2593-.2584l1.4693.5868A1.1736,1.1736,0,0,1,30,12.1489v2.692A1.1681,1.1681,0,0,1,28.8229,16l-.05-.0015C18.4775,15.3578,16.4,6.6357,16.0073,3.2976a1.1681,1.1681,0,0,1,1.0315-1.29A1.1492,1.1492,0,0,1,17.1751,2h2.5994a1.1626,1.1626,0,0,1,1.0764.7322l.5866,1.47a1.1635,1.1635,0,0,1-.2529,1.26L19.9791,6.668S20.6733,11.3682,25.334,11.95Z"/><path d="M16,30H14V25a3.0033,3.0033,0,0,0-3-3H7a3.0033,3.0033,0,0,0-3,3v5H2V25a5.0059,5.0059,0,0,1,5-5h4a5.0059,5.0059,0,0,1,5,5Z"/><path d="M9,10a3,3,0,1,1-3,3,3,3,0,0,1,3-3M9,8a5,5,0,1,0,5,5A5,5,0,0,0,9,8Z"/></svg>
+        </cds-button>
+        <cds-menu-button kind="tertiary" label="Download" menu-alignment="bottom" size="lg">
+          <cds-menu>
+            <cds-menu-item label="Full PDF report"></cds-menu-item>
+            <cds-menu-item label="Full checklist"></cds-menu-item>
+            <cds-menu-item label="Your responses"></cds-menu-item>
+          </cds-menu>
+        </cds-menu-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hero graphics layer — sticky behind content -->
+  <div class="report-hero" aria-hidden="true">
+    <div class="report-hero__art">
+      <video class="report-hero__video" autoplay muted loop playsinline>
+        <source src="assets/Hero animation.mp4" type="video/mp4" />
+      </video>
+    </div>
+  </div>
+
+  <!-- Content layer — slides over hero on scroll -->
+  <div class="report-body">
+
+
+    <div class="report-layout">
+
+      <!-- Left sticky panel -->
+      <aside class="report-sidebar" id="report-sidebar">
+        <div class="report-sidebar__icon">
+          <img src="assets/IBM Maximo Application Suite.svg" alt="IBM Maximo Application Suite" width="64" height="64" />
+        </div>
+        <h1 class="report-sidebar__title">Your Maximo<br>growth roadmap</h1>
+        <p class="report-sidebar__version">beta v3</p>
+        <div class="report-sidebar__meta" id="sidebar-meta">
+          <!-- injected by report.js -->
+        </div>
+        <nav class="report-nav" aria-label="Report sections">
+          <ul class="report-nav__list" id="report-nav-list">
+            <li><a class="report-nav__item report-nav__item--active" href="#act-today" data-section="act-today">Where you are today</a></li>
+            <li><a class="report-nav__item" href="#act-roi" data-section="act-roi">Paths to greater value</a></li>
+            <li><a class="report-nav__item" href="#act-plan" data-section="act-plan">How to reach your target</a></li>
+            <li><a class="report-nav__item" href="#act-resources" data-section="act-resources">Additional resources</a></li>
+            <li><a class="report-nav__item" href="#act-improve" data-section="act-improve">Help us improve</a></li>
+          </ul>
+        </nav>
+        <div class="report-sidebar__actions">
+          <cds-button kind="primary" size="lg">Talk to a seller
+            <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M25.334,11.95l1.2055-1.206a1.178,1.178,0,0,1,1.2593-.2584l1.4693.5868A1.1736,1.1736,0,0,1,30,12.1489v2.692A1.1681,1.1681,0,0,1,28.8229,16l-.05-.0015C18.4775,15.3578,16.4,6.6357,16.0073,3.2976a1.1681,1.1681,0,0,1,1.0315-1.29A1.1492,1.1492,0,0,1,17.1751,2h2.5994a1.1626,1.1626,0,0,1,1.0764.7322l.5866,1.47a1.1635,1.1635,0,0,1-.2529,1.26L19.9791,6.668S20.6733,11.3682,25.334,11.95Z"/><path d="M16,30H14V25a3.0033,3.0033,0,0,0-3-3H7a3.0033,3.0033,0,0,0-3,3v5H2V25a5.0059,5.0059,0,0,1,5-5h4a5.0059,5.0059,0,0,1,5,5Z"/><path d="M9,10a3,3,0,1,1-3,3,3,3,0,0,1,3-3M9,8a5,5,0,1,0,5,5A5,5,0,0,0,9,8Z"/></svg>
+          </cds-button>
+          <cds-menu-button kind="tertiary" label="Download" menu-alignment="bottom" size="lg">
+            <cds-menu>
+              <cds-menu-item label="Full PDF report"></cds-menu-item>
+              <cds-menu-item label="Full checklist"></cds-menu-item>
+              <cds-menu-item label="Your responses"></cds-menu-item>
+            </cds-menu>
+          </cds-menu-button>
+        </div>
+      </aside>
+
+      <!-- Right scrollable content -->
+      <main class="report-content" id="report-content">
+
+        <!-- ACT 1 ── Where you are today -->
+        <section id="act-today" class="report-section">
+          <div class="report-eyebrow-row">
+            <p class="report-eyebrow">Growth readiness snapshot</p>
+            <div class="report-rule" aria-hidden="true"></div>
+          </div>
+          <h2 class="report-section__heading">Where you are today</h2>
+
+          <!-- Maturity banner -->
+          <div class="maturity-banner" id="maturity-banner">
+            <!-- injected by report.js -->
+          </div>
+
+          <!-- Dimension meters -->
+          <p class="report-body-text" style="max-width:336px;margin-top:32px;">
+            Your strongest capabilities are creating value today, while several areas offer opportunities for growth.
+          </p>
+          <div class="dimension-grid" id="dimension-grid">
+            <!-- injected by report.js -->
+          </div>
+
+          <!-- Established practices -->
+          <div class="report-section__sub-heading-group" style="margin-top:32px;">
+            <h3 class="report-section__sub-heading">Established capabilities</h3>
+            <p class="report-body-text" style="max-width:378px;">These capabilities provide a strong foundation for future growth.</p>
+          </div>
+          <div class="established-card" id="established-card">
+            <!-- injected by report.js -->
+          </div>
+        </section>
+
+        <!-- ACT 2 ── Opportunities to increase ROI -->
+        <section id="act-roi" class="report-section">
+          <div class="report-eyebrow-row">
+            <p class="report-eyebrow">Expansion paths</p>
+            <div class="report-rule" aria-hidden="true"></div>
+          </div>
+          <h2 class="report-section__heading">Paths to greater value</h2>
+          <p class="report-body-text" style="max-width:308px;margin-top:0;">Build on the foundation you have already established by expanding into one or both of these growth areas.</p>
+
+          <!-- APM + FSM intro banner -->
+          <div class="expansion-intro">
+            <div class="expansion-intro__track">
+              <div class="expansion-intro__icon">
+                <img src="assets/data--scientist.svg" alt="" aria-hidden="true" width="32" height="32" />
+              </div>
+              <div>
+                <p class="expansion-intro__label"><strong>Asset Performance Management</strong></p>
+                <p class="expansion-intro__body">Asset Performance Management (APM) helps organizations improve asset reliability and reduce unplanned downtime by using asset condition, health, and performance data to make smarter maintenance decisions.</p>
+                <p class="expansion-intro__body">By supplementing time-based maintenance with condition-based actions, APM helps reduce maintenance costs, extend asset life, and prioritize investments where they can deliver the greatest value.</p>
+              </div>
+            </div>
+            <div class="expansion-intro__track">
+              <div class="expansion-intro__icon">
+                <img src="assets/supervisor-close--work.svg" alt="" aria-hidden="true" width="32" height="32" />
+              </div>
+              <div>
+                <p class="expansion-intro__label"><strong>Field Service Management</strong></p>
+                <p class="expansion-intro__body">Field Service Management (FSM) helps organizations improve workforce productivity and service execution by optimizing how work is planned, assigned, and completed across the field.</p>
+                <p class="expansion-intro__body">By coordinating scheduling, dispatch, and mobile work execution, FSM helps reduce travel time, improve first-time fix rates, increase workforce utilization, and provide real-time visibility into active work.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- APM expansion path card -->
+          <div class="expansion-card" id="apm-expansion-card">
+            <!-- injected by report.js -->
+          </div>
+
+          <!-- FSM expansion path card -->
+          <div class="expansion-card" id="fsm-expansion-card">
+            <!-- injected by report.js -->
+          </div>
+        </section>
+
+        <!-- ACT 3 ── Your action plan -->
+        <section id="act-plan" class="report-section">
+          <div class="report-eyebrow-row">
+            <p class="report-eyebrow">Your action plan</p>
+            <div class="report-rule" aria-hidden="true"></div>
+          </div>
+          <div class="report-section__heading-row">
+            <h2 class="report-section__heading" style="margin-bottom:0;">How to reach your target</h2>
+            <cds-tooltip align="bottom-start">
+              <button class="report-info-btn" slot="trigger" type="button" aria-label="About journey next steps">
+                <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M17 22V14h-4v2h2v6h-3v2h8v-2zM16 7a1.5 1.5 0 100 3 1.5 1.5 0 000-3z"/><path d="M16 2a14 14 0 100 28A14 14 0 0016 2zm0 26a12 12 0 110-24 12 12 0 010 24z"/></svg>
+              </button>
+              <span slot="body-text">Your top 3 prioritised next steps, selected based on your objectives and obstacles.</span>
+            </cds-tooltip>
+          </div>
+          <p class="report-body-text" style="max-width:376px;">Based on your assessment results, this action will help build the foundation for your next stage of growth.</p>
+          <div id="action-plan-container">
+            <!-- injected by report.js -->
+          </div>
+        </section>
+
+        <!-- ACT 4 ── Help us improve (Figma 615:4208) -->
+        <section id="act-improve" class="report-section">
+          <div class="report-eyebrow-row">
+            <p class="report-eyebrow">Help us improve</p>
+            <div class="report-rule" aria-hidden="true"></div>
+          </div>
+          <div class="feedback">
+            <div class="feedback__intro">
+              <p class="feedback__question">Was this report useful?</p>
+              <p class="feedback__text">Your input helps us improve this report for future assessments. A quick response goes a long way.</p>
+            </div>
+            <div class="feedback__actions" id="feedback-actions">
+              <cds-button kind="tertiary" size="lg" type="button" data-feedback="yes">
+                Yes
+                <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26,12H20V6a3.0033,3.0033,0,0,0-3-3H14.8672a2.0094,2.0094,0,0,0-1.98,1.7173l-.8453,5.9165L8.4648,16H2V30H23a7.0078,7.0078,0,0,0,7-7V16A4.0045,4.0045,0,0,0,26,12ZM8,28H4V18H8Zm20-5a5.0057,5.0057,0,0,1-5,5H10V17.3027l3.9578-5.9365L14.8672,5H17a1.0008,1.0008,0,0,1,1,1v8h8a2.0025,2.0025,0,0,1,2,2Z"/></svg>
+              </cds-button>
+              <cds-button kind="tertiary" size="lg" type="button" data-feedback="no">
+                No
+                <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M30,16V9a7.0078,7.0078,0,0,0-7-7H2V16H8.4648l3.5774,5.3662.8453,5.9165A2.0094,2.0094,0,0,0,14.8672,29H17a3.0033,3.0033,0,0,0,3-3V20h6A4.0045,4.0045,0,0,0,30,16ZM8,14H4V4H8Zm20,2a2.0025,2.0025,0,0,1-2,2H18v8a1.0008,1.0008,0,0,1-1,1H14.8672l-.9094-6.3662L10,14.6973V4H23a5.0057,5.0057,0,0,1,5,5Z"/></svg>
+              </cds-button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Phone only: the CTAs live in the menu and again at the foot of the
+             page, so they are never more than a scroll away. -->
+        <div class="report-end-actions">
+          <cds-button kind="primary" size="lg">Talk to a seller
+            <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M25.334,11.95l1.2055-1.206a1.178,1.178,0,0,1,1.2593-.2584l1.4693.5868A1.1736,1.1736,0,0,1,30,12.1489v2.692A1.1681,1.1681,0,0,1,28.8229,16l-.05-.0015C18.4775,15.3578,16.4,6.6357,16.0073,3.2976a1.1681,1.1681,0,0,1,1.0315-1.29A1.1492,1.1492,0,0,1,17.1751,2h2.5994a1.1626,1.1626,0,0,1,1.0764.7322l.5866,1.47a1.1635,1.1635,0,0,1-.2529,1.26L19.9791,6.668S20.6733,11.3682,25.334,11.95Z"/><path d="M16,30H14V25a3.0033,3.0033,0,0,0-3-3H7a3.0033,3.0033,0,0,0-3,3v5H2V25a5.0059,5.0059,0,0,1,5-5h4a5.0059,5.0059,0,0,1,5,5Z"/><path d="M9,10a3,3,0,1,1-3,3,3,3,0,0,1,3-3M9,8a5,5,0,1,0,5,5A5,5,0,0,0,9,8Z"/></svg>
+          </cds-button>
+          <cds-menu-button kind="tertiary" label="Download" menu-alignment="top" size="lg">
+            <cds-menu>
+              <cds-menu-item label="Full PDF report"></cds-menu-item>
+              <cds-menu-item label="Full checklist"></cds-menu-item>
+              <cds-menu-item label="Your responses"></cds-menu-item>
+            </cds-menu>
+          </cds-menu-button>
+        </div>
+
+      </main>
+    </div>
+  </div>
+</div>
 
   <script>
 (async () => {
@@ -8871,7 +11750,7 @@ function prioritisePass4(milestoneStates, pass2, pass3, answers, assessment) {
 /* --------------------------------------------------------------------------
    Main exported score() function
    -------------------------------------------------------------------------- */
-export async function score(answers, assessment) {
+async function score(answers, assessment) {
   // Pass 1 — resolve milestone states
   const milestoneStates = resolvePass1(answers, assessment);
 
@@ -8931,8 +11810,6 @@ export async function score(answers, assessment) {
   };
 }
 
-export { MILESTONE_BY_ID, DIMENSIONS };
-
 // ── js/report.js ──────────────────────────────────────────
 /**
  * report.js
@@ -8955,8 +11832,8 @@ export { MILESTONE_BY_ID, DIMENSIONS };
 /* --------------------------------------------------------------------------
    Helpers
    -------------------------------------------------------------------------- */
-const $ = (sel, root = document) => root.querySelector(sel);
-const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+const $r = (sel, root = document) => root.querySelector(sel);
+const $$r = (sel, root = document) => [...root.querySelectorAll(sel)];
 
 function escHtml(v) {
   return String(v ?? "")
@@ -8967,6 +11844,15 @@ function escHtml(v) {
 }
 
 function pad2(n) { return String(n).padStart(2, "0"); }
+
+/* Capability names read badly when the last word drops alone onto a second
+   line ("Inspections and condition / capture"). Glue the final two words
+   together so the break falls one word earlier. */
+function keepTail(text) {
+  const words = String(text).split(" ");
+  if (words.length < 3) return text;
+  return words.slice(0, -2).join(" ") + " " + words.slice(-2).join("\u00a0");
+}
 
 /* --------------------------------------------------------------------------
    Mock scoring result — used when no sessionStorage entry is present.
@@ -9027,6 +11913,11 @@ const milestones = Object.fromEntries(reportData.milestones.map(m => [m.id, m]))
 /* --------------------------------------------------------------------------
    Dimension status helpers
    -------------------------------------------------------------------------- */
+/**
+ * Pillar status bands: below 40% needs attention, 40–74% growing, 75%+ established.
+ * Both boundaries count upward — exactly 40 is Growing, exactly 75 is Established.
+ * 75 keeps "3 of 4 milestones met" reading as Established on the four-milestone pillars.
+ */
 function dimStatus(score) {
   if (score >= 75) return { label: "Established", color: "#24a148" };
   if (score >= 40) return { label: "Growing",     color: "#1192e8" };
@@ -9036,6 +11927,29 @@ function dimStatus(score) {
 /* --------------------------------------------------------------------------
    Icon SVGs (inline Carbon icons, no emoji)
    -------------------------------------------------------------------------- */
+const ICON_CHECK_FILLED = `
+  <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true">
+    <path d="M16 2a14 14 0 1014 14A14 14 0 0016 2zm-2 19.59l-5-5L10.59 15 14 18.41 21.41 11l1.596 1.586z"/>
+  </svg>`;
+
+const ICON_USER_SERVICE = `
+  <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true">
+    <path d="M25.334,11.95l1.2055-1.206a1.178,1.178,0,0,1,1.2593-.2584l1.4693.5868A1.1736,1.1736,0,0,1,30,12.1489v2.692A1.1681,1.1681,0,0,1,28.8229,16l-.05-.0015C18.4775,15.3578,16.4,6.6357,16.0073,3.2976a1.1681,1.1681,0,0,1,1.0315-1.29A1.1492,1.1492,0,0,1,17.1751,2h2.5994a1.1626,1.1626,0,0,1,1.0764.7322l.5866,1.47a1.1635,1.1635,0,0,1-.2529,1.26L19.9791,6.668S20.6733,11.3682,25.334,11.95Z"/>
+    <path d="M16,30H14V25a3.0033,3.0033,0,0,0-3-3H7a3.0033,3.0033,0,0,0-3,3v5H2V25a5.0059,5.0059,0,0,1,5-5h4a5.0059,5.0059,0,0,1,5,5Z"/>
+    <path d="M9,10a3,3,0,1,1-3,3,3,3,0,0,1,3-3M9,8a5,5,0,1,0,5,5A5,5,0,0,0,9,8Z"/>
+  </svg>`;
+
+const ICON_USER = `
+  <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true">
+    <path d="M16 4a5 5 0 11-5 5 5.006 5.006 0 015-5m0-2a7 7 0 107 7 7 7 0 00-7-7zM26 30h-2v-5a5.006 5.006 0 00-5-5h-6a5.006 5.006 0 00-5 5v5H6v-5a7.008 7.008 0 017-7h6a7.008 7.008 0 017 7z"/>
+  </svg>`;
+
+const ICON_USER_FOLLOW = `
+  <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true">
+    <path d="M32 14v-2h-4V8h-2v4h-4v2h4v4h2v-4h4z"/>
+    <path d="M12 16a5 5 0 115-5 5.006 5.006 0 01-5 5zm0-8a3 3 0 103 3 3.003 3.003 0 00-3-3zM22 30h-2v-5a5.006 5.006 0 00-5-5H9a5.006 5.006 0 00-5 5v5H2v-5a7.008 7.008 0 017-7h6a7.008 7.008 0 017 7z"/>
+  </svg>`;
+
 const ICON_CHECKMARK = `
   <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true">
     <path d="M13 24L4 15l1.41-1.41L13 21.17l13.59-13.59L28 9 13 24z"/>
@@ -9086,7 +12000,7 @@ function trackIcon(track) {
    Render sidebar meta
    -------------------------------------------------------------------------- */
 function renderSidebarMeta(contact) {
-  const el = $("#sidebar-meta");
+  const el = $r("#sidebar-meta");
   if (!el) return;
   el.innerHTML = `
     <p>Contact name: <strong>${escHtml(contact.name)}</strong><br>
@@ -9098,7 +12012,7 @@ function renderSidebarMeta(contact) {
    Render maturity banner
    -------------------------------------------------------------------------- */
 function renderMaturityBanner(result) {
-  const el = $("#maturity-banner");
+  const el = $r("#maturity-banner");
   if (!el) return;
 
   const topDims = [...result.dimensions]
@@ -9107,7 +12021,7 @@ function renderMaturityBanner(result) {
 
   el.innerHTML = `
     <div class="maturity-score-cell">
-      <p class="maturity-score-label">Your Maturity Index Score</p>
+      <p class="maturity-score-label">Your Maturity index score</p>
       <p class="maturity-score-value">${escHtml(result.maturity.score)}/100</p>
       <p class="maturity-level">Level ${escHtml(result.maturity.level)}</p>
       <p class="maturity-level-label">${escHtml(result.maturity.levelLabel)}</p>
@@ -9115,7 +12029,7 @@ function renderMaturityBanner(result) {
     <div class="maturity-strengths-cell">
       <p class="maturity-strengths-label">Your strongest capabilities</p>
       <ul class="maturity-strengths-list">
-        ${topDims.map(d => `<li>${escHtml(d.name)}</li>`).join("")}
+        ${topDims.map(d => `<li>${escHtml(keepTail(d.name))}</li>`).join("")}
       </ul>
     </div>`;
 }
@@ -9124,7 +12038,7 @@ function renderMaturityBanner(result) {
    Render dimension meters
    -------------------------------------------------------------------------- */
 function renderDimensionMeters(dimensions) {
-  const el = $("#dimension-grid");
+  const el = $r("#dimension-grid");
   if (!el) return;
 
   el.innerHTML = dimensions.map(dim => {
@@ -9132,7 +12046,7 @@ function renderDimensionMeters(dimensions) {
     return `
       <div class="meter" data-score="${dim.score}" data-color="${escHtml(color)}">
         <div class="meter__header">
-          <span class="meter__name">${escHtml(dim.name)}</span>
+          <span class="meter__name">${escHtml(keepTail(dim.name))}</span>
           <span class="meter__status">${escHtml(label)}</span>
         </div>
         <div class="meter__track">
@@ -9152,14 +12066,14 @@ function renderDimensionMeters(dimensions) {
     });
   }, { threshold: 0.2 });
 
-  $$(".meter", el).forEach(m => observer.observe(m));
+  $$r(".meter", el).forEach(m => observer.observe(m));
 }
 
 /* --------------------------------------------------------------------------
    Render established practices tabs
    -------------------------------------------------------------------------- */
 function renderEstablishedPractices(milestoneIds) {
-  const el = $("#established-card");
+  const el = $r("#established-card");
   if (!el) return;
 
   const nodes = milestoneIds.map(id => milestones[id]).filter(Boolean);
@@ -9217,8 +12131,22 @@ function renderEstablishedPractices(milestoneIds) {
     </div>`;
 
   // Wire tab switching
+  const tabList = el.querySelector(".ep-tab-list");
+
+  /* Bring the chosen tab to the middle of the strip, so whatever was hidden
+     past either edge comes into view. Scrolls the strip only — never the page,
+     which is why this measures instead of calling scrollIntoView. */
+  const centreTab = (tab) => {
+    if (!tabList) return;
+    const list = tabList.getBoundingClientRect();
+    const rect = tab.getBoundingClientRect();
+    const delta = (rect.left - list.left) - (list.width - rect.width) / 2;
+    tabList.scrollTo({ left: tabList.scrollLeft + delta, behavior: "smooth" });
+  };
+
   el.querySelectorAll(".ep-tab").forEach(btn => {
     btn.addEventListener("click", () => {
+      centreTab(btn);
       el.querySelectorAll(".ep-tab").forEach(b => {
         b.classList.remove("ep-tab--selected");
         b.setAttribute("aria-selected", "false");
@@ -9236,17 +12164,17 @@ function renderEstablishedPractices(milestoneIds) {
    Render expansion path card (APM or FSM)
    -------------------------------------------------------------------------- */
 function stageCardLabel(index, currentIndex, targetIndex) {
-  if (index  < currentIndex) return "Completed stage";
-  if (index === currentIndex) return "Your current stage";
-  if (index === targetIndex)  return "Your target stage";
-  if (index > currentIndex && index < targetIndex) return "Transitional stage";
+  if (currentIndex >= 0 && index < currentIndex) return "Completed stage";
+  if (currentIndex >= 0 && index === currentIndex) return "Your current stage";
+  if (index === targetIndex) return "Your target stage";
+  if (currentIndex >= 0 && index > currentIndex && index < targetIndex) return "Transitional stage";
   return "Expansion stage";
 }
 
 function stageCardTone(index, currentIndex, targetIndex) {
-  if (index  < currentIndex) return "past";
-  if (index === currentIndex) return "current";
-  if (index === targetIndex)  return "target";
+  if (currentIndex >= 0 && index < currentIndex) return "past";
+  if (currentIndex >= 0 && index === currentIndex) return "current";
+  if (index === targetIndex) return "target";
   return "future";
 }
 
@@ -9262,14 +12190,17 @@ function stageCardIcon(tone) {
 
 function renderStageRail(railEl, stages, currentIndex, targetIndex, mode = "button") {
   const isHover = mode === "hover";
-  // On hover/desktop: no card pre-selected (hover drives it).
-  // On button/mobile: current stage open by default.
-  let active = isHover ? null : currentIndex;
+  // No card is pre-selected in either mode: with nothing chosen, the current
+  // and target cards both render open (the CSS gives each of them 260px).
+  let active = null;
 
   // ── Initial render (once) ───────────────────────────────────────────────
   railEl.innerHTML = stages.map((s, i) => {
     const tone  = stageCardTone(i, currentIndex, targetIndex);
     const label = stageCardLabel(i, currentIndex, targetIndex);
+    // Nothing is pre-selected, so the current and target cards are the two that
+    // render open — that is what assistive tech should be told on first paint.
+    const isInitiallyExpanded = i === currentIndex || i === targetIndex;
 
     return `
       <article
@@ -9277,13 +12208,13 @@ function renderStageRail(railEl, stages, currentIndex, targetIndex, mode = "butt
         data-rail-index="${i}"
         tabindex="0"
         role="button"
-        aria-expanded="${i === currentIndex}"
+        aria-expanded="${isInitiallyExpanded}"
         aria-label="${escHtml(label)}: ${escHtml(s.name)}"
       >
         <!-- Compact row: shown when card is collapsed (past/future/manually collapsed) -->
         <div class="stage-card__compact" aria-hidden="true">
-          <span>${pad2(i + 1)}</span>
           ${stageCardIcon(tone)}
+          <span>${pad2(i + 1)}</span>
         </div>
 
         <!-- Standard panel: shown when card is open -->
@@ -9296,20 +12227,20 @@ function renderStageRail(railEl, stages, currentIndex, targetIndex, mode = "butt
             <div class="stage-card__content">
               <span class="stage-card__number-label">Stage</span>
               <span class="stage-card__number">${pad2(i + 1)}</span>
-              <span class="stage-card__title">${escHtml(s.name)}</span>
+              <span class="stage-card__title">${s.name === 'APM Foundation' ? 'APM<span class="stage-card__title-break"><br>Foundation</span><span class="stage-card__title-inline"> Foundation</span>' : escHtml(s.name)}</span>
             </div>
             ${!isHover ? `<button
               type="button"
               class="stage-card__toggle"
               data-rail-toggle="${i}"
-              aria-expanded="${i === currentIndex}"
+              aria-expanded="${isInitiallyExpanded}"
               aria-label="Expand ${escHtml(s.name)}"
             ><img src="assets/3f8ce.svg" alt="" aria-hidden="true" /></button>` : ""}
           </div>
         </div>
 
         <div class="stage-card__details" aria-hidden="${i !== currentIndex}">
-          <p>${escHtml(s.description)}</p>
+          <p>${escHtml(s.valueStatement || s.description)}</p>
         </div>
       </article>`;
   }).join("");
@@ -9326,7 +12257,9 @@ function renderStageRail(railEl, stages, currentIndex, targetIndex, mode = "butt
     cards.forEach((card, i) => {
       const tone = stageCardTone(i, currentIndex, targetIndex);
       const isExpanded  = active === i;
-      // On desktop: collapse all others when one is active; on mobile same logic
+      // One stage at a time: choosing any card collapses every other one,
+      // current and target included. With nothing chosen the CSS falls back to
+      // the default state — current and target open, the rest thin.
       const isCollapsed = active !== null && !isExpanded;
 
       card.classList.toggle("is-expanded",  isExpanded);
@@ -9393,6 +12326,12 @@ function renderStageRail(railEl, stages, currentIndex, targetIndex, mode = "butt
     railEl.addEventListener("mouseleave", () => { active = null; applyState(); });
   }
 
+  // Lets an inline reference elsewhere in the report open a named stage.
+  railEl.openStage = (i) => {
+    active = i;
+    applyState();
+  };
+
   railEl.addEventListener("keydown", (e) => {
     const card = e.target.closest("[data-rail-index]");
     if (!card) return;
@@ -9408,7 +12347,7 @@ function renderStageRail(railEl, stages, currentIndex, targetIndex, mode = "butt
 }
 
 function renderExpansionCard(containerId, track, trackResult) {
-  const el = $(`#${containerId}`);
+  const el = $r(`#${containerId}`);
   if (!el) return;
 
   const journeyStages = journey[track.toLowerCase()];
@@ -9428,7 +12367,7 @@ function renderExpansionCard(containerId, track, trackResult) {
 
   // Products
   const tagsHtml = (targetStageData.products || []).map(p =>
-    `<cds-tag size="lg" type="${p.active ? "blue" : "outline"}">${escHtml(p.name)}</cds-tag>`
+    `<cds-tag size="md" type="${p.active ? "blue" : "outline"}">${escHtml(p.name)}</cds-tag>`
   ).join("");
 
   el.innerHTML = `
@@ -9440,7 +12379,7 @@ function renderExpansionCard(containerId, track, trackResult) {
 
     <div class="expansion-value">
       <p class="expansion-value__label">What it takes to achieve your target stage:</p>
-      <p class="expansion-value__text">${escHtml(targetStageData.valueStatement)}</p>
+      <p class="expansion-value__text">${escHtml(targetStageData.description)}</p>
     </div>
 
     <div class="potential-outcomes">
@@ -9454,7 +12393,10 @@ function renderExpansionCard(containerId, track, trackResult) {
     </div>
 
     <div>
-      <cds-button kind="tertiary" size="lg">Talk to a seller</cds-button>
+      <cds-button kind="tertiary" size="lg">
+        Talk to a seller
+        ${ICON_USER_SERVICE}
+      </cds-button>
     </div>`;
 
   const railEl = el.querySelector(".stage-rail");
@@ -9485,7 +12427,12 @@ function renderHeroCard(actionEntry) {
         </p>
       </div>
       <p class="action-hero-card__prereq">
-        Foundational Pre-requisite for <u>${escHtml(track)} Stage ${stageNum} — ${escHtml(stageName)}</u>
+        Foundational pre-requisite for
+        <a class="report-inline-link"
+           href="#${track.toLowerCase()}-expansion-card"
+           data-section="act-roi"
+           data-stage-rail="#${track.toLowerCase()}-expansion-card"
+           data-stage-index="${stageNum - 1}">${escHtml(track)} Stage ${pad2(stageNum)} — ${escHtml(stageName)}</a>
       </p>
     </div>`;
 }
@@ -9503,21 +12450,21 @@ function renderDetailsCard(milestoneId) {
   const touchpointLines = m.touchpoints || [];
   const productNames = [...new Set(touchpointLines.map(l => l.split("—")[0].trim()))];
   const productTagsHtml = productNames.map(p =>
-    `<cds-tag size="lg" type="blue">${escHtml(p)}</cds-tag>`
+    `<cds-tag size="lg" type="blue">${ICON_CHECK_FILLED}${escHtml(p)}</cds-tag>`
   ).join("");
 
   const remediationHtml = actions.map(a => `
     <div class="remediation-step">
       <p class="remediation-step__text"><strong>Step ${escHtml(a.step)}:</strong> ${escHtml(a.description)}</p>
       <div class="remediation-step__roles">
-        ${a.roles.map(r => `<cds-tag size="lg" type="green">${escHtml(r)}</cds-tag>`).join("")}
+        ${a.roles.map(r => `<cds-tag size="lg" type="green">${ICON_USER}${escHtml(r)}</cds-tag>`).join("")}
       </div>
     </div>`).join("");
 
   return `
     <div class="action-details-card">
       <div class="action-details-section">
-        <p class="action-details-label">What does it unlock?</p>
+        <p class="action-details-label">What this enables</p>
         <p class="action-details-text">${escHtml(m.valueStatement)}</p>
       </div>
 
@@ -9547,7 +12494,7 @@ function renderDetailsCard(milestoneId) {
    Render action plan section
    -------------------------------------------------------------------------- */
 function renderActionPlan(actionPlan) {
-  const el = $("#action-plan-container");
+  const el = $r("#action-plan-container");
   if (!el) return;
 
   let html = "";
@@ -9557,10 +12504,12 @@ function renderActionPlan(actionPlan) {
     html += renderHeroCard(actionPlan.hero);
     html += renderDetailsCard(actionPlan.hero.milestoneId);
 
-    // Steps 02 + 03 — hero only
-    (actionPlan.secondary || []).forEach(entry => {
-      html += renderHeroCard(entry);
-    });
+    // Steps 02 + 03 — hero only, under their own label
+    const secondary = actionPlan.secondary || [];
+    if (secondary.length) {
+      html += `<p class="action-plan__next-label">Next steps on this path</p>`;
+      secondary.forEach(entry => { html += renderHeroCard(entry); });
+    }
   } else {
     // Every capability we asked about is already in place.
     html += `
@@ -9574,29 +12523,27 @@ function renderActionPlan(actionPlan) {
 
   // Additional resources (bonus) — static content
   html += `
-    <div class="bonus-block">
+    <div class="bonus-block" id="act-resources">
       <h3 class="bonus-block__heading">Additional resources</h3>
 
       <div class="bonus-resource">
         <div class="bonus-resource__inner">
           <div class="bonus-resource__icon">${PICTOGRAM_ASSESSMENT}</div>
           <div class="bonus-resource__body">
-            <p class="bonus-resource__title">60-milestones growth worksheet</p>
+            <p class="bonus-resource__title">Complete checklist</p>
             <div class="bonus-resource__desc">
-              <p>Reach a 100% on your <u>maturity index score.</u></p>
-              <p style="margin-top:12px;">The recommendations above are personalised to your results — your highest-priority next steps, right now.</p>
-              <p style="margin-top:12px;">This roadmap shows the complete picture: all 60 milestones across every capability, so you can see the full journey ahead, not just the next move.</p>
+              <p>Reach a 100% on your <a class="report-inline-link" href="#act-today" data-section="act-today">maturity index score.</a></p>
+              <p>This roadmap shows the complete picture: all 60 milestones across APM and FSM, so you can see the full journey ahead, not only the next move.</p>
             </div>
             <div class="bonus-resource__tags">
-              <cds-tag size="lg" type="green">Reliability engineer</cds-tag>
-              <cds-tag size="lg" type="green">Maintenance planner/Scheduler</cds-tag>
-              <cds-tag size="lg" type="green">Operations Manager</cds-tag>
-              <cds-tag size="lg" type="green">IT / System Administrator</cds-tag>
+              <cds-tag size="lg" type="green">${ICON_USER}Reliability engineer</cds-tag>
+              <cds-tag size="lg" type="green">${ICON_USER}Maintenance planner/Scheduler</cds-tag>
+              <cds-tag size="lg" type="green">${ICON_USER}Operations Manager</cds-tag>
+              <cds-tag size="lg" type="green">${ICON_USER}IT / System Administrator</cds-tag>
             </div>
-            <p class="bonus-resource__how-to"><strong>How to use it:</strong><br><br>Share the worksheet below with your Operations Manager, Reliability Engineer, or Maintenance Planner. Work through it with your IBM contact to turn your assessment results into a sequenced plan — milestone by milestone.</p>
             <div>
               <cds-button kind="tertiary" size="lg">
-                Download worksheet
+                Download checklist
                 <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4z"/><path d="M26 14l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
               </cds-button>
             </div>
@@ -9630,9 +12577,9 @@ function renderActionPlan(actionPlan) {
       <div class="accelerate-card__body">
         <p class="accelerate-card__title">Accelerate your Maximo Journey</p>
         <p class="accelerate-card__desc">Discuss these prioritized immediate actions and review the full roadmap with an IBM Maximo and APM specialist to estimate ROI, run scoping exercises, or schedule a deep-dive product demonstration.</p>
-        <cds-button kind="tertiary" size="lg" href="https://www.ibm.com/products/maximo">
-          Schedule a Review with an IBM Specialist
-          <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M28 6H4a2 2 0 00-2 2v20a2 2 0 002 2h24a2 2 0 002-2V8a2 2 0 00-2-2zm0 22H4V14h24zm0-16H4V8h24z"/></svg>
+        <cds-button kind="tertiary" size="lg">
+          Schedule a review with an IBM specialist
+          ${ICON_USER_SERVICE}
         </cds-button>
       </div>
     </div>
@@ -9642,10 +12589,59 @@ function renderActionPlan(actionPlan) {
 }
 
 /* --------------------------------------------------------------------------
+   Feedback buttons (Act 4)
+   -------------------------------------------------------------------------- */
+function wireFeedback() {
+  const el = $r("#feedback-actions");
+  if (!el) return;
+
+  const initialActions = el.innerHTML;
+
+  const send = (value, comment) => {
+    document.dispatchEvent(new CustomEvent("report:feedback", { detail: { value, comment: comment || "" } }));
+    el.innerHTML = `<p class="feedback__thanks">Thanks — noted.</p>`;
+  };
+
+  // "No" asks what would make the report more useful before sending.
+  const askWhy = () => {
+    el.innerHTML = `
+      <div class="feedback__form">
+        <cds-textarea
+          id="feedback-comment"
+          label="What would have made this more useful?"
+          placeholder="Tell us what was missing, unclear, or wrong."
+          rows="4"
+        ></cds-textarea>
+        <div class="feedback__form-actions">
+          <cds-button kind="primary" size="lg" type="button" data-feedback-submit>Submit feedback</cds-button>
+          <cds-button kind="ghost" size="lg" type="button" data-feedback-cancel>Cancel</cds-button>
+        </div>
+      </div>`;
+    el.querySelector("cds-textarea")?.focus();
+  };
+
+  el.addEventListener("click", event => {
+    const choice = event.target.closest("cds-button[data-feedback]");
+    if (choice) {
+      if (choice.dataset.feedback === "no") askWhy();
+      else send("yes");
+      return;
+    }
+    if (event.target.closest("[data-feedback-submit]")) {
+      send("no", $r("#feedback-comment")?.value);
+      return;
+    }
+    if (event.target.closest("[data-feedback-cancel]")) {
+      el.innerHTML = initialActions;
+    }
+  });
+}
+
+/* --------------------------------------------------------------------------
    Render follow-up questions (Act 4)
    -------------------------------------------------------------------------- */
 function renderFollowUp() {
-  const el = $("#followup-form");
+  const el = $r("#followup-form");
   if (!el) return;
 
   // Collect all followUp questions from all pages
@@ -9699,7 +12695,7 @@ function renderFollowUp() {
   el.innerHTML = html;
 
   // Wire submit
-  const btn = $("#followup-submit");
+  const btn = $r("#followup-submit");
   if (btn) {
     btn.addEventListener("click", () => {
       document.dispatchEvent(new CustomEvent("followup:submit", { detail: {} }));
@@ -9712,64 +12708,244 @@ function renderFollowUp() {
    Scrollspy — update active nav item
    -------------------------------------------------------------------------- */
 function initScrollSpy() {
-  const sections = ["act-today", "act-roi", "act-plan", "act-improve"];
-  const navItems = $$(".report-nav__item");
-  const mobileTabs = $$("cds-tab[data-section]");
-  const tabsEl = $("cds-tabs");
+  const sections = ["act-today", "act-roi", "act-plan", "act-resources", "act-improve"];
+  const navItems = $$r(".report-nav__item");
+  const mobileItems = $$r(".mobile-nav__item");
+  const mobileTitle = $r("#mobile-nav-title");
+  const toggle = $r("#mobile-nav-toggle");
+  const panel = $r("#mobile-nav-panel");
+
+  const setPanel = (open) => {
+    if (!toggle || !panel) return;
+    panel.hidden = !open;
+    toggle.setAttribute("aria-expanded", String(open));
+    toggle.setAttribute("aria-label", open ? "Close report navigation" : "Open report navigation");
+  };
+
+  // The bar carries no title while it is still over the banner; the current
+  // section appears once "Where you are today" has scrolled past it.
+  const firstHeading = $r("#act-today .report-section__heading") || $r("#act-today");
+  const bar = $r(".mobile-nav__bar");
+  const syncTitleVisibility = () => {
+    if (!mobileTitle || !firstHeading || !bar) return;
+    const barBottom = bar.getBoundingClientRect().bottom;
+    const passed = firstHeading.getBoundingClientRect().bottom <= barBottom;
+    mobileTitle.classList.toggle("is-hidden", !passed);
+    // While hidden the observer can leave a stale label behind; park it on the
+    // first section so the right words are there when it fades in.
+    if (!passed) setActive(sections[0]);
+  };
+
+  const setActive = (sectionId) => {
+    navItems.forEach(item =>
+      item.classList.toggle("report-nav__item--active", item.dataset.section === sectionId)
+    );
+    mobileItems.forEach(item =>
+      item.classList.toggle("mobile-nav__item--active", item.dataset.section === sectionId)
+    );
+    // The bar always says which section you are in.
+    const label = mobileItems.find(i => i.dataset.section === sectionId)
+      || navItems.find(i => i.dataset.section === sectionId);
+    if (mobileTitle && label) mobileTitle.textContent = label.textContent.trim();
+  };
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const sectionId = entry.target.id;
-
-        // Update desktop nav
-        navItems.forEach(item => item.classList.remove("report-nav__item--active"));
-        const activeNav = navItems.find(item => item.dataset.section === sectionId);
-        if (activeNav) activeNav.classList.add("report-nav__item--active");
-
-        // Update mobile tabs
-        if (tabsEl) tabsEl.value = sectionId;
-      }
+      if (entry.isIntersecting) setActive(entry.target.id);
     });
   }, { rootMargin: "-30% 0px -60% 0px" });
 
   sections.forEach(id => {
-    const el = $(`#${id}`);
+    const el = $r(`#${id}`);
     if (el) observer.observe(el);
   });
 
-  // Smooth scroll on desktop nav click
-  navItems.forEach(item => {
+  // The last section sits at the foot of the page, so it can never reach the
+  // observer's band (30-40% of the viewport). Treat "scrolled to the bottom"
+  // as that section being active, otherwise its nav link never highlights.
+  const lastSection = sections[sections.length - 1];
+  const syncBottom = () => {
+    const doc = document.documentElement;
+    if (window.innerHeight + window.scrollY >= doc.scrollHeight - 4) setActive(lastSection);
+  };
+  window.addEventListener("scroll", syncBottom, { passive: true });
+  syncBottom();
+
+  window.addEventListener("scroll", syncTitleVisibility, { passive: true });
+  window.addEventListener("resize", syncTitleVisibility);
+  // Start on the first section so the label is right the moment it fades in,
+  // whatever the observer happened to report during the initial layout.
+  setActive(sections[0]);
+  syncTitleVisibility();
+
+  /* scrollIntoView puts the target flush against the top of the viewport, which
+     on a phone parks it underneath the pinned bar — the heading you asked for
+     ends up hidden. Measure the bar and land the section just below it. Not
+     every target is a .report-section (the resources block is not), so the
+     offset is computed here rather than left to scroll-margin-top. */
+  const goTo = (sectionId) => {
+    const target = $r(`#${sectionId}`);
+    if (!target) return;
+    // On desktop the bar is inside a hidden wrapper, so it still reports a
+    // display value — its measured height is what tells us it is really there.
+    const barHeight = bar ? bar.getBoundingClientRect().height : 0;
+    const offset = barHeight ? barHeight + 8 : 24;
+    const top = window.scrollY + target.getBoundingClientRect().top - offset;
+    window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+    setActive(sectionId);
+  };
+
+  [...navItems, ...mobileItems].forEach(item => {
     item.addEventListener("click", e => {
       e.preventDefault();
-      const target = $(`#${item.dataset.section}`);
-      if (target) target.scrollIntoView({ behavior: "smooth" });
+      goTo(item.dataset.section);
+      setPanel(false); // a choice closes the mobile panel
     });
   });
 
-  // Smooth scroll on mobile tab selection
-  if (tabsEl) {
-    tabsEl.addEventListener("cds-tabs-selected", e => {
-      const sectionId = e.detail?.item?.dataset?.section;
-      if (sectionId) {
-        const target = $(`#${sectionId}`);
-        if (target) target.scrollIntoView({ behavior: "smooth" });
-      }
+  // Underlined references inside the report jump to what they name — a whole
+  // section, or, when the reference names a stage, that stage's card.
+  $$r(".report-inline-link").forEach(link => {
+    link.addEventListener("click", e => {
+      e.preventDefault();
+      const railSel = link.dataset.stageRail;
+      const rail = railSel ? $r(`${railSel} .stage-rail`) : null;
+      const index = Number(link.dataset.stageIndex);
+      const card = rail && Number.isInteger(index)
+        ? rail.querySelector(`[data-rail-index="${index}"]`)
+        : null;
+
+      if (!card) { goTo(link.dataset.section); return; }
+
+      rail.openStage?.(index);
+      setActive(link.dataset.section);
+      // The card changes size as it opens, so measure after that paint.
+      requestAnimationFrame(() =>
+        card.scrollIntoView({ behavior: "smooth", block: "center" }));
+      card.classList.add("is-jump-target");
+      setTimeout(() => card.classList.remove("is-jump-target"), 1400);
+    });
+  });
+
+  if (toggle && panel) {
+    toggle.addEventListener("click", () => setPanel(panel.hidden));
+    if (mobileTitle) mobileTitle.addEventListener("click", () => setPanel(panel.hidden));
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape" && !panel.hidden) { setPanel(false); toggle.focus(); }
+    });
+    // Tapping the page behind the open panel closes it.
+    document.addEventListener("click", e => {
+      if (panel.hidden) return;
+      if (e.target.closest(".report-mobile-nav")) return;
+      setPanel(false);
     });
   }
 }
 
 /* --------------------------------------------------------------------------
+   Carbon's menu button sizes the trigger inside its shadow root to its own
+   label, so a width set on the host leaves that trigger sticking out past it —
+   visible wherever the Download button has to match a neighbour or share a row.
+   Push the host's measured width through as an explicit value.
+   -------------------------------------------------------------------------- */
+function fitMenuButtons() {
+  const sheetFor = (mb) => {
+    const root = mb.shadowRoot;
+    if (!root) return null;
+    let sheet = root.querySelector("style[data-fit-width]");
+    if (!sheet) {
+      sheet = document.createElement("style");
+      sheet.setAttribute("data-fit-width", "");
+      root.append(sheet);
+    }
+    return sheet;
+  };
+
+  const sync = () => {
+    $$r("cds-menu-button").forEach(mb => {
+      const sheet = sheetFor(mb);
+      // A menu button inside the closed nav panel measures 0; it is pinned to a
+      // width its label already fills, so there is nothing to correct there.
+      const width = Math.round(mb.getBoundingClientRect().width);
+      if (!sheet || !width) return;
+      // !important is needed: Carbon's own shadow styles otherwise win.
+      sheet.textContent =
+        `cds-button { min-inline-size: 0 !important; inline-size: ${width}px !important; }` +
+        `cds-button::part(button) { min-inline-size: 0 !important; inline-size: ${width}px !important; }`;
+    });
+  };
+
+  customElements.whenDefined("cds-menu-button").then(() => {
+    requestAnimationFrame(sync);
+    window.addEventListener("resize", sync);
+  });
+}
+
+/* --------------------------------------------------------------------------
+   Fix cds-menu-button requiring two taps to open on mobile. Carbon registers
+   a focus step on first tap before opening — intercept touchend on the host
+   and fire a synthetic click on the internal trigger button so the menu opens
+   on the very first touch.
+   -------------------------------------------------------------------------- */
+function fixMenuButtonMobileTap() {
+  customElements.whenDefined("cds-menu-button").then(() => {
+    $$r("cds-menu-button").forEach(mb => {
+      mb.addEventListener("touchend", e => {
+        // Only act when the menu is currently closed
+        if (mb.hasAttribute("open")) return;
+        e.preventDefault();
+        const btn = mb.shadowRoot?.querySelector("button");
+        if (btn) btn.click();
+      }, { passive: false });
+    });
+  });
+}
+
+/* --------------------------------------------------------------------------
+   Tooltip dismiss — close any open cds-tooltip when clicking outside it or
+   its trigger button, or when clicking the trigger while it is already open.
+   -------------------------------------------------------------------------- */
+function closeTooltipsOnOutsideClick() {
+  document.addEventListener("click", e => {
+    $$r("cds-tooltip").forEach(tip => {
+      if (!tip.hasAttribute("open")) return;
+      // If the click is inside this tooltip or on its trigger, let Carbon handle it
+      if (tip.contains(e.target)) return;
+      const trigger = tip.querySelector("[slot='trigger']");
+      if (trigger && trigger.contains(e.target)) return;
+      tip.removeAttribute("open");
+    });
+  }, true);
+
+  // Also close when the trigger is clicked while tooltip is already open
+  document.addEventListener("click", e => {
+    const trigger = e.target.closest("[slot='trigger']");
+    if (!trigger) return;
+    const tip = trigger.closest("cds-tooltip");
+    if (tip && tip.hasAttribute("open")) {
+      // let the event finish then close, so Carbon's own open handler runs first
+      requestAnimationFrame(() => tip.removeAttribute("open"));
+    }
+  });
+}
+
+/* --------------------------------------------------------------------------
    Bootstrap
    -------------------------------------------------------------------------- */
-async function init() {
-  // Load scoring result from sessionStorage, fall back to mock
+async function init(injectedResult) {
+  // In the standalone build, app.js passes the result directly to avoid
+  // sessionStorage and page navigation.  On report.html, fall back to
+  // sessionStorage (or the mock when nothing has been stored yet).
   let result;
-  try {
-    const stored = sessionStorage.getItem("scoringResult");
-    result = stored ? JSON.parse(stored) : MOCK_RESULT;
-  } catch {
-    result = MOCK_RESULT;
+  if (injectedResult) {
+    result = injectedResult;
+  } else {
+    try {
+      const stored = sessionStorage.getItem("scoringResult");
+      result = stored ? JSON.parse(stored) : MOCK_RESULT;
+    } catch {
+      result = MOCK_RESULT;
+    }
   }
 
   // Render all sections
@@ -9780,35 +12956,20 @@ async function init() {
   renderExpansionCard("apm-expansion-card", "APM", result.apm);
   renderExpansionCard("fsm-expansion-card", "FSM", result.fsm);
   renderActionPlan(result.actionPlan);
-  renderFollowUp();
+  wireFeedback();
   initScrollSpy();
+  fitMenuButtons();
+  fixMenuButtonMobileTap();
   closeTooltipsOnOutsideClick();
 }
 
-function closeTooltipsOnOutsideClick() {
-  document.addEventListener("click", e => {
-    document.querySelectorAll("cds-tooltip").forEach(tip => {
-      if (!tip.hasAttribute("open")) return;
-      if (tip.contains(e.target)) return;
-      const trigger = tip.querySelector("[slot='trigger']");
-      if (trigger && trigger.contains(e.target)) return;
-      tip.removeAttribute("open");
-    });
-  }, true);
-
-  document.addEventListener("click", e => {
-    const trigger = e.target.closest("[slot='trigger']");
-    if (!trigger) return;
-    const tip = trigger.closest("cds-tooltip");
-    if (tip && tip.hasAttribute("open")) {
-      requestAnimationFrame(() => tip.removeAttribute("open"));
-    }
-  });
-}
-
-init().catch(console.error);
+// Standalone: init() is called by app.js after scoring completes.
+window.__reportInit = (result) => init(result).catch(console.error);
 
 // ── js/app.js ─────────────────────────────────────────────
+// scoring.js pulls in the full milestone register (~220KB). Nobody needs it
+// until the assessment is submitted, so it is imported on demand below.
+
 /* ----------------------------------------------------------------------
    State
    ---------------------------------------------------------------------- */
@@ -9832,6 +12993,40 @@ const els = {
   btnNext: $("#btn-next"),
   form: $("#assessment-form"),
 };
+
+/* ----------------------------------------------------------------------
+   Splash screen show / hide
+   ---------------------------------------------------------------------- */
+const splashEl = document.getElementById("splash-screen");
+
+const showSplash = () => {
+  document.body.classList.add("splash-active");
+  splashEl.hidden = false;
+  window.scrollTo({ top: 0, behavior: "instant" });
+};
+
+const hideSplash = () => {
+  document.body.classList.remove("splash-active");
+  splashEl.hidden = true;
+};
+
+window.startAssessment = () => {
+  hideSplash();
+  loadAssessmentArtwork();
+  render();
+  window.scrollTo({ top: 0, behavior: "instant" });
+};
+
+/* The sidebar artwork is ~580KB and belongs to the assessment, which nobody is
+   looking at while the splash is up. `loading="lazy"` does not help here —
+   Chromium fetches a lazy image inside a display:none container immediately —
+   so the src is withheld in the markup and attached on the way in. */
+function loadAssessmentArtwork() {
+  document.querySelectorAll("img[data-src]").forEach((img) => {
+    img.src = img.dataset.src;
+    img.removeAttribute("data-src");
+  });
+}
 
 const ICON_INFO = `
   <svg slot="trigger" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
@@ -9958,7 +13153,7 @@ const render = () => {
   els.pageTitle.textContent = page.title;
   els.pageCounter.textContent = `Page ${state.page + 1} of ${total}`;
   els.progress.value = Math.round(((state.page + 1) / total) * 100);
-  els.btnBack.disabled = state.page === 0;
+  els.btnBack.disabled = false;
   nextLabel.textContent = state.page === total - 1 ? "Submit" : "Next";
   els.formError.hidden = true;
 
@@ -10062,6 +13257,52 @@ const onControlChanged = (event) => {
 els.sections.addEventListener("cds-checkbox-changed", onControlChanged);
 els.sections.addEventListener("cds-radio-button-changed", onControlChanged);
 
+// Every splash clip starts transparent so a slow or failed load never shows as
+// a black slab; reveal each one once it has a frame. `loop` keeps them running,
+// but a clip that ends without looping (a decode hiccup, a stalled range) is
+// nudged back to the start so the banner never freezes on its last frame.
+document.querySelectorAll(".splash-screen video").forEach((video) => {
+  const reveal = () => video.classList.add("is-ready");
+  if (video.readyState >= 2) reveal();
+  video.addEventListener("loadeddata", reveal);
+  video.addEventListener("ended", () => {
+    video.currentTime = 0;
+    video.play().catch(() => {});
+  });
+});
+
+// The card videos carry preload="none" so they cost nothing on first paint.
+// Load and play each one as it comes into view, and stop it again on the way
+// out so a long splash scroll is not decoding three clips at once.
+const lazyVideos = document.querySelectorAll("video[data-lazy-video]");
+if (lazyVideos.length) {
+  const videoObserver = new IntersectionObserver((entries) => {
+    entries.forEach(({ target, isIntersecting }) => {
+      if (isIntersecting) {
+        if (target.preload === "none") target.preload = "auto";
+        target.play().catch(() => {}); // autoplay can be refused; not fatal
+      } else {
+        target.pause();
+      }
+    });
+  }, { rootMargin: "200px 0px" });
+  lazyVideos.forEach((v) => videoObserver.observe(v));
+}
+
+// Carbon's toggletip only closes from its own button or the Escape key, so on a
+// phone the guidance panel stays up after you tap somewhere else. Close any open
+// one when a tap lands outside it. composedPath is what sees through the shadow
+// root — a tap on the toggletip's own button would otherwise read as "outside"
+// and close the panel in the same gesture that opens it.
+document.addEventListener("pointerdown", (event) => {
+  const open = document.querySelectorAll("cds-toggletip[open]");
+  if (!open.length) return;
+  const path = event.composedPath();
+  open.forEach((tip) => {
+    if (!path.includes(tip)) tip.open = false;
+  });
+});
+
 // Whole-tile click: forward to the control's own <input> so the component runs
 // its normal logic (radio group exclusivity, events, focus) instead of us
 // poking `checked` from the outside.
@@ -10142,19 +13383,27 @@ const handleNext = (event) => {
     document.dispatchEvent(new CustomEvent("assessment:submit", { detail: answers }));
     // Run scoring engine and redirect to report page
     els.btnNext.disabled = true;
-    score(answers, assessment)
+    Promise.resolve(score(answers, assessmentData))
       .then(result => {
         try {
           sessionStorage.setItem("scoringResult", JSON.stringify(result));
         } catch {
           // sessionStorage quota exceeded — proceed anyway, report falls back to mock
         }
-        window.location.href = "report.html";
+        document.querySelector('.page').style.display = 'none';
+        const rv = document.getElementById('report-view');
+        rv.style.display = '';
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        window.__reportInit(result);
       })
       .catch(err => {
         console.error("Scoring failed:", err);
-        // Still redirect so the report page renders with mock data
-        window.location.href = "report.html";
+        // Still navigate to report — it will fall back to mock data
+        document.querySelector('.page').style.display = 'none';
+        const rv = document.getElementById('report-view');
+        rv.style.display = '';
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        window.__reportInit(null);
       });
     return;
   }
@@ -10163,7 +13412,13 @@ const handleNext = (event) => {
 
 els.btnNext.addEventListener("click", handleNext);
 els.form.addEventListener("submit", handleNext);
-els.btnBack.addEventListener("click", () => goTo(state.page - 1));
+els.btnBack.addEventListener("click", () => {
+  if (state.page === 0) {
+    showSplash();
+  } else {
+    goTo(state.page - 1);
+  }
+});
 
 /* ----------------------------------------------------------------------
    Scroll behaviour
