@@ -2076,15 +2076,15 @@ html, body { overflow-x: clip; }
   .bonus-resource__action:not(:has(.bonus-resource__helper)),
   .expansion-card > div:last-child,
   .accelerate-card cds-button,
-  #act-improve:not(.is-useful),
+  #act-improve:not(.is-answered),
   #act-improve .feedback__text,
   #act-improve .feedback__actions,
   cds-tooltip {
     display: none !important;
   }
 
-  /* Answered "Yes": the question and its answer, kept together. */
-  #act-improve.is-useful {
+  /* Answered (Yes or No): the question and its answer, kept together. */
+  #act-improve.is-answered {
     break-inside: avoid;
   }
   #act-improve .feedback {

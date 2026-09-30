@@ -799,12 +799,15 @@ function wireFeedback() {
   const send = (value, comment) => {
     document.dispatchEvent(new CustomEvent("report:feedback", { detail: { value, comment: comment || "" } }));
     el.innerHTML = `<p class="feedback__thanks">Thanks — noted.</p>`;
-    // A "Yes" goes into the PDF too: the section prints with the answer under
-    // the question. Unanswered (or "No") it stays out, as before.
-    if (value === "yes") {
-      el.closest("#act-improve")?.classList.add("is-useful");
-      el.insertAdjacentHTML("beforebegin", `<p class="feedback__answer">Yes</p>`);
-    }
+    // Both "Yes" and "No" print in the PDF. The section is shown whenever
+    // answered; the answer (and optional comment for "No") appear under the question.
+    el.closest("#act-improve")?.classList.add("is-answered");
+    const answerText = value === "yes"
+      ? "Yes"
+      : comment
+        ? `No — ${comment}`
+        : "No";
+    el.insertAdjacentHTML("beforebegin", `<p class="feedback__answer">${answerText}</p>`);
   };
 
   // "No" asks what would make the report more useful before sending.
