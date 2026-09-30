@@ -92,7 +92,19 @@ const MOCK_RESULT = {
       { milestoneId: "SCH-2-FWD",  status: "UNMET" },
       { milestoneId: "AS-1-OWN",   status: "UNMET" }
     ]
-  }
+  },
+  growthAppetite: {
+    answered: 3,
+    score: 5,
+    max: 8,
+    tier: "Medium",
+    tierSummary: "Your organisation is building momentum toward expansion. Some key pieces — budget, sponsorship, or timeline — are still coming together.",
+    signals: [
+      { label: "Budget: Committed",    interpretation: "Budget is in place. Your roadmap prioritises the actions with the fastest time to value this year." },
+      { label: "Sponsorship: Emerging",interpretation: "Leadership interest is there, but not yet formalised. Building that sponsorship is likely your most important next step." },
+      { label: "Plans: Active",        interpretation: "You have active plans in motion. Your roadmap connects directly to where that initiative should focus." },
+    ],
+  },
 };
 
 /* --------------------------------------------------------------------------
@@ -1351,7 +1363,7 @@ function contactLines(contact) {
   return lines.length ? `<p>${lines.join("<br>")}</p>` : "";
 }
 
-function renderResponsesDoc(stored, contact) {
+function renderResponsesDoc(stored, contact, growthAppetite) {
   const submitted = new Date(stored.submittedAt || Date.now())
     .toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
   const provenance =
@@ -1376,6 +1388,20 @@ function renderResponsesDoc(stored, contact) {
       return label + questions;
     }).join("");
 
+    // Investment Readiness summary panel — appended to the follow-up page only,
+    // when at least one Growth Appetite question was answered.
+    const investmentReadiness = (page.followUp && growthAppetite && growthAppetite.answered > 0)
+      ? `<div class="responses-doc__investment-readiness">
+          <h3 class="report-section__sub-heading responses-doc__section">Your investment readiness</h3>
+          <p class="responses-doc__ir-intro">Based on your answers, here is where your organisation stands on readiness to move forward.</p>
+          ${growthAppetite.signals.map(s => `
+            <div class="responses-doc__ir-item">
+              <p class="responses-doc__ir-label">${escHtml(s.label.split(":")[0])}</p>
+              <p class="responses-doc__ir-text">${escHtml(s.interpretation)}</p>
+            </div>`).join("")}
+        </div>`
+      : "";
+
     return `
       <section class="responses-doc__page">
         <div class="report-eyebrow-row">
@@ -1384,6 +1410,7 @@ function renderResponsesDoc(stored, contact) {
         </div>
         <h2 class="report-section__heading responses-doc__heading">${escHtml(page.title)}</h2>
         ${sections}
+        ${investmentReadiness}
       </section>`;
   }).join("");
 
@@ -1406,12 +1433,12 @@ function renderResponsesDoc(stored, contact) {
   document.body.append(doc);
 }
 
-function initResponsesDownload(contact, isDemoReport) {
+function initResponsesDownload(contact, isDemoReport, growthAppetite) {
   const stored = loadStoredResponses() ?? (isDemoReport
     ? { submittedAt: new Date().toISOString(), answers: sampleResponses(), sample: true }
     : { submittedAt: null, answers: {}, missing: true });
 
-  renderResponsesDoc(stored, contact);
+  renderResponsesDoc(stored, contact, growthAppetite);
 
   const printResponses = () => {
     const previousTitle = document.title;
@@ -1454,7 +1481,7 @@ async function init() {
   renderExpansionCard("apm-expansion-card", "APM", result.apm);
   renderExpansionCard("fsm-expansion-card", "FSM", result.fsm);
   renderActionPlan(result.actionPlan);
-  initResponsesDownload(result.contact, result === MOCK_RESULT);
+  initResponsesDownload(result.contact, result === MOCK_RESULT, result.growthAppetite ?? null);
   wireFeedback();
   initScrollSpy();
   fitMenuButtons();

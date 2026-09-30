@@ -2023,6 +2023,45 @@ html, body { overflow-x: clip; }
   font-weight: 600;
 }
 
+/* Investment Readiness summary panel — appears at the bottom of the
+   Growth Appetite (follow-up) page in the responses PDF. */
+.responses-doc__investment-readiness {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 2px solid var(--cds-border-strong);
+}
+
+.responses-doc__ir-intro {
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--cds-text-secondary);
+}
+
+.responses-doc__ir-item {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--cds-border-subtle);
+}
+
+.responses-doc__ir-item:last-child {
+  border-bottom: none;
+}
+
+.responses-doc__ir-label {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--cds-text-primary);
+}
+
+.responses-doc__ir-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--cds-text-primary);
+}
+
 @media print {
   /* Each assessment page is one section of the document and is short enough to
      fit a sheet, so it moves whole rather than starting at the foot of one
@@ -2037,6 +2076,11 @@ html, body { overflow-x: clip; }
   .responses-doc__section,
   .responses-doc__page .report-eyebrow-row {
     break-after: avoid;
+  }
+
+  .responses-doc__investment-readiness,
+  .responses-doc__ir-item {
+    break-inside: avoid;
   }
 }
 

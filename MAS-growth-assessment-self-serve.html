@@ -4609,6 +4609,45 @@ html, body { overflow-x: clip; }
   font-weight: 600;
 }
 
+/* Investment Readiness summary panel — appears at the bottom of the
+   Growth Appetite (follow-up) page in the responses PDF. */
+.responses-doc__investment-readiness {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 2px solid var(--cds-border-strong);
+}
+
+.responses-doc__ir-intro {
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--cds-text-secondary);
+}
+
+.responses-doc__ir-item {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--cds-border-subtle);
+}
+
+.responses-doc__ir-item:last-child {
+  border-bottom: none;
+}
+
+.responses-doc__ir-label {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--cds-text-primary);
+}
+
+.responses-doc__ir-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--cds-text-primary);
+}
+
 @media print {
   /* Each assessment page is one section of the document and is short enough to
      fit a sheet, so it moves whole rather than starting at the foot of one
@@ -4623,6 +4662,11 @@ html, body { overflow-x: clip; }
   .responses-doc__section,
   .responses-doc__page .report-eyebrow-row {
     break-after: avoid;
+  }
+
+  .responses-doc__investment-readiness,
+  .responses-doc__ir-item {
+    break-inside: avoid;
   }
 }
 
@@ -4968,6 +5012,13 @@ html, body { overflow-x: clip; }
     display: block;
     zoom: 0.84;
   }
+
+  /* ── Combined PDF: report followed by responses in one print run ── */
+  html.is-printing-combined .responses-doc {
+    display: block;
+    zoom: 0.84;
+    break-before: page;
+  }
 }
 
 
@@ -5225,13 +5276,10 @@ html, body { overflow-x: clip; }
       </ul>
       <div class="mobile-nav__actions">
         
-        <cds-menu-button kind="tertiary" label="Download" menu-alignment="bottom" size="lg">
-          <cds-menu>
-            <cds-menu-item label="Full PDF report" data-download="pdf"></cds-menu-item>
-            <cds-menu-item label="Full checklist" disabled></cds-menu-item>
-            <cds-menu-item label="Your responses" disabled data-download="responses"></cds-menu-item>
-          </cds-menu>
-        </cds-menu-button>
+        <cds-button kind="primary" size="lg" data-download="pdf">
+          Download PDF
+          <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4z"/><path d="M26 14l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
+        </cds-button>
       </div>
     </div>
   </div>
@@ -5272,13 +5320,10 @@ html, body { overflow-x: clip; }
         </nav>
         <div class="report-sidebar__actions">
           
-          <cds-menu-button kind="tertiary" label="Download" menu-alignment="bottom" size="lg">
-            <cds-menu>
-              <cds-menu-item label="Full PDF report" data-download="pdf"></cds-menu-item>
-              <cds-menu-item label="Full checklist" disabled></cds-menu-item>
-              <cds-menu-item label="Your responses" disabled data-download="responses"></cds-menu-item>
-            </cds-menu>
-          </cds-menu-button>
+          <cds-button kind="primary" size="lg" data-download="pdf">
+            Download PDF
+            <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4z"/><path d="M26 14l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
+          </cds-button>
         </div>
       </aside>
 
@@ -5409,13 +5454,10 @@ html, body { overflow-x: clip; }
              page, so they are never more than a scroll away. -->
         <div class="report-end-actions">
           
-          <cds-menu-button kind="tertiary" label="Download" menu-alignment="top" size="lg">
-            <cds-menu>
-              <cds-menu-item label="Full PDF report" data-download="pdf"></cds-menu-item>
-              <cds-menu-item label="Full checklist" disabled></cds-menu-item>
-              <cds-menu-item label="Your responses" disabled data-download="responses"></cds-menu-item>
-            </cds-menu>
-          </cds-menu-button>
+          <cds-button kind="primary" size="lg" data-download="pdf">
+            Download PDF
+            <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4z"/><path d="M26 14l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
+          </cds-button>
         </div>
 
       </main>
@@ -6123,19 +6165,22 @@ const assessmentData = {
                   "value": "yes-a-senior-leader-is-actively-sponsoring-this",
                   "label": "Yes — a senior leader is actively sponsoring this",
                   "score": 2,
-                  "signalLabel": "Sponsorship: Active"
+                  "signalLabel": "Sponsorship: Active",
+                  "interpretation": "You have leadership backing. That makes it much easier to move recommendations into action."
                 },
                 {
                   "value": "working-on-it-interest-exists-but-no-formal-sponsor-yet",
                   "label": "Working on it — interest exists but no formal sponsor yet",
                   "score": 1,
-                  "signalLabel": "Sponsorship: Emerging"
+                  "signalLabel": "Sponsorship: Emerging",
+                  "interpretation": "Leadership interest is there, but not yet formalised. Building that sponsorship is likely your most important next step."
                 },
                 {
                   "value": "no-no-leadership-commitment-yet",
                   "label": "No — no leadership commitment yet",
                   "score": 0,
-                  "signalLabel": "Sponsorship: Not yet"
+                  "signalLabel": "Sponsorship: Not yet",
+                  "interpretation": "There is no leadership sponsor yet. Without one, expansion decisions are hard to progress — this is worth addressing before anything else."
                 }
               ],
               "required": false,
@@ -6155,19 +6200,22 @@ const assessmentData = {
                   "value": "yes-a-project-or-initiative-is-underway-or-formally-scoped",
                   "label": "Yes — a project or initiative is underway or formally scoped",
                   "score": 2,
-                  "signalLabel": "Plans: Active"
+                  "signalLabel": "Plans: Active",
+                  "interpretation": "You have active plans in motion. Your roadmap connects directly to where that initiative should focus."
                 },
                 {
                   "value": "informally-discussions-are-happening-but-nothing-is-formalised-yet",
                   "label": "Informally — discussions are happening but nothing is formalised yet",
                   "score": 1,
-                  "signalLabel": "Plans: Exploratory"
+                  "signalLabel": "Plans: Exploratory",
+                  "interpretation": "Conversations are happening but nothing is committed yet. Your roadmap can help turn that discussion into a concrete starting point."
                 },
                 {
                   "value": "no-no-active-plans-at-this-time",
                   "label": "No — no active plans at this time",
                   "score": 0,
-                  "signalLabel": "Plans: None"
+                  "signalLabel": "Plans: None",
+                  "interpretation": "There are no active plans right now. Your roadmap gives you a clear picture to come back to when the timing is right."
                 }
               ],
               "required": false,
@@ -6187,19 +6235,22 @@ const assessmentData = {
                   "value": "within-6-months-we-move-fast-when-we-see-the-value",
                   "label": "Within 6 months — we move fast when we see the value",
                   "score": 2,
-                  "signalLabel": "Horizon: Near-term"
+                  "signalLabel": "Horizon: Near-term",
+                  "interpretation": "Your organisation moves quickly when the value is clear. Your roadmap leads with the actions that can show results fast."
                 },
                 {
                   "value": "6-18-months-planned-investment-cycle",
                   "label": "6–18 months — planned investment cycle",
                   "score": 1,
-                  "signalLabel": "Horizon: Mid-term"
+                  "signalLabel": "Horizon: Mid-term",
+                  "interpretation": "You work within a planned investment cycle. Your roadmap is structured as a phased journey that fits that rhythm."
                 },
                 {
                   "value": "18-months-longer-strategic-cycle",
                   "label": "18+ months — longer strategic cycle",
                   "score": 0,
-                  "signalLabel": "Horizon: Long-term"
+                  "signalLabel": "Horizon: Long-term",
+                  "interpretation": "Your organisation takes a longer view on technology investment. Your roadmap frames the full multi-stage journey and the cumulative value it builds."
                 }
               ],
               "required": false,
@@ -6219,19 +6270,22 @@ const assessmentData = {
                   "value": "yes-budget-is-committed-for-this-fiscal-year",
                   "label": "Yes — budget is committed for this fiscal year",
                   "score": 2,
-                  "signalLabel": "Budget: Committed"
+                  "signalLabel": "Budget: Committed",
+                  "interpretation": "Budget is in place. Your roadmap prioritises the actions with the fastest time to value this year."
                 },
                 {
                   "value": "maybe-budget-is-under-discussion-or-pending-approval",
                   "label": "Maybe — budget is under discussion or pending approval",
                   "score": 1,
-                  "signalLabel": "Budget: Pending"
+                  "signalLabel": "Budget: Pending",
+                  "interpretation": "Budget is being considered. Your roadmap is designed to help build the case alongside the plan."
                 },
                 {
                   "value": "no-no-budget-identified-yet",
                   "label": "No — no budget identified yet",
                   "score": 0,
-                  "signalLabel": "Budget: Not identified"
+                  "signalLabel": "Budget: Not identified",
+                  "interpretation": "No budget is in place yet. Your roadmap focuses on the value story you would need to bring to leadership."
                 }
               ],
               "required": false,
@@ -12469,6 +12523,50 @@ function prioritisePass4(milestoneStates, pass2, pass3, answers, assessment) {
 }
 
 /* --------------------------------------------------------------------------
+   Pass 5 — Growth Appetite / Investment Readiness
+   Reads follow-up answers only. Does not touch milestone states or stage logic.
+   Returns null if no follow-up questions were answered.
+   Interpretation text is read from opt.interpretation in assessment.js —
+   the Excel binder (Growth Appetite sheet, col I) is the source of truth.
+   -------------------------------------------------------------------------- */
+function growthAppetitePass5(answers, assessment) {
+  const followUpPage = (assessment.pages || []).find(p => p.followUp === true);
+  if (!followUpPage) return null;
+
+  const questions = (followUpPage.sections || []).flatMap(s => s.questions || []);
+
+  let totalScore = 0;
+  let answered = 0;
+  const signals = [];
+
+  questions.forEach(q => {
+    const answerValue = answers[q.id];
+    if (!answerValue) return; // unanswered — skip entirely
+    const opt = (q.options || []).find(o => o.value === answerValue);
+    if (!opt) return;
+    answered++;
+    totalScore += (opt.score ?? 0);
+    signals.push({
+      label:          opt.signalLabel    || "",
+      interpretation: opt.interpretation || "",
+    });
+  });
+
+  if (answered === 0) return null;
+
+  const tier =
+    totalScore >= 6 ? "High" :
+    totalScore >= 3 ? "Medium" : "Low";
+
+  const tierSummary =
+    tier === "High"   ? "Your organisation looks well-positioned to move forward. You have the budget, backing, and plans in place to make near-term progress." :
+    tier === "Medium" ? "Your organisation is building momentum toward expansion. Some key pieces — budget, sponsorship, or timeline — are still coming together." :
+                        "Your organisation is in the early stages of planning. This roadmap gives you a clear picture of what would need to be in place before expansion makes sense.";
+
+  return { answered, signals, score: totalScore, max: 8, tier, tierSummary };
+}
+
+/* --------------------------------------------------------------------------
    Main exported score() function
    -------------------------------------------------------------------------- */
 score = async function(answers, assessment) {
@@ -12529,6 +12627,7 @@ score = async function(answers, assessment) {
     objectiveLabels: pass3.objectiveLabels,
     actionPlan,
     milestoneCounts: counts,
+    growthAppetite: growthAppetitePass5(answers, assessment),
     _milestoneStates: milestoneStates, // kept for debugging
   };
 }
@@ -12628,7 +12727,19 @@ window.__MOCK_RESULT__ = MOCK_RESULT = {
       { milestoneId: "SCH-2-FWD",  status: "UNMET" },
       { milestoneId: "AS-1-OWN",   status: "UNMET" }
     ]
-  }
+  },
+  growthAppetite: {
+    answered: 3,
+    score: 5,
+    max: 8,
+    tier: "Medium",
+    tierSummary: "Your organisation is building momentum toward expansion. Some key pieces — budget, sponsorship, or timeline — are still coming together.",
+    signals: [
+      { label: "Budget: Committed",    interpretation: "Budget is in place. Your roadmap prioritises the actions with the fastest time to value this year." },
+      { label: "Sponsorship: Emerging",interpretation: "Leadership interest is there, but not yet formalised. Building that sponsorship is likely your most important next step." },
+      { label: "Plans: Active",        interpretation: "You have active plans in motion. Your roadmap connects directly to where that initiative should focus." },
+    ],
+  },
 };
 
 /* --------------------------------------------------------------------------
@@ -13286,11 +13397,11 @@ function renderActionPlan(actionPlan) {
         <div class="bonus-resource__inner">
           <div class="bonus-resource__icon">${PICTOGRAM_QA}</div>
           <div class="bonus-resource__body">
-            <p class="bonus-resource__title">View your responses to the Assessment</p>
-            <p class="bonus-resource__desc">Keep a copy of your assessment answers to share with colleagues who weren't in the room, or to revisit your thinking before your next planning conversation.</p>
+            <p class="bonus-resource__title">Your responses are included in the PDF</p>
+            <p class="bonus-resource__desc">The Download PDF above includes a full copy of your assessment answers — every question with the answer given — appended after the report.</p>
             <div class="bonus-resource__action">
-              <cds-button kind="tertiary" size="lg" disabled data-download="responses">
-                Download responses
+              <cds-button kind="primary" size="lg" data-download="pdf">
+                Download PDF
                 <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4z"/><path d="M26 14l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
               </cds-button>
             </div>
@@ -13679,12 +13790,10 @@ function initPrint(contact) {
     // already-opened page as the state to restore, and the tabs and stage
     // cards would stay open after printing — so it only ever runs once.
     if (document.documentElement.classList.contains("is-printing")) return;
-    // The responses download sets its own title; leave that one alone.
-    if (!document.documentElement.classList.contains("is-printing-responses")) {
-      titleBeforePrint = document.title;
-      document.title = reportTitle;
-    }
+    titleBeforePrint = document.title;
+    document.title = `${reportTitle} — with responses`;
     document.documentElement.classList.add("is-printing");
+    document.documentElement.classList.add("is-printing-combined");
     // Tab panels: remember the inline value so the tab state survives the print.
     $$(".established-panel").forEach(panel => {
       panel.dataset.printDisplay = panel.style.display;
@@ -13704,6 +13813,7 @@ function initPrint(contact) {
       titleBeforePrint = null;
     }
     document.documentElement.classList.remove("is-printing");
+    document.documentElement.classList.remove("is-printing-combined");
     $$(".established-panel").forEach(panel => {
       panel.style.display = panel.dataset.printDisplay || "";
       delete panel.dataset.printDisplay;
@@ -13719,7 +13829,7 @@ function initPrint(contact) {
   window.addEventListener("beforeprint", openEverything);
   window.addEventListener("afterprint", restore);
 
-  $$('cds-menu-item[data-download="pdf"]').forEach(item => {
+  $$('[data-download="pdf"]').forEach(item => {
     item.addEventListener("click", () => {
       // print() lays the page out for paper itself, so it is called straight
       // away. Waiting a frame first would stall indefinitely in a tab that is
@@ -13866,14 +13976,14 @@ function contactLines(contact) {
   return lines.length ? `<p>${lines.join("<br>")}</p>` : "";
 }
 
-function renderResponsesDoc(stored, contact) {
+function renderResponsesDoc(stored, contact, growthAppetite) {
   const submitted = new Date(stored.submittedAt || Date.now())
     .toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
   const provenance =
     stored.sample  ? "Sample answers — complete the assessment to download your own" :
     stored.missing ? "Your answers were not saved in this browser tab — complete the assessment again to include them" :
                      `Answers submitted on ${submitted}`;
-  const pages = [SESSION_DETAILS_PAGE, ...(assessment.pages || [])];
+  const pages = [...(assessment.pages || [])];
 
   const body = pages.map((page, i) => {
     const sections = page.sections.map(section => {
@@ -13891,6 +14001,20 @@ function renderResponsesDoc(stored, contact) {
       return label + questions;
     }).join("");
 
+    // Investment Readiness summary panel — appended to the follow-up page only,
+    // when at least one Growth Appetite question was answered.
+    const investmentReadiness = (page.followUp && growthAppetite && growthAppetite.answered > 0)
+      ? `<div class="responses-doc__investment-readiness">
+          <h3 class="report-section__sub-heading responses-doc__section">Your investment readiness</h3>
+          <p class="responses-doc__ir-intro">Based on your answers, here is where your organisation stands on readiness to move forward.</p>
+          ${growthAppetite.signals.map(s => `
+            <div class="responses-doc__ir-item">
+              <p class="responses-doc__ir-label">${escHtml(s.label.split(":")[0])}</p>
+              <p class="responses-doc__ir-text">${escHtml(s.interpretation)}</p>
+            </div>`).join("")}
+        </div>`
+      : "";
+
     return `
       <section class="responses-doc__page">
         <div class="report-eyebrow-row">
@@ -13899,6 +14023,7 @@ function renderResponsesDoc(stored, contact) {
         </div>
         <h2 class="report-section__heading responses-doc__heading">${escHtml(page.title)}</h2>
         ${sections}
+        ${investmentReadiness}
       </section>`;
   }).join("");
 
@@ -13911,22 +14036,18 @@ function renderResponsesDoc(stored, contact) {
       <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiBmaWxsPSJ3aGl0ZSIgZmlsbC1vcGFjaXR5PSIwLjAxIi8+CjxtYXNrIGlkPSJtYXNrMF8xMjAzXzI2MDI0IiBzdHlsZT0ibWFzay10eXBlOmx1bWluYW5jZSIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeD0iMiIgeT0iNCIgd2lkdGg9IjYwIiBoZWlnaHQ9IjU3Ij4KPHBhdGggZD0iTTYxLjc1IDMxLjAzMDRMNTQuMDkgMTcuMjQ0NEM1Ni4yNTYgMTcuODk4NCA1OC44NCAxOC42Njg0IDU4Ljg0IDE4LjY2ODRMNjAuMDAyIDE0Ljg0MDRMNDguNTE4IDExLjM1NjRMNDUuMDM0IDIyLjg0MDRMNDguODYyIDI0LjAwMjRMNTAuNDE4IDE4Ljg3MDRMNTcuNyAzMS45Nzg0TDQ0Ljg1MiA1NC4wMDI0SDIwVjU4LjAwMjRINDZDNDYuMzQ5NiA1OC4wMDI1IDQ2LjY5MzEgNTcuOTExIDQ2Ljk5NjMgNTcuNzM3QzQ3LjI5OTUgNTcuNTYyOSA0Ny41NTE4IDU3LjMxMjQgNDcuNzI4IDU3LjAxMDRMNjEuNzI4IDMzLjAxMDRDNjEuOTAzMSAzMi43MTEgNjEuOTk3MSAzMi4zNzEgNjIuMDAwNiAzMi4wMjQxQzYyLjAwNDEgMzEuNjc3MiA2MS45MTcgMzEuMzM1NCA2MS43NDggMzEuMDMyNEw2MS43NSAzMS4wMzA0WiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTE4IDYwLjM4ODdWNTAuMzg4N0gzNlY2MC4zODg3SDE4WiIgZmlsbD0idXJsKCNwYWludDBfbGluZWFyXzEyMDNfMjYwMjQpIi8+CjxwYXRoIGQ9Ik0xOC4wMDA3IDYuMDAwMDlDMTcuNjUxMSA1Ljk5OTk5IDE3LjMwNzUgNi4wOTE1MyAxNy4wMDQzIDYuMjY1NTlDMTYuNzAxMSA2LjQzOTY1IDE2LjQ0ODkgNi42OTAxNCAxNi4yNzI3IDYuOTkyMDlMMi4yNzI2NyAzMC45OTIxQzIuMDk3NTYgMzEuMjkxNiAyLjAwMzYxIDMxLjYzMTUgMi4wMDAxIDMxLjk3ODRDMS45OTY1OSAzMi4zMjUzIDIuMDgzNjUgMzIuNjY3MSAyLjI1MjY3IDMyLjk3MDFMOS45MTI2NyA0Ni43NTYxQzcuNzQ2NjcgNDYuMTAyMSA1LjE2MjY3IDQ1LjMzMjEgNS4xNjI2NyA0NS4zMzIxTDQuMDAwNjcgNDkuMTYwMUwxNS40ODQ3IDUyLjY0NDFMMTguOTY4NyA0MS4xNjAxTDE1LjE0MDcgMzkuOTk4MUwxMy41ODQ3IDQ1LjEyODFMNi4zMDI2NyAzMi4wMjAxTDE5LjE1MDcgOS45OTYwOUg0NC4wMDI3VjUuOTk2MDlIMTguMDAyN0wxOC4wMDA3IDYuMDAwMDlaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNNDYgNC42NDg0NFYxNC42NDg0TDI4IDE0LjY0ODRWNC42NDg0NEw0NiA0LjY0ODQ0WiIgZmlsbD0idXJsKCNwYWludDFfbGluZWFyXzEyMDNfMjYwMjQpIi8+CjwvbWFzaz4KPGcgbWFzaz0idXJsKCNtYXNrMF8xMjAzXzI2MDI0KSI+CjxyZWN0IHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgZmlsbD0idXJsKCNwYWludDJfbGluZWFyXzEyMDNfMjYwMjQpIi8+CjwvZz4KPHBhdGggZD0iTTMyIDQyQzI2LjQ4NiA0MiAyMiAzNy41MTQgMjIgMzJDMjIgMjYuNDg2IDI2LjQ4NiAyMiAzMiAyMkMzNy41MTQgMjIgNDIgMjYuNDg2IDQyIDMyQzQyIDM3LjUxNCAzNy41MTQgNDIgMzIgNDJaTTMyIDI2QzI4LjY5MiAyNiAyNiAyOC42OTIgMjYgMzJDMjYgMzUuMzA4IDI4LjY5MiAzOCAzMiAzOEMzNS4zMDggMzggMzggMzUuMzA4IDM4IDMyQzM4IDI4LjY5MiAzNS4zMDggMjYgMzIgMjZaIiBmaWxsPSIjMDAxRDZDIi8+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9InBhaW50MF9saW5lYXJfMTIwM18yNjAyNCIgeDE9IjM2IiB5MT0iNTUuMzg4NyIgeDI9IjE4IiB5Mj0iNTUuMzg4NyIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLW9wYWNpdHk9IjAiLz4KPHN0b3Agb2Zmc2V0PSIwLjkiLz4KPC9saW5lYXJHcmFkaWVudD4KPGxpbmVhckdyYWRpZW50IGlkPSJwYWludDFfbGluZWFyXzEyMDNfMjYwMjQiIHgxPSIyOCIgeTE9IjkuNjQ4NDQiIHgyPSI0NiIgeTI9IjkuNjQ4NDQiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KPHN0b3Agc3RvcC1vcGFjaXR5PSIwIi8+CjxzdG9wIG9mZnNldD0iMC45Ii8+CjwvbGluZWFyR3JhZGllbnQ+CjxsaW5lYXJHcmFkaWVudCBpZD0icGFpbnQyX2xpbmVhcl8xMjAzXzI2MDI0IiB4MT0iLTQuNzY4MzdlLTA3IiB5MT0iNjQiIHgyPSI2NCIgeTI9Ii00Ljc2ODM3ZS0wNyIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBvZmZzZXQ9IjAuMSIgc3RvcC1jb2xvcj0iI0E1NkVGRiIvPgo8c3RvcCBvZmZzZXQ9IjAuOSIgc3RvcC1jb2xvcj0iIzAwNDNDRSIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjwvc3ZnPgo=" alt="" width="32" height="32" />
       <h1 class="report-sidebar__title">Your assessment<br>responses</h1>
       <p class="report-sidebar__version">beta v3</p>
-      <div class="report-sidebar__meta">
-        ${contactLines(contact)}
-        <p class="meta-date">${escHtml(provenance)}</p>
-      </div>
     </header>
     <p class="report-body-text responses-doc__intro">Every question from the MAS Growth Readiness Assessment, with the answer given. Your roadmap is built from these.</p>
     ${body}`;
   document.body.append(doc);
 }
 
-function initResponsesDownload(contact, isDemoReport) {
+function initResponsesDownload(contact, isDemoReport, growthAppetite) {
   const stored = loadStoredResponses() ?? (isDemoReport
     ? { submittedAt: new Date().toISOString(), answers: sampleResponses(), sample: true }
     : { submittedAt: null, answers: {}, missing: true });
 
-  renderResponsesDoc(stored, contact);
+  renderResponsesDoc(stored, contact, growthAppetite);
 
   const printResponses = () => {
     const previousTitle = document.title;
@@ -13963,7 +14084,7 @@ initReport = async function(result) {
   renderExpansionCard("apm-expansion-card", "APM", result.apm);
   renderExpansionCard("fsm-expansion-card", "FSM", result.fsm);
   renderActionPlan(result.actionPlan);
-  initResponsesDownload(result.contact, result === MOCK_RESULT);
+  initResponsesDownload(result.contact, result === MOCK_RESULT, result.growthAppetite ?? null);
   wireFeedback();
   initScrollSpy();
   fitMenuButtons();

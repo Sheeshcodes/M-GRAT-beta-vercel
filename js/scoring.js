@@ -398,6 +398,50 @@ function prioritisePass4(milestoneStates, pass2, pass3, answers, assessment) {
 }
 
 /* --------------------------------------------------------------------------
+   Pass 5 — Growth Appetite / Investment Readiness
+   Reads follow-up answers only. Does not touch milestone states or stage logic.
+   Returns null if no follow-up questions were answered.
+   Interpretation text is read from opt.interpretation in assessment.js —
+   the Excel binder (Growth Appetite sheet, col I) is the source of truth.
+   -------------------------------------------------------------------------- */
+function growthAppetitePass5(answers, assessment) {
+  const followUpPage = (assessment.pages || []).find(p => p.followUp === true);
+  if (!followUpPage) return null;
+
+  const questions = (followUpPage.sections || []).flatMap(s => s.questions || []);
+
+  let totalScore = 0;
+  let answered = 0;
+  const signals = [];
+
+  questions.forEach(q => {
+    const answerValue = answers[q.id];
+    if (!answerValue) return; // unanswered — skip entirely
+    const opt = (q.options || []).find(o => o.value === answerValue);
+    if (!opt) return;
+    answered++;
+    totalScore += (opt.score ?? 0);
+    signals.push({
+      label:          opt.signalLabel     || "",
+      interpretation: opt.interpretation  || "",
+    });
+  });
+
+  if (answered === 0) return null;
+
+  const tier =
+    totalScore >= 6 ? "High" :
+    totalScore >= 3 ? "Medium" : "Low";
+
+  const tierSummary =
+    tier === "High"   ? "Your organisation looks well-positioned to move forward. You have the budget, backing, and plans in place to make near-term progress." :
+    tier === "Medium" ? "Your organisation is building momentum toward expansion. Some key pieces — budget, sponsorship, or timeline — are still coming together." :
+                        "Your organisation is in the early stages of planning. This roadmap gives you a clear picture of what would need to be in place before expansion makes sense.";
+
+  return { answered, signals, score: totalScore, max: 8, tier, tierSummary };
+}
+
+/* --------------------------------------------------------------------------
    Main exported score() function
    -------------------------------------------------------------------------- */
 export async function score(answers, assessment) {
@@ -427,6 +471,9 @@ export async function score(answers, assessment) {
     acc[s] = (acc[s] || 0) + 1;
     return acc;
   }, { MET: 0, UNMET: 0, UNKNOWN: 0 });
+
+  // Pass 5 — Growth Appetite (follow-up only, does not affect milestone/stage logic)
+  const growthAppetite = growthAppetitePass5(answers, assessment);
 
   return {
     contact: {
@@ -458,6 +505,7 @@ export async function score(answers, assessment) {
     objectiveLabels: pass3.objectiveLabels,
     actionPlan,
     milestoneCounts: counts,
+    growthAppetite,
     _milestoneStates: milestoneStates, // kept for debugging
   };
 }
