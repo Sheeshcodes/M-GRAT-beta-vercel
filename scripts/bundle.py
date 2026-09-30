@@ -8,7 +8,7 @@ Reads  : index.html, report.html, css/styles.css, css/splash.css,
          css/report.css, js/app.js, js/scoring.js, js/report.js,
          data/assessment.js, data/report_data.js, data/journey.js,
          data/milestone-actions.js
-Writes : MAS-growth-assessment-facillitated.html  (in the project root)
+Writes : MAS-growth-assessment-self-serve.html  (in the project root)
 
 The output file has no local dependencies — it can be double-clicked
 directly from Finder / Explorer and runs over the file:// protocol
@@ -36,7 +36,7 @@ import sys
 import urllib.parse
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OUT  = os.path.join(ROOT, "MAS-growth-assessment-facillitated.html")
+OUT  = os.path.join(ROOT, "MAS-growth-assessment-self-serve.html")
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -736,7 +736,7 @@ def bundle():
         f.write(html)
 
     kb = os.path.getsize(OUT) / 1024
-    print(f"✓  Bundled → MAS-growth-assessment-facillitated.html  ({kb:.1f} KB)")
+    print(f"✓  Bundled → MAS-growth-assessment-self-serve.html  ({kb:.1f} KB)")
     print("   Splash screen active on open with animation & media assets.")
     print("   'Start assessment' transitions to assessment form.")
     print("   Complete all pages → Submit → Report renders in-place.")
