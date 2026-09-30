@@ -12,7 +12,7 @@ Run the assessment live with the customer on a call. You drive the questions and
 
 **Link to use:**
 ```
-https://sheeshcodes.github.io/M-GRAT-beta-vercel/
+https://pages.github.ibm.com/ALM-Consumability/M-GRAT/
 ```
 
 Open the link before the call and share your screen, or send it to the customer so they can follow along. At the end of the assessment a report is generated automatically in the browser.
@@ -70,7 +70,7 @@ At the end, the scoring engine produces:
 
 ---
 
-## For developers — technical details
+## Technical details
 
 ### What's in the repo
 
