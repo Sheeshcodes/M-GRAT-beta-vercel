@@ -413,6 +413,16 @@ const handleNext = (event) => {
   if (state.page === assessment.pages.length - 1) {
     const answers = structuredClone(state.answers);
     document.dispatchEvent(new CustomEvent("assessment:submit", { detail: answers }));
+    // The report's "Download responses" prints these back as a document. Saved
+    // before scoring runs so a scoring failure cannot lose them.
+    try {
+      sessionStorage.setItem("assessmentResponses", JSON.stringify({
+        submittedAt: new Date().toISOString(),
+        answers,
+      }));
+    } catch {
+      // storage unavailable — the report simply leaves "Download responses" off
+    }
     // Run scoring engine and redirect to report page
     els.btnNext.disabled = true;
     import("./scoring.js")
