@@ -244,6 +244,11 @@ cds-menu-item::part(list-item) {
   gap: 16px;
 }
 
+/* Only the PDF needs telling where the download buttons went. */
+.report-eyebrow-row.bonus-block__print-note {
+  display: none;
+}
+
 .report-eyebrow {
   font-family: var(--font-mono);
   font-weight: 500;
@@ -491,6 +496,17 @@ cds-menu-item::part(list-item) {
   color: var(--cds-text-primary);
   border-bottom-color: var(--cds-interactive);
   font-weight: 600;
+}
+
+/* Each panel names its own pillar. On screen the tab above it already says so,
+   so it is hidden; in print, where the tabs are gone, it becomes the heading. */
+.established-panel__title {
+  display: none;
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 22px;
+  color: var(--cds-text-primary);
 }
 
 /* Panel area */
@@ -825,6 +841,13 @@ cds-menu-item::part(list-item) {
 
 .stage-card:focus-visible { outline: 3px solid #0f62fe; outline-offset: 2px; }
 .stage-rail .stage-card { cursor: pointer; }
+
+/* Groups "what it takes", the outcomes and the capabilities so print can keep
+   them on one page. On screen it steps out of the way: `display: contents`
+   hands its children straight back to the card's flex column. */
+.expansion-summary {
+  display: contents;
+}
 
 .expansion-value {
   display: flex;
@@ -1175,6 +1198,23 @@ cds-menu-item::part(list-item) {
 .bonus-resource__tags cds-tag,
 .remediation-step__roles cds-tag {
   max-width: 100%;
+}
+
+/* A disabled download sits above its own note rather than beside it, so the
+   reason it cannot be pressed reads as part of the control. */
+.bonus-resource__action {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.bonus-resource__helper {
+  margin: 0;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.32px;
+  color: #d0e2d5;
 }
 
 .bonus-divider {
@@ -1829,3 +1869,493 @@ cds-menu-item::part(list-item) {
 /* `clip` contains sideways overflow without creating a scroll container —
    `hidden` here would silently break every `position: sticky` on the page. */
 html, body { overflow-x: clip; }
+
+/* --------------------------------------------------------------------------
+   Print — "Download > Full PDF report" and "Download responses"
+
+   Design logic for collapsed content:
+   1. Anything the reader would have to click is opened. All five stage cards
+      print, not just the current and target; every established-capability
+      panel prints, not just the selected tab.
+   2. Opened content earns a label. The tab strip is dropped, so each panel
+      prints under its own pillar heading instead of an anonymous block.
+   3. Everything that only exists to be interacted with is dropped: nav, CTAs,
+      the hero video, expand toggles, the feedback section.
+   4. The stage rails print as the mobile stack — one card under the next,
+      each fully open — at any paper width. The desktop rail sizes its cards
+      with `flex: 0 0 49px`, which in a column would set their height, so every
+      rule the rail depends on is restated here rather than borrowed from the
+      phone breakpoint (which only happens to apply on portrait Letter/A4).
+   5. Only small, self-contained blocks refuse to split across pages. Asking a
+      whole expansion card or a long panel not to break just moves it to the
+      next page and leaves the rest of this one empty.
+   -------------------------------------------------------------------------- */
+
+/* The responses document only ever appears on paper. It borrows the report's
+   own classes for the cover, eyebrows and headings, so only the answer
+   layout is defined here. */
+.responses-doc {
+  display: none;
+  color: var(--cds-text-primary);
+}
+
+.responses-doc__cover {
+  padding: 0 0 16px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--cds-border-subtle);
+}
+
+.responses-doc__cover img {
+  display: block;
+  margin-bottom: 16px;
+}
+
+.responses-doc__cover .report-sidebar__title {
+  margin: 0 0 12px;
+}
+
+.responses-doc__cover .report-sidebar__version {
+  margin: 0 0 16px;
+}
+
+.responses-doc__intro {
+  max-width: 420px;
+  margin: 0 0 32px;
+}
+
+.responses-doc__page + .responses-doc__page {
+  margin-top: 36px;
+}
+
+.responses-doc__heading {
+  margin: 0 0 8px;
+}
+
+/* The report's sub-heading is display-sized; here it sits under a page
+   heading, so it steps down to keep eyebrow → page → section → question
+   reading as a hierarchy rather than two headings of equal weight. */
+.responses-doc__section,
+.report-section__sub-heading.responses-doc__section {
+  margin: 24px 0 4px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 22px;
+  letter-spacing: 0;
+  color: var(--cds-text-secondary);
+}
+
+/* One question per block, divided by a hairline — the same rhythm as the
+   capability lists in the report. */
+.responses-doc__q {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--cds-border-subtle);
+}
+
+.responses-doc__question {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--cds-text-primary);
+}
+
+.responses-doc__answer,
+.responses-doc__list li,
+.responses-doc__matrix dd {
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--cds-text-primary);
+}
+
+.responses-doc__answer {
+  margin: 0;
+}
+
+.responses-doc__list {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.responses-doc__list li + li {
+  margin-top: 2px;
+}
+
+.responses-doc__empty,
+.responses-doc__matrix dd.is-empty {
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--cds-text-secondary);
+}
+
+/* Matrix rows: the practice on the left, the answer given on the right. */
+.responses-doc__matrix {
+  margin: 0;
+}
+
+.responses-doc__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 6px 0;
+}
+
+.responses-doc__row + .responses-doc__row {
+  border-top: 1px dashed var(--cds-border-subtle);
+}
+
+.responses-doc__matrix dt {
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--cds-text-secondary);
+}
+
+.responses-doc__matrix dd {
+  margin: 0;
+  flex: 0 0 auto;
+  text-align: right;
+  font-weight: 600;
+}
+
+@media print {
+  /* Each assessment page is one section of the document and is short enough to
+     fit a sheet, so it moves whole rather than starting at the foot of one
+     page and finishing on the next. */
+  .responses-doc__page,
+  .responses-doc__q,
+  .responses-doc__row {
+    break-inside: avoid;
+  }
+
+  .responses-doc__heading,
+  .responses-doc__section,
+  .responses-doc__page .report-eyebrow-row {
+    break-after: avoid;
+  }
+}
+
+@media print {
+  @page {
+    margin: 14mm;
+  }
+
+  /* Carbon's fills carry meaning here — the blue banner, the green resources
+     block, the stage tones — so they must survive the print. */
+  *,
+  *::before,
+  *::after {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  html,
+  .report-page {
+    background: #fff;
+    overflow: visible;
+  }
+
+  /* ── 3. Interaction-only furniture ───────────────────────────────────── */
+  .report-mobile-nav,
+  .report-hero,
+  .report-nav,
+  .report-sidebar__actions,
+  .report-end-actions,
+  .mobile-nav__actions,
+  .ep-tab-list,
+  .report-info-btn,
+  .stage-card__toggle,
+  .stage-card__compact-toggle,
+  .stage-card__compact,
+  .bonus-resource__action,
+  .expansion-card > div:last-child,
+  .accelerate-card cds-button,
+  #act-improve,
+  cds-tooltip {
+    display: none !important;
+  }
+
+  /* ── Single column; the sidebar becomes a compact cover block ────────── */
+  /* The report is set for a screen: 16px body, 40px headings. On paper that is
+     large, and at that size the blocks that must stay whole often do not fit
+     the space left on a page, so they jump and leave half-empty pages behind.
+     Printing the whole document a little smaller packs them together without
+     changing any of its proportions. */
+  .report-body {
+    margin: 0;
+    padding: 0;
+    zoom: 0.84;
+    /* On screen this shadow lifts the body over the hero; on paper it draws a
+       stray hairline across the top of page one and down its left edge. */
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .report-layout {
+    display: block;
+    padding: 0;
+    gap: 0;
+  }
+
+  .report-sidebar {
+    position: static;
+    width: auto;
+    max-width: none;
+    max-height: none;
+    overflow: visible;
+    padding: 0 0 16px;
+    border-bottom: 1px solid var(--cds-border-subtle);
+    margin-bottom: 24px;
+  }
+
+  .report-sidebar__icon img {
+    width: 32px;
+    height: 32px;
+  }
+
+  .report-sidebar__meta {
+    display: block;
+  }
+
+  .report-content {
+    max-width: none;
+    gap: 28px;
+  }
+
+  .report-section {
+    padding-bottom: 0;
+  }
+
+  /* The phone layout stacks the score and the strengths; a page is wide
+     enough to put them side by side, which keeps "Where you are today" on
+     the first page instead of pushing it to the second. */
+  .maturity-banner {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    gap: 48px;
+    padding: 28px 32px;
+    min-height: 0;
+  }
+
+  /* ── 1 + 2. Established capabilities: every panel, each with its name ── */
+  .established-panel {
+    display: block !important;
+  }
+
+  .established-panel + .established-panel {
+    margin-top: 28px;
+    padding-top: 28px;
+    border-top: 1px solid var(--cds-border-subtle);
+  }
+
+  .established-panel__title {
+    display: block;
+    break-after: avoid;
+  }
+
+  /* ── 1 + 4. Stage rails: the mobile stack, every card open ───────────── */
+  .stage-rail {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 0;
+    gap: 8px;
+  }
+
+  .stage-card,
+  .stage-card.is-collapsed,
+  .stage-card.is-expanded,
+  .stage-card--current:not(.is-collapsed):not(.is-expanded),
+  .stage-card--target:not(.is-collapsed):not(.is-expanded) {
+    flex: none !important;
+    flex-direction: column;
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible;
+    transition: none;
+    break-inside: avoid;
+  }
+
+  .stage-card__standard,
+  .stage-card.is-expanded .stage-card__standard,
+  .stage-card.is-collapsed .stage-card__standard,
+  .stage-card--past:not(.is-expanded) .stage-card__standard,
+  .stage-card--future:not(.is-expanded) .stage-card__standard {
+    position: static;
+    inset: auto;
+    width: 100% !important;
+    height: auto;
+    display: flex !important;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px 16px 0;
+    box-sizing: border-box;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto;
+    transition: none;
+  }
+
+  .stage-card__content-stack,
+  .stage-card.is-expanded .stage-card__content-stack {
+    width: 100%;
+    gap: 16px;
+  }
+
+  .stage-card__content {
+    height: auto;
+    min-height: 0;
+  }
+
+  .stage-card__details,
+  .stage-card.is-expanded .stage-card__details {
+    position: static;
+    width: 100%;
+    height: auto;
+    padding: 0 16px 16px;
+    margin-top: 16px;
+    box-sizing: border-box;
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: auto;
+    transition: none;
+  }
+
+  /* ── 5. Keep every section in one piece ──────────────────────────────
+     A reader should never meet a label at the foot of one page and its
+     content at the top of the next. So: chapters open on a fresh page,
+     every heading and label is tied to what follows it, and each block that
+     reads as one thing is never split. The longest of those — a capability
+     panel, the step-one details — still fits on a page, so nothing is ever
+     forced to break anyway. */
+  #act-roi,
+  #act-plan {
+    break-before: page;
+  }
+
+  /* An expansion path — five stages and what they add up to — runs to about a
+     page and a half, so it cannot sit on one page. Starting each at the top of
+     its own keeps it to two consecutive pages instead of three partial ones. */
+  #apm-expansion-card,
+  #fsm-expansion-card {
+    break-before: page;
+  }
+
+  .report-eyebrow-row,
+  .report-section__heading,
+  .report-section__heading-row,
+  .report-section__sub-heading,
+  .report-section__sub-heading-group,
+  .report-body-text,
+  .expansion-card__header,
+  .expansion-value__label,
+  .potential-outcomes__label,
+  .expansion-products__label,
+  .established-panel__title,
+  .established-sub-label,
+  .action-details-label,
+  .action-details-label-row,
+  .action-plan__next-label,
+  .bonus-block__heading {
+    break-after: avoid;
+  }
+
+  .maturity-banner,
+  .dimension-grid,
+  .expansion-intro,
+  .established-panel,
+  .established-sub-section,
+  .stage-card,
+  .expansion-summary,
+  .potential-outcomes,
+  .action-hero-card,
+  .action-details-card,
+  .action-details-section,
+  .bonus-block,
+  .bonus-resource,
+  .accelerate-card,
+  .outcome-item {
+    break-inside: avoid;
+  }
+
+  .report-eyebrow-row.bonus-block__print-note {
+    display: flex;
+    margin-top: 8px;
+    break-after: avoid;
+  }
+
+  /* ── Layout that makes those blocks fit ──────────────────────────────── */
+  /* The phone rules stack these into one column; a page has the width for
+     two, which is what lets each of them sit on one page. */
+  .dimension-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 32px;
+  }
+
+  .expansion-intro {
+    flex-direction: row;
+    gap: 32px;
+    padding: 28px 24px;
+  }
+
+  .expansion-intro__track {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .expansion-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  /* Boxes that run across pages lose their fill and outline. A filled or
+     bordered container that breaks is drawn to the foot of the page, which
+     leaves an empty grey slab wherever the next block was pushed over. The
+     stage cards keep their own colours; the white ones gain a hairline so
+     they still read as cards on white paper. */
+  .expansion-card {
+    background: none;
+    border-radius: 0;
+    padding: 0;
+    gap: 24px;
+  }
+
+  .stage-card--future,
+  .stage-card--past {
+    border: 1px solid var(--cds-border-subtle);
+  }
+
+  .established-card {
+    border: 0;
+  }
+
+  .established-panel {
+    padding: 0;
+    gap: 24px;
+  }
+
+  /* The meters animate their width in from 0; a print can arrive before that
+     has run, which would show every bar empty. */
+  .meter__bar {
+    transition: none !important;
+  }
+
+  /* Links print as plain text — a PDF cannot follow them. */
+  .report-inline-link {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  /* ── Download responses: the page prints the answers and nothing else ── */
+  html.is-printing-responses .report-page > :not(.responses-doc) {
+    display: none !important;
+  }
+
+  /* Same print scale as the report, so the two PDFs share one type size. */
+  html.is-printing-responses .responses-doc {
+    display: block;
+    zoom: 0.84;
+  }
+}
