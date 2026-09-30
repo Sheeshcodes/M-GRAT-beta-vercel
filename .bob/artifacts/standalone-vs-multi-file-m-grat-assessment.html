@@ -1,0 +1,337 @@
+
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Standalone vs Multi-file — M-GRAT Assessment</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #1f2328;
+    background: #ffffff;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page { max-width: 760px; margin: 0 auto; padding: 40px 32px 64px; }
+
+  h1 { font-size: 22px; font-weight: 700; margin: 0 0 4px; }
+  h2 { font-size: 17px; font-weight: 700; margin: 32px 0 12px; color: #1f2328; }
+  h3 { font-size: 13px; font-weight: 700; margin: 20px 0 8px; text-transform: uppercase; letter-spacing: 0.06em; color: #57606a; }
+  p  { margin: 0 0 12px; }
+  ul { margin: 0 0 12px; padding-left: 20px; }
+  li { margin-bottom: 5px; }
+
+  .meta { font-size: 12px; color: #57606a; margin: 0 0 32px; }
+
+  /* Section divider */
+  .section-rule {
+    border: none;
+    border-top: 1px solid #e5e7eb;
+    margin: 40px 0;
+  }
+
+  /* Audience badge */
+  .audience-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+  .badge-general { background: #e5e7eb; color: #57606a; }
+  .badge-technical { background: #dbeafe; color: #1d4ed8; }
+
+  /* Comparison table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-bottom: 24px;
+  }
+  th {
+    text-align: left;
+    padding: 8px 12px;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: #f7f8fa;
+    border: 1px solid #e5e7eb;
+    color: #57606a;
+  }
+  td {
+    padding: 10px 12px;
+    border: 1px solid #e5e7eb;
+    vertical-align: top;
+  }
+  tr:nth-child(even) td { background: #fafafa; }
+
+  /* Callout boxes */
+  .callout {
+    border-left: 3px solid #e5e7eb;
+    padding: 12px 16px;
+    margin: 16px 0;
+    background: #f7f8fa;
+    border-radius: 0 4px 4px 0;
+    font-size: 13px;
+  }
+  .callout.blue { border-left-color: #3b82d4; }
+  .callout.purple { border-left-color: #7c5cd8; }
+  .callout.green { border-left-color: #16a34a; }
+  .callout.amber { border-left-color: #d97706; }
+
+  .callout strong { display: block; margin-bottom: 4px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: #57606a; }
+
+  /* Code-style inline */
+  code {
+    font-family: "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+    font-size: 12px;
+    background: #f0f2f4;
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: #1f2328;
+  }
+
+  /* Flow diagram */
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+    margin: 16px 0 24px;
+    font-size: 12px;
+  }
+  .flow-step {
+    background: #f7f8fa;
+    border: 1px solid #e5e7eb;
+    padding: 8px 14px;
+    border-radius: 4px;
+    text-align: center;
+    min-width: 100px;
+    flex: 0 0 auto;
+  }
+  .flow-step strong { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #57606a; margin-bottom: 2px; }
+  .flow-arrow {
+    color: #c0c0c0;
+    font-size: 16px;
+    padding: 0 6px;
+    flex: 0 0 auto;
+  }
+  .flow-step.highlight { background: #dbeafe; border-color: #93c5fd; }
+
+  /* Patch table */
+  .patch-table { font-size: 12px; }
+  .patch-table td:first-child { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 11px; color: #57606a; white-space: nowrap; }
+
+  /* Footer */
+  .footer {
+    margin-top: 48px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+    text-align: center;
+    font-size: 12px;
+    color: #57606a;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <h1>Standalone vs Multi-file — MAS Growth Readiness Assessment</h1>
+  <p class="meta">M-GRAT · assessment-standalone.html vs the served multi-file app</p>
+
+  
+
+  <span class="audience-badge badge-general">General audience</span>
+
+  <h2>What are the two versions?</h2>
+  <p>The assessment exists in two forms that behave identically for anyone filling it in:</p>
+
+  <table>
+    <thead>
+      <tr><th>Aspect</th><th>Standalone HTML file</th><th>Multi-file web app</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>What it is</td>
+        <td>A single <code>.html</code> file you can save to your desktop or share via email</td>
+        <td>A folder of separate files hosted on a web server</td>
+      </tr>
+      <tr>
+        <td>How to open it</td>
+        <td>Double-click the file — it opens in any browser, no internet required for the assessment itself</td>
+        <td>Visit a URL (e.g. <code>assessment.example.com</code>) — requires a live server</td>
+      </tr>
+      <tr>
+        <td>What the user experiences</td>
+        <td>Identical — same splash screen, same questions, same report</td>
+        <td>Identical — same splash screen, same questions, same report</td>
+      </tr>
+      <tr>
+        <td>Who it's for</td>
+        <td>Field teams, demos, email distribution, situations without reliable internet access</td>
+        <td>Published product, analytics tracking, regular content updates</td>
+      </tr>
+      <tr>
+        <td>Keeping it up to date</td>
+        <td>A developer runs one command to regenerate the file whenever the app changes</td>
+        <td>Changes are deployed to the server in the normal way</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout blue">
+    <strong>Key point</strong>
+    The standalone file is not a simplified version — it contains everything: all questions, all scoring logic, all report content. It is a complete, self-contained snapshot of the app at the moment it was last generated.
+  </div>
+
+  <h2>Why have both?</h2>
+  <ul>
+    <li><strong>Standalone</strong> — ideal when you need to share the assessment in a one-to-one or field context: attach it to an email, open it on a laptop without Wi-Fi, include it in a sales kit. No login, no URL, no dependency on anyone's server being up.</li>
+    <li><strong>Multi-file app</strong> — ideal as the live, maintained version of record. Supports server-side analytics, easy incremental updates, and proper hosting infrastructure.</li>
+  </ul>
+
+  <div class="callout green">
+    <strong>One source of truth</strong>
+    The standalone is always generated from the same source files as the live app. Running <code>python3 scripts/bundle.py</code> produces a new standalone that reflects whatever changes have been made to the app.
+  </div>
+
+  <hr class="section-rule" />
+
+  
+
+  <span class="audience-badge badge-technical">Technical audience</span>
+
+  <h2>Architecture overview</h2>
+
+  <h3>Multi-file app — structure</h3>
+  <p>The live app is a vanilla JS ES-module project with no build tool. Files communicate via standard browser module semantics:</p>
+  <table>
+    <thead><tr><th>File / folder</th><th>Role</th></tr></thead>
+    <tbody>
+      <tr><td><code>index.html</code></td><td>Splash screen + assessment shell; loads <code>js/app.js</code> as a module</td></tr>
+      <tr><td><code>report.html</code></td><td>Report page; loads <code>js/report.js</code> as a module</td></tr>
+      <tr><td><code>js/app.js</code></td><td>Assessment state machine, renderer, navigation</td></tr>
+      <tr><td><code>js/scoring.js</code></td><td>4-pass scoring engine; lazy-loaded via dynamic <code>import()</code> on submit</td></tr>
+      <tr><td><code>js/report.js</code></td><td>Report renderer; reads result from <code>sessionStorage</code> on page load</td></tr>
+      <tr><td><code>data/*.js</code></td><td>ES-module data files: assessment questions, milestone register, journey data, remediation actions</td></tr>
+      <tr><td><code>css/styles.css</code>, <code>splash.css</code>, <code>report.css</code></td><td>Separate stylesheets, each <code>&lt;link&gt;</code>ed from the relevant HTML page</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Multi-file app — submit flow</h3>
+  <div class="flow">
+    <div class="flow-step"><strong>User submits</strong>app.js</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><strong>Dynamic import</strong>scoring.js</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><strong>score()</strong>returns result</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><strong>sessionStorage</strong>JSON serialised</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><strong>Navigate</strong>report.html</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><strong>init()</strong>reads sessionStorage</div>
+  </div>
+
+  <h3>Standalone — how it's built</h3>
+  <p><code>scripts/bundle.py</code> assembles <code>assessment-standalone.html</code> from the live source files. It performs these transformations in order:</p>
+
+  <ol>
+    <li><strong>Start from <code>index.html</code></strong> — the full splash + assessment shell HTML is the base document.</li>
+    <li><strong>Inline all CSS</strong> — <code>css/styles.css</code>, <code>css/splash.css</code>, and <code>css/report.css</code> each replace their <code>&lt;link&gt;</code> tags with a <code>&lt;style&gt;</code> block in-place.</li>
+    <li><strong>Inject the report DOM</strong> — the <code>&lt;body&gt;</code> content from <code>report.html</code> (the full report HTML, including all injection-target <code>id</code>s) is inserted into the existing empty <code>#report-view</code> div. The <code>&lt;script&gt;</code> tags from <code>report.html</code> are stripped; the JS is included via the bundle instead.</li>
+    <li><strong>Add report Carbon components</strong> — <code>report.html</code> loads additional Carbon Web Component CDN scripts (<code>cds-tooltip</code>, <code>cds-menu-button</code>, etc.) that <code>index.html</code> does not. These are appended to the <code>&lt;head&gt;</code>.</li>
+    <li><strong>Build the flat JS bundle</strong> — all ES modules are concatenated in dependency order into a single non-module script, wrapped in an async IIFE (<code>(async () =&gt; { … })()</code>). Module syntax is stripped as follows:
+      <ul>
+        <li><code>import … from …</code> statements are deleted</li>
+        <li><code>export default</code> is converted to <code>const &lt;alias&gt; =</code></li>
+        <li><code>export async function</code> / <code>export const</code> — <code>export</code> keyword is dropped</li>
+        <li><code>export { … }</code> re-export lists are deleted</li>
+      </ul>
+    </li>
+    <li><strong>Resolve naming collisions</strong> — both <code>report.js</code> and <code>app.js</code> declare <code>const $</code> and <code>const $$</code> at module scope (legal in modules, fatal in a flat script). The bundler renames <code>report.js</code>'s copies to <code>$r</code> and <code>$$r</code> at both declaration and all call sites.</li>
+    <li><strong>Apply standalone-specific JS patches</strong> — four targeted substitutions are applied to the bundled source (see table below).</li>
+    <li><strong>Strip Vercel analytics</strong> — the <code>cdn.vercel-insights.com</code> script tag is removed (server-side telemetry, irrelevant in a local file).</li>
+  </ol>
+
+  <h3>Standalone — JS patches detail</h3>
+  <table class="patch-table">
+    <thead><tr><th>Location</th><th>Original (multi-file)</th><th>Patched (standalone)</th><th>Reason</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>app.js — submit handler</td>
+        <td><code>import("./scoring.js").then(({score}) =&gt; score(…))</code></td>
+        <td><code>Promise.resolve(score(answers, assessmentData))</code></td>
+        <td>Dynamic <code>import()</code> is unavailable in non-module scripts; <code>score()</code> is already in flat scope</td>
+      </tr>
+      <tr>
+        <td>app.js — success path</td>
+        <td><code>window.location.href = "report.html"</code></td>
+        <td>Hide <code>.page</code>, show <code>#report-view</code>, call <code>window.__reportInit(result)</code></td>
+        <td>No server or separate page exists; the report DOM is already in the document</td>
+      </tr>
+      <tr>
+        <td>app.js — error/fallback path</td>
+        <td><code>window.location.href = "report.html"</code></td>
+        <td>Same reveal + <code>window.__reportInit(null)</code></td>
+        <td>Same as above; <code>null</code> signals <code>init()</code> to fall back to mock data</td>
+      </tr>
+      <tr>
+        <td>report.js — bootstrap</td>
+        <td><code>init().catch(console.error)</code> (auto-runs on page load)</td>
+        <td><code>window.__reportInit = (result) =&gt; init(result).catch(…)</code></td>
+        <td>init() must not fire on page load (no result yet); app.js calls it after scoring</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Standalone — submit flow</h3>
+  <div class="flow">
+    <div class="flow-step"><strong>User submits</strong>app.js</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step highlight"><strong>Direct call</strong>score() in scope</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><strong>result object</strong>in memory</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step highlight"><strong>Show #report-view</strong>hide .page</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step highlight"><strong>__reportInit(result)</strong>renders report</div>
+  </div>
+
+  <h3>report.js — backward-compatible init() signature</h3>
+  <p><code>init()</code> in <code>js/report.js</code> was updated to accept an optional <code>injectedResult</code> parameter:</p>
+  <ul>
+    <li><strong>Multi-file app</strong> — called with no argument; reads result from <code>sessionStorage</code> as before.</li>
+    <li><strong>Standalone</strong> — called by <code>window.__reportInit(result)</code> with the live scoring result; <code>sessionStorage</code> is bypassed entirely.</li>
+  </ul>
+
+  <h3>Maintenance model</h3>
+  <table>
+    <thead><tr><th>Scenario</th><th>Action required</th></tr></thead>
+    <tbody>
+      <tr><td>Questions or data updated (Excel → <code>data/*.js</code>)</td><td>Run <code>python3 scripts/build_assessment.py</code> then <code>python3 scripts/bundle.py</code></td></tr>
+      <tr><td>Milestone register updated</td><td>Run <code>python3 scripts/build_report_data.py</code> then <code>python3 scripts/bundle.py</code></td></tr>
+      <tr><td>UI / logic change in any <code>js/</code> or <code>css/</code> file</td><td>Run <code>python3 scripts/bundle.py</code></td></tr>
+      <tr><td><code>report.html</code> structure changed</td><td>Run <code>python3 scripts/bundle.py</code></td></tr>
+      <tr><td>New Carbon CDN component added to <code>report.html</code></td><td>Add the script tag to <code>REPORT_CDN_SCRIPTS</code> in <code>scripts/bundle.py</code>, then re-bundle</td></tr>
+      <tr><td>New naming collision introduced (new shared helper in a module)</td><td>Add a rename pass to the relevant <code>build_*_module()</code> function in <code>scripts/bundle.py</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout amber">
+    <strong>Known constraint</strong>
+    The standalone relies on CDN-hosted Carbon Web Components for interactive controls (<code>cds-button</code>, <code>cds-checkbox</code>, etc.). An internet connection is required for those elements. The assessment content, scoring logic, and all data are fully self-contained and work offline; only the UI component styling and behaviour depend on the CDN.
+  </div>
+
+  <div class="footer">M-GRAT · MAS Growth Readiness Assessment · Made with IBM Bob</div>
+</div>
+</body>
+</html>

@@ -1463,14 +1463,20 @@ function initResponsesDownload(contact, isDemoReport, growthAppetite) {
 /* --------------------------------------------------------------------------
    Bootstrap
    -------------------------------------------------------------------------- */
-async function init() {
-  // Load scoring result from sessionStorage, fall back to mock
+async function init(injectedResult) {
+  // In the standalone build, app.js passes the result directly to avoid
+  // sessionStorage and page navigation.  On report.html, fall back to
+  // sessionStorage (or the mock when nothing has been stored yet).
   let result;
-  try {
-    const stored = sessionStorage.getItem("scoringResult");
-    result = stored ? JSON.parse(stored) : MOCK_RESULT;
-  } catch {
-    result = MOCK_RESULT;
+  if (injectedResult) {
+    result = injectedResult;
+  } else {
+    try {
+      const stored = sessionStorage.getItem("scoringResult");
+      result = stored ? JSON.parse(stored) : MOCK_RESULT;
+    } catch {
+      result = MOCK_RESULT;
+    }
   }
 
   // Render all sections
