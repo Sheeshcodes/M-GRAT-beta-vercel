@@ -6,7 +6,7 @@ import assessment from "../data/assessment.js";
    State
    ---------------------------------------------------------------------- */
 const state = {
-  page: 0, // zero-based index into assessment.pages
+  page: 0, // zero-based index into pages (session details, then assessment.pages)
   answers: {}, // questionId -> answer (see data/assessment.js for shapes)
 };
 
@@ -157,8 +157,26 @@ const tilesTemplate = (q) => {
   </div>`;
 };
 
+const textFieldTemplate = (q) => `
+  <div class="text-field" data-question="${q.id}" data-type="text" ${q.required ? "data-required" : ""}>
+    <input
+      type="text"
+      id="field-${q.id}"
+      class="text-field__input"
+      data-text-answer="${q.id}"
+      aria-labelledby="${q.id}-title"
+      placeholder="${escapeHtml(q.placeholder ?? "")}"
+      value="${escapeHtml(state.answers[q.id] ?? "")}"
+      autocomplete="${q.autocomplete ?? "off"}"
+      ${q.required ? 'required aria-required="true"' : ""} />
+    <p class="text-field__error">${escapeHtml(q.error ?? "Enter an answer to continue")}</p>
+  </div>`;
+
 const questionTemplate = (q) => {
-  const body = q.type === "matrix" ? matrixTemplate(q) : tilesTemplate(q);
+  const body =
+    q.type === "matrix" ? matrixTemplate(q) :
+    q.type === "text" ? textFieldTemplate(q) :
+    tilesTemplate(q);
   return `<div class="question" data-question-wrap="${q.id}">${questionHeadTemplate(q)}${body}</div>`;
 };
 
@@ -172,15 +190,39 @@ const sectionTemplate = (s) => `
   </section>`;
 
 /* ----------------------------------------------------------------------
+   Session details — the page before the questions. Not part of the binder,
+   so it lives here rather than in data/assessment.js. The answers ride along
+   with the rest under reserved "__" keys that scoring.js reads for the report;
+   report.js lists the same three fields, in the same order, for the exports.
+   ---------------------------------------------------------------------- */
+const DETAILS_PAGE = {
+  id: "details",
+  title: "About this session",
+  sections: [
+    {
+      id: "grp-details",
+      label: "Session details",
+      questions: [
+        { id: "__facilitator_name", type: "text", required: true, title: "Facilitator’s name", placeholder: "e.g. Jane Smith", autocomplete: "name", error: "Enter the facilitator’s name to continue" },
+        { id: "__contact_name", type: "text", required: true, title: "Customer’s name", placeholder: "e.g. John Doe", autocomplete: "off", error: "Enter the customer’s name to continue" },
+        { id: "__contact_organization", type: "text", required: true, title: "Organization", placeholder: "e.g. Acme Utilities", autocomplete: "organization", error: "Enter the organization to continue" },
+      ],
+    },
+  ],
+};
+
+const pages = [DETAILS_PAGE, ...assessment.pages];
+
+/* ----------------------------------------------------------------------
    Rendering
    ---------------------------------------------------------------------- */
-const currentPage = () => assessment.pages[state.page];
+const currentPage = () => pages[state.page];
 const questionsOnPage = () => currentPage().sections.flatMap((s) => s.questions);
 const questionById = (id) => questionsOnPage().find((q) => q.id === id);
 
 const render = () => {
   const page = currentPage();
-  const total = assessment.pages.length;
+  const total = pages.length;
 
   els.pageTitle.textContent = page.title;
   els.pageCounter.textContent = `Page ${state.page + 1} of ${total}`;
@@ -234,12 +276,18 @@ const applyCheckboxRules = (group, changed) => {
   if (!q || q.type !== "checkbox") return;
   const boxes = Array.from(group.querySelectorAll("cds-checkbox"));
   const optionFor = (box) => q.options.find((o) => o.value === box.value) ?? {};
+  // Not every "None of the above" row in the binder is flagged "Is None
+  // Option", so go by the option itself as well as the flag.
+  const exclusive = (box) => {
+    const o = optionFor(box);
+    return Boolean(o.exclusive) || o.value === "none-of-the-above";
+  };
 
   if (changed?.checked) {
-    const changedIsExclusive = Boolean(optionFor(changed).exclusive);
+    const changedIsExclusive = exclusive(changed);
     boxes.forEach((box) => {
       if (box === changed) return;
-      const isExclusive = Boolean(optionFor(box).exclusive);
+      const isExclusive = exclusive(box);
       if (changedIsExclusive || isExclusive) box.checked = false;
     });
   }
@@ -262,6 +310,9 @@ const syncTiles = (group) => {
 
 const setInvalid = (el, invalid) => {
   el.classList.toggle("is-invalid", invalid);
+  el.querySelectorAll(".text-field__input").forEach((input) => {
+    input.setAttribute("aria-invalid", String(invalid));
+  });
   el.querySelectorAll("cds-radio-button, cds-checkbox").forEach((c) => {
     c.invalid = invalid;
   });
@@ -288,6 +339,14 @@ const onControlChanged = (event) => {
 
 els.sections.addEventListener("cds-checkbox-changed", onControlChanged);
 els.sections.addEventListener("cds-radio-button-changed", onControlChanged);
+els.sections.addEventListener("input", (event) => {
+  const id = event.target?.dataset?.textAnswer;
+  if (!id) return;
+  state.answers[id] = event.target.value.trim();
+  const field = event.target.closest(".text-field");
+  if (field?.classList.contains("is-invalid") && state.answers[id]) setInvalid(field, false);
+  if (!findFirstInvalid(false)) els.formError.hidden = true;
+});
 
 // Every splash clip starts transparent so a slow or failed load never shows as
 // a black slab; reveal each one once it has a frame. `loop` keeps them running,
@@ -359,6 +418,8 @@ const isAnswered = (q) => {
       return Array.isArray(a) && a.length > 0;
     case "radio":
       return a != null;
+    case "text":
+      return typeof a === "string" && a.trim() !== "";
     default:
       return true;
   }
@@ -391,7 +452,7 @@ const findFirstInvalid = (mark = true) => {
    Navigation
    ---------------------------------------------------------------------- */
 const goTo = (index) => {
-  state.page = Math.max(0, Math.min(assessment.pages.length - 1, index));
+  state.page = Math.max(0, Math.min(pages.length - 1, index));
   render();
   // Jump (not smooth-scroll) so the new page always opens on its first question.
   window.scrollTo({ top: 0, behavior: "instant" });
@@ -407,12 +468,22 @@ const handleNext = (event) => {
   if (firstInvalid) {
     els.formError.hidden = false;
     firstInvalid.scrollIntoView({ behavior: "smooth", block: "center" });
-    firstInvalid.querySelector("cds-radio-button, cds-checkbox")?.focus();
+    firstInvalid.querySelector("cds-radio-button, cds-checkbox, input")?.focus();
     return;
   }
-  if (state.page === assessment.pages.length - 1) {
+  if (state.page === pages.length - 1) {
     const answers = structuredClone(state.answers);
     document.dispatchEvent(new CustomEvent("assessment:submit", { detail: answers }));
+    // The report's "Download responses" prints these back as a document. Saved
+    // before scoring runs so a scoring failure cannot lose them.
+    try {
+      sessionStorage.setItem("assessmentResponses", JSON.stringify({
+        submittedAt: new Date().toISOString(),
+        answers,
+      }));
+    } catch {
+      // storage unavailable — the report simply leaves "Download responses" off
+    }
     // Run scoring engine and redirect to report page
     els.btnNext.disabled = true;
     import("./scoring.js")

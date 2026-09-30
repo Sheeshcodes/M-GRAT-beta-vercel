@@ -51,6 +51,8 @@ function keepTail(text) {
 const MOCK_RESULT = {
   contact: {
     name: "Michael Scott",
+    organization: "Acme Utilities",
+    facilitator: "Jane Smith",
     industry: "Utilities & Energy",
     date: new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })
   },
@@ -90,7 +92,19 @@ const MOCK_RESULT = {
       { milestoneId: "SCH-2-FWD",  status: "UNMET" },
       { milestoneId: "AS-1-OWN",   status: "UNMET" }
     ]
-  }
+  },
+  growthAppetite: {
+    answered: 3,
+    score: 5,
+    max: 8,
+    tier: "Medium",
+    tierSummary: "Your organisation is building momentum toward expansion. Some key pieces — budget, sponsorship, or timeline — are still coming together.",
+    signals: [
+      { label: "Budget: Committed",    interpretation: "Budget is in place. Your roadmap prioritises the actions with the fastest time to value this year." },
+      { label: "Sponsorship: Emerging",interpretation: "Leadership interest is there, but not yet formalised. Building that sponsorship is likely your most important next step." },
+      { label: "Plans: Active",        interpretation: "You have active plans in motion. Your roadmap connects directly to where that initiative should focus." },
+    ],
+  },
 };
 
 /* --------------------------------------------------------------------------
@@ -192,8 +206,7 @@ function renderSidebarMeta(contact) {
   const el = $("#sidebar-meta");
   if (!el) return;
   el.innerHTML = `
-    <p>Contact name: <strong>${escHtml(contact.name)}</strong><br>
-    Industry/Organization: <strong>${escHtml(contact.industry)}</strong></p>
+    ${contactLines(contact)}
     <p class="meta-date">Based on assessment results on ${escHtml(contact.date)}</p>`;
 }
 
@@ -290,6 +303,7 @@ function renderEstablishedPractices(milestoneIds) {
         aria-labelledby="ep-tab-${escHtml(n.id)}"
         style="${i !== 0 ? 'display:none' : ''}"
       >
+        <p class="established-panel__title">${escHtml(n.pillar)}</p>
         <p class="established-resp">${escHtml(n.respMet)}</p>
         ${signals.length ? `
         <div class="established-sub-section">
@@ -566,6 +580,7 @@ function renderExpansionCard(containerId, track, trackResult) {
 
     <div class="stage-rail" role="region" aria-label="${escHtml(trackLabel)} stages"></div>
 
+    <div class="expansion-summary">
     <div class="expansion-value">
       <p class="expansion-value__label">What it takes to achieve your target stage:</p>
       <p class="expansion-value__text">${escHtml(targetStageData.description)}</p>
@@ -579,6 +594,7 @@ function renderExpansionCard(containerId, track, trackResult) {
     <div class="expansion-products">
       <p class="expansion-products__label">What capabilities are you using and which ones you'll need:</p>
       <div class="expansion-products__tags">${tagsHtml}</div>
+    </div>
     </div>
 
     <div>
@@ -710,8 +726,13 @@ function renderActionPlan(actionPlan) {
       </div>`;
   }
 
-  // Additional resources (bonus) — static content
+  // Additional resources (bonus) — static content. On paper the download
+  // buttons are gone, so the PDF gets a line pointing back to where they live.
   html += `
+    <div class="report-eyebrow-row bonus-block__print-note">
+      <p class="report-eyebrow">Resources can be downloaded from the web report only</p>
+      <div class="report-rule" aria-hidden="true"></div>
+    </div>
     <div class="bonus-block" id="act-resources">
       <h3 class="bonus-block__heading">Additional resources</h3>
 
@@ -730,11 +751,12 @@ function renderActionPlan(actionPlan) {
               <cds-tag size="lg" type="green">${ICON_USER}Operations Manager</cds-tag>
               <cds-tag size="lg" type="green">${ICON_USER}IT / System Administrator</cds-tag>
             </div>
-            <div>
-              <cds-button kind="tertiary" size="lg">
+            <div class="bonus-resource__action">
+              <cds-button kind="tertiary" size="lg" disabled>
                 Download checklist
                 <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4z"/><path d="M26 14l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
               </cds-button>
+              <p class="bonus-resource__helper">Coming soon</p>
             </div>
           </div>
         </div>
@@ -748,8 +770,8 @@ function renderActionPlan(actionPlan) {
           <div class="bonus-resource__body">
             <p class="bonus-resource__title">View your responses to the Assessment</p>
             <p class="bonus-resource__desc">Keep a copy of your assessment answers to share with colleagues who weren't in the room, or to revisit your thinking before your next planning conversation.</p>
-            <div>
-              <cds-button kind="tertiary" size="lg">
+            <div class="bonus-resource__action">
+              <cds-button kind="tertiary" size="lg" disabled data-download="responses">
                 Download responses
                 <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4z"/><path d="M26 14l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
               </cds-button>
@@ -789,6 +811,15 @@ function wireFeedback() {
   const send = (value, comment) => {
     document.dispatchEvent(new CustomEvent("report:feedback", { detail: { value, comment: comment || "" } }));
     el.innerHTML = `<p class="feedback__thanks">Thanks — noted.</p>`;
+    // Both "Yes" and "No" print in the PDF. The section is shown whenever
+    // answered; the answer (and optional comment for "No") appear under the question.
+    el.closest("#act-improve")?.classList.add("is-answered");
+    const answerText = value === "yes"
+      ? "Yes"
+      : comment
+        ? `No — ${comment}`
+        : "No";
+    el.insertAdjacentHTML("beforebegin", `<p class="feedback__answer">${answerText}</p>`);
   };
 
   // "No" asks what would make the report more useful before sending.
@@ -1119,6 +1150,317 @@ function closeTooltipsOnOutsideClick() {
 }
 
 /* --------------------------------------------------------------------------
+   Print / Download as PDF
+
+   The report hides a lot behind interaction: four of the five stage cards are
+   collapsed, and the established-capability panels are a tab set showing one at
+   a time. A PDF cannot be clicked, so everything is opened for the print run.
+
+   Most of that is done in the print stylesheet. Two things have to happen in
+   JS: the tab panels carry an inline `display:none` that only `!important`
+   could beat, and each stage rail's internal state has to be released so the
+   cards stop fighting the print layout. Both are put back afterwards so the
+   page the person is looking at is unchanged.
+   -------------------------------------------------------------------------- */
+function initPrint(contact) {
+  // "Save as PDF" names the file after the page title, so the title carries
+  // the report's name for the length of the print.
+  const name = (contact?.name || "").trim();
+  const reportTitle = name
+    ? `Maximo Growth Readiness Report - ${name}`
+    : "Maximo Growth Readiness Report";
+  let titleBeforePrint = null;
+
+  const openEverything = () => {
+    // The menu item opens everything and then calls print(), which fires
+    // beforeprint and lands here again. A second pass would record the
+    // already-opened page as the state to restore, and the tabs and stage
+    // cards would stay open after printing — so it only ever runs once.
+    if (document.documentElement.classList.contains("is-printing")) return;
+    // The responses download sets its own title; leave that one alone.
+    if (!document.documentElement.classList.contains("is-printing-responses")) {
+      titleBeforePrint = document.title;
+      document.title = reportTitle;
+    }
+    document.documentElement.classList.add("is-printing");
+    // Tab panels: remember the inline value so the tab state survives the print.
+    $$(".established-panel").forEach(panel => {
+      panel.dataset.printDisplay = panel.style.display;
+      panel.style.display = "";
+    });
+    // Stage cards: drop the open/collapsed classes so every card prints in full.
+    $$(".stage-card").forEach(card => {
+      card.dataset.printClass = card.className;
+      card.classList.remove("is-collapsed", "is-expanded");
+    });
+  };
+
+  const restore = () => {
+    if (!document.documentElement.classList.contains("is-printing")) return;
+    if (titleBeforePrint !== null) {
+      document.title = titleBeforePrint;
+      titleBeforePrint = null;
+    }
+    document.documentElement.classList.remove("is-printing");
+    $$(".established-panel").forEach(panel => {
+      panel.style.display = panel.dataset.printDisplay || "";
+      delete panel.dataset.printDisplay;
+    });
+    $$(".stage-card").forEach(card => {
+      if (card.dataset.printClass) card.className = card.dataset.printClass;
+      delete card.dataset.printClass;
+    });
+  };
+
+  // Safari and Firefox fire these for Cmd+P as well as for our own call, so the
+  // menu item does not need to do the expanding itself.
+  window.addEventListener("beforeprint", openEverything);
+  window.addEventListener("afterprint", restore);
+
+  $$('cds-menu-item[data-download="pdf"]').forEach(item => {
+    item.addEventListener("click", () => {
+      // print() lays the page out for paper itself, so it is called straight
+      // away. Waiting a frame first would stall indefinitely in a tab that is
+      // not visible, leaving the page opened up with the print title.
+      openEverything();
+      window.print();
+    });
+  });
+}
+
+/* --------------------------------------------------------------------------
+   Download responses
+
+   The assessment saves its answers to sessionStorage on submit. This turns
+   them back into a plain document — every question, in the order it was
+   asked, with the answer given — set in the report's own type and colour so
+   it reads as part of the same pack. It only ever exists on paper: the page
+   prints it and nothing else, then goes back to the report.
+
+   It is always available. With no answers saved in this tab:
+   - the demo report (opened directly) prints a matching sample set, labelled
+     as such on the cover;
+   - a real report whose answers were not saved here (opened in another tab)
+     prints the questions unanswered and says why, rather than inventing any.
+   -------------------------------------------------------------------------- */
+function loadStoredResponses() {
+  try {
+    const raw = sessionStorage.getItem("assessmentResponses");
+    const parsed = raw ? JSON.parse(raw) : null;
+    return parsed && parsed.answers ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+/* A plausible set of answers for the demo report, picked by position from the
+   live question data rather than hard-coded, so it can never reference an
+   option the spreadsheet no longer has. The optional advanced-practices block
+   is left empty on purpose, so the sample also shows how a skipped question
+   prints. */
+function sampleResponses() {
+  const answers = {
+    __facilitator_name: MOCK_RESULT.contact.facilitator,
+    __contact_name: MOCK_RESULT.contact.name,
+    __contact_organization: MOCK_RESULT.contact.organization,
+  };
+  const matrixPattern = ["met", "met", "unmet", "unknown"];
+  assessment.pages.forEach(page => page.sections.forEach(section => section.questions.forEach(q => {
+    switch (q.type) {
+      case "checkbox": {
+        if (q.required === false) return;
+        const choices = (q.options || []).filter(o => !o.exclusive);
+        answers[q.id] = choices.slice(0, q.maxSelections || 2).map(o => o.value);
+        break;
+      }
+      case "radio": {
+        const options = q.options || [];
+        if (options.length) answers[q.id] = options[Math.min(1, options.length - 1)].value;
+        break;
+      }
+      case "matrix": {
+        const values = (q.columns || []).map(c => c.value);
+        answers[q.id] = Object.fromEntries((q.rows || []).map((row, i) => {
+          const wanted = matrixPattern[i % matrixPattern.length];
+          return [row.id, values.includes(wanted) ? wanted : values[0]];
+        }));
+        break;
+      }
+    }
+  })));
+  return answers;
+}
+
+const NOT_ANSWERED = `<p class="responses-doc__empty">Not answered</p>`;
+
+/* The session details page that opens the assessment (js/app.js), mirrored
+   here so the responses document starts where the assessment does. Same ids,
+   labels and order as the form. */
+const SESSION_DETAILS_PAGE = {
+  id: "details",
+  title: "About this session",
+  sections: [{
+    id: "grp-details",
+    label: "Session details",
+    questions: [
+      { id: "__facilitator_name", type: "text", title: "Facilitator’s name" },
+      { id: "__contact_name", type: "text", title: "Customer’s name" },
+      { id: "__contact_organization", type: "text", title: "Organization" },
+    ],
+  }],
+};
+
+function renderAnswer(q, answer) {
+  const labelFor = (value) =>
+    (q.options || []).find(o => o.value === value)?.label ?? value;
+
+  switch (q.type) {
+    case "checkbox": {
+      const picked = Array.isArray(answer) ? answer : [];
+      if (!picked.length) return NOT_ANSWERED;
+      return `<ul class="responses-doc__list">${
+        picked.map(v => `<li>${escHtml(labelFor(v))}</li>`).join("")
+      }</ul>`;
+    }
+    case "radio":
+      return answer
+        ? `<p class="responses-doc__answer">${escHtml(labelFor(answer))}</p>`
+        : NOT_ANSWERED;
+    case "text":
+      return answer
+        ? `<p class="responses-doc__answer">${escHtml(answer)}</p>`
+        : NOT_ANSWERED;
+    case "matrix": {
+      const given = answer && typeof answer === "object" ? answer : {};
+      const columnLabel = (value) =>
+        (q.columns || []).find(c => c.value === value)?.label ?? value;
+      return `<dl class="responses-doc__matrix">${
+        (q.rows || []).map(row => `
+          <div class="responses-doc__row">
+            <dt>${escHtml(row.label)}</dt>
+            <dd${given[row.id] ? "" : ' class="is-empty"'}>${
+              given[row.id] ? escHtml(columnLabel(given[row.id])) : "Not answered"
+            }</dd>
+          </div>`).join("")
+      }</dl>`;
+    }
+    default:
+      return NOT_ANSWERED;
+  }
+}
+
+// Labelled and ordered as on the session details page. Only the lines that
+// have something in them — a printed label with nothing after it reads as a
+// fault on paper.
+function contactLines(contact) {
+  if (!contact) return "";
+  const lines = [
+    contact.facilitator && `Facilitator’s name: <strong>${escHtml(contact.facilitator)}</strong>`,
+    contact.name && `Customer’s name: <strong>${escHtml(contact.name)}</strong>`,
+    contact.organization && `Organization: <strong>${escHtml(contact.organization)}</strong>`,
+    contact.industry && `Industry: <strong>${escHtml(contact.industry)}</strong>`,
+  ].filter(Boolean);
+  return lines.length ? `<p>${lines.join("<br>")}</p>` : "";
+}
+
+function renderResponsesDoc(stored, contact, growthAppetite) {
+  const submitted = new Date(stored.submittedAt || Date.now())
+    .toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+  const provenance =
+    stored.sample  ? "Sample answers — complete the assessment to download your own" :
+    stored.missing ? "Your answers were not saved in this browser tab — complete the assessment again to include them" :
+                     `Answers submitted on ${submitted}`;
+  const pages = [SESSION_DETAILS_PAGE, ...(assessment.pages || [])];
+
+  const body = pages.map((page, i) => {
+    const sections = page.sections.map(section => {
+      // A section named the same as its page would only repeat the heading.
+      const label = section.label && section.label !== page.title
+        ? `<h3 class="report-section__sub-heading responses-doc__section">${escHtml(section.label)}</h3>`
+        : "";
+      // Grouped matrices are titled after their section ("Reliability
+      // practices" under "Reliability practices"); say it once.
+      const questions = section.questions.map(q => `
+        <div class="responses-doc__q">
+          ${q.title !== section.label ? `<p class="responses-doc__question">${escHtml(q.title)}</p>` : ""}
+          ${renderAnswer(q, stored.answers[q.id])}
+        </div>`).join("");
+      return label + questions;
+    }).join("");
+
+    // Investment Readiness summary panel — appended to the follow-up page only,
+    // when at least one Growth Appetite question was answered.
+    const investmentReadiness = (page.followUp && growthAppetite && growthAppetite.answered > 0)
+      ? `<div class="responses-doc__investment-readiness">
+          <h3 class="report-section__sub-heading responses-doc__section">Your investment readiness</h3>
+          <p class="responses-doc__ir-intro">Based on your answers, here is where your organisation stands on readiness to move forward.</p>
+          ${growthAppetite.signals.map(s => `
+            <div class="responses-doc__ir-item">
+              <p class="responses-doc__ir-label">${escHtml(s.label.split(":")[0])}</p>
+              <p class="responses-doc__ir-text">${escHtml(s.interpretation)}</p>
+            </div>`).join("")}
+        </div>`
+      : "";
+
+    return `
+      <section class="responses-doc__page">
+        <div class="report-eyebrow-row">
+          <p class="report-eyebrow">Page ${i + 1} of ${pages.length}</p>
+          <div class="report-rule" aria-hidden="true"></div>
+        </div>
+        <h2 class="report-section__heading responses-doc__heading">${escHtml(page.title)}</h2>
+        ${sections}
+        ${investmentReadiness}
+      </section>`;
+  }).join("");
+
+  const doc = document.createElement("section");
+  doc.className = "responses-doc";
+  doc.id = "responses-doc";
+  doc.setAttribute("aria-hidden", "true");
+  doc.innerHTML = `
+    <header class="responses-doc__cover">
+      <img src="assets/IBM Maximo Application Suite.svg" alt="" width="32" height="32" />
+      <h1 class="report-sidebar__title">Your assessment<br>responses</h1>
+      <p class="report-sidebar__version">beta v3</p>
+      <div class="report-sidebar__meta">
+        ${contactLines(contact)}
+        <p class="meta-date">${escHtml(provenance)}</p>
+      </div>
+    </header>
+    <p class="report-body-text responses-doc__intro">Every question from the MAS Growth Readiness Assessment, with the answer given. Your roadmap is built from these.</p>
+    ${body}`;
+  document.body.append(doc);
+}
+
+function initResponsesDownload(contact, isDemoReport, growthAppetite) {
+  const stored = loadStoredResponses() ?? (isDemoReport
+    ? { submittedAt: new Date().toISOString(), answers: sampleResponses(), sample: true }
+    : { submittedAt: null, answers: {}, missing: true });
+
+  renderResponsesDoc(stored, contact, growthAppetite);
+
+  const printResponses = () => {
+    const previousTitle = document.title;
+    const done = () => {
+      document.documentElement.classList.remove("is-printing-responses");
+      document.title = previousTitle;
+      window.removeEventListener("afterprint", done);
+    };
+    document.documentElement.classList.add("is-printing-responses");
+    // "Save as PDF" names the file after the page title.
+    document.title = "Your assessment responses — MAS Growth Readiness Assessment";
+    window.addEventListener("afterprint", done);
+    window.print();
+  };
+
+  $$('[data-download="responses"]').forEach(control => {
+    control.removeAttribute("disabled");
+    control.addEventListener("click", printResponses);
+  });
+}
+
+/* --------------------------------------------------------------------------
    Bootstrap
    -------------------------------------------------------------------------- */
 async function init(injectedResult) {
@@ -1145,9 +1487,11 @@ async function init(injectedResult) {
   renderExpansionCard("apm-expansion-card", "APM", result.apm);
   renderExpansionCard("fsm-expansion-card", "FSM", result.fsm);
   renderActionPlan(result.actionPlan);
+  initResponsesDownload(result.contact, result === MOCK_RESULT, result.growthAppetite ?? null);
   wireFeedback();
   initScrollSpy();
   fitMenuButtons();
+  initPrint(result.contact);
   fixMenuButtonMobileTap();
   closeTooltipsOnOutsideClick();
 }
