@@ -51,6 +51,8 @@ function keepTail(text) {
 const MOCK_RESULT = {
   contact: {
     name: "Michael Scott",
+    organization: "Acme Utilities",
+    facilitator: "Jane Smith",
     industry: "Utilities & Energy",
     date: new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })
   },
@@ -192,8 +194,7 @@ function renderSidebarMeta(contact) {
   const el = $("#sidebar-meta");
   if (!el) return;
   el.innerHTML = `
-    <p>Contact name: <strong>${escHtml(contact.name)}</strong><br>
-    Industry/Organization: <strong>${escHtml(contact.industry)}</strong></p>
+    ${contactLines(contact)}
     <p class="meta-date">Based on assessment results on ${escHtml(contact.date)}</p>`;
 }
 
@@ -717,7 +718,7 @@ function renderActionPlan(actionPlan) {
   // buttons are gone, so the PDF gets a line pointing back to where they live.
   html += `
     <div class="report-eyebrow-row bonus-block__print-note">
-      <p class="report-eyebrow">Download resources from your online report</p>
+      <p class="report-eyebrow">Resources can be downloaded from the web report only</p>
       <div class="report-rule" aria-hidden="true"></div>
     </div>
     <div class="bonus-block" id="act-resources">
@@ -798,6 +799,12 @@ function wireFeedback() {
   const send = (value, comment) => {
     document.dispatchEvent(new CustomEvent("report:feedback", { detail: { value, comment: comment || "" } }));
     el.innerHTML = `<p class="feedback__thanks">Thanks — noted.</p>`;
+    // A "Yes" goes into the PDF too: the section prints with the answer under
+    // the question. Unanswered (or "No") it stays out, as before.
+    if (value === "yes") {
+      el.closest("#act-improve")?.classList.add("is-useful");
+      el.insertAdjacentHTML("beforebegin", `<p class="feedback__answer">Yes</p>`);
+    }
   };
 
   // "No" asks what would make the report more useful before sending.
@@ -1237,7 +1244,11 @@ function loadStoredResponses() {
    is left empty on purpose, so the sample also shows how a skipped question
    prints. */
 function sampleResponses() {
-  const answers = {};
+  const answers = {
+    __facilitator_name: MOCK_RESULT.contact.facilitator,
+    __contact_name: MOCK_RESULT.contact.name,
+    __contact_organization: MOCK_RESULT.contact.organization,
+  };
   const matrixPattern = ["met", "met", "unmet", "unknown"];
   assessment.pages.forEach(page => page.sections.forEach(section => section.questions.forEach(q => {
     switch (q.type) {
@@ -1267,6 +1278,23 @@ function sampleResponses() {
 
 const NOT_ANSWERED = `<p class="responses-doc__empty">Not answered</p>`;
 
+/* The session details page that opens the assessment (js/app.js), mirrored
+   here so the responses document starts where the assessment does. Same ids,
+   labels and order as the form. */
+const SESSION_DETAILS_PAGE = {
+  id: "details",
+  title: "About this session",
+  sections: [{
+    id: "grp-details",
+    label: "Session details",
+    questions: [
+      { id: "__facilitator_name", type: "text", title: "Facilitator’s name" },
+      { id: "__contact_name", type: "text", title: "Customer’s name" },
+      { id: "__contact_organization", type: "text", title: "Organization" },
+    ],
+  }],
+};
+
 function renderAnswer(q, answer) {
   const labelFor = (value) =>
     (q.options || []).find(o => o.value === value)?.label ?? value;
@@ -1282,6 +1310,10 @@ function renderAnswer(q, answer) {
     case "radio":
       return answer
         ? `<p class="responses-doc__answer">${escHtml(labelFor(answer))}</p>`
+        : NOT_ANSWERED;
+    case "text":
+      return answer
+        ? `<p class="responses-doc__answer">${escHtml(answer)}</p>`
         : NOT_ANSWERED;
     case "matrix": {
       const given = answer && typeof answer === "object" ? answer : {};
@@ -1302,13 +1334,16 @@ function renderAnswer(q, answer) {
   }
 }
 
-// Only the lines that have something in them — a printed label with nothing
-// after it reads as a fault on paper.
+// Labelled and ordered as on the session details page. Only the lines that
+// have something in them — a printed label with nothing after it reads as a
+// fault on paper.
 function contactLines(contact) {
   if (!contact) return "";
   const lines = [
-    contact.name && `Contact name: <strong>${escHtml(contact.name)}</strong>`,
-    contact.industry && `Industry/Organization: <strong>${escHtml(contact.industry)}</strong>`,
+    contact.facilitator && `Facilitator’s name: <strong>${escHtml(contact.facilitator)}</strong>`,
+    contact.name && `Customer’s name: <strong>${escHtml(contact.name)}</strong>`,
+    contact.organization && `Organization: <strong>${escHtml(contact.organization)}</strong>`,
+    contact.industry && `Industry: <strong>${escHtml(contact.industry)}</strong>`,
   ].filter(Boolean);
   return lines.length ? `<p>${lines.join("<br>")}</p>` : "";
 }
@@ -1320,7 +1355,7 @@ function renderResponsesDoc(stored, contact) {
     stored.sample  ? "Sample answers — complete the assessment to download your own" :
     stored.missing ? "Your answers were not saved in this browser tab — complete the assessment again to include them" :
                      `Answers submitted on ${submitted}`;
-  const pages = assessment.pages || [];
+  const pages = [SESSION_DETAILS_PAGE, ...(assessment.pages || [])];
 
   const body = pages.map((page, i) => {
     const sections = page.sections.map(section => {

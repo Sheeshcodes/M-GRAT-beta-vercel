@@ -430,8 +430,10 @@ export async function score(answers, assessment) {
 
   return {
     contact: {
-      name:     answers["__contact_name"]     || "Your Organisation",
-      industry: answers["__contact_industry"] || "",
+      name:         answers["__contact_name"]         || "",
+      organization: answers["__contact_organization"] || "",
+      facilitator:  answers["__facilitator_name"]     || "",
+      industry:     answers["__contact_industry"]     || "",
       date:     new Date().toLocaleDateString("en-GB", {
         day: "numeric", month: "short", year: "numeric"
       }),
