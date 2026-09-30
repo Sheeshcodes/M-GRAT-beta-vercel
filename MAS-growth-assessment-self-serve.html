@@ -4609,6 +4609,45 @@ html, body { overflow-x: clip; }
   font-weight: 600;
 }
 
+/* Investment Readiness summary panel — appears at the bottom of the
+   Growth Appetite (follow-up) page in the responses PDF. */
+.responses-doc__investment-readiness {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 2px solid var(--cds-border-strong);
+}
+
+.responses-doc__ir-intro {
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--cds-text-secondary);
+}
+
+.responses-doc__ir-item {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--cds-border-subtle);
+}
+
+.responses-doc__ir-item:last-child {
+  border-bottom: none;
+}
+
+.responses-doc__ir-label {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--cds-text-primary);
+}
+
+.responses-doc__ir-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--cds-text-primary);
+}
+
 @media print {
   /* Each assessment page is one section of the document and is short enough to
      fit a sheet, so it moves whole rather than starting at the foot of one
@@ -4623,6 +4662,11 @@ html, body { overflow-x: clip; }
   .responses-doc__section,
   .responses-doc__page .report-eyebrow-row {
     break-after: avoid;
+  }
+
+  .responses-doc__investment-readiness,
+  .responses-doc__ir-item {
+    break-inside: avoid;
   }
 }
 
@@ -6121,19 +6165,22 @@ const assessmentData = {
                   "value": "yes-a-senior-leader-is-actively-sponsoring-this",
                   "label": "Yes — a senior leader is actively sponsoring this",
                   "score": 2,
-                  "signalLabel": "Sponsorship: Active"
+                  "signalLabel": "Sponsorship: Active",
+                  "interpretation": "You have leadership backing. That makes it much easier to move recommendations into action."
                 },
                 {
                   "value": "working-on-it-interest-exists-but-no-formal-sponsor-yet",
                   "label": "Working on it — interest exists but no formal sponsor yet",
                   "score": 1,
-                  "signalLabel": "Sponsorship: Emerging"
+                  "signalLabel": "Sponsorship: Emerging",
+                  "interpretation": "Leadership interest is there, but not yet formalised. Building that sponsorship is likely your most important next step."
                 },
                 {
                   "value": "no-no-leadership-commitment-yet",
                   "label": "No — no leadership commitment yet",
                   "score": 0,
-                  "signalLabel": "Sponsorship: Not yet"
+                  "signalLabel": "Sponsorship: Not yet",
+                  "interpretation": "There is no leadership sponsor yet. Without one, expansion decisions are hard to progress — this is worth addressing before anything else."
                 }
               ],
               "required": false,
@@ -6153,19 +6200,22 @@ const assessmentData = {
                   "value": "yes-a-project-or-initiative-is-underway-or-formally-scoped",
                   "label": "Yes — a project or initiative is underway or formally scoped",
                   "score": 2,
-                  "signalLabel": "Plans: Active"
+                  "signalLabel": "Plans: Active",
+                  "interpretation": "You have active plans in motion. Your roadmap connects directly to where that initiative should focus."
                 },
                 {
                   "value": "informally-discussions-are-happening-but-nothing-is-formalised-yet",
                   "label": "Informally — discussions are happening but nothing is formalised yet",
                   "score": 1,
-                  "signalLabel": "Plans: Exploratory"
+                  "signalLabel": "Plans: Exploratory",
+                  "interpretation": "Conversations are happening but nothing is committed yet. Your roadmap can help turn that discussion into a concrete starting point."
                 },
                 {
                   "value": "no-no-active-plans-at-this-time",
                   "label": "No — no active plans at this time",
                   "score": 0,
-                  "signalLabel": "Plans: None"
+                  "signalLabel": "Plans: None",
+                  "interpretation": "There are no active plans right now. Your roadmap gives you a clear picture to come back to when the timing is right."
                 }
               ],
               "required": false,
@@ -6185,19 +6235,22 @@ const assessmentData = {
                   "value": "within-6-months-we-move-fast-when-we-see-the-value",
                   "label": "Within 6 months — we move fast when we see the value",
                   "score": 2,
-                  "signalLabel": "Horizon: Near-term"
+                  "signalLabel": "Horizon: Near-term",
+                  "interpretation": "Your organisation moves quickly when the value is clear. Your roadmap leads with the actions that can show results fast."
                 },
                 {
                   "value": "6-18-months-planned-investment-cycle",
                   "label": "6–18 months — planned investment cycle",
                   "score": 1,
-                  "signalLabel": "Horizon: Mid-term"
+                  "signalLabel": "Horizon: Mid-term",
+                  "interpretation": "You work within a planned investment cycle. Your roadmap is structured as a phased journey that fits that rhythm."
                 },
                 {
                   "value": "18-months-longer-strategic-cycle",
                   "label": "18+ months — longer strategic cycle",
                   "score": 0,
-                  "signalLabel": "Horizon: Long-term"
+                  "signalLabel": "Horizon: Long-term",
+                  "interpretation": "Your organisation takes a longer view on technology investment. Your roadmap frames the full multi-stage journey and the cumulative value it builds."
                 }
               ],
               "required": false,
@@ -6217,19 +6270,22 @@ const assessmentData = {
                   "value": "yes-budget-is-committed-for-this-fiscal-year",
                   "label": "Yes — budget is committed for this fiscal year",
                   "score": 2,
-                  "signalLabel": "Budget: Committed"
+                  "signalLabel": "Budget: Committed",
+                  "interpretation": "Budget is in place. Your roadmap prioritises the actions with the fastest time to value this year."
                 },
                 {
                   "value": "maybe-budget-is-under-discussion-or-pending-approval",
                   "label": "Maybe — budget is under discussion or pending approval",
                   "score": 1,
-                  "signalLabel": "Budget: Pending"
+                  "signalLabel": "Budget: Pending",
+                  "interpretation": "Budget is being considered. Your roadmap is designed to help build the case alongside the plan."
                 },
                 {
                   "value": "no-no-budget-identified-yet",
                   "label": "No — no budget identified yet",
                   "score": 0,
-                  "signalLabel": "Budget: Not identified"
+                  "signalLabel": "Budget: Not identified",
+                  "interpretation": "No budget is in place yet. Your roadmap focuses on the value story you would need to bring to leadership."
                 }
               ],
               "required": false,
@@ -12467,6 +12523,50 @@ function prioritisePass4(milestoneStates, pass2, pass3, answers, assessment) {
 }
 
 /* --------------------------------------------------------------------------
+   Pass 5 — Growth Appetite / Investment Readiness
+   Reads follow-up answers only. Does not touch milestone states or stage logic.
+   Returns null if no follow-up questions were answered.
+   Interpretation text is read from opt.interpretation in assessment.js —
+   the Excel binder (Growth Appetite sheet, col I) is the source of truth.
+   -------------------------------------------------------------------------- */
+function growthAppetitePass5(answers, assessment) {
+  const followUpPage = (assessment.pages || []).find(p => p.followUp === true);
+  if (!followUpPage) return null;
+
+  const questions = (followUpPage.sections || []).flatMap(s => s.questions || []);
+
+  let totalScore = 0;
+  let answered = 0;
+  const signals = [];
+
+  questions.forEach(q => {
+    const answerValue = answers[q.id];
+    if (!answerValue) return; // unanswered — skip entirely
+    const opt = (q.options || []).find(o => o.value === answerValue);
+    if (!opt) return;
+    answered++;
+    totalScore += (opt.score ?? 0);
+    signals.push({
+      label:          opt.signalLabel    || "",
+      interpretation: opt.interpretation || "",
+    });
+  });
+
+  if (answered === 0) return null;
+
+  const tier =
+    totalScore >= 6 ? "High" :
+    totalScore >= 3 ? "Medium" : "Low";
+
+  const tierSummary =
+    tier === "High"   ? "Your organisation looks well-positioned to move forward. You have the budget, backing, and plans in place to make near-term progress." :
+    tier === "Medium" ? "Your organisation is building momentum toward expansion. Some key pieces — budget, sponsorship, or timeline — are still coming together." :
+                        "Your organisation is in the early stages of planning. This roadmap gives you a clear picture of what would need to be in place before expansion makes sense.";
+
+  return { answered, signals, score: totalScore, max: 8, tier, tierSummary };
+}
+
+/* --------------------------------------------------------------------------
    Main exported score() function
    -------------------------------------------------------------------------- */
 score = async function(answers, assessment) {
@@ -12527,6 +12627,7 @@ score = async function(answers, assessment) {
     objectiveLabels: pass3.objectiveLabels,
     actionPlan,
     milestoneCounts: counts,
+    growthAppetite: growthAppetitePass5(answers, assessment),
     _milestoneStates: milestoneStates, // kept for debugging
   };
 }
@@ -12626,7 +12727,19 @@ window.__MOCK_RESULT__ = MOCK_RESULT = {
       { milestoneId: "SCH-2-FWD",  status: "UNMET" },
       { milestoneId: "AS-1-OWN",   status: "UNMET" }
     ]
-  }
+  },
+  growthAppetite: {
+    answered: 3,
+    score: 5,
+    max: 8,
+    tier: "Medium",
+    tierSummary: "Your organisation is building momentum toward expansion. Some key pieces — budget, sponsorship, or timeline — are still coming together.",
+    signals: [
+      { label: "Budget: Committed",    interpretation: "Budget is in place. Your roadmap prioritises the actions with the fastest time to value this year." },
+      { label: "Sponsorship: Emerging",interpretation: "Leadership interest is there, but not yet formalised. Building that sponsorship is likely your most important next step." },
+      { label: "Plans: Active",        interpretation: "You have active plans in motion. Your roadmap connects directly to where that initiative should focus." },
+    ],
+  },
 };
 
 /* --------------------------------------------------------------------------
@@ -13863,7 +13976,7 @@ function contactLines(contact) {
   return lines.length ? `<p>${lines.join("<br>")}</p>` : "";
 }
 
-function renderResponsesDoc(stored, contact) {
+function renderResponsesDoc(stored, contact, growthAppetite) {
   const submitted = new Date(stored.submittedAt || Date.now())
     .toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
   const provenance =
@@ -13888,6 +14001,20 @@ function renderResponsesDoc(stored, contact) {
       return label + questions;
     }).join("");
 
+    // Investment Readiness summary panel — appended to the follow-up page only,
+    // when at least one Growth Appetite question was answered.
+    const investmentReadiness = (page.followUp && growthAppetite && growthAppetite.answered > 0)
+      ? `<div class="responses-doc__investment-readiness">
+          <h3 class="report-section__sub-heading responses-doc__section">Your investment readiness</h3>
+          <p class="responses-doc__ir-intro">Based on your answers, here is where your organisation stands on readiness to move forward.</p>
+          ${growthAppetite.signals.map(s => `
+            <div class="responses-doc__ir-item">
+              <p class="responses-doc__ir-label">${escHtml(s.label.split(":")[0])}</p>
+              <p class="responses-doc__ir-text">${escHtml(s.interpretation)}</p>
+            </div>`).join("")}
+        </div>`
+      : "";
+
     return `
       <section class="responses-doc__page">
         <div class="report-eyebrow-row">
@@ -13896,6 +14023,7 @@ function renderResponsesDoc(stored, contact) {
         </div>
         <h2 class="report-section__heading responses-doc__heading">${escHtml(page.title)}</h2>
         ${sections}
+        ${investmentReadiness}
       </section>`;
   }).join("");
 
@@ -13914,12 +14042,12 @@ function renderResponsesDoc(stored, contact) {
   document.body.append(doc);
 }
 
-function initResponsesDownload(contact, isDemoReport) {
+function initResponsesDownload(contact, isDemoReport, growthAppetite) {
   const stored = loadStoredResponses() ?? (isDemoReport
     ? { submittedAt: new Date().toISOString(), answers: sampleResponses(), sample: true }
     : { submittedAt: null, answers: {}, missing: true });
 
-  renderResponsesDoc(stored, contact);
+  renderResponsesDoc(stored, contact, growthAppetite);
 
   const printResponses = () => {
     const previousTitle = document.title;
@@ -13956,7 +14084,7 @@ initReport = async function(result) {
   renderExpansionCard("apm-expansion-card", "APM", result.apm);
   renderExpansionCard("fsm-expansion-card", "FSM", result.fsm);
   renderActionPlan(result.actionPlan);
-  initResponsesDownload(result.contact, result === MOCK_RESULT);
+  initResponsesDownload(result.contact, result === MOCK_RESULT, result.growthAppetite ?? null);
   wireFeedback();
   initScrollSpy();
   fitMenuButtons();
