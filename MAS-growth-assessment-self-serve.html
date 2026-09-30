@@ -4968,6 +4968,13 @@ html, body { overflow-x: clip; }
     display: block;
     zoom: 0.84;
   }
+
+  /* ── Combined PDF: report followed by responses in one print run ── */
+  html.is-printing-combined .responses-doc {
+    display: block;
+    zoom: 0.84;
+    break-before: page;
+  }
 }
 
 
@@ -5225,13 +5232,10 @@ html, body { overflow-x: clip; }
       </ul>
       <div class="mobile-nav__actions">
         
-        <cds-menu-button kind="tertiary" label="Download" menu-alignment="bottom" size="lg">
-          <cds-menu>
-            <cds-menu-item label="Full PDF report" data-download="pdf"></cds-menu-item>
-            <cds-menu-item label="Full checklist" disabled></cds-menu-item>
-            <cds-menu-item label="Your responses" disabled data-download="responses"></cds-menu-item>
-          </cds-menu>
-        </cds-menu-button>
+        <cds-button kind="primary" size="lg" data-download="pdf">
+          Download PDF
+          <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4z"/><path d="M26 14l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
+        </cds-button>
       </div>
     </div>
   </div>
@@ -5272,13 +5276,10 @@ html, body { overflow-x: clip; }
         </nav>
         <div class="report-sidebar__actions">
           
-          <cds-menu-button kind="tertiary" label="Download" menu-alignment="bottom" size="lg">
-            <cds-menu>
-              <cds-menu-item label="Full PDF report" data-download="pdf"></cds-menu-item>
-              <cds-menu-item label="Full checklist" disabled></cds-menu-item>
-              <cds-menu-item label="Your responses" disabled data-download="responses"></cds-menu-item>
-            </cds-menu>
-          </cds-menu-button>
+          <cds-button kind="primary" size="lg" data-download="pdf">
+            Download PDF
+            <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4z"/><path d="M26 14l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
+          </cds-button>
         </div>
       </aside>
 
@@ -5409,13 +5410,10 @@ html, body { overflow-x: clip; }
              page, so they are never more than a scroll away. -->
         <div class="report-end-actions">
           
-          <cds-menu-button kind="tertiary" label="Download" menu-alignment="top" size="lg">
-            <cds-menu>
-              <cds-menu-item label="Full PDF report" data-download="pdf"></cds-menu-item>
-              <cds-menu-item label="Full checklist" disabled></cds-menu-item>
-              <cds-menu-item label="Your responses" disabled data-download="responses"></cds-menu-item>
-            </cds-menu>
-          </cds-menu-button>
+          <cds-button kind="primary" size="lg" data-download="pdf">
+            Download PDF
+            <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4z"/><path d="M26 14l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
+          </cds-button>
         </div>
 
       </main>
@@ -13286,11 +13284,11 @@ function renderActionPlan(actionPlan) {
         <div class="bonus-resource__inner">
           <div class="bonus-resource__icon">${PICTOGRAM_QA}</div>
           <div class="bonus-resource__body">
-            <p class="bonus-resource__title">View your responses to the Assessment</p>
-            <p class="bonus-resource__desc">Keep a copy of your assessment answers to share with colleagues who weren't in the room, or to revisit your thinking before your next planning conversation.</p>
+            <p class="bonus-resource__title">Your responses are included in the PDF</p>
+            <p class="bonus-resource__desc">The Download PDF above includes a full copy of your assessment answers — every question with the answer given — appended after the report.</p>
             <div class="bonus-resource__action">
-              <cds-button kind="tertiary" size="lg" disabled data-download="responses">
-                Download responses
+              <cds-button kind="primary" size="lg" data-download="pdf">
+                Download PDF
                 <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4z"/><path d="M26 14l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
               </cds-button>
             </div>
@@ -13679,12 +13677,10 @@ function initPrint(contact) {
     // already-opened page as the state to restore, and the tabs and stage
     // cards would stay open after printing — so it only ever runs once.
     if (document.documentElement.classList.contains("is-printing")) return;
-    // The responses download sets its own title; leave that one alone.
-    if (!document.documentElement.classList.contains("is-printing-responses")) {
-      titleBeforePrint = document.title;
-      document.title = reportTitle;
-    }
+    titleBeforePrint = document.title;
+    document.title = `${reportTitle} — with responses`;
     document.documentElement.classList.add("is-printing");
+    document.documentElement.classList.add("is-printing-combined");
     // Tab panels: remember the inline value so the tab state survives the print.
     $$(".established-panel").forEach(panel => {
       panel.dataset.printDisplay = panel.style.display;
@@ -13704,6 +13700,7 @@ function initPrint(contact) {
       titleBeforePrint = null;
     }
     document.documentElement.classList.remove("is-printing");
+    document.documentElement.classList.remove("is-printing-combined");
     $$(".established-panel").forEach(panel => {
       panel.style.display = panel.dataset.printDisplay || "";
       delete panel.dataset.printDisplay;
@@ -13719,7 +13716,7 @@ function initPrint(contact) {
   window.addEventListener("beforeprint", openEverything);
   window.addEventListener("afterprint", restore);
 
-  $$('cds-menu-item[data-download="pdf"]').forEach(item => {
+  $$('[data-download="pdf"]').forEach(item => {
     item.addEventListener("click", () => {
       // print() lays the page out for paper itself, so it is called straight
       // away. Waiting a frame first would stall indefinitely in a tab that is
@@ -13873,7 +13870,7 @@ function renderResponsesDoc(stored, contact) {
     stored.sample  ? "Sample answers — complete the assessment to download your own" :
     stored.missing ? "Your answers were not saved in this browser tab — complete the assessment again to include them" :
                      `Answers submitted on ${submitted}`;
-  const pages = [SESSION_DETAILS_PAGE, ...(assessment.pages || [])];
+  const pages = [...(assessment.pages || [])];
 
   const body = pages.map((page, i) => {
     const sections = page.sections.map(section => {
@@ -13911,10 +13908,6 @@ function renderResponsesDoc(stored, contact) {
       <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiBmaWxsPSJ3aGl0ZSIgZmlsbC1vcGFjaXR5PSIwLjAxIi8+CjxtYXNrIGlkPSJtYXNrMF8xMjAzXzI2MDI0IiBzdHlsZT0ibWFzay10eXBlOmx1bWluYW5jZSIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeD0iMiIgeT0iNCIgd2lkdGg9IjYwIiBoZWlnaHQ9IjU3Ij4KPHBhdGggZD0iTTYxLjc1IDMxLjAzMDRMNTQuMDkgMTcuMjQ0NEM1Ni4yNTYgMTcuODk4NCA1OC44NCAxOC42Njg0IDU4Ljg0IDE4LjY2ODRMNjAuMDAyIDE0Ljg0MDRMNDguNTE4IDExLjM1NjRMNDUuMDM0IDIyLjg0MDRMNDguODYyIDI0LjAwMjRMNTAuNDE4IDE4Ljg3MDRMNTcuNyAzMS45Nzg0TDQ0Ljg1MiA1NC4wMDI0SDIwVjU4LjAwMjRINDZDNDYuMzQ5NiA1OC4wMDI1IDQ2LjY5MzEgNTcuOTExIDQ2Ljk5NjMgNTcuNzM3QzQ3LjI5OTUgNTcuNTYyOSA0Ny41NTE4IDU3LjMxMjQgNDcuNzI4IDU3LjAxMDRMNjEuNzI4IDMzLjAxMDRDNjEuOTAzMSAzMi43MTEgNjEuOTk3MSAzMi4zNzEgNjIuMDAwNiAzMi4wMjQxQzYyLjAwNDEgMzEuNjc3MiA2MS45MTcgMzEuMzM1NCA2MS43NDggMzEuMDMyNEw2MS43NSAzMS4wMzA0WiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTE4IDYwLjM4ODdWNTAuMzg4N0gzNlY2MC4zODg3SDE4WiIgZmlsbD0idXJsKCNwYWludDBfbGluZWFyXzEyMDNfMjYwMjQpIi8+CjxwYXRoIGQ9Ik0xOC4wMDA3IDYuMDAwMDlDMTcuNjUxMSA1Ljk5OTk5IDE3LjMwNzUgNi4wOTE1MyAxNy4wMDQzIDYuMjY1NTlDMTYuNzAxMSA2LjQzOTY1IDE2LjQ0ODkgNi42OTAxNCAxNi4yNzI3IDYuOTkyMDlMMi4yNzI2NyAzMC45OTIxQzIuMDk3NTYgMzEuMjkxNiAyLjAwMzYxIDMxLjYzMTUgMi4wMDAxIDMxLjk3ODRDMS45OTY1OSAzMi4zMjUzIDIuMDgzNjUgMzIuNjY3MSAyLjI1MjY3IDMyLjk3MDFMOS45MTI2NyA0Ni43NTYxQzcuNzQ2NjcgNDYuMTAyMSA1LjE2MjY3IDQ1LjMzMjEgNS4xNjI2NyA0NS4zMzIxTDQuMDAwNjcgNDkuMTYwMUwxNS40ODQ3IDUyLjY0NDFMMTguOTY4NyA0MS4xNjAxTDE1LjE0MDcgMzkuOTk4MUwxMy41ODQ3IDQ1LjEyODFMNi4zMDI2NyAzMi4wMjAxTDE5LjE1MDcgOS45OTYwOUg0NC4wMDI3VjUuOTk2MDlIMTguMDAyN0wxOC4wMDA3IDYuMDAwMDlaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNNDYgNC42NDg0NFYxNC42NDg0TDI4IDE0LjY0ODRWNC42NDg0NEw0NiA0LjY0ODQ0WiIgZmlsbD0idXJsKCNwYWludDFfbGluZWFyXzEyMDNfMjYwMjQpIi8+CjwvbWFzaz4KPGcgbWFzaz0idXJsKCNtYXNrMF8xMjAzXzI2MDI0KSI+CjxyZWN0IHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgZmlsbD0idXJsKCNwYWludDJfbGluZWFyXzEyMDNfMjYwMjQpIi8+CjwvZz4KPHBhdGggZD0iTTMyIDQyQzI2LjQ4NiA0MiAyMiAzNy41MTQgMjIgMzJDMjIgMjYuNDg2IDI2LjQ4NiAyMiAzMiAyMkMzNy41MTQgMjIgNDIgMjYuNDg2IDQyIDMyQzQyIDM3LjUxNCAzNy41MTQgNDIgMzIgNDJaTTMyIDI2QzI4LjY5MiAyNiAyNiAyOC42OTIgMjYgMzJDMjYgMzUuMzA4IDI4LjY5MiAzOCAzMiAzOEMzNS4zMDggMzggMzggMzUuMzA4IDM4IDMyQzM4IDI4LjY5MiAzNS4zMDggMjYgMzIgMjZaIiBmaWxsPSIjMDAxRDZDIi8+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9InBhaW50MF9saW5lYXJfMTIwM18yNjAyNCIgeDE9IjM2IiB5MT0iNTUuMzg4NyIgeDI9IjE4IiB5Mj0iNTUuMzg4NyIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLW9wYWNpdHk9IjAiLz4KPHN0b3Agb2Zmc2V0PSIwLjkiLz4KPC9saW5lYXJHcmFkaWVudD4KPGxpbmVhckdyYWRpZW50IGlkPSJwYWludDFfbGluZWFyXzEyMDNfMjYwMjQiIHgxPSIyOCIgeTE9IjkuNjQ4NDQiIHgyPSI0NiIgeTI9IjkuNjQ4NDQiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KPHN0b3Agc3RvcC1vcGFjaXR5PSIwIi8+CjxzdG9wIG9mZnNldD0iMC45Ii8+CjwvbGluZWFyR3JhZGllbnQ+CjxsaW5lYXJHcmFkaWVudCBpZD0icGFpbnQyX2xpbmVhcl8xMjAzXzI2MDI0IiB4MT0iLTQuNzY4MzdlLTA3IiB5MT0iNjQiIHgyPSI2NCIgeTI9Ii00Ljc2ODM3ZS0wNyIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBvZmZzZXQ9IjAuMSIgc3RvcC1jb2xvcj0iI0E1NkVGRiIvPgo8c3RvcCBvZmZzZXQ9IjAuOSIgc3RvcC1jb2xvcj0iIzAwNDNDRSIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjwvc3ZnPgo=" alt="" width="32" height="32" />
       <h1 class="report-sidebar__title">Your assessment<br>responses</h1>
       <p class="report-sidebar__version">beta v3</p>
-      <div class="report-sidebar__meta">
-        ${contactLines(contact)}
-        <p class="meta-date">${escHtml(provenance)}</p>
-      </div>
     </header>
     <p class="report-body-text responses-doc__intro">Every question from the MAS Growth Readiness Assessment, with the answer given. Your roadmap is built from these.</p>
     ${body}`;
