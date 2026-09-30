@@ -1637,6 +1637,11 @@ cds-menu-item::part(list-item) {
   gap: 8px;
 }
 
+/* Print only — the "Yes" under the question once it has been answered. */
+.feedback__answer {
+  display: none;
+}
+
 .feedback__thanks {
   margin: 0;
   font-size: 14px;
@@ -1880,7 +1885,8 @@ html, body { overflow-x: clip; }
    2. Opened content earns a label. The tab strip is dropped, so each panel
       prints under its own pillar heading instead of an anonymous block.
    3. Everything that only exists to be interacted with is dropped: nav, CTAs,
-      the hero video, expand toggles, the feedback section.
+      the hero video, expand toggles, the feedback buttons. The feedback
+      question itself prints only once answered "Yes", with that answer.
    4. The stage rails print as the mobile stack — one card under the next,
       each fully open — at any paper width. The desktop rail sizes its cards
       with `flex: 0 0 49px`, which in a column would set their height, so every
@@ -2066,12 +2072,30 @@ html, body { overflow-x: clip; }
   .stage-card__toggle,
   .stage-card__compact-toggle,
   .stage-card__compact,
-  .bonus-resource__action,
+  .bonus-resource__action cds-button,
+  .bonus-resource__action:not(:has(.bonus-resource__helper)),
   .expansion-card > div:last-child,
   .accelerate-card cds-button,
-  #act-improve,
+  #act-improve:not(.is-useful),
+  #act-improve .feedback__text,
+  #act-improve .feedback__actions,
   cds-tooltip {
     display: none !important;
+  }
+
+  /* Answered "Yes": the question and its answer, kept together. */
+  #act-improve.is-useful {
+    break-inside: avoid;
+  }
+  #act-improve .feedback {
+    gap: 4px;
+  }
+  #act-improve .feedback__answer {
+    display: block;
+    margin: 0;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--cds-text-primary);
   }
 
   /* ── Single column; the sidebar becomes a compact cover block ────────── */
