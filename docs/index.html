@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>M-GRAT · MAS Growth Readiness Assessment Tool</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Serif:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & Base ─────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+      color: #161616;
+      background: #f4f4f4;
+    }
+    a { color: inherit; text-decoration: none; }
+    img, svg { display: block; max-width: 100%; }
+
+    /* ── Layout ───────────────────────────────────────────── */
+    .container {
+      max-width: 1056px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    /* ── Header ───────────────────────────────────────────── */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: #0043ce;
+      border-bottom: 1px solid #002d9c;
+      height: 48px;
+    }
+    .site-header .container {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+    .header-wordmark {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-right: auto;
+      flex-shrink: 0;
+    }
+    .header-wordmark img {
+      height: 18px;
+      filter: brightness(0) invert(1);
+    }
+    .header-wordmark-text {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: #ffffff;
+      white-space: nowrap;
+    }
+    .header-wordmark-text span {
+      font-weight: 300;
+      color: rgba(255,255,255,0.7);
+    }
+    .site-nav {
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+    .site-nav a {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 0.8125rem;
+      color: rgba(255,255,255,0.8);
+      padding: 0 1rem;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      border-bottom: 2px solid transparent;
+      transition: color 0.1s, border-color 0.1s, background 0.1s;
+    }
+    .site-nav a:hover { background: rgba(255,255,255,0.08); color: #fff; }
+    .site-nav a.active { color: #fff; border-bottom-color: #fff; }
+    .site-nav a.nav-cta {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      margin-left: 0.5rem;
+      border-radius: 0;
+      font-weight: 500;
+    }
+    .site-nav a.nav-cta:hover { background: rgba(255,255,255,0.22); }
+
+    /* ── Hero ─────────────────────────────────────────────── */
+    .hero {
+      background: #ffffff;
+      border-bottom: 1px solid #e0e0e0;
+      overflow: hidden;
+    }
+    .hero-inner {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 0;
+      min-height: 480px;
+    }
+    .hero-content {
+      padding: 4rem 3rem 4rem 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .hero-eyebrow {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: #0f62fe;
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+    }
+    .hero-headline {
+      font-family: 'IBM Plex Serif', serif;
+      font-size: 2.625rem;
+      font-weight: 300;
+      line-height: 1.2;
+      color: #161616;
+      margin-bottom: 1.25rem;
+      max-width: 26ch;
+    }
+    .hero-headline em {
+      font-style: italic;
+      font-weight: 300;
+    }
+    .hero-body {
+      font-size: 0.9375rem;
+      color: #525252;
+      line-height: 1.6;
+      max-width: 52ch;
+      margin-bottom: 1.75rem;
+    }
+    .hero-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+    .pill {
+      font-family: 'IBM Plex Sans Condensed', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: #0043ce;
+      background: #edf5ff;
+      border: 1px solid #d0e2ff;
+      padding: 0.25rem 0.75rem;
+      border-radius: 1rem;
+    }
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #ffffff;
+      background: #0f62fe;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      cursor: pointer;
+      transition: background 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+    .btn-primary:hover { background: #0043ce; }
+    .btn-secondary-link {
+      font-size: 0.875rem;
+      color: #0f62fe;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      transition: color 0.1s;
+    }
+    .btn-secondary-link:hover { color: #0043ce; text-decoration: underline; }
+    .hero-visual {
+      position: relative;
+      overflow: hidden;
+      background: #edf5ff;
+    }
+    .hero-visual img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center left;
+    }
+
+    /* ── Metric Badges ────────────────────────────────────── */
+    .metric-strip {
+      background: #0043ce;
+      border-bottom: 2px solid #002d9c;
+    }
+    .metric-strip .container {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+    }
+    .metric-item {
+      flex: 1;
+      text-align: center;
+      padding: 1.25rem 1rem;
+      border-right: 1px solid rgba(255,255,255,0.12);
+    }
+    .metric-item:last-child { border-right: none; }
+    .metric-value {
+      font-family: 'IBM Plex Serif', serif;
+      font-size: 1.75rem;
+      font-weight: 300;
+      color: #ffffff;
+      line-height: 1;
+      margin-bottom: 0.25rem;
+    }
+    .metric-label {
+      font-family: 'IBM Plex Sans Condensed', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.7);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* ── Section Shared ───────────────────────────────────── */
+    .section {
+      padding: 4rem 0;
+    }
+    .section-alt { background: #f4f4f4; }
+    .section-white { background: #ffffff; }
+    .section-header {
+      margin-bottom: 2.5rem;
+    }
+    .section-eyebrow {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: #0f62fe;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-family: 'IBM Plex Serif', serif;
+      font-size: 1.875rem;
+      font-weight: 300;
+      color: #161616;
+      line-height: 1.25;
+      margin-bottom: 0.75rem;
+    }
+    .section-subtitle {
+      font-family: 'IBM Plex Sans Condensed', sans-serif;
+      font-size: 0.9375rem;
+      color: #525252;
+      max-width: 60ch;
+    }
+    .rule {
+      border: none;
+      border-top: 1px solid #e0e0e0;
+      margin: 0;
+    }
+
+    /* ── Value Framework ──────────────────────────────────── */
+    .value-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      border: 1px solid #e0e0e0;
+    }
+    .value-card {
+      background: #ffffff;
+      padding: 2rem 1.75rem;
+      border-right: 1px solid #e0e0e0;
+    }
+    .value-card:last-child { border-right: none; }
+    .value-icon {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 1.25rem;
+    }
+    .value-number {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #0f62fe;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.5rem;
+    }
+    .value-title {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 1.0625rem;
+      font-weight: 600;
+      color: #161616;
+      margin-bottom: 0.75rem;
+    }
+    .value-body {
+      font-size: 0.875rem;
+      color: #525252;
+      line-height: 1.6;
+    }
+
+    /* ── Two Options ──────────────────────────────────────── */
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    .option-card {
+      background: #ffffff;
+      border: 1px solid #e0e0e0;
+      padding: 2rem;
+    }
+    .option-badge {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: #0043ce;
+      background: #edf5ff;
+      border: 1px solid #d0e2ff;
+      padding: 0.2rem 0.6rem;
+      display: inline-block;
+      margin-bottom: 1rem;
+    }
+    .option-title {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #161616;
+      margin-bottom: 0.375rem;
+    }
+    .option-sub {
+      font-family: 'IBM Plex Sans Condensed', sans-serif;
+      font-size: 0.8125rem;
+      color: #525252;
+      margin-bottom: 1.25rem;
+    }
+    .option-how-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #525252;
+      margin-bottom: 0.5rem;
+    }
+    .option-body {
+      font-size: 0.875rem;
+      color: #525252;
+      line-height: 1.6;
+      margin-bottom: 1.25rem;
+    }
+    .option-link-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      background: #f4f4f4;
+      border: 1px solid #e0e0e0;
+      margin-bottom: 1.25rem;
+    }
+    .option-url {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.75rem;
+      color: #525252;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .btn-copy {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #0f62fe;
+      background: none;
+      border: 1px solid #0f62fe;
+      padding: 0.3125rem 0.75rem;
+      cursor: pointer;
+      transition: background 0.1s, color 0.1s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .btn-copy:hover { background: #edf5ff; }
+    .btn-copy.copied { color: #0e6027; border-color: #0e6027; background: #defbe6; }
+    .option-outcome {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      background: #defbe6;
+      border-left: 3px solid #0e6027;
+      padding: 0.625rem 0.875rem;
+      font-size: 0.8125rem;
+      color: #0e6027;
+      font-weight: 500;
+    }
+    .option-steps {
+      list-style: none;
+      counter-reset: step;
+      padding: 0;
+    }
+    .option-steps li {
+      counter-increment: step;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.625rem 0;
+      border-bottom: 1px solid #f4f4f4;
+      font-size: 0.875rem;
+      color: #525252;
+      line-height: 1.5;
+    }
+    .option-steps li:last-child { border-bottom: none; }
+    .option-steps li::before {
+      content: counter(step);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #0f62fe;
+      background: #edf5ff;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border-radius: 50%;
+      margin-top: 0.0625rem;
+    }
+    .option-step-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      flex: 1;
+    }
+    .btn-download {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #0f62fe;
+      background: none;
+      border: 1px solid #0f62fe;
+      padding: 0.3125rem 0.75rem;
+      cursor: pointer;
+      transition: background 0.1s, color 0.1s;
+      white-space: nowrap;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      text-decoration: none;
+    }
+    .btn-download:hover { background: #edf5ff; }
+    code.inline {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.8em;
+      background: #f4f4f4;
+      border: 1px solid #e0e0e0;
+      padding: 0.1em 0.4em;
+      color: #161616;
+    }
+
+    /* ── Accordion ────────────────────────────────────────── */
+    .accordion {
+      border: 1px solid #e0e0e0;
+      background: #ffffff;
+    }
+    .accordion-item {
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .accordion-item:last-child { border-bottom: none; }
+    .accordion-trigger {
+      width: 100%;
+      background: none;
+      border: none;
+      text-align: left;
+      padding: 1.25rem 1.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: background 0.1s;
+    }
+    .accordion-trigger:hover { background: #f4f4f4; }
+    .accordion-trigger[aria-expanded="true"] { background: #edf5ff; }
+    .accordion-step {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      color: #0f62fe;
+      background: #edf5ff;
+      border: 1px solid #d0e2ff;
+      padding: 0.2rem 0.55rem;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .accordion-title {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #161616;
+      flex: 1;
+    }
+    .accordion-chevron {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      transition: transform 0.2s;
+      color: #525252;
+    }
+    .accordion-trigger[aria-expanded="true"] .accordion-chevron { transform: rotate(180deg); }
+    .accordion-panel {
+      display: none;
+      padding: 0 1.5rem 1.5rem 4rem;
+    }
+    .accordion-panel.open { display: block; }
+    .accordion-panel p {
+      font-size: 0.9375rem;
+      color: #525252;
+      line-height: 1.7;
+    }
+    .accordion-panel p + p { margin-top: 0.75rem; }
+    .accordion-panel ul {
+      margin: 0.75rem 0 0 1.25rem;
+    }
+    .accordion-panel ul li {
+      font-size: 0.9375rem;
+      color: #525252;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .dim-tooltip-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 15px;
+      height: 15px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.625rem;
+      font-weight: 700;
+      color: #0f62fe;
+      background: #edf5ff;
+      border: 1px solid #d0e2ff;
+      border-radius: 50%;
+      cursor: pointer;
+      position: relative;
+      vertical-align: middle;
+      margin-left: 0.25rem;
+      padding: 0;
+      line-height: 1;
+    }
+    .dim-tooltip-btn:hover { background: #d0e2ff; }
+    .dim-tooltip-text {
+      display: none;
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 6px);
+      transform: translateX(-50%);
+      width: 260px;
+      background: #161616;
+      color: #f4f4f4;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 400;
+      line-height: 1.5;
+      padding: 0.5rem 0.75rem;
+      border-radius: 0;
+      white-space: normal;
+      z-index: 100;
+      pointer-events: none;
+    }
+    .dim-tooltip-text::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: #161616;
+    }
+    .dim-tooltip-btn.open .dim-tooltip-text { display: block; }
+    .panel-subsection {
+      padding: 1rem 0;
+      border-top: 1px solid #e0e0e0;
+    }
+    .panel-subsection--last {
+      padding-bottom: 0;
+    }
+    .panel-subsection-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #0f62fe;
+      margin-bottom: 0.625rem;
+    }
+    .stage-pill {
+      display: inline-block;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      padding: 0.15rem 0.55rem;
+      border-radius: 0;
+      margin: 0.125rem 0.125rem 0.125rem 0;
+    }
+    .stage-1 { background: #f4f4f4; color: #525252; border: 1px solid #e0e0e0; }
+    .stage-2 { background: #edf5ff; color: #0043ce; border: 1px solid #d0e2ff; }
+    .stage-3 { background: #d0e2ff; color: #002d9c; border: 1px solid #a6c8ff; }
+    .stage-4 { background: #4589ff; color: #ffffff; border: 1px solid #4589ff; }
+    .stage-5 { background: #0043ce; color: #ffffff; border: 1px solid #002d9c; }
+
+    /* ── Journey Banner ───────────────────────────────────── */
+    .journey-banner {
+      background: #161616;
+      color: #ffffff;
+      padding: 3.5rem 0;
+    }
+    .journey-banner-inner {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 2rem;
+    }
+    .journey-banner-eyebrow {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: #78a9ff;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+    .journey-banner-title {
+      font-family: 'IBM Plex Serif', serif;
+      font-size: 1.625rem;
+      font-weight: 300;
+      color: #f4f4f4;
+      line-height: 1.3;
+      margin-bottom: 0.75rem;
+    }
+    .journey-banner-body {
+      font-size: 0.9375rem;
+      color: #a8a8a8;
+      max-width: 60ch;
+      line-height: 1.6;
+    }
+    .btn-outline-white {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #ffffff;
+      border: 2px solid #ffffff;
+      padding: 0.75rem 1.5rem;
+      background: none;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-outline-white:hover { background: #ffffff; color: #161616; }
+
+    /* ── Feedback Card ────────────────────────────────────── */
+    .feedback-card {
+      background: #ffffff;
+      border: 1px solid #e0e0e0;
+      padding: 2.5rem;
+      max-width: 640px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .feedback-card img {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 1.25rem;
+    }
+    .feedback-card-title {
+      font-family: 'IBM Plex Serif', serif;
+      font-size: 1.5rem;
+      font-weight: 300;
+      color: #161616;
+      margin-bottom: 0.625rem;
+    }
+    .feedback-card-body {
+      font-size: 0.9375rem;
+      color: #525252;
+      line-height: 1.6;
+      margin-bottom: 0.75rem;
+    }
+    .feedback-note {
+      font-family: 'IBM Plex Sans Condensed', sans-serif;
+      font-size: 0.8125rem;
+      color: #525252;
+      background: #fff8e1;
+      border-left: 3px solid #f1c21b;
+      padding: 0.625rem 0.875rem;
+      text-align: left;
+      margin-bottom: 1.5rem;
+    }
+    .btn-primary-ghost {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #0f62fe;
+      border: 1px solid #0f62fe;
+      background: none;
+      padding: 0.75rem 1.5rem;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+    .btn-primary-ghost:hover { background: #0f62fe; color: #fff; }
+
+    /* ── Footer ───────────────────────────────────────────── */
+    .site-footer {
+      background: #161616;
+      border-top: 4px solid #0f62fe;
+      padding: 2.5rem 0 1.75rem;
+    }
+    .footer-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 3rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid #393939;
+      margin-bottom: 1.25rem;
+    }
+    .footer-brand { flex-shrink: 0; }
+    .footer-brand img { height: 23px; filter: brightness(0) invert(1); margin-bottom: 0.75rem; }
+    .footer-brand-name {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: #f4f4f4;
+    }
+    .footer-brand-sub {
+      font-family: 'IBM Plex Sans Condensed', sans-serif;
+      font-size: 0.75rem;
+      color: #6f6f6f;
+      margin-top: 0.25rem;
+    }
+    .footer-links {
+      display: flex;
+      gap: 3rem;
+      flex: 1;
+    }
+    .footer-link-group h4 {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #6f6f6f;
+      margin-bottom: 0.75rem;
+    }
+    .footer-link-group a {
+      display: block;
+      font-size: 0.8125rem;
+      color: #c6c6c6;
+      margin-bottom: 0.5rem;
+      transition: color 0.1s;
+    }
+    .footer-link-group a:hover { color: #ffffff; }
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .footer-legal {
+      font-size: 0.75rem;
+      color: #6f6f6f;
+    }
+    .footer-version {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6875rem;
+      color: #525252;
+      background: #262626;
+      padding: 0.2rem 0.6rem;
+      border: 1px solid #393939;
+    }
+
+    /* ── Responsive ───────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .hero-inner { grid-template-columns: 1fr; }
+      .hero-visual { min-height: 220px; }
+      .hero-content { padding: 3rem 0 2rem; }
+      .value-grid { grid-template-columns: 1fr; }
+      .value-card { border-right: none; border-bottom: 1px solid #e0e0e0; }
+      .value-card:last-child { border-bottom: none; }
+      .options-grid { grid-template-columns: 1fr; }
+      .journey-banner-inner { grid-template-columns: 1fr; }
+      .footer-top { flex-direction: column; gap: 2rem; }
+      .footer-links { flex-direction: column; gap: 1.5rem; }
+    }
+    @media (max-width: 600px) {
+      .metric-strip .container { flex-direction: column; }
+      .metric-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.12); }
+      .site-nav a { font-size: 0.75rem; padding: 0 0.5rem; }
+      .hero-headline { font-size: 2rem; }
+      .section-title { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════ HEADER ════════════════════════════════ -->
+  <header class="site-header">
+    <div class="container">
+      <div class="header-wordmark">
+        <img src="../assets/IBM Maximo Application Suite.svg" alt="IBM MAS" />
+        <span class="header-wordmark-text">
+          M-GRAT <span>· MAS Growth Readiness Assessment</span>
+        </span>
+      </div>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="#" class="active">Overview</a>
+        <a href="journeys.html">Maturity Journeys</a>
+        <a href="https://pages.github.ibm.com/ALM-Consumability/M-GRAT/" target="_blank" class="nav-cta">Launch Tool ↗</a>
+        <a href="#feedback-section">Feedback</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ═══════════════ HERO ══════════════════════════════════ -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-inner">
+        <div class="hero-content">
+          <p class="hero-eyebrow">IBM Maximo Application Suite · Internal Enablement</p>
+          <h1 class="hero-headline">Turn customer uncertainty into a growth plan.</h1>
+          <p class="hero-body">
+            Maximo customers who have successfully deployed Maximo often stall when expanding into advanced capabilities — APM, Reliability, Work Execution — because neither side has a shared view of current maturity. M-GRAT is a 10–15 minute guided assessment that pinpoints their current stage, uncovers gaps, and creates a clear, personalized roadmap.
+          </p>
+          <div class="hero-pills" aria-label="Intended audience">
+            <span class="pill">IBM Sellers &amp; CSEs</span>
+            <span class="pill">Business Partners</span>
+            <span class="pill">Technical Specialists</span>
+            <span class="pill">Product Managers</span>
+            <span class="pill">Customer Success</span>
+          </div>
+          <div class="hero-actions">
+            <a href="https://pages.github.ibm.com/ALM-Consumability/M-GRAT/" target="_blank" class="btn-primary">
+              Launch Live Assessment
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M26 28H6a2 2 0 01-2-2V6a2 2 0 012-2h9v2H6v20h20v-9h2v9a2 2 0 01-2 2z"/><path d="M21 2v2h5.59L17 13.41 18.59 15 28 5.59V11h2V2z"/></svg>
+            </a>
+            <a href="journeys.html" class="btn-secondary-link">
+              Explore Maturity Journeys
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M18 6L16.6 7.4 24.2 15H4v2h20.2l-7.6 7.6L18 26l10-10z"/></svg>
+            </a>
+          </div>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <img src="../assets/banner-illustration.png" alt="M-GRAT Assessment Illustration" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ METRIC STRIP ══════════════════════════ -->
+  <div class="metric-strip" aria-label="Key metrics">
+    <div class="container">
+      <div class="metric-item">
+        <div class="metric-value">8–12 min</div>
+        <div class="metric-label">Average completion time</div>
+      </div>
+      <div class="metric-item">
+        <div class="metric-value">100%</div>
+        <div class="metric-label">Client-ready instant report</div>
+      </div>
+      <div class="metric-item">
+        <div class="metric-value">3–4</div>
+        <div class="metric-label">Prioritized roadmap actions</div>
+      </div>
+      <div class="metric-item">
+        <div class="metric-value">No login</div>
+        <div class="metric-label">Required to share results</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ VALUE FRAMEWORK ══════════════════════ -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-eyebrow">Value Framework</p>
+        <h2 class="section-title">How you bring value through the assessment</h2>
+        <p class="section-subtitle">Three lenses that make M-GRAT a strategic conversation opener, not just a survey.</p>
+      </div>
+      <div class="value-grid" role="list">
+        <div class="value-card" role="listitem">
+          <img src="../assets/Pictogram.svg" alt="" class="value-icon" aria-hidden="true" />
+          <p class="value-number">01 · WHERE THEY ARE</p>
+          <h3 class="value-title">Understand current adoption &amp; readiness stage</h3>
+          <p class="value-body">Instantly surface where the customer sits today across strategic readiness, data maturity, operational execution, and cultural change — across every account in your book.</p>
+        </div>
+        <div class="value-card" role="listitem">
+          <img src="../assets/Pictogram-1.svg" alt="" class="value-icon" aria-hidden="true" />
+          <p class="value-number">02 · WHAT'S HOLDING THEM BACK</p>
+          <h3 class="value-title">Pinpoint blocker gaps and score breakdown</h3>
+          <p class="value-body">See exactly which dimensions are suppressing the overall score — so you can lead with the right conversation and bring the right IBM resource into the next call.</p>
+        </div>
+        <div class="value-card" role="listitem">
+          <img src="../assets/Pictogram-2.svg" alt="" class="value-icon" aria-hidden="true" />
+          <p class="value-number">03 · WHAT TO DO NEXT</p>
+          <h3 class="value-title">Deliver a prioritized, shareable roadmap</h3>
+          <p class="value-body">3–4 high-impact next steps are generated automatically. The client-ready report requires no login and can be saved as a PDF — no post-processing required.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ TWO WAYS TO RUN IT ════════════════════ -->
+  <section class="section section-white">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-eyebrow">For Sellers</p>
+        <h2 class="section-title">Two ways to run it</h2>
+        <p class="section-subtitle">Choose the mode that fits the customer situation — both produce the same client-ready output.</p>
+      </div>
+      <div class="options-grid">
+
+        <!-- Option 1 -->
+        <div class="option-card">
+          <span class="option-badge">Option 1 · Facilitated</span>
+          <h3 class="option-title">On-call / Discovery session</h3>
+          <p class="option-sub">Guided live with the customer</p>
+          <p class="option-how-label">How</p>
+          <p class="option-body">Run the live assessment together on a call. Drive the questions, capture answers collaboratively, and walk through the report in real time.</p>
+          <div class="option-link-row">
+            <span class="option-url" id="tool-url">https://pages.github.ibm.com/ALM-Consumability/M-GRAT/</span>
+            <button class="btn-copy" id="copy-btn" onclick="copyToolUrl()" aria-label="Copy tool URL">Copy Link</button>
+          </div>
+          <div class="option-outcome">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true" style="flex-shrink:0;margin-top:1px"><path d="M14 21.414L9 16.414 10.414 15 14 18.586 21.586 11 23 12.414z"/><path d="M16 2a14 14 0 100 28A14 14 0 0016 2zm0 26a12 12 0 110-24 12 12 0 010 24z"/></svg>
+            In-browser report generated automatically on completion.
+          </div>
+        </div>
+
+        <!-- Option 2 -->
+        <div class="option-card">
+          <span class="option-badge">Option 2 · Self-serve</span>
+          <h3 class="option-title">Async / Offline</h3>
+          <p class="option-sub">Customer completes independently</p>
+          <p class="option-how-label">How</p>
+          <p class="option-body">Send the standalone single-file HTML bundle to the customer. They complete it on their own time — no internet required.</p>
+          <ol class="option-steps">
+            <li>
+              <div class="option-step-content">
+                <span>Download the standalone assessment file.</span>
+                <a href="MAS-growth-assessment-self-serve.html" download="MAS-growth-assessment-self-serve.html" class="btn-download">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4zm0-10l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
+                  Download
+                </a>
+              </div>
+            </li>
+            <li>Attach the file to an email or share via Box / OneDrive.</li>
+            <li>Customer opens in any browser (offline-ready), answers all questions, and clicks <strong>Save as PDF</strong>.</li>
+            <li>Customer sends the PDF back to you for review and follow-up conversation.</li>
+          </ol>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ HOW TO GUIDE ACCORDION ════════════════ -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-eyebrow">Seller Guide</p>
+        <h2 class="section-title">How to guide the customer</h2>
+        <p class="section-subtitle">A five-step flow for turning assessment results into a growth conversation.</p>
+      </div>
+
+      <div class="accordion" role="list">
+
+        <div class="accordion-item" role="listitem">
+          <button class="accordion-trigger" aria-expanded="true" aria-controls="panel-1" onclick="toggleAccordion(this)">
+            <span class="accordion-step">Step 1</span>
+            <span class="accordion-title">Launch &amp; Discovery</span>
+            <svg class="accordion-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 22L6 12l1.4-1.4L16 19.2l8.6-8.6L26 12z"/></svg>
+          </button>
+          <div class="accordion-panel open" id="panel-1" role="region">
+            <p>Open the live link or send the self-serve bundle depending on the engagement model. Before starting, set the stage clearly with the customer:</p>
+            <ul>
+              <li><strong>This is a diagnostic, not an audit.</strong> There are no wrong answers — only honest ones.</li>
+              <li>Remind them the goal is to identify the fastest path forward, not to score their current state.</li>
+              <li>Estimate 10–15 minutes for the full assessment. Have them focus on their primary operational site or BU if the organization is large.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="accordion-item" role="listitem">
+          <button class="accordion-trigger" aria-expanded="false" aria-controls="panel-2" onclick="toggleAccordion(this)">
+            <span class="accordion-step">Step 2</span>
+            <span class="accordion-title">Read the Results</span>
+            <svg class="accordion-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 22L6 12l1.4-1.4L16 19.2l8.6-8.6L26 12z"/></svg>
+          </button>
+          <div class="accordion-panel" id="panel-2" role="region">
+
+            <div class="panel-subsection">
+              <p class="panel-subsection-label">Overall Maturity</p>
+              <p>The report opens with an <strong>overall maturity score</strong> mapped to one of five descriptive levels. This tells you where the customer stands today across their full Maximo environment — use it to set shared context at the start of the conversation, not as a target.</p>
+              <p style="margin-top:0.625rem">
+                <span class="stage-pill stage-1">1 · Foundational</span>
+                <span class="stage-pill stage-2">2 · Core Operations</span>
+                <span class="stage-pill stage-3">3 · Connected</span>
+                <span class="stage-pill stage-4">4 · Optimized</span>
+                <span class="stage-pill stage-5">5 · Prescriptive &amp; Automated</span>
+              </p>
+            </div>
+
+            <div class="panel-subsection">
+              <p class="panel-subsection-label">Dimensions</p>
+              <p>Below the headline, the report shows scores across <strong>8 capability dimensions</strong>. Each is rated <em>Emerging</em> (below 40), <em>Growing</em> (40–74), or <em>Established</em> (75+):</p>
+              <ul>
+                <li><strong>Asset Data</strong> — Asset data quality, criticality, and hierarchy <button class="dim-tooltip-btn" onclick="toggleTooltip(this)" aria-label="More info">?<span class="dim-tooltip-text">Covers asset registry governance, criticality scoring, classification structure, and parent-child hierarchies — the foundation for work order linkage and downstream analytics.</span></button></li>
+                <li><strong>Work Management</strong> — Job plan and PM maturity <button class="dim-tooltip-btn" onclick="toggleTooltip(this)" aria-label="More info">?<span class="dim-tooltip-text">How well work is templated, PM strategies are tied to asset needs, and failure codes are captured at close-out.</span></button></li>
+                <li><strong>Inspections &amp; Condition Capture</strong> — Inspection programs and condition data <button class="dim-tooltip-btn" onclick="toggleTooltip(this)" aria-label="More info">?<span class="dim-tooltip-text">Whether formal inspection cycles exist and condition readings are captured digitally against assets.</span></button></li>
+                <li><strong>Supply Chain &amp; Inventory</strong> — Storeroom and inventory readiness <button class="dim-tooltip-btn" onclick="toggleTooltip(this)" aria-label="More info">?<span class="dim-tooltip-text">From basic parts tracking through to demand-driven reorder planning and inventory optimization against predicted failure risk.</span></button></li>
+                <li><strong>Scheduling</strong> — Schedule planning and optimization <button class="dim-tooltip-btn" onclick="toggleTooltip(this)" aria-label="More info">?<span class="dim-tooltip-text">Whether work has scheduled dates, forward-looking schedules are being used, and constraint-based optimization is in place.</span></button></li>
+                <li><strong>Assignment &amp; Dispatch</strong> — Work assignment and dispatch <button class="dim-tooltip-btn" onclick="toggleTooltip(this)" aria-label="More info">?<span class="dim-tooltip-text">How work is owned, dispatched, and whether skills-based best-fit assignment is being used.</span></button></li>
+                <li><strong>Reliability Practices</strong> — Failure code governance and reliability strategies <button class="dim-tooltip-btn" onclick="toggleTooltip(this)" aria-label="More info">?<span class="dim-tooltip-text">Whether failure codes feed FMEA, reliability strategies tie PMs to failure modes, and the knowledge base improves over time.</span></button></li>
+                <li><strong>Condition Monitoring &amp; Prediction</strong> — Condition visibility and predictive capability <button class="dim-tooltip-btn" onclick="toggleTooltip(this)" aria-label="More info">?<span class="dim-tooltip-text">From low-frequency manual readings and condition-driven alerts through to real-time telemetry, health scoring, and forward-looking risk prediction.</span></button></li>
+              </ul>
+              <p style="margin-top:0.625rem">Any dimension rated <em>Emerging</em> is often the most impactful conversation opener — it signals where a targeted investment would have the greatest lift on the overall score.</p>
+            </div>
+
+            <div class="panel-subsection panel-subsection--last">
+              <p class="panel-subsection-label">Strengths</p>
+              <p>Dimensions rated <em>Established</em> are the customer's proof points — capabilities that are already working well and creating value today. Don't overlook them.</p>
+              <ul>
+                <li>Use strengths to build credibility and reinforce what good looks like — they validate the investment the customer has already made.</li>
+                <li>Identify which Established dimensions are prerequisites for the next stage of growth. A strong Asset Data foundation, for example, directly enables more advanced APM and condition monitoring capabilities.</li>
+                <li>Frame the conversation around building <em>on</em> their strengths, not just fixing gaps — it makes the roadmap feel achievable rather than daunting.</li>
+              </ul>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="accordion-item" role="listitem">
+          <button class="accordion-trigger" aria-expanded="false" aria-controls="panel-3" onclick="toggleAccordion(this)">
+            <span class="accordion-step">Step 3</span>
+            <span class="accordion-title">Explore Expansion Pathways</span>
+            <svg class="accordion-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 22L6 12l1.4-1.4L16 19.2l8.6-8.6L26 12z"/></svg>
+          </button>
+          <div class="accordion-panel" id="panel-3" role="region">
+            <p>The Maturity Journeys define specific expansion paths across the APM and FSM tracks. Unlike the overall maturity level — which is purely descriptive — each journey has a <strong>current stage</strong> and a <strong>target stage</strong>, identifying where the customer is on that capability track today and where they have the most to gain. Use the journey detail to build a picture of what reaching the target stage would mean for the business.</p>
+            <ul>
+              <li><strong>Review the target stage narrative.</strong> Each stage describes the business outcomes, potential KPI improvements, and which MAS products come into play. Use the outcome stats as conversation anchors.</li>
+              <li><strong>Look beyond the current track.</strong> If the customer's results focus on APM milestones, review what FSM milestones they're also missing — and vice versa. This surfaces a broader expansion story beyond the immediate next step.</li>
+              <li><strong>Cross-reference milestones.</strong> The Journeys page details each milestone's description, value statement, and Maximo touchpoints — helping you map the customer's gaps to specific MAS modules and IBM services.</li>
+            </ul>
+            <p style="margin-top:0.75rem">
+              <a href="journeys.html" style="display:inline-flex;align-items:center;gap:0.375rem;font-size:0.875rem;color:#0f62fe;font-weight:500;">
+                Explore the Maturity Journeys →
+              </a>
+            </p>
+          </div>
+        </div>
+
+        <div class="accordion-item" role="listitem">
+          <button class="accordion-trigger" aria-expanded="false" aria-controls="panel-4" onclick="toggleAccordion(this)">
+            <span class="accordion-step">Step 4</span>
+            <span class="accordion-title">Review the Action Plan</span>
+            <svg class="accordion-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 22L6 12l1.4-1.4L16 19.2l8.6-8.6L26 12z"/></svg>
+          </button>
+          <div class="accordion-panel" id="panel-4" role="region">
+            <p>The report surfaces a prioritized hero action and 2–3 secondary actions drawn from the customer's unmet milestones. Each action includes the foundational steps required and flags likely blockers.</p>
+            <ul>
+              <li><strong>Start with the target stage.</strong> The tool recommends a target stage based on the customer's stated objectives — confirm whether this feels right before diving into the actions. <em>"Does this target make sense for where you want to be in the next 12–18 months?"</em></li>
+              <li><strong>Use the hero action as the anchor.</strong> This is the highest-priority milestone the customer should focus on first. Walk through the foundational steps together and identify which blockers need to be cleared — and whether IBM support is needed to clear them.</li>
+              <li><strong>Sequence the secondary actions.</strong> The plan is cumulative — earlier milestones unlock later ones. Help the customer distinguish quick wins from multi-quarter plays, and use that to shape a realistic roadmap.</li>
+              <li><strong>Let the customer lead.</strong> Ask which actions resonate most: <em>"Which of these would create the most value for your team right now?"</em> — then build the next steps around their answer.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="accordion-item" role="listitem">
+          <button class="accordion-trigger" aria-expanded="false" aria-controls="panel-5" onclick="toggleAccordion(this)">
+            <span class="accordion-step">Step 5</span>
+            <span class="accordion-title">Prepare for the Conversation</span>
+            <svg class="accordion-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 22L6 12l1.4-1.4L16 19.2l8.6-8.6L26 12z"/></svg>
+          </button>
+          <div class="accordion-panel" id="panel-5" role="region">
+            <p>Before the follow-up call, bring together the results, the journeys context, and the action plan into a clear point of view for the customer.</p>
+            <ul>
+              <li><strong>Map actions to MAS modules and services.</strong> Use the milestone touchpoints from the Journeys page to tie each recommended action to a specific IBM product or offering.</li>
+              <li><strong>Identify who else to bring in.</strong> If any dimension score is low or a blocker requires technical depth, loop in a CSE or Technical Sales specialist before the call.</li>
+              <li><strong>Use the report as a leave-behind.</strong> The PDF is client-ready with no login required — share it with the executive sponsor or champion as a pre-read for a broader team conversation.</li>
+              <li><strong>Set a clear next step.</strong> End the conversation with a defined action: a follow-up workshop, a technical discovery call, or a specific milestone to target together.</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ JOURNEY BANNER ════════════════════════ -->
+
+  <!-- ═══════════════ FEEDBACK SECTION ══════════════════════ -->
+  <section class="section section-alt" id="feedback-section">
+    <div class="container">
+      <div class="section-header" style="text-align:center">
+        <p class="section-eyebrow">Community &amp; Feedback</p>
+        <h2 class="section-title">Help us improve M-GRAT</h2>
+      </div>
+      <div class="feedback-card">
+        <img src="../assets/question--and--answer.svg" alt="" aria-hidden="true" />
+        <h3 class="feedback-card-title">Share your feedback</h3>
+        <p class="feedback-card-body">Spotted a gap in the questions? Have a customer use case that the assessment doesn't capture? Submit it directly to the product team — your input directly drives the next scoring iteration.</p>
+        <div class="feedback-note">
+          ⚠︎ The feedback board is currently in staging. Your input directly drives the next scoring iteration.
+        </div>
+        <a href="https://monday.com/placeholder-mgrat-feedback" target="_blank" rel="noopener noreferrer" class="btn-primary-ghost">
+          Submit Feedback on Monday.com ↗
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ FOOTER ════════════════════════════════ -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <img src="../assets/ibm-logo.svg" alt="IBM" />
+          <div class="footer-brand-name">M-GRAT</div>
+          <div class="footer-brand-sub">MAS Growth Readiness Assessment Tool</div>
+        </div>
+        <div class="footer-links">
+          <div class="footer-link-group">
+            <h4>Navigation</h4>
+            <a href="#">Overview</a>
+            <a href="journeys.html">Maturity Journeys</a>
+            <a href="#feedback-section">Feedback</a>
+          </div>
+          <div class="footer-link-group">
+            <h4>Resources</h4>
+            <a href="https://pages.github.ibm.com/ALM-Consumability/M-GRAT/" target="_blank" rel="noopener noreferrer">Launch Live Tool ↗</a>
+            <a href="../assessment-standalone.html">Self-Serve Bundle</a>
+          </div>
+          <div class="footer-link-group">
+            <h4>Feedback</h4>
+            <a href="https://monday.com/placeholder-mgrat-feedback" target="_blank" rel="noopener noreferrer">Feedback Board</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-legal">© 2026 IBM Corporation. Internal use only. Not for external distribution.</p>
+        <span class="footer-version">beta</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    /* ── Accordion ─────────────────────────────────────────── */
+    function toggleAccordion(trigger) {
+      const expanded = trigger.getAttribute('aria-expanded') === 'true';
+      const panelId = trigger.getAttribute('aria-controls');
+      const panel = document.getElementById(panelId);
+
+      // Close all panels first
+      document.querySelectorAll('.accordion-trigger').forEach(function(t) {
+        t.setAttribute('aria-expanded', 'false');
+      });
+      document.querySelectorAll('.accordion-panel').forEach(function(p) {
+        p.classList.remove('open');
+      });
+
+      // If this one was closed, open it
+      if (!expanded) {
+        trigger.setAttribute('aria-expanded', 'true');
+        panel.classList.add('open');
+      }
+    }
+
+    /* ── Copy to Clipboard ──────────────────────────────────── */
+    function copyToolUrl() {
+      const url = document.getElementById('tool-url').textContent.trim();
+      const btn = document.getElementById('copy-btn');
+
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(url).then(function() {
+          showCopied(btn);
+        });
+      } else {
+        // Fallback for older browsers / non-HTTPS
+        var ta = document.createElement('textarea');
+        ta.value = url;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showCopied(btn);
+      }
+    }
+
+    /* ── Dimension Tooltips ─────────────────────────────────── */
+    function toggleTooltip(btn) {
+      var isOpen = btn.classList.contains('open');
+      // Close any other open tooltips first
+      document.querySelectorAll('.dim-tooltip-btn.open').forEach(function(b) {
+        b.classList.remove('open');
+      });
+      if (!isOpen) {
+        btn.classList.add('open');
+        // Close on next outside click
+        setTimeout(function() {
+          document.addEventListener('click', function handler(e) {
+            if (!btn.contains(e.target)) {
+              btn.classList.remove('open');
+              document.removeEventListener('click', handler);
+            }
+          });
+        }, 0);
+      }
+    }
+
+    function showCopied(btn) {
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(function() {
+        btn.textContent = 'Copy Link';
+        btn.classList.remove('copied');
+      }, 2000);
+    }
+  </script>
+
+</body>
+</html>

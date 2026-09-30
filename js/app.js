@@ -498,8 +498,8 @@ const handleNext = (event) => {
       })
       .catch(err => {
         console.error("Scoring failed:", err);
-        // Still redirect so the report page renders with mock data
-        window.location.href = "report.html";
+        // Still navigate to report — it will fall back to mock data
+        window.location.href = "report.html?fallback=1";
       });
     return;
   }
