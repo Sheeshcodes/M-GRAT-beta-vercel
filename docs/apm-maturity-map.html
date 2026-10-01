@@ -220,11 +220,6 @@
       border-right: 1px solid #e0e0e0;
     }
     .metric-item:last-child { border-right: none; }
-    .metric-item__icon {
-      width: 14px;
-      height: 14px;
-      margin-left: 6px;
-    }
     .metric-item__dots {
       display: flex;
       gap: 3px;
@@ -254,7 +249,6 @@
 
     /* ── Print styles ────────────────────────────────────────── */
     @page {
-      /* Let the page be as tall as the content — no clipping, no pagination. */
       size: auto;
       margin: 0;
     }
@@ -265,7 +259,6 @@
         overflow: visible;
         background: #fff;
       }
-      /* Prevent the browser from inserting any page breaks. */
       * {
         page-break-inside: avoid;
         break-inside: avoid;
@@ -275,7 +268,6 @@
       .map-grid {
         padding: 16px 16px 32px;
         gap: 4px;
-        /* Keep all four cards on one continuous sheet. */
         page-break-inside: avoid;
         break-inside: avoid;
       }
@@ -314,341 +306,108 @@
   </header>
 
   <!-- ══ STAGE GRID ═══════════════════════════════════════════ -->
-  <main class="map-grid">
+  <main class="map-grid" id="map-grid"></main>
 
-    <!-- ── Stage 1 → 2: APM Foundation ── -->
-    <article class="stage-card">
-      <div class="stage-card__body">
-        <p class="stage-label">STAGE 1 → <span class="stage-label__target">STAGE 2</span></p>
-        <h2 class="stage-name">APM Foundation</h2>
-        <p class="stage-quote">"Build the foundational APM data loop — strategy, scores, and condition visibility."</p>
+  <script type="module">
+    import JOURNEY from '../data/journey.js';
 
-        <div class="stage-ready">
-          <div class="stage-ready__header">
-            <!-- Checkmark outline icon -->
-            <svg viewBox="0 0 32 32" width="16" height="16" fill="none" stroke="#161616" stroke-width="2" aria-hidden="true"><circle cx="16" cy="16" r="13"/><polyline points="10,16 14,20 22,12"/></svg>
-            <span class="stage-ready__label">Are you ready?</span>
-          </div>
-          <p class="stage-ready__text">You have an ISO 14224-aligned asset hierarchy, criticality scoring, maturing work management, mobility, and initial condition monitoring in place.</p>
-        </div>
+    // SVG snippets reused per card
+    const SVG_CHECK = `<svg viewBox="0 0 32 32" width="16" height="16" fill="none" stroke="#161616" stroke-width="2" aria-hidden="true"><circle cx="16" cy="16" r="13"/><polyline points="10,16 14,20 22,12"/></svg>`;
+    const SVG_UP    = `<svg class="arrow-up-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true" style="color:#161616"><path d="M16 4l-10 10h6v14h8V14h6z"/></svg>`;
+    const SVG_DOWN  = `<svg class="arrow-down-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true" style="color:#161616"><path d="M16 28l10-10h-6V4h-8v14H6z"/></svg>`;
 
-        <p class="stage-section-label">What you gain</p>
-        <ul class="stage-list" aria-label="What you gain at APM Foundation stage">
-          <li class="stage-list__item">
-            <span class="stage-list__bullet" aria-hidden="true">•</span>
-            <span class="stage-list__text"><strong>15–20% reduction</strong> in unplanned downtime for critical pilot assets.</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__bullet" aria-hidden="true">•</span>
-            <span class="stage-list__text"><strong>A single, objective health score</strong> across critical asset classes in Maximo Health.</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__bullet" aria-hidden="true">•</span>
-            <span class="stage-list__text"><strong>Calendar-only guesswork eliminated</strong> through lightweight condition telemetry.</span>
-          </li>
-        </ul>
+    // Metric footer config per stage (not in Excel — purely visual KPI indicators).
+    // dots: number of filled dots (out of 4); direction: 'up'|'down'; label: string.
+    const APM_METRICS = {
+      APM2: [
+        { direction: 'up',   dots: 1, label: 'Unplanned downtime' },
+        { direction: 'down', dots: 1, label: 'Labour productivity' },
+        { direction: 'up',   dots: 1, label: 'MRO capital spend'  },
+      ],
+      APM3: [
+        { direction: 'up',   dots: 2, label: 'Unplanned downtime' },
+        { direction: 'down', dots: 2, label: 'Labour productivity' },
+        { direction: 'up',   dots: 2, label: 'MRO capital spend'  },
+      ],
+      APM4: [
+        { direction: 'up',   dots: 3, label: 'Unplanned downtime' },
+        { direction: 'down', dots: 3, label: 'Labour productivity' },
+        { direction: 'up',   dots: 3, label: 'MRO capital spend'  },
+      ],
+      APM5: [
+        { direction: 'up',   dots: 4, label: 'Unplanned downtime' },
+        { direction: 'down', dots: 4, label: 'Labour productivity' },
+        { direction: 'up',   dots: 4, label: 'MRO capital spend'  },
+      ],
+    };
 
-        <p class="stage-section-label">Key moves to get there</p>
-        <ul class="stage-list" aria-label="Key moves for APM Foundation stage">
-          <li class="stage-list__item">
-            <span class="stage-list__arrow" aria-hidden="true">→</span>
-            <span class="stage-list__text">Activate Reliability Strategies to tie work orders to failure modes.</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__arrow" aria-hidden="true">→</span>
-            <span class="stage-list__text">Enable foundational health scores for your critical assets.</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__arrow" aria-hidden="true">→</span>
-            <span class="stage-list__text">Begin Monitor exploration using your existing data sources.</span>
-          </li>
-        </ul>
-      </div>
+    function dots(count, purple) {
+      const cls = purple ? 'metric-dot--purple' : 'metric-dot--blue';
+      return Array.from({ length: 4 }, (_, i) =>
+        `<div class="metric-dot${i < count ? ' ' + cls : ''}"></div>`
+      ).join('');
+    }
 
-      <div class="stage-card__metrics">
+    function renderMetrics(stageId, purple) {
+      const metrics = APM_METRICS[stageId] || [];
+      return metrics.map(m => `
         <div class="metric-item">
-          <!-- arrow up -->
-          <svg class="arrow-up-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true" style="color:#161616"><path d="M16 4l-10 10h6v14h8V14h6z"/></svg>
-          <div class="metric-item__dots">
-            <div class="metric-dot metric-dot--blue"></div>
-            <div class="metric-dot"></div>
-            <div class="metric-dot"></div>
-            <div class="metric-dot"></div>
-          </div>
-          <span class="metric-item__label">Unplanned downtime</span>
-        </div>
-        <div class="metric-item">
-          <!-- arrow down -->
-          <svg class="arrow-down-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true" style="color:#161616"><path d="M16 28l10-10h-6V4h-8v14H6z"/></svg>
-          <div class="metric-item__dots">
-            <div class="metric-dot metric-dot--blue"></div>
-            <div class="metric-dot"></div>
-            <div class="metric-dot"></div>
-            <div class="metric-dot"></div>
-          </div>
-          <span class="metric-item__label">Labour productivity</span>
-        </div>
-        <div class="metric-item">
-          <!-- arrow up -->
-          <svg class="arrow-up-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true" style="color:#161616"><path d="M16 4l-10 10h6v14h8V14h6z"/></svg>
-          <div class="metric-item__dots">
-            <div class="metric-dot metric-dot--blue"></div>
-            <div class="metric-dot"></div>
-            <div class="metric-dot"></div>
-            <div class="metric-dot"></div>
-          </div>
-          <span class="metric-item__label">MRO capital spend</span>
-        </div>
-      </div>
-    </article>
+          ${m.direction === 'up' ? SVG_UP : SVG_DOWN}
+          <div class="metric-item__dots">${dots(m.dots, purple)}</div>
+          <span class="metric-item__label">${m.label}</span>
+        </div>`).join('');
+    }
 
-    <!-- ── Stage 2 → 3: Maintenance Optimisation (CBM+) ── -->
-    <article class="stage-card">
-      <div class="stage-card__body">
-        <p class="stage-label">STAGE 2 → <span class="stage-label__target">STAGE 3</span></p>
-        <h2 class="stage-name">Maintenance Optimisation (CBM+)</h2>
-        <p class="stage-quote">"Make every maintenance decision evidence-driven, not habit-driven."</p>
+    // APM maturity map shows stages APM2–APM5 (the 4 transition cards)
+    const displayStages = JOURNEY.apm.filter(s => s.stage >= 2);
 
-        <div class="stage-ready">
-          <div class="stage-ready__header">
-            <svg viewBox="0 0 32 32" width="16" height="16" fill="none" stroke="#161616" stroke-width="2" aria-hidden="true"><circle cx="16" cy="16" r="13"/><polyline points="10,16 14,20 22,12"/></svg>
-            <span class="stage-ready__label">Are you ready?</span>
+    const grid = document.getElementById('map-grid');
+    grid.innerHTML = displayStages.map(stage => {
+      const from  = stage.stage - 1;
+      const to    = stage.stage;
+      const purple = stage.stage >= 4;
+      const accentCls = purple ? ' stage-label__target--purple' : '';
+      const bulletCls = purple ? ' stage-list__bullet--purple' : '';
+      const arrowCls  = purple ? ' stage-list__arrow--purple'  : '';
+
+      const gainItems = stage.potentialOutcomes.map(o => `
+        <li class="stage-list__item">
+          <span class="stage-list__bullet${bulletCls}" aria-hidden="true">•</span>
+          <span class="stage-list__text"><strong>${o.stat}</strong> ${o.label}</span>
+        </li>`).join('');
+
+      const moveItems = (stage.keyMoves || []).map(m => `
+        <li class="stage-list__item">
+          <span class="stage-list__arrow${arrowCls}" aria-hidden="true">→</span>
+          <span class="stage-list__text">${m}</span>
+        </li>`).join('');
+
+      return `
+      <article class="stage-card">
+        <div class="stage-card__body">
+          <p class="stage-label">STAGE ${from} → <span class="stage-label__target${accentCls}">STAGE ${to}</span></p>
+          <h2 class="stage-name">${stage.name}</h2>
+          <p class="stage-quote">"${stage.description}"</p>
+
+          <div class="stage-ready">
+            <div class="stage-ready__header">
+              ${SVG_CHECK}
+              <span class="stage-ready__label">Are you ready?</span>
+            </div>
+            <p class="stage-ready__text">${stage.readinessText || stage.valueStatement}</p>
           </div>
-          <p class="stage-ready__text">Reliability Strategies are activated, foundational health scores are live for critical assets, and Monitor exploration is underway.</p>
-        </div>
 
-        <p class="stage-section-label">What you gain</p>
-        <ul class="stage-list" aria-label="What you gain at Maintenance Optimisation stage">
-          <li class="stage-list__item">
-            <span class="stage-list__bullet" aria-hidden="true">•</span>
-            <span class="stage-list__text"><strong>20–30% reduction</strong> in unnecessary preventive maintenance labour and parts spend.</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__bullet" aria-hidden="true">•</span>
-            <span class="stage-list__text"><strong>Real-time OT/IoT telemetry</strong> ingested in Maximo Monitor and mapped to health factors.</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__bullet" aria-hidden="true">•</span>
-            <span class="stage-list__text"><strong>Dynamic PM frequency</strong> driven by asset condition and operating context.</span>
-          </li>
-        </ul>
+          <p class="stage-section-label">What you gain</p>
+          <ul class="stage-list" aria-label="What you gain at ${stage.name} stage">${gainItems}</ul>
 
-        <p class="stage-section-label">Key moves to get there</p>
-        <ul class="stage-list" aria-label="Key moves for Maintenance Optimisation stage">
-          <li class="stage-list__item">
-            <span class="stage-list__arrow" aria-hidden="true">→</span>
-            <span class="stage-list__text">Integrate OT/IoT and bring multivariable health scoring live.</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__arrow" aria-hidden="true">→</span>
-            <span class="stage-list__text">Operationalise FMEA and optimise PM cycles with condition evidence.</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__arrow" aria-hidden="true">→</span>
-            <span class="stage-list__text">Make workforce scheduling risk-driven and begin AIP exploration.</span>
-          </li>
-        </ul>
-      </div>
-
-      <div class="stage-card__metrics">
-        <div class="metric-item">
-          <svg class="arrow-up-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true" style="color:#161616"><path d="M16 4l-10 10h6v14h8V14h6z"/></svg>
-          <div class="metric-item__dots">
-            <div class="metric-dot metric-dot--blue"></div>
-            <div class="metric-dot metric-dot--blue"></div>
-            <div class="metric-dot"></div>
-            <div class="metric-dot"></div>
-          </div>
-          <span class="metric-item__label">Unplanned downtime</span>
-        </div>
-        <div class="metric-item">
-          <svg class="arrow-down-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true" style="color:#161616"><path d="M16 28l10-10h-6V4h-8v14H6z"/></svg>
-          <div class="metric-item__dots">
-            <div class="metric-dot metric-dot--blue"></div>
-            <div class="metric-dot metric-dot--blue"></div>
-            <div class="metric-dot"></div>
-            <div class="metric-dot"></div>
-          </div>
-          <span class="metric-item__label">Labour productivity</span>
-        </div>
-        <div class="metric-item">
-          <svg class="arrow-up-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true" style="color:#161616"><path d="M16 4l-10 10h6v14h8V14h6z"/></svg>
-          <div class="metric-item__dots">
-            <div class="metric-dot metric-dot--blue"></div>
-            <div class="metric-dot metric-dot--blue"></div>
-            <div class="metric-dot"></div>
-            <div class="metric-dot"></div>
-          </div>
-          <span class="metric-item__label">MRO capital spend</span>
-        </div>
-      </div>
-    </article>
-
-    <!-- ── Stage 3 → 4: Prescriptive Reliability ── -->
-    <article class="stage-card">
-      <div class="stage-card__body">
-        <p class="stage-label">STAGE 3 → <span class="stage-label__target--purple stage-label__target">STAGE 4</span></p>
-        <h2 class="stage-name">Prescriptive Reliability</h2>
-        <p class="stage-quote">"Know when assets will fail before they do — quantify risk, prescribe action, prevent failure."</p>
-
-        <div class="stage-ready">
-          <div class="stage-ready__header">
-            <svg viewBox="0 0 32 32" width="16" height="16" fill="none" stroke="#161616" stroke-width="2" aria-hidden="true"><circle cx="16" cy="16" r="13"/><polyline points="10,16 14,20 22,12"/></svg>
-            <span class="stage-ready__label">Are you ready?</span>
-          </div>
-          <p class="stage-ready__text">OT/IoT is fully integrated, multivariable health scoring is live, FMEA is operationalised, and PM cycles are condition-optimised.</p>
+          <p class="stage-section-label">Key moves to get there</p>
+          <ul class="stage-list" aria-label="Key moves for ${stage.name} stage">${moveItems}</ul>
         </div>
 
-        <p class="stage-section-label">What you gain</p>
-        <ul class="stage-list" aria-label="What you gain at Prescriptive Reliability stage">
-          <li class="stage-list__item">
-            <span class="stage-list__bullet stage-list__bullet--purple" aria-hidden="true">•</span>
-            <span class="stage-list__text"><strong>Up to 47% reduction</strong> in unplanned downtime via early failure prediction.</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__bullet stage-list__bullet--purple" aria-hidden="true">•</span>
-            <span class="stage-list__text"><strong>10–20% reduction</strong> in maintenance overtime and emergency repair costs.</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__bullet stage-list__bullet--purple" aria-hidden="true">•</span>
-            <span class="stage-list__text"><strong>Continuous failure-probability scoring</strong> and automated anomaly detection in Maximo Predict.</span>
-          </li>
-        </ul>
-
-        <p class="stage-section-label">Key moves to get there</p>
-        <ul class="stage-list" aria-label="Key moves for Prescriptive Reliability stage">
-          <li class="stage-list__item">
-            <span class="stage-list__arrow stage-list__arrow--purple" aria-hidden="true">→</span>
-            <span class="stage-list__text">Bring the Risk Scenario Engine (RSE) live to simulate degradation.</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__arrow stage-list__arrow--purple" aria-hidden="true">→</span>
-            <span class="stage-list__text">Make root-cause-before-failure (RCBF) standard practice.</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__arrow stage-list__arrow--purple" aria-hidden="true">→</span>
-            <span class="stage-list__text">Connect failure evidence to capital planning with AIP Foundation.</span>
-          </li>
-        </ul>
-      </div>
-
-      <div class="stage-card__metrics">
-        <div class="metric-item">
-          <svg class="arrow-up-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true" style="color:#161616"><path d="M16 4l-10 10h6v14h8V14h6z"/></svg>
-          <div class="metric-item__dots">
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot"></div>
-          </div>
-          <span class="metric-item__label">Unplanned downtime</span>
-        </div>
-        <div class="metric-item">
-          <svg class="arrow-down-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true" style="color:#161616"><path d="M16 28l10-10h-6V4h-8v14H6z"/></svg>
-          <div class="metric-item__dots">
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot"></div>
-          </div>
-          <span class="metric-item__label">Labour productivity</span>
-        </div>
-        <div class="metric-item">
-          <svg class="arrow-up-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true" style="color:#161616"><path d="M16 4l-10 10h6v14h8V14h6z"/></svg>
-          <div class="metric-item__dots">
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot"></div>
-          </div>
-          <span class="metric-item__label">MRO capital spend</span>
-        </div>
-      </div>
-    </article>
-
-    <!-- ── Stage 4 → 5: Reliability Enterprise ── -->
-    <article class="stage-card">
-      <div class="stage-card__body">
-        <p class="stage-label">STAGE 4 → <span class="stage-label__target--purple stage-label__target">STAGE 5</span></p>
-        <h2 class="stage-name">Reliability Enterprise</h2>
-        <p class="stage-quote">"Embed reliability into every asset decision — forever."</p>
-
-        <div class="stage-ready">
-          <div class="stage-ready__header">
-            <svg viewBox="0 0 32 32" width="16" height="16" fill="none" stroke="#161616" stroke-width="2" aria-hidden="true"><circle cx="16" cy="16" r="13"/><polyline points="10,16 14,20 22,12"/></svg>
-            <span class="stage-ready__label">Are you ready?</span>
-          </div>
-          <p class="stage-ready__text">The Risk Scenario Engine is live, RCBF is standard practice, and AIP Foundation connects failure evidence to capital planning.</p>
-        </div>
-
-        <p class="stage-section-label">What you gain</p>
-        <ul class="stage-list" aria-label="What you gain at Reliability Enterprise stage">
-          <li class="stage-list__item">
-            <span class="stage-list__bullet stage-list__bullet--purple" aria-hidden="true">•</span>
-            <span class="stage-list__text"><strong>10–15% longer asset lifespan</strong> through evidence-based lifecycle planning.</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__bullet stage-list__bullet--purple" aria-hidden="true">•</span>
-            <span class="stage-list__text"><strong>8–15% optimisation</strong> in MRO spare-parts inventory holding costs.</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__bullet stage-list__bullet--purple" aria-hidden="true">•</span>
-            <span class="stage-list__text"><strong>Closed-loop operational learning</strong> with GenAI prescriptive guidance at the point of work.</span>
-          </li>
-        </ul>
-
-        <p class="stage-section-label">Key moves to get there</p>
-        <ul class="stage-list" aria-label="Key moves for Reliability Enterprise stage">
-          <li class="stage-list__item">
-            <span class="stage-list__arrow stage-list__arrow--purple" aria-hidden="true">→</span>
-            <span class="stage-list__text">Run continuous FMEA governance refined by RSE evidence.</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__arrow stage-list__arrow--purple" aria-hidden="true">→</span>
-            <span class="stage-list__text">Make AIP fully operational and shift to lean, risk-based inventory.</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__arrow stage-list__arrow--purple" aria-hidden="true">→</span>
-            <span class="stage-list__text">Close the design-for-reliability loop back to procurement.</span>
-          </li>
-        </ul>
-      </div>
-
-      <div class="stage-card__metrics">
-        <div class="metric-item">
-          <svg class="arrow-up-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true" style="color:#161616"><path d="M16 4l-10 10h6v14h8V14h6z"/></svg>
-          <div class="metric-item__dots">
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot metric-dot--purple"></div>
-          </div>
-          <span class="metric-item__label">Unplanned downtime</span>
-        </div>
-        <div class="metric-item">
-          <svg class="arrow-down-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true" style="color:#161616"><path d="M16 28l10-10h-6V4h-8v14H6z"/></svg>
-          <div class="metric-item__dots">
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot metric-dot--purple"></div>
-          </div>
-          <span class="metric-item__label">Labour productivity</span>
-        </div>
-        <div class="metric-item">
-          <svg class="arrow-up-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true" style="color:#161616"><path d="M16 4l-10 10h6v14h8V14h6z"/></svg>
-          <div class="metric-item__dots">
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot metric-dot--purple"></div>
-          </div>
-          <span class="metric-item__label">MRO capital spend</span>
-        </div>
-      </div>
-    </article>
-
-  </main>
+        <div class="stage-card__metrics">${renderMetrics(stage.id, purple)}</div>
+      </article>`;
+    }).join('');
+  </script>
 
 </body>
 </html>

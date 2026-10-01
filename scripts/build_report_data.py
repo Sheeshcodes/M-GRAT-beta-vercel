@@ -195,7 +195,9 @@ def build_journey(rows: list[dict]) -> list[dict]:
             "name": r.get("Stage Name"),
             "description": tidy(blank_to_none(r.get("Description", ""))),
             "valueStatement": tidy(blank_to_none(r.get("Value statement", ""))),
+            "readinessText": tidy(blank_to_none(r.get("Milestones", ""))),
             "potentialOutcomes": parse_outcomes(r.get("Potential outcomes", "")),
+            "keyMoves": split_lines(r.get("Key moves", "")),
             "products": parse_products(r.get("MAS Products", "")),
         })
     stages.sort(key=lambda s: s["stage"] or 0)

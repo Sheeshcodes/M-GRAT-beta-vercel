@@ -96,7 +96,7 @@
       flex-direction: column;
     }
 
-    /* Stage label (e.g. STAGE 1 → STAGE 2) */
+    /* Stage label */
     .stage-label {
       font-family: 'IBM Plex Sans Condensed', sans-serif;
       font-size: 12px;
@@ -248,7 +248,6 @@
 
     /* ── Print styles ────────────────────────────────────────── */
     @page {
-      /* Let the page be as tall as the content — no clipping, no pagination. */
       size: auto;
       margin: 0;
     }
@@ -259,7 +258,6 @@
         overflow: visible;
         background: #fff;
       }
-      /* Prevent the browser from inserting any page breaks. */
       * {
         page-break-inside: avoid;
         break-inside: avoid;
@@ -269,7 +267,6 @@
       .map-grid {
         padding: 16px 16px 32px;
         gap: 4px;
-        /* Keep all four cards on one continuous sheet. */
         page-break-inside: avoid;
         break-inside: avoid;
       }
@@ -308,353 +305,106 @@
   </header>
 
   <!-- ══ STAGE GRID ═══════════════════════════════════════════ -->
-  <main class="map-grid">
+  <main class="map-grid" id="map-grid"></main>
 
-    <!-- ── Stage 1 → 2: Coordinated Operations ── -->
-    <article class="stage-card">
-      <div class="stage-card__body">
-        <p class="stage-label">STAGE 1 → <span class="stage-label__target">STAGE 2</span></p>
-        <h2 class="stage-name">Coordinated Operations</h2>
-        <p class="stage-quote">"Centralizes schedule coordination and field dispatch — single-pane visibility across labor and crew capacity, extended planning horizons, and mobile work execution that eliminates paper delays."</p>
+  <script type="module">
+    import JOURNEY from '../data/journey.js';
 
-        <div class="stage-ready">
-          <div class="stage-ready__header">
-            <svg viewBox="0 0 32 32" width="16" height="16" fill="none" stroke="#161616" stroke-width="2" aria-hidden="true"><circle cx="16" cy="16" r="13"/><polyline points="10,16 14,20 22,12"/></svg>
-            <span class="stage-ready__label">Are you ready?</span>
-          </div>
-          <p class="stage-ready__text">Work orders carry scheduled dates and a forward planning horizon is established (weekly to monthly). A centralized scheduler or dispatcher role is active in Assignment Manager, workforce availability is enriched with exceptions, and job plans gain materials, tools, and classifications. HSE, Inspections, and Inventory enter as parallel capability layers.</p>
-        </div>
+    const SVG_CHECK = `<svg viewBox="0 0 32 32" width="16" height="16" fill="none" stroke="#161616" stroke-width="2" aria-hidden="true"><circle cx="16" cy="16" r="13"/><polyline points="10,16 14,20 22,12"/></svg>`;
+    const SVG_UP    = `<svg class="arrow-up-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 4l-10 10h6v14h8V14h6z"/></svg>`;
+    const SVG_DOWN  = `<svg class="arrow-down-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 28l10-10h-6V4h-8v14H6z"/></svg>`;
 
-        <p class="stage-section-label">What you gain</p>
-        <ul class="stage-list" aria-label="What you gain at Coordinated Operations stage">
-          <li class="stage-list__item">
-            <span class="stage-list__bullet" aria-hidden="true">•</span>
-            <span class="stage-list__text"><strong>10–15% reduction</strong> in administrative dispatch overhead and phone coordination.</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__bullet" aria-hidden="true">•</span>
-            <span class="stage-list__text"><strong>8–12% increase</strong> in wrench time through mobile work-order delivery and status updates.</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__bullet" aria-hidden="true">•</span>
-            <span class="stage-list__text"><strong>Multi-week forward</strong> planning horizon actively managed in Assignment Manager.</span>
-          </li>
-        </ul>
+    // Metric footer config per stage (not in Excel — purely visual KPI indicators).
+    const FSM_METRICS = {
+      FSM2: [
+        { direction: 'up',   dots: 1, label: 'Technician productivity' },
+        { direction: 'down', dots: 1, label: 'Dispatch overhead'       },
+        { direction: 'up',   dots: 1, label: 'First-time fix rate'     },
+      ],
+      FSM3: [
+        { direction: 'up',   dots: 2, label: 'Technician productivity' },
+        { direction: 'down', dots: 2, label: 'Dispatch overhead'       },
+        { direction: 'up',   dots: 2, label: 'First-time fix rate'     },
+      ],
+      FSM4: [
+        { direction: 'up',   dots: 3, label: 'Technician productivity' },
+        { direction: 'down', dots: 3, label: 'Dispatch overhead'       },
+        { direction: 'up',   dots: 3, label: 'First-time fix rate'     },
+      ],
+      FSM5: [
+        { direction: 'up',   dots: 4, label: 'Technician productivity' },
+        { direction: 'down', dots: 4, label: 'Dispatch overhead'       },
+        { direction: 'up',   dots: 4, label: 'First-time fix rate'     },
+      ],
+    };
 
-        <p class="stage-section-label">Key moves to get there</p>
-        <ul class="stage-list" aria-label="Key moves for Coordinated Operations stage">
-          <li class="stage-list__item">
-            <span class="stage-list__arrow" aria-hidden="true">→</span>
-            <span class="stage-list__text">Stand up a central scheduler/dispatcher role in Assignment Manager</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__arrow" aria-hidden="true">→</span>
-            <span class="stage-list__text">Enrich workforce availability with shifts, exceptions, and crafts</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__arrow" aria-hidden="true">→</span>
-            <span class="stage-list__text">Add materials, tools, and classifications to job plans</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__arrow" aria-hidden="true">→</span>
-            <span class="stage-list__text">Roll out mobile work execution to field crews</span>
-          </li>
-        </ul>
-      </div>
+    function dots(count, purple) {
+      const cls = purple ? 'metric-dot--purple' : 'metric-dot--blue';
+      return Array.from({ length: 4 }, (_, i) =>
+        `<div class="metric-dot${i < count ? ' ' + cls : ''}"></div>`
+      ).join('');
+    }
 
-      <div class="stage-card__metrics">
+    function renderMetrics(stageId, purple) {
+      const metrics = FSM_METRICS[stageId] || [];
+      return metrics.map(m => `
         <div class="metric-item">
-          <svg class="arrow-up-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 4l-10 10h6v14h8V14h6z"/></svg>
-          <div class="metric-item__dots">
-            <div class="metric-dot metric-dot--blue"></div>
-            <div class="metric-dot"></div>
-            <div class="metric-dot"></div>
-            <div class="metric-dot"></div>
-          </div>
-          <span class="metric-item__label">Technician productivity</span>
-        </div>
-        <div class="metric-item">
-          <svg class="arrow-down-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 28l10-10h-6V4h-8v14H6z"/></svg>
-          <div class="metric-item__dots">
-            <div class="metric-dot metric-dot--blue"></div>
-            <div class="metric-dot"></div>
-            <div class="metric-dot"></div>
-            <div class="metric-dot"></div>
-          </div>
-          <span class="metric-item__label">Dispatch overhead</span>
-        </div>
-        <div class="metric-item">
-          <svg class="arrow-up-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 4l-10 10h6v14h8V14h6z"/></svg>
-          <div class="metric-item__dots">
-            <div class="metric-dot metric-dot--blue"></div>
-            <div class="metric-dot"></div>
-            <div class="metric-dot"></div>
-            <div class="metric-dot"></div>
-          </div>
-          <span class="metric-item__label">First-time fix rate</span>
-        </div>
-      </div>
-    </article>
+          ${m.direction === 'up' ? SVG_UP : SVG_DOWN}
+          <div class="metric-item__dots">${dots(m.dots, purple)}</div>
+          <span class="metric-item__label">${m.label}</span>
+        </div>`).join('');
+    }
 
-    <!-- ── Stage 2 → 3: Structured Scheduling ── -->
-    <article class="stage-card">
-      <div class="stage-card__body">
-        <p class="stage-label">STAGE 2 → <span class="stage-label__target">STAGE 3</span></p>
-        <h2 class="stage-name">Structured Scheduling</h2>
-        <p class="stage-quote">"Optimizes crew productivity and work preparation — enriching job plans with planned materials and tools, sequencing work by dependencies, and routing technicians by geographic proximity."</p>
+    // FSM maturity map shows stages FSM2–FSM5 (the 4 transition cards)
+    const displayStages = JOURNEY.fsm.filter(s => s.stage >= 2);
 
-        <div class="stage-ready">
-          <div class="stage-ready__header">
-            <svg viewBox="0 0 32 32" width="16" height="16" fill="none" stroke="#161616" stroke-width="2" aria-hidden="true"><circle cx="16" cy="16" r="13"/><polyline points="10,16 14,20 22,12"/></svg>
-            <span class="stage-ready__label">Are you ready?</span>
+    const grid = document.getElementById('map-grid');
+    grid.innerHTML = displayStages.map(stage => {
+      const from  = stage.stage - 1;
+      const to    = stage.stage;
+      const purple = stage.stage >= 4;
+      const accentCls = purple ? ' stage-label__target--purple' : '';
+      const bulletCls = purple ? ' stage-list__bullet--purple' : '';
+      const arrowCls  = purple ? ' stage-list__arrow--purple'  : '';
+
+      const gainItems = stage.potentialOutcomes.map(o => `
+        <li class="stage-list__item">
+          <span class="stage-list__bullet${bulletCls}" aria-hidden="true">•</span>
+          <span class="stage-list__text"><strong>${o.stat}</strong> ${o.label}</span>
+        </li>`).join('');
+
+      const moveItems = (stage.keyMoves || []).map(m => `
+        <li class="stage-list__item">
+          <span class="stage-list__arrow${arrowCls}" aria-hidden="true">→</span>
+          <span class="stage-list__text">${m}</span>
+        </li>`).join('');
+
+      return `
+      <article class="stage-card">
+        <div class="stage-card__body">
+          <p class="stage-label">STAGE ${from} → <span class="stage-label__target${accentCls}">STAGE ${to}</span></p>
+          <h2 class="stage-name">${stage.name}</h2>
+          <p class="stage-quote">"${stage.description}"</p>
+
+          <div class="stage-ready">
+            <div class="stage-ready__header">
+              ${SVG_CHECK}
+              <span class="stage-ready__label">Are you ready?</span>
+            </div>
+            <p class="stage-ready__text">${stage.readinessText || stage.valueStatement}</p>
           </div>
-          <p class="stage-ready__text">Forward planning extends to rolling windows with predecessor and hierarchy constraints. System-suggested dispatch based on effective availability is active. Job plans are scoped to asset classes, include hierarchies and predecessors, and link to asset data. Inspection results feed condition data and inventory is planned against work requirements.</p>
-        </div>
 
-        <p class="stage-section-label">What you gain</p>
-        <ul class="stage-list" aria-label="What you gain at Structured Scheduling stage">
-          <li class="stage-list__item">
-            <span class="stage-list__bullet" aria-hidden="true">•</span>
-            <span class="stage-list__text"><strong>15–25% reduction</strong> in technician travel time and return trips via proximity routing.</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__bullet" aria-hidden="true">•</span>
-            <span class="stage-list__text"><strong>Significant reduction</strong> in job delays caused by missing parts, permits, or tools.</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__bullet" aria-hidden="true">•</span>
-            <span class="stage-list__text"><strong>Real-time effective</strong> capacity calculation accounting for leaves and active assignments.</span>
-          </li>
-        </ul>
+          <p class="stage-section-label">What you gain</p>
+          <ul class="stage-list" aria-label="What you gain at ${stage.name} stage">${gainItems}</ul>
 
-        <p class="stage-section-label">Key moves to get there</p>
-        <ul class="stage-list" aria-label="Key moves for Structured Scheduling stage">
-          <li class="stage-list__item">
-            <span class="stage-list__arrow" aria-hidden="true">→</span>
-            <span class="stage-list__text">Move to rolling planning windows with predecessor constraints</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__arrow" aria-hidden="true">→</span>
-            <span class="stage-list__text">Enable system-suggested dispatch on effective availability</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__arrow" aria-hidden="true">→</span>
-            <span class="stage-list__text">Scope job plans to asset classes and hierarchies</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__arrow" aria-hidden="true">→</span>
-            <span class="stage-list__text">Feed inspection results into asset condition data</span>
-          </li>
-        </ul>
-      </div>
-
-      <div class="stage-card__metrics">
-        <div class="metric-item">
-          <svg class="arrow-up-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 4l-10 10h6v14h8V14h6z"/></svg>
-          <div class="metric-item__dots">
-            <div class="metric-dot metric-dot--blue"></div>
-            <div class="metric-dot metric-dot--blue"></div>
-            <div class="metric-dot"></div>
-            <div class="metric-dot"></div>
-          </div>
-          <span class="metric-item__label">Technician productivity</span>
-        </div>
-        <div class="metric-item">
-          <svg class="arrow-down-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 28l10-10h-6V4h-8v14H6z"/></svg>
-          <div class="metric-item__dots">
-            <div class="metric-dot metric-dot--blue"></div>
-            <div class="metric-dot metric-dot--blue"></div>
-            <div class="metric-dot"></div>
-            <div class="metric-dot"></div>
-          </div>
-          <span class="metric-item__label">Dispatch overhead</span>
-        </div>
-        <div class="metric-item">
-          <svg class="arrow-up-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 4l-10 10h6v14h8V14h6z"/></svg>
-          <div class="metric-item__dots">
-            <div class="metric-dot metric-dot--blue"></div>
-            <div class="metric-dot metric-dot--blue"></div>
-            <div class="metric-dot"></div>
-            <div class="metric-dot"></div>
-          </div>
-          <span class="metric-item__label">First-time fix rate</span>
-        </div>
-      </div>
-    </article>
-
-    <!-- ── Stage 3 → 4: Intelligent Field Coordination ── -->
-    <article class="stage-card">
-      <div class="stage-card__body">
-        <p class="stage-label">STAGE 3 → <span class="stage-label__target stage-label__target--purple">STAGE 4</span></p>
-        <h2 class="stage-name">Intelligent Field Coordination</h2>
-        <p class="stage-quote">"Automates schedule optimization and exception handling — constraint-based algorithms match technicians by skill and location, inject emergency break-in work, and integrate storeroom inventory at the point of work."</p>
-
-        <div class="stage-ready">
-          <div class="stage-ready__header">
-            <svg viewBox="0 0 32 32" width="16" height="16" fill="none" stroke="#161616" stroke-width="2" aria-hidden="true"><circle cx="16" cy="16" r="13"/><polyline points="10,16 14,20 22,12"/></svg>
-            <span class="stage-ready__label">Are you ready?</span>
-          </div>
-          <p class="stage-ready__text">The Optimizer runs automatically via cron-based scheduling. Assignments are system-generated from constraints, skills, and optimized availability. Planning, Scheduling, and Dispatch dashboards are live with cost, resource, and compliance views. Condition-based inspection and optimized inventory management are active.</p>
+          <p class="stage-section-label">Key moves to get there</p>
+          <ul class="stage-list" aria-label="Key moves for ${stage.name} stage">${moveItems}</ul>
         </div>
 
-        <p class="stage-section-label">What you gain</p>
-        <ul class="stage-list" aria-label="What you gain at Intelligent Field Coordination stage">
-          <li class="stage-list__item">
-            <span class="stage-list__bullet stage-list__bullet--purple" aria-hidden="true">•</span>
-            <span class="stage-list__text"><strong>≥80% First-Time Fix Rate</strong> through automated skill- and parts-aware dispatch.</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__bullet stage-list__bullet--purple" aria-hidden="true">•</span>
-            <span class="stage-list__text"><strong>15–20% reduction</strong> in emergency travel disruption via dynamic break-in scheduling.</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__bullet stage-list__bullet--purple" aria-hidden="true">•</span>
-            <span class="stage-list__text"><strong>Real-time</strong> storeroom balance visibility and mobile material issuance from the field.</span>
-          </li>
-        </ul>
-
-        <p class="stage-section-label">Key moves to get there</p>
-        <ul class="stage-list" aria-label="Key moves for Intelligent Field Coordination stage">
-          <li class="stage-list__item">
-            <span class="stage-list__arrow stage-list__arrow--purple" aria-hidden="true">→</span>
-            <span class="stage-list__text">Introduce optimization-driven scheduling across crews and territories</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__arrow stage-list__arrow--purple" aria-hidden="true">→</span>
-            <span class="stage-list__text">Connect condition and IoT signals to trigger work automatically</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__arrow stage-list__arrow--purple" aria-hidden="true">→</span>
-            <span class="stage-list__text">Plan inventory and logistics against forecast work demand</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__arrow stage-list__arrow--purple" aria-hidden="true">→</span>
-            <span class="stage-list__text">Measure schedule compliance and wrench time continuously</span>
-          </li>
-        </ul>
-      </div>
-
-      <div class="stage-card__metrics">
-        <div class="metric-item">
-          <svg class="arrow-up-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 4l-10 10h6v14h8V14h6z"/></svg>
-          <div class="metric-item__dots">
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot"></div>
-          </div>
-          <span class="metric-item__label">Technician productivity</span>
-        </div>
-        <div class="metric-item">
-          <svg class="arrow-down-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 28l10-10h-6V4h-8v14H6z"/></svg>
-          <div class="metric-item__dots">
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot"></div>
-          </div>
-          <span class="metric-item__label">Dispatch overhead</span>
-        </div>
-        <div class="metric-item">
-          <svg class="arrow-up-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 4l-10 10h6v14h8V14h6z"/></svg>
-          <div class="metric-item__dots">
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot"></div>
-          </div>
-          <span class="metric-item__label">First-time fix rate</span>
-        </div>
-      </div>
-    </article>
-
-    <!-- ── Stage 4 → 5: Optimized Field Operations ── -->
-    <article class="stage-card">
-      <div class="stage-card__body">
-        <p class="stage-label">STAGE 4 → <span class="stage-label__target stage-label__target--purple">STAGE 5</span></p>
-        <h2 class="stage-name">Optimized Field Operations</h2>
-        <p class="stage-quote">"Achieves autonomous, end-to-end field workforce execution — automated cron-based optimization, GenAI point-of-work troubleshooting, and real-time field actuals driving continuous schedule refinement."</p>
-
-        <div class="stage-ready">
-          <div class="stage-ready__header">
-            <svg viewBox="0 0 32 32" width="16" height="16" fill="none" stroke="#161616" stroke-width="2" aria-hidden="true"><circle cx="16" cy="16" r="13"/><polyline points="10,16 14,20 22,12"/></svg>
-            <span class="stage-ready__label">Are you ready?</span>
-          </div>
-          <p class="stage-ready__text">The Optimizer operates fully autonomously for routine scheduling and dispatch. Humans are approvers and exception handlers only. Strategic inventory, AIP-connected job plans, and GenAI-assisted work execution complete the full FSM maturity picture.</p>
-        </div>
-
-        <p class="stage-section-label">What you gain</p>
-        <ul class="stage-list" aria-label="What you gain at Optimized Field Operations stage">
-          <li class="stage-list__item">
-            <span class="stage-list__bullet stage-list__bullet--purple" aria-hidden="true">•</span>
-            <span class="stage-list__text"><strong>Up to 26%</strong> overall technician productivity gain (achieving ≥45–55% wrench time).</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__bullet stage-list__bullet--purple" aria-hidden="true">•</span>
-            <span class="stage-list__text"><strong>10–20%</strong> reduction in overtime through autonomous schedule balancing.</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__bullet stage-list__bullet--purple" aria-hidden="true">•</span>
-            <span class="stage-list__text"><strong>Closed-loop feedback</strong> from field actuals directly into job plan durations and inventory forecasts.</span>
-          </li>
-        </ul>
-
-        <p class="stage-section-label">Key moves to get there</p>
-        <ul class="stage-list" aria-label="Key moves for Optimized Field Operations stage">
-          <li class="stage-list__item">
-            <span class="stage-list__arrow stage-list__arrow--purple" aria-hidden="true">→</span>
-            <span class="stage-list__text">Run continuous, AI-assisted schedule optimization</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__arrow stage-list__arrow--purple" aria-hidden="true">→</span>
-            <span class="stage-list__text">Close the loop from asset health to planning and dispatch</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__arrow stage-list__arrow--purple" aria-hidden="true">→</span>
-            <span class="stage-list__text">Standardize KPIs and benchmarks across all regions</span>
-          </li>
-          <li class="stage-list__item">
-            <span class="stage-list__arrow stage-list__arrow--purple" aria-hidden="true">→</span>
-            <span class="stage-list__text">Embed field feedback into job-plan and reliability improvement</span>
-          </li>
-        </ul>
-      </div>
-
-      <div class="stage-card__metrics">
-        <div class="metric-item">
-          <svg class="arrow-up-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 4l-10 10h6v14h8V14h6z"/></svg>
-          <div class="metric-item__dots">
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot metric-dot--purple"></div>
-          </div>
-          <span class="metric-item__label">Technician productivity</span>
-        </div>
-        <div class="metric-item">
-          <svg class="arrow-down-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 28l10-10h-6V4h-8v14H6z"/></svg>
-          <div class="metric-item__dots">
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot metric-dot--purple"></div>
-          </div>
-          <span class="metric-item__label">Dispatch overhead</span>
-        </div>
-        <div class="metric-item">
-          <svg class="arrow-up-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 4l-10 10h6v14h8V14h6z"/></svg>
-          <div class="metric-item__dots">
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot metric-dot--purple"></div>
-            <div class="metric-dot metric-dot--purple"></div>
-          </div>
-          <span class="metric-item__label">First-time fix rate</span>
-        </div>
-      </div>
-    </article>
-
-  </main>
+        <div class="stage-card__metrics">${renderMetrics(stage.id, purple)}</div>
+      </article>`;
+    }).join('');
+  </script>
 
 </body>
 </html>
