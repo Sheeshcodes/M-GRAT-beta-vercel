@@ -1110,7 +1110,7 @@ export default {
     },
     {
       "id": "CM-1-LF",
-      "name": "Condition Monitoring — Low Frequency",
+      "name": "Condition Monitoring Triggers",
       "pillar": "Condition Monitoring & Prediction",
       "level": 1,
       "levelLabel": "Level 1",

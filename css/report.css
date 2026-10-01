@@ -1209,6 +1209,13 @@ cds-menu-item::part(list-item) {
   gap: 8px;
 }
 
+/* Two side-by-side launch buttons (maturity maps row). */
+.bonus-resource__action--row {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
 .bonus-resource__helper {
   margin: 0;
   font-size: 12px;
