@@ -889,9 +889,9 @@
       <div class="hero-inner">
         <div class="hero-content">
           <p class="hero-eyebrow">IBM Maximo Application Suite · Internal Enablement</p>
-          <h1 class="hero-headline">Turn customer uncertainty into a growth plan.</h1>
+          <h1 class="hero-headline">Turn customer uncertainty <span style="color:#7c3df4;font-weight:600;">into a growth plan.</span></h1>
           <p class="hero-body">
-            Maximo customers who have successfully deployed Maximo often stall when expanding into advanced capabilities — APM, Reliability, Work Execution — because neither side has a shared view of current maturity. M-GRAT is a 10–15 minute guided assessment that pinpoints their current stage, uncovers gaps, and creates a clear, personalized roadmap.
+            Use the <strong>Maximo Growth Assessment</strong> to give customers clarity on where they are, confidence in what comes next, and a roadmap to get there.
           </p>
           <div class="hero-pills" aria-label="Intended audience">
             <span class="pill">IBM Sellers &amp; CSEs</span>
@@ -922,7 +922,7 @@
   <div class="metric-strip" aria-label="Key metrics">
     <div class="container">
       <div class="metric-item">
-        <div class="metric-value">8–12 min</div>
+        <div class="metric-value">10–15 min</div>
         <div class="metric-label">Average completion time</div>
       </div>
       <div class="metric-item">
@@ -1088,13 +1088,24 @@
               <p style="margin-top:0.625rem">Any dimension rated <em>Emerging</em> is often the most impactful conversation opener — it signals where a targeted investment would have the greatest lift on the overall score.</p>
             </div>
 
-            <div class="panel-subsection panel-subsection--last">
+            <div class="panel-subsection">
               <p class="panel-subsection-label">Strengths</p>
               <p>Dimensions rated <em>Established</em> are the customer's proof points — capabilities that are already working well and creating value today. Don't overlook them.</p>
               <ul>
                 <li>Use strengths to build credibility and reinforce what good looks like — they validate the investment the customer has already made.</li>
                 <li>Identify which Established dimensions are prerequisites for the next stage of growth. A strong Asset Data foundation, for example, directly enables more advanced APM and condition monitoring capabilities.</li>
                 <li>Frame the conversation around building <em>on</em> their strengths, not just fixing gaps — it makes the roadmap feel achievable rather than daunting.</li>
+              </ul>
+            </div>
+
+            <div class="panel-subsection panel-subsection--last">
+              <p class="panel-subsection-label">Unknowns</p>
+              <p>When a customer answers <em>Unknown</em> to a question, the tool treats that response the same as an unmet milestone — it counts against the score. However, <em>Unknown</em> doesn't always mean <em>absent</em> — it often means the wrong person answered that question.</p>
+              <p>Scan the responses for <em>Unknown</em> answers before the follow-up conversation:</p>
+              <ul>
+                <li>They're a signal that the customer may not have full visibility into their own environment — a second stakeholder (IT, Operations lead, or plant-level manager) may hold the real answer.</li>
+                <li>Use unknowns as conversation starters: <em>"You answered Unknown for inspection data capture — is there someone on the operations side we should pull in to validate that?"</em></li>
+                <li>Treat a cluster of unknowns in a single dimension as a discovery gap, not a confirmed deficiency. The follow-up goal is to replace unknowns with <em>Yes</em> or <em>No</em> answers — either outcome resolves the uncertainty and improves the quality of the roadmap.</li>
               </ul>
             </div>
 
@@ -1149,7 +1160,7 @@
             <p>Before the follow-up call, bring together the results, the journeys context, and the action plan into a clear point of view for the customer.</p>
             <ul>
               <li><strong>Map actions to MAS modules and services.</strong> Use the milestone touchpoints from the Journeys page to tie each recommended action to a specific IBM product or offering.</li>
-              <li><strong>Identify who else to bring in.</strong> If any dimension score is low or a blocker requires technical depth, loop in a CSE or Technical Sales specialist before the call.</li>
+              <li><strong>Identify who else to bring in.</strong> If any dimension score is low, a blocker requires technical depth, or the customer answered <em>Unknown</em> for several questions in a dimension, loop in the right stakeholder before the next call. Unknown answers often point to a gap in who was in the room — not a confirmed gap in capability.</li>
               <li><strong>Use the report as a leave-behind.</strong> The PDF is client-ready with no login required — share it with the executive sponsor or champion as a pre-read for a broader team conversation.</li>
               <li><strong>Set a clear next step.</strong> End the conversation with a defined action: a follow-up workshop, a technical discovery call, or a specific milestone to target together.</li>
             </ul>
@@ -1261,6 +1272,9 @@
       const panelId = trigger.getAttribute('aria-controls');
       const panel = document.getElementById(panelId);
 
+      // Capture the trigger's distance from the top of the viewport before any DOM changes
+      const triggerTop = trigger.getBoundingClientRect().top;
+
       // Close all panels first
       document.querySelectorAll('.accordion-trigger').forEach(function(t) {
         t.setAttribute('aria-expanded', 'false');
@@ -1273,6 +1287,13 @@
       if (!expanded) {
         trigger.setAttribute('aria-expanded', 'true');
         panel.classList.add('open');
+      }
+
+      // Re-anchor the viewport so the clicked trigger stays at the same visual position
+      const newTriggerTop = trigger.getBoundingClientRect().top;
+      const shift = newTriggerTop - triggerTop;
+      if (shift !== 0) {
+        window.scrollBy({ top: shift, behavior: 'instant' });
       }
     }
 
