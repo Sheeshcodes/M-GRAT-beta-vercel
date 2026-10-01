@@ -662,7 +662,7 @@ export default {
                 {
                   "value": "none-of-the-above",
                   "label": "None of the above",
-                  "milestoneId": "CM-3-MVAR"
+                  "milestoneId": null
                 }
               ],
               "unansweredBehavior": "All Unknown",

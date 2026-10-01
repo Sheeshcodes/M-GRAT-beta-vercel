@@ -17,9 +17,9 @@ export default {
       "level": 1,
       "levelLabel": "Level 1",
       "apmStage": 1,
-      "fsmStage": 1,
+      "fsmStage": null,
       "apmStageId": "APM1",
-      "fsmStageId": "FSM1",
+      "fsmStageId": null,
       "description": "A trusted, governed asset registry in Maximo Manage with unique asset records, defined asset and location hierarchies, and standardized asset information. Serves as the single source of truth for critical maintenance assets.",
       "valueStatement": "Enables work order linkage, job plan reuse, and downstream analytics. Without a clean asset register, health scoring and inspection scoping cannot be reliably performed.",
       "imperative": "Establish a governed, duplicate-free asset registry with defined naming conventions and location hierarchies.",
@@ -495,9 +495,9 @@ export default {
       "level": 1,
       "levelLabel": "Level 1",
       "apmStage": null,
-      "fsmStage": 1,
+      "fsmStage": null,
       "apmStageId": null,
-      "fsmStageId": "FSM1",
+      "fsmStageId": null,
       "description": "A repeatable inspection program exists for critical assets. Results captured consistently (paper, spreadsheet, or standalone app) but not yet digitally integrated with Maximo asset records.",
       "valueStatement": "Establishes inspection discipline before digitization. Customers with active programs migrate faster; this milestone credits existing practice.",
       "imperative": "Establish a documented, repeatable inspection route program with standardized frequencies for critical assets.",
@@ -1189,9 +1189,9 @@ export default {
       "pillar": "Condition Monitoring & Prediction",
       "level": 2,
       "levelLabel": "Level 2",
-      "apmStage": 2,
+      "apmStage": null,
       "fsmStage": null,
-      "apmStageId": "APM2",
+      "apmStageId": null,
       "fsmStageId": null,
       "description": "Periodic asset condition data collected via lightweight ingestion mechanisms (EDC, CSV files, REST APIs, MQTT, or historian extracts) and analyzed in Maximo Monitor.",
       "valueStatement": "Enables condition-based insights without full real-time OT/IoT investment. Extends health scoring beyond WO and inspection data.",
@@ -1571,9 +1571,9 @@ export default {
       "pillar": "Reliability Practices",
       "level": 4,
       "levelLabel": "Level 4",
-      "apmStage": 4,
+      "apmStage": null,
       "fsmStage": null,
-      "apmStageId": "APM4",
+      "apmStageId": null,
       "fsmStageId": null,
       "description": "FMEA records updated from operational signals — health degradation patterns, Predict contributing factors, and root-cause-before-failure (RCBF) investigation outcomes. The FMEA transitions from a one-time project artifact to a living document that responds to what the asset is actually doing in operation.",
       "valueStatement": "Reliability knowledge base improves continuously as assets operate. Maintenance strategies get smarter with each investigation cycle.",
@@ -1650,9 +1650,9 @@ export default {
       "level": 1,
       "levelLabel": "Level 1",
       "apmStage": null,
-      "fsmStage": 1,
+      "fsmStage": null,
       "apmStageId": null,
-      "fsmStageId": "FSM1",
+      "fsmStageId": null,
       "description": "Spare parts used for maintenance are identified and tracked somewhere — spreadsheet, ERP, or competitor CMMS. Not yet fully managed in Maximo storeroom applications. Explicitly covers customers migrating from a competitor tool.",
       "valueStatement": "Credits existing parts tracking practice. Customers migrating from competitor tools already have this data — the milestone acknowledges their starting point.",
       "imperative": "Establish an identified, standardized registry of maintenance spare parts, item numbers, and primary stocking locations.",
@@ -2823,7 +2823,7 @@ export default {
       "name": "Digital Maintenance Foundation",
       "description": "Good Asset Management Practices (GAMP) — Know your assets before you can manage them. ISO 14224-aligned asset hierarchy, criticality scoring, maturing work management, mobility enablement, and condition monitoring established.",
       "valueStatement": "This is the foundation everything else is built on. Clean, criticality-scored asset data gives you a single source of truth for work order linkage, failure mode mapping, and future analytics. Structured failure data and reliable work management data become the raw material that FMEA, Reliability Strategies, and health scoring all depend on later — skip this, and every capability above Stage 1 inherits the gap. Mobility closes the paper lag, and condition monitoring gets your team acting on asset signals for the first time, without needing IoT investment yet.",
-      "readinessText": "You have an ISO 14224-aligned asset hierarchy, criticality scoring, maturing work management, mobility, and initial condition monitoring in place.",
+      "readinessText": null,
       "potentialOutcomes": [
         {
           "stat": "10–15%",
@@ -2878,7 +2878,7 @@ export default {
       "name": "APM Foundation",
       "description": "Build the foundational APM data loop — strategy, scores, and condition visibility. Reliability Strategies activated, foundational health scores enabled for critical assets, Monitor exploration with existing data sources begins.",
       "valueStatement": "Maintenance starts being driven by evidence instead of habit. Reliability Strategies tie every work order to a documented failure mode, not just a fixed interval. A foundational health score gives you one number to judge asset condition instead of checking multiple sources separately. And exploring Monitor with data you already have lets you experience real dashboards — a low-risk way to build momentum before committing to full instrumentation.",
-      "readinessText": "Reliability Strategies are activated, foundational health scores are live for critical assets, and Monitor exploration is underway.",
+      "readinessText": null,
       "potentialOutcomes": [
         {
           "stat": "15–20%",
@@ -2937,7 +2937,7 @@ export default {
       "name": "Maintenance Optimisation (CBM+)",
       "description": "Make every maintenance decision evidence-driven. OT/IoT fully integrated, multivariable health scoring live, FMEA operationalised, PM cycles optimised, workforce scheduling risk-driven, AIP exploration begins.",
       "valueStatement": "This is where Maximo stops just running maintenance and starts predicting it. FMEA gives every PM strategy a documented failure-mode rationale instead of an OEM default. Full OT/IoT integration and multivariable health scoring eliminate the blind spots between PM windows, replacing calendar guesses with real-time visibility. PM intervals, technician scheduling, capital planning, and inventory all start reacting to that visibility instead of fixed assumptions — the whole operation becomes condition-driven, not just individual capabilities.",
-      "readinessText": "OT/IoT is fully integrated, multivariable health scoring is live, FMEA is operationalised, and PM cycles are condition-optimised.",
+      "readinessText": null,
       "potentialOutcomes": [
         {
           "stat": "20–30%",
@@ -2996,7 +2996,7 @@ export default {
       "name": "Prescriptive Reliability",
       "description": "Know when assets will fail before they do. Quantify risk, prescribe action, prevent failure. Risk Scenario Engine (RSE) live, RCBF standard practice, AIP Foundation active connecting failure evidence to capital planning.",
       "valueStatement": "Maintenance shifts from reactive to prescriptive. RSE doesn't just score current condition — it simulates how degradation will evolve and tells your team what to do about it: inspect, defer, advance the PM, or adjust the strategy. RCBF turns every investigation into a model improvement, so the system gets smarter with each intervention instead of repeating the same fire drills. And capital planning stops assuming and starts reflecting real, continuously-updated asset condition — reducing both premature replacement and unexpected failure-driven spend.",
-      "readinessText": "The Risk Scenario Engine is live, RCBF is standard practice, and AIP Foundation connects failure evidence to capital planning.",
+      "readinessText": null,
       "potentialOutcomes": [
         {
           "stat": "Up to 47%",
@@ -3055,7 +3055,7 @@ export default {
       "name": "Reliability Enterprise",
       "description": "Embed reliability into every asset decision — forever. FMEA governance continuous, RSE models maturing from evidence, AIP fully operational, lean inventory, design-for-reliability loop closed.",
       "valueStatement": "Reliability becomes a compounding, self-improving system instead of a set of one-time projects. FMEA is reviewed on a continuous cycle, refined by real RSE evidence rather than reopened once and forgotten. Inventory strategy shifts from stocking against fear to stocking against actual predicted risk. And the loop closes all the way back to procurement — every failure investigated in operations informs the next asset you buy, so reliability gets designed in before an asset ever enters service, not fixed after the fact. This is the difference between managing failures and preventing them.",
-      "readinessText": "FMEA governance is continuous, RSE models are maturing from evidence, AIP is fully operational, lean inventory is active, and the design-for-reliability loop is closed.",
+      "readinessText": null,
       "potentialOutcomes": [
         {
           "stat": "10–15%",
@@ -3116,7 +3116,7 @@ export default {
       "name": "Reactive Execution",
       "description": "The organization operates in a reactive mode: work is logged but not systematically planned or dispatched. The data foundation for FSM is being established — labor records, craft classifications, calendar/shift definitions, and basic job plan templates. Scheduled dates on work orders and the ownership-vs-assignment distinction are the defining Level 1 signals.",
       "valueStatement": "Establishes baseline scheduling discipline and digital labor records — moving away from unstructured verbal dispatch to formal scheduled dates and distinct work assignments in Maximo Manage.",
-      "readinessText": "Labour records, craft classifications, calendar/shift definitions, and basic job plan templates are established. Work orders carry scheduled dates.",
+      "readinessText": null,
       "potentialOutcomes": [
         {
           "stat": "Elimination",
@@ -3160,7 +3160,7 @@ export default {
       "name": "Coordinated Operations",
       "description": "Work orders carry scheduled dates and a forward planning horizon is established (weekly to monthly). A centralized scheduler or dispatcher role is active and using Assignment Manager. Workforce availability data is enriched with exceptions. Job plans are enriched with materials, tools, and classifications. HSE, Inspections, and Inventory management enter at this stage as parallel capability layers.",
       "valueStatement": "Centralizes schedule coordination and field dispatch — providing single-pane visibility across labor and crew capacity, extending forward planning horizons, and deploying mobile work execution to eliminate paper delays.",
-      "readinessText": "Work orders carry scheduled dates and a forward planning horizon is established (weekly to monthly). A centralized scheduler or dispatcher role is active in Assignment Manager, workforce availability is enriched with exceptions, and job plans gain materials, tools, and classifications. HSE, Inspections, and Inventory enter as parallel capability layers.",
+      "readinessText": null,
       "potentialOutcomes": [
         {
           "stat": "10–15%",
@@ -3210,7 +3210,7 @@ export default {
       "name": "Structured Scheduling",
       "description": "Forward planning extends to rolling windows with predecessor and hierarchy constraints. System-suggested dispatch based on effective availability is active. Job plans are scoped to asset classes, include hierarchies and predecessors, and are linked to asset data. Inspection results feed condition data and inventory is planned against work requirements.",
       "valueStatement": "Optimizes crew productivity and work preparation — enriching job plans with planned materials and tool requirements, sequencing work by dependencies, and routing technicians by geographic proximity.",
-      "readinessText": "Forward planning extends to rolling windows with predecessor and hierarchy constraints. System-suggested dispatch based on effective availability is active. Job plans are scoped to asset classes, include hierarchies and predecessors, and link to asset data. Inspection results feed condition data and inventory is planned against work requirements.",
+      "readinessText": null,
       "potentialOutcomes": [
         {
           "stat": "15–25%",
@@ -3265,7 +3265,7 @@ export default {
       "name": "Intelligent Field Coordination",
       "description": "The Optimizer runs automatically via cron-based scheduling. Assignments are system-generated based on constraints, skills, and optimized availability. Planning, Scheduling, and Dispatch dashboards are live with cost, resource, and compliance views. Condition-based inspection and optimized inventory management are active.",
       "valueStatement": "Automates schedule optimization and exception handling — using constraint-based algorithms to match technicians by skill and location, dynamically inject emergency break-in work, and integrate storeroom inventory at the point of work.",
-      "readinessText": "The Optimizer runs automatically via cron-based scheduling. Assignments are system-generated from constraints, skills, and optimized availability. Planning, Scheduling, and Dispatch dashboards are live with cost, resource, and compliance views. Condition-based inspection and optimized inventory management are active.",
+      "readinessText": null,
       "potentialOutcomes": [
         {
           "stat": "≥80%",
@@ -3325,7 +3325,7 @@ export default {
       "name": "Optimized Field Operations",
       "description": "The Optimizer operates fully autonomously for routine scheduling and dispatch. Humans are approvers and exception handlers only. Strategic inventory, AIP-connected job plans, and GenAI-assisted work execution complete the full FSM maturity picture.",
       "valueStatement": "Achieves autonomous, end-to-end field workforce execution — leveraging automated cron-based optimization, GenAI point-of-work troubleshooting, and real-time field actuals to drive continuous schedule refinement.",
-      "readinessText": "The Optimizer operates fully autonomously for routine scheduling and dispatch. Humans are approvers and exception handlers only. Strategic inventory, AIP-connected job plans, and GenAI-assisted work execution complete the full FSM maturity picture.",
+      "readinessText": null,
       "potentialOutcomes": [
         {
           "stat": "Up to 26%",
