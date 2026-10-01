@@ -4711,7 +4711,8 @@ html, body { overflow-x: clip; }
   .stage-card__compact,
   .bonus-resource__action cds-button,
   .bonus-resource__action:not(:has(.bonus-resource__helper)),
-  .expansion-card > div:last-child,
+  .expansion-card__actions,
+  .expansion-card > div:last-child:has(cds-button),
   .accelerate-card cds-button,
   #act-improve:not(.is-useful),
   #act-improve .feedback__text,
@@ -4929,7 +4930,9 @@ html, body { overflow-x: clip; }
   .established-sub-section,
   .stage-card,
   .expansion-summary,
+  .expansion-value,
   .potential-outcomes,
+  .expansion-products,
   .action-hero-card,
   .action-details-card,
   .action-details-section,
@@ -4966,9 +4969,18 @@ html, body { overflow-x: clip; }
   }
 
   .expansion-summary {
-    display: flex;
-    flex-direction: column;
-    gap: 28px;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 24px;
+    width: 100%;
+  }
+
+  .outcome-item__stat {
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    -webkit-text-fill-color: initial !important;
+    background-clip: unset !important;
+    color: #8a3ffc !important;
   }
 
   /* Boxes that run across pages lose their fill and outline. A filled or
@@ -13575,7 +13587,13 @@ function renderExpansionCard(containerId, track, trackResult) {
       <div class="expansion-products__tags">${tagsHtml}</div>
     </div>
     </div>
-`;
+
+    <div class="expansion-card__actions">
+      <cds-button kind="tertiary" size="lg">
+        Talk to a seller
+        ${ICON_USER_SERVICE}
+      </cds-button>
+    </div>`;
 
   const railEl = el.querySelector(".stage-rail");
   // Use hover mode on desktop, tap/button mode on mobile
@@ -14367,20 +14385,6 @@ function renderResponsesDoc(stored, contact, growthAppetite) {
       return label + questions;
     }).join("");
 
-    // Investment Readiness summary panel — appended to the follow-up page only,
-    // when at least one Growth Appetite question was answered.
-    const investmentReadiness = (page.followUp && growthAppetite && growthAppetite.answered > 0)
-      ? `<div class="responses-doc__investment-readiness">
-          <h3 class="report-section__sub-heading responses-doc__section">Your investment readiness</h3>
-          <p class="responses-doc__ir-intro">Based on your answers, here is where your organisation stands on readiness to move forward.</p>
-          ${growthAppetite.signals.map(s => `
-            <div class="responses-doc__ir-item">
-              <p class="responses-doc__ir-label">${escHtml(s.label.split(":")[0])}</p>
-              <p class="responses-doc__ir-text">${escHtml(s.interpretation)}</p>
-            </div>`).join("")}
-        </div>`
-      : "";
-
     return `
       <section class="responses-doc__page">
         <div class="report-eyebrow-row">
@@ -14389,7 +14393,6 @@ function renderResponsesDoc(stored, contact, growthAppetite) {
         </div>
         <h2 class="report-section__heading responses-doc__heading">${escHtml(page.title)}</h2>
         ${sections}
-        ${investmentReadiness}
       </section>`;
   }).join("");
 

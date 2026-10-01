@@ -2125,7 +2125,8 @@ html, body { overflow-x: clip; }
   .stage-card__compact,
   .bonus-resource__action cds-button,
   .bonus-resource__action:not(:has(.bonus-resource__helper)),
-  .expansion-card > div:last-child,
+  .expansion-card__actions,
+  .expansion-card > div:last-child:has(cds-button),
   .accelerate-card cds-button,
   #act-improve:not(.is-answered),
   #act-improve .feedback__text,
@@ -2328,8 +2329,13 @@ html, body { overflow-x: clip; }
   .expansion-intro,
   .established-sub-section,
   .stage-card,
+  .expansion-summary,
+  .expansion-value,
   .potential-outcomes,
+  .expansion-products,
   .action-hero-card,
+  .action-details-card,
+  .action-details-section,
   .bonus-block,
   .bonus-resource,
   .accelerate-card,
@@ -2363,9 +2369,18 @@ html, body { overflow-x: clip; }
   }
 
   .expansion-summary {
-    display: flex;
-    flex-direction: column;
-    gap: 28px;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 24px;
+    width: 100%;
+  }
+
+  .outcome-item__stat {
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    -webkit-text-fill-color: initial !important;
+    background-clip: unset !important;
+    color: #8a3ffc !important;
   }
 
   /* Boxes that run across pages lose their fill and outline. A filled or

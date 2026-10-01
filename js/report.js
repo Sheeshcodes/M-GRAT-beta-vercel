@@ -610,7 +610,7 @@ function renderExpansionCard(containerId, track, trackResult) {
     </div>
     </div>
 
-    <div>
+    <div class="expansion-card__actions">
       <cds-button kind="tertiary" size="lg">
         Talk to a seller
         ${ICON_USER_SERVICE}
@@ -1423,20 +1423,6 @@ function renderResponsesDoc(stored, contact, growthAppetite) {
       return label + questions;
     }).join("");
 
-    // Investment Readiness summary panel — appended to the follow-up page only,
-    // when at least one Growth Appetite question was answered.
-    const investmentReadiness = (page.followUp && growthAppetite && growthAppetite.answered > 0)
-      ? `<div class="responses-doc__investment-readiness">
-          <h3 class="report-section__sub-heading responses-doc__section">Your investment readiness</h3>
-          <p class="responses-doc__ir-intro">Based on your answers, here is where your organisation stands on readiness to move forward.</p>
-          ${growthAppetite.signals.map(s => `
-            <div class="responses-doc__ir-item">
-              <p class="responses-doc__ir-label">${escHtml(s.label.split(":")[0])}</p>
-              <p class="responses-doc__ir-text">${escHtml(s.interpretation)}</p>
-            </div>`).join("")}
-        </div>`
-      : "";
-
     return `
       <section class="responses-doc__page">
         <div class="report-eyebrow-row">
@@ -1445,7 +1431,6 @@ function renderResponsesDoc(stored, contact, growthAppetite) {
         </div>
         <h2 class="report-section__heading responses-doc__heading">${escHtml(page.title)}</h2>
         ${sections}
-        ${investmentReadiness}
       </section>`;
   }).join("");
 
