@@ -188,6 +188,19 @@ const PICTOGRAM_ASSESSMENT = `<img src="assets/assessment-used.svg" width="32" h
 
 const PICTOGRAM_QA = `<img src="assets/question--and--answer.svg" width="32" height="32" aria-hidden="true" />`;
 
+const PICTOGRAM_TREE_MAP = `
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <g clip-path="url(#clip0_flexibility_js)">
+      <rect width="32" height="32" fill="white" fill-opacity="0.01"/>
+      <path d="M19.3612 30.9992H18.6412V15.9992C18.6412 14.6982 19.7002 13.6392 21.0012 13.6392H30.1322L27.7462 11.2532L28.2562 10.7442L31.5102 13.9992L28.2562 17.2542L27.7462 16.7452L30.1322 14.3592H21.0012C20.0972 14.3592 19.3612 15.0952 19.3612 15.9992V30.9992ZM16.3612 30.9992H15.6412V1.86823L13.2552 4.25323L12.7462 3.74423L16.0012 0.490234L19.2562 3.74523L18.7462 4.25423L16.3612 1.86823V30.9992ZM13.3612 30.9992H12.6412V20.9992C12.6412 20.0952 11.9052 19.3592 11.0012 19.3592H1.87019L4.25519 21.7442L3.74619 22.2542L0.492188 18.9992L3.74719 15.7452L4.25619 16.2542L1.87019 18.6392H11.0012C12.3022 18.6392 13.3612 19.6982 13.3612 20.9992V30.9992Z" fill="white"/>
+    </g>
+    <defs>
+      <clipPath id="clip0_flexibility_js">
+        <rect width="32" height="32" fill="white"/>
+      </clipPath>
+    </defs>
+  </svg>`;
+
 const PICTOGRAM_SUPERVISOR = `
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="currentColor" aria-hidden="true">
     <path d="M16 4a5 5 0 110 10A5 5 0 0116 4zm0 2a3 3 0 100 6 3 3 0 000-6z"/>
@@ -757,6 +770,28 @@ function renderActionPlan(actionPlan) {
                 <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4z"/><path d="M26 14l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
               </cds-button>
               <p class="bonus-resource__helper">Coming soon</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bonus-divider"></div>
+
+      <div class="bonus-resource">
+        <div class="bonus-resource__inner">
+          <div class="bonus-resource__icon">${PICTOGRAM_TREE_MAP}</div>
+          <div class="bonus-resource__body">
+            <p class="bonus-resource__title">Asset Performance Management &amp; Field Service Management maturity maps</p>
+            <p class="bonus-resource__desc">Explore the journey from foundational asset management and coordinated field operations to predictive reliability, intelligent scheduling, and fully optimized enterprise performance.</p>
+            <div class="bonus-resource__action bonus-resource__action--row">
+              <cds-button kind="tertiary" size="lg" href="docs/apm-maturity-map.html" target="_blank" rel="noopener noreferrer">
+                APM Maturity map
+                <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 28H6a2 2 0 01-2-2V6a2 2 0 012-2h10v2H6v20h20V16h2v10a2 2 0 01-2 2z"/><path d="M21 2v2h5.59L18 12.59 19.41 14 28 5.41V11h2V2z"/></svg>
+              </cds-button>
+              <cds-button kind="tertiary" size="lg" href="docs/fsm-maturity-map.html" target="_blank" rel="noopener noreferrer">
+                FSM Maturity map
+                <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 28H6a2 2 0 01-2-2V6a2 2 0 012-2h10v2H6v20h20V16h2v10a2 2 0 01-2 2z"/><path d="M21 2v2h5.59L18 12.59 19.41 14 28 5.41V11h2V2z"/></svg>
+              </cds-button>
             </div>
           </div>
         </div>
