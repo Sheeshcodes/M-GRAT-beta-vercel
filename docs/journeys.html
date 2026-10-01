@@ -6,13 +6,13 @@
   <title>Maturity Journeys · M-GRAT</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Serif:ital,wght@0,300;1,300&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+Condensed:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Serif:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 16px;
+      font-size: 14px;
       line-height: 1.5;
       color: #161616;
       background: #f4f4f4;
@@ -85,72 +85,302 @@
     }
     .site-nav a.nav-cta:hover { background: rgba(255,255,255,0.22); }
 
-    /* ── Main ─────────────────────────────────────────────── */
-    main {
-      flex: 1;
+    /* ── Map Header / Hero ────────────────────────────────── */
+    .map-header {
+      background: #d0e2ff;
+      padding: 48px 0;
+      position: relative;
+      border-bottom: 1px solid #a8c0ff;
+    }
+    .map-header__inner-container {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 5rem 1rem;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 32px;
     }
-    .coming-soon {
-      max-width: 560px;
-      width: 100%;
-      text-align: center;
+    .map-header__inner {
+      max-width: 640px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
-    .coming-soon-eyebrow {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.6875rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      color: #0f62fe;
-      text-transform: uppercase;
-      margin-bottom: 1.5rem;
-    }
-    .coming-soon-icon {
-      width: 64px;
-      height: 64px;
-      margin: 0 auto 2rem;
-      opacity: 0.35;
-    }
-    .coming-soon-title {
-      font-family: 'IBM Plex Serif', serif;
-      font-size: 2.25rem;
-      font-weight: 300;
-      color: #161616;
-      line-height: 1.2;
-      margin-bottom: 1rem;
-    }
-    .coming-soon-body {
-      font-size: 0.9375rem;
-      color: #525252;
-      line-height: 1.7;
-      margin-bottom: 2.5rem;
-    }
-    .coming-soon-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
+    .map-header__eyebrow {
       font-family: 'IBM Plex Mono', monospace;
       font-size: 0.75rem;
       font-weight: 600;
-      color: #0043ce;
-      background: #edf5ff;
-      border: 1px solid #d0e2ff;
-      padding: 0.375rem 0.875rem;
-      margin-bottom: 2.5rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #0f62fe;
     }
-    .coming-soon-tag svg { flex-shrink: 0; }
-    .coming-soon-back {
+    .map-header__title {
+      font-family: 'IBM Plex Serif', serif;
+      font-size: 36px;
+      font-weight: 300;
+      line-height: 1.15;
+      color: #161616;
+    }
+    .map-header__subtitle {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 400;
+      line-height: 22px;
+      color: #393939;
+    }
+
+    /* ── Download button ──────────────────────────────────── */
+    .btn-download {
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: #0f62fe;
-      transition: color 0.1s;
+      gap: 8px;
+      height: 40px;
+      padding: 0 16px;
+      background: #0f62fe;
+      color: #fff;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 70ms;
+      flex-shrink: 0;
     }
-    .coming-soon-back:hover { color: #0043ce; text-decoration: underline; }
+    .btn-download:hover { background: #0353e9; }
+    .btn-download svg { flex-shrink: 0; }
+
+    /* ── Tab Switcher ─────────────────────────────────────── */
+    .tabs-container {
+      background: #ffffff;
+      border-bottom: 1px solid #e0e0e0;
+      position: sticky;
+      top: 48px;
+      z-index: 100;
+    }
+    .cds-tabs {
+      display: flex;
+      gap: 0;
+    }
+    .cds-tab-btn {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: #525252;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      padding: 0 1rem;
+      height: 48px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+      transition: color 70ms, border-color 70ms, background-color 70ms;
+    }
+    .cds-tab-btn:hover {
+      color: #161616;
+      border-bottom-color: #8d8d8d;
+      background-color: #f4f4f4;
+    }
+    .cds-tab-btn:focus {
+      outline: 2px solid #0f62fe;
+      outline-offset: -2px;
+    }
+    .cds-tab-btn.active {
+      color: #161616;
+      font-weight: 600;
+      border-bottom-color: #0f62fe;
+    }
+
+    /* ── Main Content ─────────────────────────────────────── */
+    .journeys-main-content {
+      flex: 1;
+      padding: 16px 0 64px 0;
+    }
+
+    /* ── Stage grid ───────────────────────────────────────── */
+    .map-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    /* ── Stage card ───────────────────────────────────────── */
+    .stage-card {
+      background: #fff;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      border: 1px solid #e0e0e0;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .stage-card__body {
+      flex: 1;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Stage label (e.g. STAGE 1 → STAGE 2) */
+    .stage-label {
+      font-family: 'IBM Plex Sans Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 14px;
+      letter-spacing: 0.5px;
+      color: #8d8d8d;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+    .stage-label__target { color: #0f62fe; }
+    .stage-label__target--purple { color: #8a3ffc; }
+
+    /* Stage name */
+    .stage-name {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      line-height: 24px;
+      color: #161616;
+      margin-bottom: 12px;
+    }
+
+    /* Stage quote */
+    .stage-quote {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 13.5px;
+      font-style: italic;
+      line-height: 18px;
+      color: #525252;
+      margin-bottom: 20px;
+    }
+
+    /* Ready box */
+    .stage-ready {
+      background: #f4f4f4;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border-left: 3px solid #0f62fe;
+    }
+    .stage-ready.stage-ready--purple {
+      border-left-color: #8a3ffc;
+    }
+    .stage-ready__header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .stage-ready__label {
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 14px;
+      letter-spacing: 0.32px;
+      color: #161616;
+      text-transform: uppercase;
+    }
+    .stage-ready__text {
+      font-size: 13px;
+      font-weight: 400;
+      line-height: 18px;
+      color: #161616;
+    }
+
+    /* Section labels (WHAT YOU GAIN / KEY MOVES) */
+    .stage-section-label {
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 14px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #525252;
+      margin-bottom: 12px;
+      border-top: 1px solid #f4f4f4;
+      padding-top: 16px;
+    }
+
+    /* Bullet list */
+    .stage-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .stage-list:last-child {
+      margin-bottom: 0;
+    }
+    .stage-list__item {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .stage-list__bullet {
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 18px;
+      color: #0f62fe;
+      flex-shrink: 0;
+    }
+    .stage-list__bullet--purple { color: #8a3ffc; }
+    .stage-list__arrow {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 18px;
+      color: #0f62fe;
+      flex-shrink: 0;
+    }
+    .stage-list__arrow--purple { color: #8a3ffc; }
+    .stage-list__text {
+      font-size: 13px;
+      font-weight: 400;
+      line-height: 18px;
+      color: #161616;
+    }
+    .stage-list__text strong { font-weight: 600; }
+
+    /* ── Metric footer ────────────────────────────────────── */
+    .stage-card__metrics {
+      border-top: 1px solid #e0e0e0;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      background: #fafafa;
+    }
+    .metric-item {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      border-right: 1px solid #e0e0e0;
+    }
+    .metric-item:last-child { border-right: none; }
+    .metric-item__dots {
+      display: flex;
+      gap: 3px;
+      align-items: center;
+    }
+    .metric-dot {
+      width: 10px;
+      height: 3px;
+      border-radius: 1px;
+      background: #e0e0e0;
+    }
+    .metric-dot--blue { background: #0f62fe; }
+    .metric-dot--purple { background: #8a3ffc; }
+    .metric-item__label {
+      font-size: 10.5px;
+      font-weight: 400;
+      line-height: 13px;
+      color: #525252;
+    }
+
+    /* Arrow icons inline SVG */
+    .arrow-up-icon, .arrow-down-icon {
+      display: block;
+      width: 14px;
+      height: 14px;
+    }
 
     /* ── Footer ───────────────────────────────────────────── */
     .site-footer {
@@ -177,6 +407,66 @@
       padding: 0.2rem 0.6rem;
       border: 1px solid #393939;
     }
+
+    /* ── Print styles ─────────────────────────────────────── */
+    @page {
+      size: auto;
+      margin: 0;
+    }
+    @media print {
+      html, body {
+        width: 100%;
+        height: auto;
+        overflow: visible;
+        background: #fff;
+      }
+      * {
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+      .site-header, .tabs-container, .site-footer, .btn-download {
+        display: none !important;
+      }
+      .map-header {
+        padding: 32px 0;
+        background: #d0e2ff !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        border-bottom: none;
+      }
+      .map-header__inner {
+        max-width: 100%;
+      }
+      .map-grid {
+        padding: 16px 0;
+        gap: 8px;
+        grid-template-columns: repeat(4, 1fr) !important;
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+      .stage-card {
+        box-shadow: none;
+        border: 1px solid #8d8d8d;
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* ── Responsive breakpoints ───────────────────────────── */
+    @media (max-width: 1056px) {
+      .map-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+      .map-grid { grid-template-columns: 1fr; }
+      .map-header__inner-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+      .map-header__title { font-size: 28px; }
+    }
   </style>
 </head>
 <body>
@@ -198,24 +488,39 @@
     </div>
   </header>
 
-  <main>
-    <div class="coming-soon">
-      <p class="coming-soon-eyebrow">Maturity Journeys</p>
-      <img src="../assets/Pictogram.svg" alt="" class="coming-soon-icon" aria-hidden="true" />
-      <h1 class="coming-soon-title">This page is coming soon.</h1>
-      <p class="coming-soon-body">
-      The Maturity Journeys guide shows every stage and milestone across the Field Service Management and Asset Performance Management tracks — including stage narratives, potential outcomes, MAS product mapping, and the full milestone register that powers the M-GRAT assessment.
-    </p>
-      <div>
-        <span class="coming-soon-tag">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 2a14 14 0 1 0 14 14A14 14 0 0 0 16 2zm0 26a12 12 0 1 1 12-12 12 12 0 0 1-12 12z"/><path d="M20.59 22L15 16.41V7h2v8.58l5 5.01L20.59 22z"/></svg>
-          In development
-        </span>
+  <header class="map-header">
+    <div class="container map-header__inner-container">
+      <div class="map-header__inner">
+        <p class="map-header__eyebrow">Maturity Journeys</p>
+        <h1 class="map-header__title" id="page-title">Plan your next move</h1>
+        <p class="map-header__subtitle" id="page-subtitle">Assess where field operations stand today and advance toward autonomous, self-optimizing field service.</p>
       </div>
-      <a href="index.html" class="coming-soon-back">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M14 26L4 16 14 6l1.4 1.4L6.8 16l8.6 8.6z"/><path d="M6 15h22v2H6z"/></svg>
-        Back to Overview
-      </a>
+      <button class="btn-download" onclick="window.print()">
+        Download PDF
+        <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true">
+          <path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4z"/>
+          <path d="M26 14l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="tabs-container">
+    <div class="container">
+      <div class="cds-tabs" role="tablist">
+        <button class="cds-tab-btn active" id="btn-fsm" role="tab" aria-selected="true" onclick="switchTab('fsm')">
+          Field Service Management (FSM)
+        </button>
+        <button class="cds-tab-btn" id="btn-apm" role="tab" aria-selected="false" onclick="switchTab('apm')">
+          Asset Performance Management (APM)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <main class="journeys-main-content">
+    <div class="container">
+      <div class="map-grid" id="map-grid"></div>
     </div>
   </main>
 
@@ -227,6 +532,192 @@
       </div>
     </div>
   </footer>
+
+  <script>
+    const JOURNEY = {"apm":[{"id":"APM1","stage":1,"name":"Digital Maintenance Foundation","description":"Good Asset Management Practices (GAMP) — Know your assets before you can manage them. ISO 14224-aligned asset hierarchy, criticality scoring, maturing work management, mobility enablement, and condition monitoring established.","valueStatement":"This is the foundation everything else is built on. Clean, criticality-scored asset data gives you a single source of truth for work order linkage, failure mode mapping, and future analytics. Structured failure data and reliable work management data become the raw material that FMEA, Reliability Strategies, and health scoring all depend on later — skip this, and every capability above Stage 1 inherits the gap. Mobility closes the paper lag, and condition monitoring gets your team acting on asset signals for the first time, without needing IoT investment yet.","readinessText":"You have an ISO 14224-aligned asset hierarchy, criticality scoring, maturing work management, mobility, and initial condition monitoring in place.","potentialOutcomes":[{"stat":"10–15%","label":"increase in technician productivity via standardized job plans"},{"stat":"Accurate","label":"asset hierarchy and criticality rankings across maintainable assets"},{"stat":"Standardized","label":"failure code capture (Problem-Cause-Remedy) on 100% of closed work orders"}],"keyMoves":[],"products":[{"name":"Maximo Manage","status":"Strong","active":true},{"name":"Health","status":"Not in use","active":false},{"name":"Monitor","status":"Not in use","active":false},{"name":"Reliability Strategies","status":"Not in use","active":false},{"name":"Predict","status":"Not in use","active":false},{"name":"AIP","status":"Not in use","active":false}]},{"id":"APM2","stage":2,"name":"APM Foundation","description":"Build the foundational APM data loop — strategy, scores, and condition visibility. Reliability Strategies activated, foundational health scores enabled for critical assets, Monitor exploration with existing data sources begins.","valueStatement":"Maintenance starts being driven by evidence instead of habit. Reliability Strategies tie every work order to a documented failure mode, not just a fixed interval. A foundational health score gives you one number to judge asset condition instead of checking multiple sources separately. And exploring Monitor with data you already have lets you experience real dashboards — a low-risk way to build momentum before committing to full instrumentation.","readinessText":"Reliability Strategies are activated, foundational health scores are live for critical assets, and Monitor exploration is underway.","potentialOutcomes":[{"stat":"15–20%","label":"reduction in unplanned downtime for critical pilot assets"},{"stat":"Single","label":"objective health score view across critical asset classes in Maximo Health"},{"stat":"Elimination","label":"of calendar-only guesswork through lightweight condition telemetry"}],"keyMoves":["Activate Reliability Strategies to tie work orders to failure modes.","Enable foundational health scores for your critical assets.","Begin Monitor exploration using your existing data sources."],"products":[{"name":"Maximo Manage","status":"Strong","active":true},{"name":"Health","status":"Low/Exploring","active":false},{"name":"Monitor","status":"Low/Exploring","active":false},{"name":"Reliability Strategies","status":"Low/Exploring","active":false},{"name":"Predict","status":"Not in use","active":false},{"name":"AIP","status":"Not in use","active":false}]},{"id":"APM3","stage":3,"name":"Maintenance Optimisation (CBM+)","description":"Make every maintenance decision evidence-driven. OT/IoT fully integrated, multivariable health scoring live, FMEA operationalised, PM cycles optimised, workforce scheduling risk-driven, AIP exploration begins.","valueStatement":"This is where Maximo stops just running maintenance and starts predicting it. FMEA gives every PM strategy a documented failure-mode rationale instead of an OEM default. Full OT/IoT integration and multivariable health scoring eliminate the blind spots between PM windows, replacing calendar guesses with real-time visibility. PM intervals, technician scheduling, capital planning, and inventory all start reacting to that visibility instead of fixed assumptions — the whole operation becomes condition-driven, not just individual capabilities.","readinessText":"OT/IoT is fully integrated, multivariable health scoring is live, FMEA is operationalised, and PM cycles are condition-optimised.","potentialOutcomes":[{"stat":"20–30%","label":"reduction in unnecessary preventive maintenance labor and parts spend"},{"stat":"Real-time","label":"OT/IoT telemetry ingestion in Maximo Monitor mapped to health factors"},{"stat":"Dynamic","label":"PM frequency adjustments driven by asset condition and operating context"}],"keyMoves":["Integrate OT/IoT and bring multivariable health scoring live.","Operationalise FMEA and optimise PM cycles with condition evidence.","Make workforce scheduling risk-driven and begin AIP exploration."],"products":[{"name":"Maximo Manage","status":"Strong","active":true},{"name":"Health","status":"Medium→Strong","active":true},{"name":"Monitor","status":"Medium","active":true},{"name":"Reliability Strategies","status":"Medium+","active":true},{"name":"Predict","status":"Not in use","active":false},{"name":"AIP","status":"Not in use","active":false}]},{"id":"APM4","stage":4,"name":"Prescriptive Reliability","description":"Know when assets will fail before they do. Quantify risk, prescribe action, prevent failure. Risk Scenario Engine (RSE) live, RCBF standard practice, AIP Foundation active connecting failure evidence to capital planning.","valueStatement":"Maintenance shifts from reactive to prescriptive. RSE doesn't just score current condition — it simulates how degradation will evolve and tells your team what to do about it: inspect, defer, advance the PM, or adjust the strategy. RCBF turns every investigation into a model improvement, so the system gets smarter with each intervention instead of repeating the same fire drills. And capital planning stops assuming and starts reflecting real, continuously-updated asset condition — reducing both premature replacement and unexpected failure-driven spend.","readinessText":"The Risk Scenario Engine is live, RCBF is standard practice, and AIP Foundation connects failure evidence to capital planning.","potentialOutcomes":[{"stat":"Up to 47%","label":"reduction in unplanned downtime via early failure prediction"},{"stat":"10–20%","label":"reduction in maintenance overtime and emergency repair costs"},{"stat":"Continuous","label":"failure probability scoring and automated anomaly detection in Maximo Predict"}],"keyMoves":["Bring the Risk Scenario Engine (RSE) live to simulate degradation.","Make root-cause-before-failure (RCBF) standard practice.","Connect failure evidence to capital planning with AIP Foundation."],"products":[{"name":"Maximo Manage","status":"Strong","active":true},{"name":"Health","status":"Strong","active":true},{"name":"Monitor","status":"Strong","active":true},{"name":"Reliability Strategies","status":"Strong","active":true},{"name":"Predict","status":"Medium→Strong","active":true},{"name":"AIP","status":"Low/Exploring","active":false}]},{"id":"APM5","stage":5,"name":"Reliability Enterprise","description":"Embed reliability into every asset decision — forever. FMEA governance continuous, RSE models maturing from evidence, AIP fully operational, lean inventory, design-for-reliability loop closed.","valueStatement":"Reliability becomes a compounding, self-improving system instead of a set of one-time projects. FMEA is reviewed on a continuous cycle, refined by real RSE evidence rather than reopened once and forgotten. Inventory strategy shifts from stocking against fear to stocking against actual predicted risk. And the loop closes all the way back to procurement — every failure investigated in operations informs the next asset you buy, so reliability gets designed in before an asset ever enters service, not fixed after the fact. This is the difference between managing failures and preventing them.","readinessText":"FMEA governance is continuous, RSE models are maturing from evidence, AIP is fully operational, lean inventory is active, and the design-for-reliability loop is closed.","potentialOutcomes":[{"stat":"10–15%","label":"extension in asset economic lifespan through evidence-based lifecycle planning"},{"stat":"8–15%","label":"optimization in MRO spare parts inventory holding costs"},{"stat":"Closed-loop","label":"operational learning with GenAI prescriptive guidance at the point of work"}],"keyMoves":["Run continuous FMEA governance refined by RSE evidence.","Make AIP fully operational and shift to lean, risk-based inventory.","Close the design-for-reliability loop back to procurement."],"products":[{"name":"Maximo Manage","status":"Strong","active":true},{"name":"Health","status":"Strong","active":true},{"name":"Monitor","status":"Strong","active":true},{"name":"Reliability Strategies","status":"Strong","active":true},{"name":"Predict","status":"Strong","active":true},{"name":"AIP","status":"Strong","active":true}]}],"fsm":[{"id":"FSM1","stage":1,"name":"Reactive Execution","description":"The organization operates in a reactive mode: work is logged but not systematically planned or dispatched. The data foundation for FSM is being established — labor records, craft classifications, calendar/shift definitions, and basic job plan templates. Scheduled dates on work orders and the ownership-vs-assignment distinction are the defining Level 1 signals.","valueStatement":"Establishes baseline scheduling discipline and digital labor records — moving away from unstructured verbal dispatch to formal scheduled dates and distinct work assignments in Maximo Manage.","readinessText":"Labour records, craft classifications, calendar/shift definitions, and basic job plan templates are established. Work orders carry scheduled dates.","potentialOutcomes":[{"stat":"Elimination","label":"of lost or unassigned work orders through formal Assignment records"},{"stat":"Accurate","label":"baseline capture of technician craft, shift, and calendar availability"},{"stat":"Baseline","label":"tracking of work order scheduled start and finish targets"}],"keyMoves":["Establish formal Assignment records for all active work orders.","Define technician craft, shift, and calendar records.","Ensure all active work orders carry scheduled start and finish dates."],"products":[{"name":"Maximo Manage","status":"Core","active":true},{"name":"Maximo Mobile","status":"Entry","active":false},{"name":"Spatial","status":"Optional","active":false}]},{"id":"FSM2","stage":2,"name":"Coordinated Operations","description":"Work orders carry scheduled dates and a forward planning horizon is established (weekly to monthly). A centralized scheduler or dispatcher role is active and using Assignment Manager. Workforce availability data is enriched with exceptions. Job plans are enriched with materials, tools, and classifications. HSE, Inspections, and Inventory management enter at this stage as parallel capability layers.","valueStatement":"Centralizes schedule coordination and field dispatch — providing single-pane visibility across labor and crew capacity, extending forward planning horizons, and deploying mobile work execution to eliminate paper delays.","readinessText":"Work orders carry scheduled dates and a forward planning horizon is established (weekly to monthly). A centralized scheduler or dispatcher role is active in Assignment Manager, workforce availability is enriched with exceptions, and job plans gain materials, tools, and classifications. HSE, Inspections, and Inventory enter as parallel capability layers.","potentialOutcomes":[{"stat":"10–15%","label":"reduction in administrative dispatch overhead and phone coordination"},{"stat":"8–12%","label":"increase in wrench time through mobile work order delivery and status updates"},{"stat":"Multi-week","label":"forward planning horizon actively managed in Assignment Manager"}],"keyMoves":["Stand up a central scheduler/dispatcher role in Assignment Manager.","Enrich workforce availability with shifts, exceptions, and crafts.","Add materials, tools, and classifications to job plans.","Roll out mobile work execution to field crews."],"products":[{"name":"Maximo Manage","status":"Strong","active":true},{"name":"Maximo Mobile","status":"Core","active":true},{"name":"Maximo HSE","status":"Entry","active":false},{"name":"MAS Scheduler (GWW)","status":"Entry","active":false}]},{"id":"FSM3","stage":3,"name":"Structured Scheduling","description":"Forward planning extends to rolling windows with predecessor and hierarchy constraints. System-suggested dispatch based on effective availability is active. Job plans are scoped to asset classes, include hierarchies and predecessors, and are linked to asset data. Inspection results feed condition data and inventory is planned against work requirements.","valueStatement":"Optimizes crew productivity and work preparation — enriching job plans with planned materials and tool requirements, sequencing work by dependencies, and routing technicians by geographic proximity.","readinessText":"Forward planning extends to rolling windows with predecessor and hierarchy constraints. System-suggested dispatch based on effective availability is active. Job plans are scoped to asset classes, include hierarchies and predecessors, and link to asset data. Inspection results feed condition data and inventory is planned against work requirements.","potentialOutcomes":[{"stat":"15–25%","label":"reduction in technician travel time and return trips via proximity routing"},{"stat":"Significant","label":"reduction in job delays caused by missing parts, permits, or tools"},{"stat":"Real-time","label":"effective capacity calculation accounting for leaves and active assignments"}],"keyMoves":["Move to rolling planning windows with predecessor constraints.","Enable system-suggested dispatch on effective availability.","Scope job plans to asset classes and hierarchies.","Feed inspection results into asset condition data."],"products":[{"name":"Maximo Manage","status":"Strong","active":true},{"name":"Maximo Mobile","status":"Core","active":true},{"name":"MAS Scheduler","status":"Core","active":true},{"name":"Spatial","status":"Planning","active":false},{"name":"Dispatcher","status":"Limited/Emerging","active":false}]},{"id":"FSM4","stage":4,"name":"Intelligent Field Coordination","description":"The Optimizer runs automatically via cron-based scheduling. Assignments are system-generated based on constraints, skills, and optimized availability. Planning, Scheduling, and Dispatch dashboards are live with cost, resource, and compliance views. Condition-based inspection and optimized inventory management are active.","valueStatement":"Automates schedule optimization and exception handling — using constraint-based algorithms to match technicians by skill and location, dynamically inject emergency break-in work, and integrate storeroom inventory at the point of work.","readinessText":"The Optimizer runs automatically via cron-based scheduling. Assignments are system-generated from constraints, skills, and optimized availability. Planning, Scheduling, and Dispatch dashboards are live with cost, resource, and compliance views. Condition-based inspection and optimized inventory management are active.","potentialOutcomes":[{"stat":"≥80%","label":"First-Time Fix Rate (FTFR) through automated skill- and parts-aware dispatch"},{"stat":"15–20%","label":"reduction in emergency travel disruption via dynamic break-in scheduling"},{"stat":"Real-time","label":"storeroom balance visibility and mobile material issuance from the field"}],"keyMoves":["Introduce optimization-driven scheduling across crews and territories.","Connect condition and IoT signals to trigger work automatically.","Plan inventory and logistics against forecast work demand.","Measure schedule compliance and wrench time continuously."],"products":[{"name":"Maximo Manage","status":"Strong","active":true},{"name":"Maximo Mobile","status":"Core","active":true},{"name":"MAS Scheduler","status":"Advanced","active":true},{"name":"Dispatcher","status":"Core","active":true},{"name":"Spatial","status":"Core","active":true},{"name":"Optimizer","status":"Emerging","active":false}]},{"id":"FSM5","stage":5,"name":"Optimized Field Operations","description":"The Optimizer operates fully autonomously for routine scheduling and dispatch. Humans are approvers and exception handlers only. Strategic inventory, AIP-connected job plans, and GenAI-assisted work execution complete the full FSM maturity picture.","valueStatement":"Achieves autonomous, end-to-end field workforce execution — leveraging automated cron-based optimization, GenAI point-of-work troubleshooting, and real-time field actuals to drive continuous schedule refinement.","readinessText":"The Optimizer operates fully autonomously for routine scheduling and dispatch. Humans are approvers and exception handlers only. Strategic inventory, AIP-connected job plans, and GenAI-assisted work execution complete the full FSM maturity picture.","potentialOutcomes":[{"stat":"Up to 26%","label":"overall technician productivity gain (achieving ≥45–55% wrench time)"},{"stat":"10–20%","label":"reduction in overtime through autonomous schedule balancing"},{"stat":"Closed-loop","label":"feedback from field actuals directly into job plan durations and inventory forecasts"}],"keyMoves":["Run continuous, AI-assisted schedule optimization.","Close the loop from asset health to planning and dispatch.","Standardize KPIs and benchmarks across all regions.","Embed field feedback into job-plan and reliability improvement."],"products":[{"name":"Maximo Manage","status":"Strong","active":true},{"name":"Maximo Mobile","status":"Core","active":true},{"name":"MAS Scheduler","status":"Advanced","active":true},{"name":"Optimizer","status":"Full","active":true},{"name":"Dispatcher","status":"Exception Management","active":true}]}]};
+
+    const SVG_CHECK = `<svg viewBox="0 0 32 32" width="16" height="16" fill="none" stroke="#161616" stroke-width="2" aria-hidden="true"><circle cx="16" cy="16" r="13"/><polyline points="10,16 14,20 22,12"/></svg>`;
+    const SVG_UP    = `<svg class="arrow-up-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true" style="color:#161616"><path d="M16 4l-10 10h6v14h8V14h6z"/></svg>`;
+    const SVG_DOWN  = `<svg class="arrow-down-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true" style="color:#161616"><path d="M16 28l10-10h-6V4h-8v14H6z"/></svg>`;
+
+    const APM_METRICS = {
+      APM2: [
+        { direction: 'up',   dots: 1, label: 'Unplanned downtime' },
+        { direction: 'down', dots: 1, label: 'Labour productivity' },
+        { direction: 'up',   dots: 1, label: 'MRO capital spend'  },
+      ],
+      APM3: [
+        { direction: 'up',   dots: 2, label: 'Unplanned downtime' },
+        { direction: 'down', dots: 2, label: 'Labour productivity' },
+        { direction: 'up',   dots: 2, label: 'MRO capital spend'  },
+      ],
+      APM4: [
+        { direction: 'up',   dots: 3, label: 'Unplanned downtime' },
+        { direction: 'down', dots: 3, label: 'Labour productivity' },
+        { direction: 'up',   dots: 3, label: 'MRO capital spend'  },
+      ],
+      APM5: [
+        { direction: 'up',   dots: 4, label: 'Unplanned downtime' },
+        { direction: 'down', dots: 4, label: 'Labour productivity' },
+        { direction: 'up',   dots: 4, label: 'MRO capital spend'  },
+      ],
+    };
+
+    const FSM_METRICS = {
+      FSM2: [
+        { direction: 'up',   dots: 1, label: 'Technician productivity' },
+        { direction: 'down', dots: 1, label: 'Dispatch overhead'       },
+        { direction: 'up',   dots: 1, label: 'First-time fix rate'     },
+      ],
+      FSM3: [
+        { direction: 'up',   dots: 2, label: 'Technician productivity' },
+        { direction: 'down', dots: 2, label: 'Dispatch overhead'       },
+        { direction: 'up',   dots: 2, label: 'First-time fix rate'     },
+      ],
+      FSM4: [
+        { direction: 'up',   dots: 3, label: 'Technician productivity' },
+        { direction: 'down', dots: 3, label: 'Dispatch overhead'       },
+        { direction: 'up',   dots: 3, label: 'First-time fix rate'     },
+      ],
+      FSM5: [
+        { direction: 'up',   dots: 4, label: 'Technician productivity' },
+        { direction: 'down', dots: 4, label: 'Dispatch overhead'       },
+        { direction: 'up',   dots: 4, label: 'First-time fix rate'     },
+      ],
+    };
+
+    function dots(count, purple) {
+      const cls = purple ? 'metric-dot--purple' : 'metric-dot--blue';
+      return Array.from({ length: 4 }, (_, i) =>
+        `<div class="metric-dot${i < count ? ' ' + cls : ''}"></div>`
+      ).join('');
+    }
+
+    function renderMetrics(journeyType, stageId, purple) {
+      const registry = journeyType === 'apm' ? APM_METRICS : FSM_METRICS;
+      const metrics = registry[stageId] || [];
+      return metrics.map(m => `
+        <div class="metric-item">
+          ${m.direction === 'up' ? SVG_UP : SVG_DOWN}
+          <div class="metric-item__dots">${dots(m.dots, purple)}</div>
+          <span class="metric-item__label">${m.label}</span>
+        </div>`).join('');
+    }
+
+    function switchTab(type) {
+      const fsmBtn = document.getElementById('btn-fsm');
+      const apmBtn = document.getElementById('btn-apm');
+      const pageTitle = document.getElementById('page-title');
+      const pageSubtitle = document.getElementById('page-subtitle');
+      const grid = document.getElementById('map-grid');
+
+      if (type === 'apm') {
+        fsmBtn.classList.remove('active');
+        fsmBtn.setAttribute('aria-selected', 'false');
+        apmBtn.classList.add('active');
+        apmBtn.setAttribute('aria-selected', 'true');
+
+        pageTitle.innerText = "Assess, Advance, Achieve";
+        pageSubtitle.innerText = "Assess where you are today and advance towards reliability-driven operations with Asset Performance Management.";
+
+        // Render APM stages
+        const apmStages = JOURNEY.apm.filter(s => s.stage >= 2);
+        grid.innerHTML = apmStages.map(stage => renderStageCard('apm', stage)).join('');
+        
+        // Update URL hash
+        if (history.pushState) {
+          history.replaceState(null, null, '#apm');
+        } else {
+          window.location.hash = 'apm';
+        }
+      } else {
+        apmBtn.classList.remove('active');
+        apmBtn.setAttribute('aria-selected', 'false');
+        fsmBtn.classList.add('active');
+        fsmBtn.setAttribute('aria-selected', 'true');
+
+        pageTitle.innerText = "Plan your next move";
+        pageSubtitle.innerText = "Assess where field operations stand today and advance toward autonomous, self-optimizing field service.";
+
+        // Render FSM stages
+        const fsmStages = JOURNEY.fsm.filter(s => s.stage >= 2);
+        grid.innerHTML = fsmStages.map(stage => renderStageCard('fsm', stage)).join('');
+
+        // Update URL hash
+        if (history.pushState) {
+          history.replaceState(null, null, '#fsm');
+        } else {
+          window.location.hash = 'fsm';
+        }
+      }
+    }
+
+    function renderStageCard(journeyType, stage) {
+      const from  = stage.stage - 1;
+      const to    = stage.stage;
+      const purple = stage.stage >= 4;
+      const accentCls = purple ? ' stage-label__target--purple' : '';
+      const bulletCls = purple ? ' stage-list__bullet--purple' : '';
+      const arrowCls  = purple ? ' stage-list__arrow--purple'  : '';
+      const readyCls  = purple ? ' stage-ready--purple' : '';
+
+      const gainItems = stage.potentialOutcomes.map(o => `
+        <li class="stage-list__item">
+          <span class="stage-list__bullet${bulletCls}" aria-hidden="true">•</span>
+          <span class="stage-list__text"><strong>${o.stat}</strong> ${o.label}</span>
+        </li>`).join('');
+
+      const moveItems = (stage.keyMoves || []).map(m => `
+        <li class="stage-list__item">
+          <span class="stage-list__arrow${arrowCls}" aria-hidden="true">→</span>
+          <span class="stage-list__text">${m}</span>
+        </li>`).join('');
+
+      return `
+      <article class="stage-card">
+        <div class="stage-card__body">
+          <p class="stage-label">STAGE ${from} → <span class="stage-label__target${accentCls}">STAGE ${to}</span></p>
+          <h2 class="stage-name">${stage.name}</h2>
+          <p class="stage-quote">"${stage.description}"</p>
+
+          <div class="stage-ready${readyCls}">
+            <div class="stage-ready__header">
+              ${SVG_CHECK}
+              <span class="stage-ready__label">Are you ready?</span>
+            </div>
+            <p class="stage-ready__text">${stage.readinessText || stage.valueStatement}</p>
+          </div>
+
+          <p class="stage-section-label">What you gain</p>
+          <ul class="stage-list" aria-label="What you gain at ${stage.name} stage">${gainItems}</ul>
+
+          <p class="stage-section-label">Key moves to get there</p>
+          <ul class="stage-list" aria-label="Key moves for ${stage.name} stage">${moveItems}</ul>
+        </div>
+
+        <div class="stage-card__metrics">${renderMetrics(journeyType, stage.id, purple)}</div>
+      </article>`;
+    }
+
+    // Initialize based on hash
+    document.addEventListener('DOMContentLoaded', () => {
+      const hash = window.location.hash;
+      if (hash === '#apm') {
+        switchTab('apm');
+      } else {
+        switchTab('fsm');
+      }
+    });
+
+    window.addEventListener('hashchange', () => {
+      const hash = window.location.hash;
+      if (hash === '#apm') {
+        switchTab('apm');
+      } else if (hash === '#fsm') {
+        switchTab('fsm');
+      }
+    });
+  </script>
 
 </body>
 </html>
