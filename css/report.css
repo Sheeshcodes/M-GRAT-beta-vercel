@@ -2093,7 +2093,7 @@ html, body { overflow-x: clip; }
 
 @media print {
   @page {
-    margin: 14mm;
+    margin: 12mm;
   }
 
   /* Carbon's fills carry meaning here — the blue banner, the green resources
@@ -2193,7 +2193,7 @@ html, body { overflow-x: clip; }
 
   .report-content {
     max-width: none;
-    gap: 28px;
+    gap: 64px;
   }
 
   .report-section {
@@ -2218,8 +2218,8 @@ html, body { overflow-x: clip; }
   }
 
   .established-panel + .established-panel {
-    margin-top: 28px;
-    padding-top: 28px;
+    margin-top: 16px;
+    padding-top: 16px;
     border-top: 1px solid var(--cds-border-subtle);
   }
 
@@ -2228,10 +2228,10 @@ html, body { overflow-x: clip; }
     break-after: avoid;
   }
 
-  /* ── 1 + 4. Stage rails: the mobile stack, every card open ───────────── */
+  /* ── 1 + 4. Stage rails: 2-column grid, every card open ─────────────── */
   .stage-rail {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     width: 100%;
     min-height: 0;
     gap: 8px;
@@ -2304,19 +2304,6 @@ html, body { overflow-x: clip; }
      reads as one thing is never split. The longest of those — a capability
      panel, the step-one details — still fits on a page, so nothing is ever
      forced to break anyway. */
-  #act-roi,
-  #act-plan {
-    break-before: page;
-  }
-
-  /* An expansion path — five stages and what they add up to — runs to about a
-     page and a half, so it cannot sit on one page. Starting each at the top of
-     its own keeps it to two consecutive pages instead of three partial ones. */
-  #apm-expansion-card,
-  #fsm-expansion-card {
-    break-before: page;
-  }
-
   .report-eyebrow-row,
   .report-section__heading,
   .report-section__heading-row,
@@ -2339,14 +2326,10 @@ html, body { overflow-x: clip; }
   .maturity-banner,
   .dimension-grid,
   .expansion-intro,
-  .established-panel,
   .established-sub-section,
   .stage-card,
-  .expansion-summary,
   .potential-outcomes,
   .action-hero-card,
-  .action-details-card,
-  .action-details-section,
   .bonus-block,
   .bonus-resource,
   .accelerate-card,

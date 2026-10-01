@@ -4679,7 +4679,7 @@ html, body { overflow-x: clip; }
 
 @media print {
   @page {
-    margin: 14mm;
+    margin: 12mm;
   }
 
   /* Carbon's fills carry meaning here — the blue banner, the green resources
@@ -4779,7 +4779,7 @@ html, body { overflow-x: clip; }
 
   .report-content {
     max-width: none;
-    gap: 28px;
+    gap: 64px;
   }
 
   .report-section {
@@ -4804,8 +4804,8 @@ html, body { overflow-x: clip; }
   }
 
   .established-panel + .established-panel {
-    margin-top: 28px;
-    padding-top: 28px;
+    margin-top: 16px;
+    padding-top: 16px;
     border-top: 1px solid var(--cds-border-subtle);
   }
 
@@ -4814,10 +4814,10 @@ html, body { overflow-x: clip; }
     break-after: avoid;
   }
 
-  /* ── 1 + 4. Stage rails: the mobile stack, every card open ───────────── */
+  /* ── 1 + 4. Stage rails: 2-column grid, every card open ─────────────── */
   .stage-rail {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     width: 100%;
     min-height: 0;
     gap: 8px;
@@ -4890,19 +4890,6 @@ html, body { overflow-x: clip; }
      reads as one thing is never split. The longest of those — a capability
      panel, the step-one details — still fits on a page, so nothing is ever
      forced to break anyway. */
-  #act-roi,
-  #act-plan {
-    break-before: page;
-  }
-
-  /* An expansion path — five stages and what they add up to — runs to about a
-     page and a half, so it cannot sit on one page. Starting each at the top of
-     its own keeps it to two consecutive pages instead of three partial ones. */
-  #apm-expansion-card,
-  #fsm-expansion-card {
-    break-before: page;
-  }
-
   .report-eyebrow-row,
   .report-section__heading,
   .report-section__heading-row,
@@ -4925,14 +4912,10 @@ html, body { overflow-x: clip; }
   .maturity-banner,
   .dimension-grid,
   .expansion-intro,
-  .established-panel,
   .established-sub-section,
   .stage-card,
-  .expansion-summary,
   .potential-outcomes,
   .action-hero-card,
-  .action-details-card,
-  .action-details-section,
   .bonus-block,
   .bonus-resource,
   .accelerate-card,
@@ -12832,12 +12815,12 @@ const PICTOGRAM_QA = `<img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIG
 
 const PICTOGRAM_TREE_MAP = `
   <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <g clip-path="url(#clip0_flexibility_docs)">
+    <g clip-path="url(#clip0_flexibility_root)">
       <rect width="32" height="32" fill="white" fill-opacity="0.01"/>
       <path d="M19.3612 30.9992H18.6412V15.9992C18.6412 14.6982 19.7002 13.6392 21.0012 13.6392H30.1322L27.7462 11.2532L28.2562 10.7442L31.5102 13.9992L28.2562 17.2542L27.7462 16.7452L30.1322 14.3592H21.0012C20.0972 14.3592 19.3612 15.0952 19.3612 15.9992V30.9992ZM16.3612 30.9992H15.6412V1.86823L13.2552 4.25323L12.7462 3.74423L16.0012 0.490234L19.2562 3.74523L18.7462 4.25423L16.3612 1.86823V30.9992ZM13.3612 30.9992H12.6412V20.9992C12.6412 20.0952 11.9052 19.3592 11.0012 19.3592H1.87019L4.25519 21.7442L3.74619 22.2542L0.492188 18.9992L3.74719 15.7452L4.25619 16.2542L1.87019 18.6392H11.0012C12.3022 18.6392 13.3612 19.6982 13.3612 20.9992V30.9992Z" fill="white"/>
     </g>
     <defs>
-      <clipPath id="clip0_flexibility_docs">
+      <clipPath id="clip0_flexibility_root">
         <rect width="32" height="32" fill="white"/>
       </clipPath>
     </defs>
@@ -13420,11 +13403,11 @@ function renderActionPlan(actionPlan) {
             <p class="bonus-resource__title">Asset Performance Management &amp; Field Service Management maturity maps</p>
             <p class="bonus-resource__desc">Explore the journey from foundational asset management and coordinated field operations to predictive reliability, intelligent scheduling, and fully optimized enterprise performance.</p>
             <div class="bonus-resource__action bonus-resource__action--row">
-              <cds-button kind="tertiary" size="lg" href="apm-maturity-map.html" target="_blank" rel="noopener noreferrer">
+              <cds-button kind="tertiary" size="lg" href="docs/apm-maturity-map.html" target="_blank" rel="noopener noreferrer">
                 APM Maturity map
                 <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 28H6a2 2 0 01-2-2V6a2 2 0 012-2h10v2H6v20h20V16h2v10a2 2 0 01-2 2z"/><path d="M21 2v2h5.59L18 12.59 19.41 14 28 5.41V11h2V2z"/></svg>
               </cds-button>
-              <cds-button kind="tertiary" size="lg" href="fsm-maturity-map.html" target="_blank" rel="noopener noreferrer">
+              <cds-button kind="tertiary" size="lg" href="docs/fsm-maturity-map.html" target="_blank" rel="noopener noreferrer">
                 FSM Maturity map
                 <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 28H6a2 2 0 01-2-2V6a2 2 0 012-2h10v2H6v20h20V16h2v10a2 2 0 01-2 2z"/><path d="M21 2v2h5.59L18 12.59 19.41 14 28 5.41V11h2V2z"/></svg>
               </cds-button>
