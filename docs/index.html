@@ -861,9 +861,78 @@
       .hero-headline { font-size: 2rem; }
       .section-title { font-size: 1.5rem; }
     }
+    /* ── Beta Banner ──────────────────────────────────────── */
+    .beta-banner {
+      background: #fff8e1;
+      border-bottom: 1px solid #f1c21b;
+      padding: 0.625rem 0;
+    }
+    .beta-banner .container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .beta-badge {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: #b45309;
+      background: #fef3c7;
+      border: 1px solid #f1c21b;
+      padding: 0.2rem 0.55rem;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .beta-banner-text {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 0.8125rem;
+      color: #525252;
+      flex: 1;
+    }
+    .beta-banner-text strong {
+      color: #161616;
+      font-weight: 600;
+    }
+    .beta-banner-link {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: #0f62fe;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: color 0.1s;
+    }
+    .beta-banner-link:hover { color: #0043ce; text-decoration: underline; }
+    .beta-banner-dismiss {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #6f6f6f;
+      font-size: 1rem;
+      line-height: 1;
+      padding: 0 0 0 0.25rem;
+      flex-shrink: 0;
+      transition: color 0.1s;
+    }
+    .beta-banner-dismiss:hover { color: #161616; }
   </style>
 </head>
 <body>
+
+  <!-- ═══════════════ BETA BANNER ═══════════════════════════ -->
+  <div class="beta-banner" id="beta-banner" role="note" aria-label="Beta notice">
+    <div class="container">
+      <span class="beta-badge">BETA</span>
+      <p class="beta-banner-text">
+        <strong>Beta — your feedback shapes this tool.</strong>
+        Use it with real accounts, drive the conversation, and tell us what to improve. Not yet supported: partner sharing, self-serve from cloud, and automatic data capture.
+      </p>
+      <a href="https://wkf.ms/4y6RVgc" target="_blank" rel="noopener noreferrer" class="beta-banner-link">Share feedback ↗</a>
+      <button class="beta-banner-dismiss" onclick="document.getElementById('beta-banner').style.display='none'" aria-label="Dismiss beta notice">✕</button>
+    </div>
+  </div>
 
   <!-- ═══════════════ HEADER ════════════════════════════════ -->
   <header class="site-header">
