@@ -4,6 +4,18 @@ A record of significant decisions made during the design and build of M-GRAT —
 
 ---
 
+## Modular build architecture & unified compilation runner
+**Date:** 1 Oct 2026
+**Status:** Active
+
+**Context:** The data compilation and bundler scripts (`build_assessment.py`, `build_report_data.py`, `bundle.py`, `serve.py`) duplicated workbook parsing logic and required multiple manual steps to compile and verify. Sibling scripts relied on fragile runtime path modifications (`sys.path.insert(0, ...)`).
+
+**Decision:** Extract shared OpenXML workbook extraction, text sanitization, and ES module emission into `scripts/common.py`. Implement full type annotations, break the bundler into discrete pipeline stages, and introduce `scripts/build_all.py` as the single entry point.
+
+**Impact:** Clean separation of concerns with standard-library-only tooling. Developers can build and verify the full pipeline with a single command without cross-script circular dependencies.
+
+---
+
 ## Two delivery modes: facilitated and self-serve
 **Date:** 30 Sep 2026  
 **Status:** Active
