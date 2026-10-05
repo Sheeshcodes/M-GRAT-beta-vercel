@@ -24,6 +24,7 @@ A high-level record of what changed in M-GRAT and when. This focuses on what sel
 
 ### ⚑ Infrastructure
 - **Consolidated single-command build pipeline and modular Python architecture** — Centralized spreadsheet parsing, data generation, and offline bundle assembly into clean pipeline stages with a unified build runner (`python3 scripts/build_all.py`).
+- **Clean Code & Python modularization** — Extracted shared workbook utilities (`read_workbook`, slug/text helpers) into `scripts/common.py`, eliminated inter-script runtime path hacks, added full type annotations, and decomposed `scripts/bundle.py` into distinct functional stages.
 - **GitHub Pages seller landing page launched** — A public-facing landing page and seller guide were added under `docs/`, accessible at the IBM GitHub Pages URL. This is the primary link sellers use for the facilitated session.
 - **Vercel hosting set up** — The tool is now deployed on Vercel for the public-facing self-serve path. Pushes to `main` deploy automatically.
 - **IBM GitHub mirror configured** — The repo automatically mirrors from the internal IBM GitHub to a public GitHub.com mirror on every push, enabling external access without manual syncing.
