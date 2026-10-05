@@ -4230,7 +4230,7 @@ cds-menu-item::part(list-item) {
   gap: 8px;
 }
 
-/* Print only — the "Yes" under the question once it has been answered. */
+/* Print only — the answer under the question once it has been answered. */
 .feedback__answer {
   display: none;
 }
@@ -4735,6 +4735,10 @@ html, body { overflow-x: clip; }
     line-height: 20px;
     color: var(--cds-text-primary);
   }
+  #act-improve .feedback__question {
+    font-size: 20px;
+    line-height: 28px;
+  }
 
   /* ── Single column; the sidebar becomes a compact cover block ────────── */
   /* The report is set for a screen: 16px body, 40px headings. On paper that is
@@ -5017,6 +5021,13 @@ html, body { overflow-x: clip; }
     display: block;
     zoom: 0.84;
   }
+
+  /* ── Combined PDF: report followed by responses in one print run ── */
+  html.is-printing-combined .responses-doc {
+    display: block;
+    zoom: 0.84;
+    break-before: page;
+  }
 }
 
 
@@ -5037,6 +5048,286 @@ html, body { overflow-x: clip; }
   <script type="module">import "https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/menu-button.min.js";</script>
   <script type="module">import "https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/menu.min.js";</script>
   <script type="module">import "https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/textarea.min.js";</script>
+<style>
+  /* ── Embed Maturity Map Styles ── */
+  #view-maturity-map {
+    background-color: #f4f4f4;
+    min-height: 100vh;
+  }
+  .map-header {
+    background: #d0e2ff;
+    padding: 32px;
+    position: relative;
+    border: 1px solid #e0e0e0;
+  }
+  .map-header__inner {
+    max-width: 640px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .map-header__eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #0f62fe;
+    margin: 0;
+  }
+  .map-header__title {
+    font-family: 'IBM Plex Serif', serif;
+    font-size: 32px;
+    font-weight: 300;
+    line-height: 1.15;
+    color: #161616;
+    margin: 0;
+  }
+  .map-header__subtitle {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    color: #393939;
+    margin: 0;
+  }
+  .btn-download {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 16px;
+    background: #0f62fe;
+    color: #fff;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 70ms;
+    flex-shrink: 0;
+  }
+  .btn-download:hover { background: #0353e9; }
+  .btn-download svg { flex-shrink: 0; }
+
+  .tabs-container {
+    background: #ffffff;
+    border-bottom: 1px solid #e0e0e0;
+    width: 100%;
+  }
+  .cds-tabs {
+    display: flex;
+    gap: 0;
+  }
+  .cds-tab-btn {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #525252;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 0 1rem;
+    height: 48px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    transition: color 70ms, border-color 70ms, background-color 70ms;
+  }
+  .cds-tab-btn:hover {
+    color: #161616;
+    border-bottom-color: #8d8d8d;
+    background-color: #f4f4f4;
+  }
+  .cds-tab-btn.active {
+    color: #161616;
+    font-weight: 600;
+    border-bottom-color: #0f62fe;
+  }
+
+  .map-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+  #view-maturity-map .stage-card {
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    border: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .stage-card__body {
+    flex: 1;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+  }
+  .stage-label {
+    font-family: 'IBM Plex Sans Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 14px;
+    letter-spacing: 0.5px;
+    color: #8d8d8d;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+  .stage-label__target { color: #0f62fe; }
+  .stage-label__target--purple { color: #8a3ffc; }
+
+  .stage-name {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 24px;
+    color: #161616;
+    margin-bottom: 12px;
+  }
+  .stage-quote {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13.5px;
+    font-style: italic;
+    line-height: 18px;
+    color: #525252;
+    margin-bottom: 20px;
+  }
+
+  .stage-ready {
+    background: #f4f4f4;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border-left: 3px solid #0f62fe;
+  }
+  .stage-ready.stage-ready--purple {
+    border-left-color: #8a3ffc;
+  }
+  .stage-ready__header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .stage-ready__label {
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 14px;
+    letter-spacing: 0.32px;
+    color: #161616;
+    text-transform: uppercase;
+  }
+  .stage-ready__text {
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 18px;
+    color: #161616;
+  }
+
+  .stage-section-label {
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 14px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #525252;
+    margin-bottom: 12px;
+    border-top: 1px solid #f4f4f4;
+    padding-top: 16px;
+  }
+
+  .stage-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 0;
+  }
+  .stage-list:last-child {
+    margin-bottom: 0;
+  }
+  .stage-list__item {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .stage-list__bullet {
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 18px;
+    color: #0f62fe;
+    flex-shrink: 0;
+  }
+  .stage-list__bullet--purple { color: #8a3ffc; }
+  .stage-list__arrow {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
+    color: #0f62fe;
+    flex-shrink: 0;
+  }
+  .stage-list__arrow--purple { color: #8a3ffc; }
+  .stage-list__text {
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 18px;
+    color: #161616;
+  }
+  .stage-list__text strong { font-weight: 600; }
+
+  .stage-card__metrics {
+    border-top: 1px solid #e0e0e0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    background: #fafafa;
+  }
+  .metric-item {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    border-right: 1px solid #e0e0e0;
+  }
+  .metric-item:last-child { border-right: none; }
+  .metric-item__dots {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+  }
+  .metric-dot {
+    width: 10px;
+    height: 3px;
+    border-radius: 1px;
+    background: #e0e0e0;
+  }
+  .metric-dot--blue { background: #0f62fe; }
+  .metric-dot--purple { background: #8a3ffc; }
+  .metric-item__label {
+    font-size: 10.5px;
+    font-weight: 400;
+    line-height: 13px;
+    color: #525252;
+  }
+
+  .arrow-up-icon, .arrow-down-icon {
+    display: block;
+    width: 14px;
+    height: 14px;
+  }
+
+  @media (max-width: 1056px) {
+    .map-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .map-grid { grid-template-columns: 1fr; }
+  }
+</style>
 </head>
 <body class="splash-active">
   <div id="view-assessment">
@@ -5274,13 +5565,10 @@ html, body { overflow-x: clip; }
       </ul>
       <div class="mobile-nav__actions">
         
-        <cds-menu-button kind="tertiary" label="Download" menu-alignment="bottom" size="lg">
-          <cds-menu>
-            <cds-menu-item label="Full PDF report" data-download="pdf"></cds-menu-item>
-            <cds-menu-item label="Full checklist" disabled></cds-menu-item>
-            <cds-menu-item label="Your responses" disabled data-download="responses"></cds-menu-item>
-          </cds-menu>
-        </cds-menu-button>
+        <cds-button kind="primary" size="lg" data-download="pdf">
+          Download PDF
+          <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4z"/><path d="M26 14l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
+        </cds-button>
       </div>
     </div>
   </div>
@@ -5321,13 +5609,10 @@ html, body { overflow-x: clip; }
         </nav>
         <div class="report-sidebar__actions">
           
-          <cds-menu-button kind="tertiary" label="Download" menu-alignment="bottom" size="lg">
-            <cds-menu>
-              <cds-menu-item label="Full PDF report" data-download="pdf"></cds-menu-item>
-              <cds-menu-item label="Full checklist" disabled></cds-menu-item>
-              <cds-menu-item label="Your responses" disabled data-download="responses"></cds-menu-item>
-            </cds-menu>
-          </cds-menu-button>
+          <cds-button kind="primary" size="lg" data-download="pdf">
+            Download PDF
+            <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4z"/><path d="M26 14l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
+          </cds-button>
         </div>
       </aside>
 
@@ -5458,13 +5743,10 @@ html, body { overflow-x: clip; }
              page, so they are never more than a scroll away. -->
         <div class="report-end-actions">
           
-          <cds-menu-button kind="tertiary" label="Download" menu-alignment="top" size="lg">
-            <cds-menu>
-              <cds-menu-item label="Full PDF report" data-download="pdf"></cds-menu-item>
-              <cds-menu-item label="Full checklist" disabled></cds-menu-item>
-              <cds-menu-item label="Your responses" disabled data-download="responses"></cds-menu-item>
-            </cds-menu>
-          </cds-menu-button>
+          <cds-button kind="primary" size="lg" data-download="pdf">
+            Download PDF
+            <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4z"/><path d="M26 14l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
+          </cds-button>
         </div>
 
       </main>
@@ -5472,12 +5754,56 @@ html, body { overflow-x: clip; }
   </div>
 </div><!-- /#view-report -->
 
+<div id="view-maturity-map" style="display:none; padding: 2rem 0;">
+  <div class="container" style="max-width: 1056px; margin: 0 auto; padding: 0 1rem; display: flex; flex-direction: column; gap: 1.5rem;">
+    <div>
+      <cds-button id="map-back-btn" kind="ghost" size="sm" type="button" style="margin-left: -12px;">
+        <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true">
+          <path d="M14 26L4 16 14 6l1.4 1.4L6.8 16l8.6 8.6z"/>
+          <path d="M6 15h22v2H6z"/>
+        </svg>
+        Back to report
+      </cds-button>
+    </div>
+    
+    <header class="map-header">
+      <div class="map-header__inner">
+        <p class="map-header__eyebrow">Maturity Journeys</p>
+        <h1 class="map-header__title" id="embed-map-title">Plan your next move</h1>
+        <p class="map-header__subtitle" id="embed-map-subtitle">Assess where field operations stand today and advance toward autonomous, self-optimizing field service.</p>
+      </div>
+      <button class="btn-download" onclick="window.print()" style="position: absolute; bottom: 2rem; right: 2rem;">
+        Download PDF
+        <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true">
+          <path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4z"/>
+          <path d="M26 14l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/>
+        </svg>
+      </button>
+    </header>
+
+    <div class="tabs-container">
+      <div class="cds-tabs" role="tablist">
+        <button class="cds-tab-btn active" id="embed-btn-fsm" role="tab" aria-selected="true" onclick="switchEmbedTab('fsm')">
+          Field Service Management (FSM)
+        </button>
+        <button class="cds-tab-btn" id="embed-btn-apm" role="tab" aria-selected="false" onclick="switchEmbedTab('apm')">
+          Asset Performance Management (APM)
+        </button>
+      </div>
+    </div>
+
+    <div class="map-grid" id="embed-map-grid"></div>
+  </div>
+</div>
+
+
+
   <script>
 (async () => {
 // ── data/assessment.js ─────────────────────────────────────────
 /**
  * GENERATED FILE — do not edit by hand.
- * Built from Logic/Question_Binder_Sep30.xlsx by scripts/build_assessment.py.
+ * Built from Logic/Question_Binder_Sep20.xlsx by scripts/build_assessment.py.
  * To update the questions: edit the workbook, then run
  *   python3 scripts/build_assessment.py
  *
@@ -5489,7 +5815,7 @@ const assessmentData = {
   "product": "Maximo Application Suite",
   "subtitle": "Growth readiness assessment",
   "version": "beta v3",
-  "source": "Question_Binder_Sep30.xlsx",
+  "source": "Question_Binder_Sep20.xlsx",
   "pages": [
     {
       "id": "goals",
@@ -6139,7 +6465,7 @@ const assessmentData = {
                 {
                   "value": "none-of-the-above",
                   "label": "None of the above",
-                  "milestoneId": null
+                  "milestoneId": "CM-3-MVAR"
                 }
               ],
               "unansweredBehavior": "All Unknown",
@@ -6172,19 +6498,22 @@ const assessmentData = {
                   "value": "yes-a-senior-leader-is-actively-sponsoring-this",
                   "label": "Yes — a senior leader is actively sponsoring this",
                   "score": 2,
-                  "signalLabel": "Sponsorship: Active"
+                  "signalLabel": "Sponsorship: Active",
+                  "interpretation": "You have leadership backing. That makes it much easier to move recommendations into action."
                 },
                 {
                   "value": "working-on-it-interest-exists-but-no-formal-sponsor-yet",
                   "label": "Working on it — interest exists but no formal sponsor yet",
                   "score": 1,
-                  "signalLabel": "Sponsorship: Emerging"
+                  "signalLabel": "Sponsorship: Emerging",
+                  "interpretation": "Leadership interest is there, but not yet formalised. Building that sponsorship is likely your most important next step."
                 },
                 {
                   "value": "no-no-leadership-commitment-yet",
                   "label": "No — no leadership commitment yet",
                   "score": 0,
-                  "signalLabel": "Sponsorship: Not yet"
+                  "signalLabel": "Sponsorship: Not yet",
+                  "interpretation": "There is no leadership sponsor yet. Without one, expansion decisions are hard to progress — this is worth addressing before anything else."
                 }
               ],
               "required": false,
@@ -6204,19 +6533,22 @@ const assessmentData = {
                   "value": "yes-a-project-or-initiative-is-underway-or-formally-scoped",
                   "label": "Yes — a project or initiative is underway or formally scoped",
                   "score": 2,
-                  "signalLabel": "Plans: Active"
+                  "signalLabel": "Plans: Active",
+                  "interpretation": "You have active plans in motion. Your roadmap connects directly to where that initiative should focus."
                 },
                 {
                   "value": "informally-discussions-are-happening-but-nothing-is-formalised-yet",
                   "label": "Informally — discussions are happening but nothing is formalised yet",
                   "score": 1,
-                  "signalLabel": "Plans: Exploratory"
+                  "signalLabel": "Plans: Exploratory",
+                  "interpretation": "Conversations are happening but nothing is committed yet. Your roadmap can help turn that discussion into a concrete starting point."
                 },
                 {
                   "value": "no-no-active-plans-at-this-time",
                   "label": "No — no active plans at this time",
                   "score": 0,
-                  "signalLabel": "Plans: None"
+                  "signalLabel": "Plans: None",
+                  "interpretation": "There are no active plans right now. Your roadmap gives you a clear picture to come back to when the timing is right."
                 }
               ],
               "required": false,
@@ -6236,19 +6568,22 @@ const assessmentData = {
                   "value": "within-6-months-we-move-fast-when-we-see-the-value",
                   "label": "Within 6 months — we move fast when we see the value",
                   "score": 2,
-                  "signalLabel": "Horizon: Near-term"
+                  "signalLabel": "Horizon: Near-term",
+                  "interpretation": "Your organisation moves quickly when the value is clear. Your roadmap leads with the actions that can show results fast."
                 },
                 {
                   "value": "6-18-months-planned-investment-cycle",
                   "label": "6–18 months — planned investment cycle",
                   "score": 1,
-                  "signalLabel": "Horizon: Mid-term"
+                  "signalLabel": "Horizon: Mid-term",
+                  "interpretation": "You work within a planned investment cycle. Your roadmap is structured as a phased journey that fits that rhythm."
                 },
                 {
                   "value": "18-months-longer-strategic-cycle",
                   "label": "18+ months — longer strategic cycle",
                   "score": 0,
-                  "signalLabel": "Horizon: Long-term"
+                  "signalLabel": "Horizon: Long-term",
+                  "interpretation": "Your organisation takes a longer view on technology investment. Your roadmap frames the full multi-stage journey and the cumulative value it builds."
                 }
               ],
               "required": false,
@@ -6268,19 +6603,22 @@ const assessmentData = {
                   "value": "yes-budget-is-committed-for-this-fiscal-year",
                   "label": "Yes — budget is committed for this fiscal year",
                   "score": 2,
-                  "signalLabel": "Budget: Committed"
+                  "signalLabel": "Budget: Committed",
+                  "interpretation": "Budget is in place. Your roadmap prioritises the actions with the fastest time to value this year."
                 },
                 {
                   "value": "maybe-budget-is-under-discussion-or-pending-approval",
                   "label": "Maybe — budget is under discussion or pending approval",
                   "score": 1,
-                  "signalLabel": "Budget: Pending"
+                  "signalLabel": "Budget: Pending",
+                  "interpretation": "Budget is being considered. Your roadmap is designed to help build the case alongside the plan."
                 },
                 {
                   "value": "no-no-budget-identified-yet",
                   "label": "No — no budget identified yet",
                   "score": 0,
-                  "signalLabel": "Budget: Not identified"
+                  "signalLabel": "Budget: Not identified",
+                  "interpretation": "No budget is in place yet. Your roadmap focuses on the value story you would need to bring to leadership."
                 }
               ],
               "required": false,
@@ -7410,7 +7748,7 @@ const reportData = {
     },
     {
       "id": "CM-1-LF",
-      "name": "Condition Monitoring Triggers",
+      "name": "Condition Monitoring — Low Frequency",
       "pillar": "Condition Monitoring & Prediction",
       "level": 1,
       "levelLabel": "Level 1",
@@ -9123,7 +9461,6 @@ const reportData = {
       "name": "Digital Maintenance Foundation",
       "description": "Good Asset Management Practices (GAMP) — Know your assets before you can manage them. ISO 14224-aligned asset hierarchy, criticality scoring, maturing work management, mobility enablement, and condition monitoring established.",
       "valueStatement": "This is the foundation everything else is built on. Clean, criticality-scored asset data gives you a single source of truth for work order linkage, failure mode mapping, and future analytics. Structured failure data and reliable work management data become the raw material that FMEA, Reliability Strategies, and health scoring all depend on later — skip this, and every capability above Stage 1 inherits the gap. Mobility closes the paper lag, and condition monitoring gets your team acting on asset signals for the first time, without needing IoT investment yet.",
-      "readinessText": null,
       "potentialOutcomes": [
         {
           "stat": "10–15%",
@@ -9138,7 +9475,6 @@ const reportData = {
           "label": "failure code capture (Problem-Cause-Remedy) on 100% of closed work orders"
         }
       ],
-      "keyMoves": [],
       "products": [
         {
           "name": "Maximo Manage",
@@ -9178,7 +9514,6 @@ const reportData = {
       "name": "APM Foundation",
       "description": "Build the foundational APM data loop — strategy, scores, and condition visibility. Reliability Strategies activated, foundational health scores enabled for critical assets, Monitor exploration with existing data sources begins.",
       "valueStatement": "Maintenance starts being driven by evidence instead of habit. Reliability Strategies tie every work order to a documented failure mode, not just a fixed interval. A foundational health score gives you one number to judge asset condition instead of checking multiple sources separately. And exploring Monitor with data you already have lets you experience real dashboards — a low-risk way to build momentum before committing to full instrumentation.",
-      "readinessText": null,
       "potentialOutcomes": [
         {
           "stat": "15–20%",
@@ -9192,11 +9527,6 @@ const reportData = {
           "stat": "Elimination",
           "label": "of calendar-only guesswork through lightweight condition telemetry"
         }
-      ],
-      "keyMoves": [
-        "Activate Reliability Strategies to tie work orders to failure modes.",
-        "Enable foundational health scores for your critical assets.",
-        "Begin Monitor exploration using your existing data sources."
       ],
       "products": [
         {
@@ -9237,7 +9567,6 @@ const reportData = {
       "name": "Maintenance Optimisation (CBM+)",
       "description": "Make every maintenance decision evidence-driven. OT/IoT fully integrated, multivariable health scoring live, FMEA operationalised, PM cycles optimised, workforce scheduling risk-driven, AIP exploration begins.",
       "valueStatement": "This is where Maximo stops just running maintenance and starts predicting it. FMEA gives every PM strategy a documented failure-mode rationale instead of an OEM default. Full OT/IoT integration and multivariable health scoring eliminate the blind spots between PM windows, replacing calendar guesses with real-time visibility. PM intervals, technician scheduling, capital planning, and inventory all start reacting to that visibility instead of fixed assumptions — the whole operation becomes condition-driven, not just individual capabilities.",
-      "readinessText": null,
       "potentialOutcomes": [
         {
           "stat": "20–30%",
@@ -9251,11 +9580,6 @@ const reportData = {
           "stat": "Dynamic",
           "label": "PM frequency adjustments driven by asset condition and operating context"
         }
-      ],
-      "keyMoves": [
-        "Integrate OT/IoT and bring multivariable health scoring live.",
-        "Operationalise FMEA and optimise PM cycles with condition evidence.",
-        "Make workforce scheduling risk-driven and begin AIP exploration."
       ],
       "products": [
         {
@@ -9296,7 +9620,6 @@ const reportData = {
       "name": "Prescriptive Reliability",
       "description": "Know when assets will fail before they do. Quantify risk, prescribe action, prevent failure. Risk Scenario Engine (RSE) live, RCBF standard practice, AIP Foundation active connecting failure evidence to capital planning.",
       "valueStatement": "Maintenance shifts from reactive to prescriptive. RSE doesn't just score current condition — it simulates how degradation will evolve and tells your team what to do about it: inspect, defer, advance the PM, or adjust the strategy. RCBF turns every investigation into a model improvement, so the system gets smarter with each intervention instead of repeating the same fire drills. And capital planning stops assuming and starts reflecting real, continuously-updated asset condition — reducing both premature replacement and unexpected failure-driven spend.",
-      "readinessText": null,
       "potentialOutcomes": [
         {
           "stat": "Up to 47%",
@@ -9310,11 +9633,6 @@ const reportData = {
           "stat": "Continuous",
           "label": "failure probability scoring and automated anomaly detection in Maximo Predict"
         }
-      ],
-      "keyMoves": [
-        "Bring the Risk Scenario Engine (RSE) live to simulate degradation.",
-        "Make root-cause-before-failure (RCBF) standard practice.",
-        "Connect failure evidence to capital planning with AIP Foundation."
       ],
       "products": [
         {
@@ -9355,7 +9673,6 @@ const reportData = {
       "name": "Reliability Enterprise",
       "description": "Embed reliability into every asset decision — forever. FMEA governance continuous, RSE models maturing from evidence, AIP fully operational, lean inventory, design-for-reliability loop closed.",
       "valueStatement": "Reliability becomes a compounding, self-improving system instead of a set of one-time projects. FMEA is reviewed on a continuous cycle, refined by real RSE evidence rather than reopened once and forgotten. Inventory strategy shifts from stocking against fear to stocking against actual predicted risk. And the loop closes all the way back to procurement — every failure investigated in operations informs the next asset you buy, so reliability gets designed in before an asset ever enters service, not fixed after the fact. This is the difference between managing failures and preventing them.",
-      "readinessText": null,
       "potentialOutcomes": [
         {
           "stat": "10–15%",
@@ -9369,11 +9686,6 @@ const reportData = {
           "stat": "Closed-loop",
           "label": "operational learning with GenAI prescriptive guidance at the point of work"
         }
-      ],
-      "keyMoves": [
-        "Run continuous FMEA governance refined by RSE evidence.",
-        "Make AIP fully operational and shift to lean, risk-based inventory.",
-        "Close the design-for-reliability loop back to procurement."
       ],
       "products": [
         {
@@ -9416,7 +9728,6 @@ const reportData = {
       "name": "Reactive Execution",
       "description": "The organization operates in a reactive mode: work is logged but not systematically planned or dispatched. The data foundation for FSM is being established — labor records, craft classifications, calendar/shift definitions, and basic job plan templates. Scheduled dates on work orders and the ownership-vs-assignment distinction are the defining Level 1 signals.",
       "valueStatement": "Establishes baseline scheduling discipline and digital labor records — moving away from unstructured verbal dispatch to formal scheduled dates and distinct work assignments in Maximo Manage.",
-      "readinessText": null,
       "potentialOutcomes": [
         {
           "stat": "Elimination",
@@ -9430,11 +9741,6 @@ const reportData = {
           "stat": "Baseline",
           "label": "tracking of work order scheduled start and finish targets"
         }
-      ],
-      "keyMoves": [
-        "Establish formal Assignment records for all active work orders.",
-        "Define technician craft, shift, and calendar records.",
-        "Ensure all active work orders carry scheduled start and finish dates."
       ],
       "products": [
         {
@@ -9460,7 +9766,6 @@ const reportData = {
       "name": "Coordinated Operations",
       "description": "Work orders carry scheduled dates and a forward planning horizon is established (weekly to monthly). A centralized scheduler or dispatcher role is active and using Assignment Manager. Workforce availability data is enriched with exceptions. Job plans are enriched with materials, tools, and classifications. HSE, Inspections, and Inventory management enter at this stage as parallel capability layers.",
       "valueStatement": "Centralizes schedule coordination and field dispatch — providing single-pane visibility across labor and crew capacity, extending forward planning horizons, and deploying mobile work execution to eliminate paper delays.",
-      "readinessText": null,
       "potentialOutcomes": [
         {
           "stat": "10–15%",
@@ -9474,12 +9779,6 @@ const reportData = {
           "stat": "Multi-week",
           "label": "forward planning horizon actively managed in Assignment Manager"
         }
-      ],
-      "keyMoves": [
-        "Stand up a central scheduler/dispatcher role in Assignment Manager.",
-        "Enrich workforce availability with shifts, exceptions, and crafts.",
-        "Add materials, tools, and classifications to job plans.",
-        "Roll out mobile work execution to field crews."
       ],
       "products": [
         {
@@ -9510,7 +9809,6 @@ const reportData = {
       "name": "Structured Scheduling",
       "description": "Forward planning extends to rolling windows with predecessor and hierarchy constraints. System-suggested dispatch based on effective availability is active. Job plans are scoped to asset classes, include hierarchies and predecessors, and are linked to asset data. Inspection results feed condition data and inventory is planned against work requirements.",
       "valueStatement": "Optimizes crew productivity and work preparation — enriching job plans with planned materials and tool requirements, sequencing work by dependencies, and routing technicians by geographic proximity.",
-      "readinessText": null,
       "potentialOutcomes": [
         {
           "stat": "15–25%",
@@ -9524,12 +9822,6 @@ const reportData = {
           "stat": "Real-time",
           "label": "effective capacity calculation accounting for leaves and active assignments"
         }
-      ],
-      "keyMoves": [
-        "Move to rolling planning windows with predecessor constraints.",
-        "Enable system-suggested dispatch on effective availability.",
-        "Scope job plans to asset classes and hierarchies.",
-        "Feed inspection results into asset condition data."
       ],
       "products": [
         {
@@ -9565,7 +9857,6 @@ const reportData = {
       "name": "Intelligent Field Coordination",
       "description": "The Optimizer runs automatically via cron-based scheduling. Assignments are system-generated based on constraints, skills, and optimized availability. Planning, Scheduling, and Dispatch dashboards are live with cost, resource, and compliance views. Condition-based inspection and optimized inventory management are active.",
       "valueStatement": "Automates schedule optimization and exception handling — using constraint-based algorithms to match technicians by skill and location, dynamically inject emergency break-in work, and integrate storeroom inventory at the point of work.",
-      "readinessText": null,
       "potentialOutcomes": [
         {
           "stat": "≥80%",
@@ -9579,12 +9870,6 @@ const reportData = {
           "stat": "Real-time",
           "label": "storeroom balance visibility and mobile material issuance from the field"
         }
-      ],
-      "keyMoves": [
-        "Introduce optimization-driven scheduling across crews and territories.",
-        "Connect condition and IoT signals to trigger work automatically.",
-        "Plan inventory and logistics against forecast work demand.",
-        "Measure schedule compliance and wrench time continuously."
       ],
       "products": [
         {
@@ -9625,7 +9910,6 @@ const reportData = {
       "name": "Optimized Field Operations",
       "description": "The Optimizer operates fully autonomously for routine scheduling and dispatch. Humans are approvers and exception handlers only. Strategic inventory, AIP-connected job plans, and GenAI-assisted work execution complete the full FSM maturity picture.",
       "valueStatement": "Achieves autonomous, end-to-end field workforce execution — leveraging automated cron-based optimization, GenAI point-of-work troubleshooting, and real-time field actuals to drive continuous schedule refinement.",
-      "readinessText": null,
       "potentialOutcomes": [
         {
           "stat": "Up to 26%",
@@ -9639,12 +9923,6 @@ const reportData = {
           "stat": "Closed-loop",
           "label": "feedback from field actuals directly into job plan durations and inventory forecasts"
         }
-      ],
-      "keyMoves": [
-        "Run continuous, AI-assisted schedule optimization.",
-        "Close the loop from asset health to planning and dispatch.",
-        "Standardize KPIs and benchmarks across all regions.",
-        "Embed field feedback into job-plan and reliability improvement."
       ],
       "products": [
         {
@@ -10684,7 +10962,6 @@ const journey = {
       "name": "Digital Maintenance Foundation",
       "description": "Good Asset Management Practices (GAMP) — Know your assets before you can manage them. ISO 14224-aligned asset hierarchy, criticality scoring, maturing work management, mobility enablement, and condition monitoring established.",
       "valueStatement": "This is the foundation everything else is built on. Clean, criticality-scored asset data gives you a single source of truth for work order linkage, failure mode mapping, and future analytics. Structured failure data and reliable work management data become the raw material that FMEA, Reliability Strategies, and health scoring all depend on later — skip this, and every capability above Stage 1 inherits the gap. Mobility closes the paper lag, and condition monitoring gets your team acting on asset signals for the first time, without needing IoT investment yet.",
-      "readinessText": null,
       "potentialOutcomes": [
         {
           "stat": "10–15%",
@@ -10699,7 +10976,6 @@ const journey = {
           "label": "failure code capture (Problem-Cause-Remedy) on 100% of closed work orders"
         }
       ],
-      "keyMoves": [],
       "products": [
         {
           "name": "Maximo Manage",
@@ -10739,7 +11015,6 @@ const journey = {
       "name": "APM Foundation",
       "description": "Build the foundational APM data loop — strategy, scores, and condition visibility. Reliability Strategies activated, foundational health scores enabled for critical assets, Monitor exploration with existing data sources begins.",
       "valueStatement": "Maintenance starts being driven by evidence instead of habit. Reliability Strategies tie every work order to a documented failure mode, not just a fixed interval. A foundational health score gives you one number to judge asset condition instead of checking multiple sources separately. And exploring Monitor with data you already have lets you experience real dashboards — a low-risk way to build momentum before committing to full instrumentation.",
-      "readinessText": null,
       "potentialOutcomes": [
         {
           "stat": "15–20%",
@@ -10753,11 +11028,6 @@ const journey = {
           "stat": "Elimination",
           "label": "of calendar-only guesswork through lightweight condition telemetry"
         }
-      ],
-      "keyMoves": [
-        "Activate Reliability Strategies to tie work orders to failure modes.",
-        "Enable foundational health scores for your critical assets.",
-        "Begin Monitor exploration using your existing data sources."
       ],
       "products": [
         {
@@ -10798,7 +11068,6 @@ const journey = {
       "name": "Maintenance Optimisation (CBM+)",
       "description": "Make every maintenance decision evidence-driven. OT/IoT fully integrated, multivariable health scoring live, FMEA operationalised, PM cycles optimised, workforce scheduling risk-driven, AIP exploration begins.",
       "valueStatement": "This is where Maximo stops just running maintenance and starts predicting it. FMEA gives every PM strategy a documented failure-mode rationale instead of an OEM default. Full OT/IoT integration and multivariable health scoring eliminate the blind spots between PM windows, replacing calendar guesses with real-time visibility. PM intervals, technician scheduling, capital planning, and inventory all start reacting to that visibility instead of fixed assumptions — the whole operation becomes condition-driven, not just individual capabilities.",
-      "readinessText": null,
       "potentialOutcomes": [
         {
           "stat": "20–30%",
@@ -10812,11 +11081,6 @@ const journey = {
           "stat": "Dynamic",
           "label": "PM frequency adjustments driven by asset condition and operating context"
         }
-      ],
-      "keyMoves": [
-        "Integrate OT/IoT and bring multivariable health scoring live.",
-        "Operationalise FMEA and optimise PM cycles with condition evidence.",
-        "Make workforce scheduling risk-driven and begin AIP exploration."
       ],
       "products": [
         {
@@ -10857,7 +11121,6 @@ const journey = {
       "name": "Prescriptive Reliability",
       "description": "Know when assets will fail before they do. Quantify risk, prescribe action, prevent failure. Risk Scenario Engine (RSE) live, RCBF standard practice, AIP Foundation active connecting failure evidence to capital planning.",
       "valueStatement": "Maintenance shifts from reactive to prescriptive. RSE doesn't just score current condition — it simulates how degradation will evolve and tells your team what to do about it: inspect, defer, advance the PM, or adjust the strategy. RCBF turns every investigation into a model improvement, so the system gets smarter with each intervention instead of repeating the same fire drills. And capital planning stops assuming and starts reflecting real, continuously-updated asset condition — reducing both premature replacement and unexpected failure-driven spend.",
-      "readinessText": null,
       "potentialOutcomes": [
         {
           "stat": "Up to 47%",
@@ -10871,11 +11134,6 @@ const journey = {
           "stat": "Continuous",
           "label": "failure probability scoring and automated anomaly detection in Maximo Predict"
         }
-      ],
-      "keyMoves": [
-        "Bring the Risk Scenario Engine (RSE) live to simulate degradation.",
-        "Make root-cause-before-failure (RCBF) standard practice.",
-        "Connect failure evidence to capital planning with AIP Foundation."
       ],
       "products": [
         {
@@ -10916,7 +11174,6 @@ const journey = {
       "name": "Reliability Enterprise",
       "description": "Embed reliability into every asset decision — forever. FMEA governance continuous, RSE models maturing from evidence, AIP fully operational, lean inventory, design-for-reliability loop closed.",
       "valueStatement": "Reliability becomes a compounding, self-improving system instead of a set of one-time projects. FMEA is reviewed on a continuous cycle, refined by real RSE evidence rather than reopened once and forgotten. Inventory strategy shifts from stocking against fear to stocking against actual predicted risk. And the loop closes all the way back to procurement — every failure investigated in operations informs the next asset you buy, so reliability gets designed in before an asset ever enters service, not fixed after the fact. This is the difference between managing failures and preventing them.",
-      "readinessText": null,
       "potentialOutcomes": [
         {
           "stat": "10–15%",
@@ -10930,11 +11187,6 @@ const journey = {
           "stat": "Closed-loop",
           "label": "operational learning with GenAI prescriptive guidance at the point of work"
         }
-      ],
-      "keyMoves": [
-        "Run continuous FMEA governance refined by RSE evidence.",
-        "Make AIP fully operational and shift to lean, risk-based inventory.",
-        "Close the design-for-reliability loop back to procurement."
       ],
       "products": [
         {
@@ -10977,7 +11229,6 @@ const journey = {
       "name": "Reactive Execution",
       "description": "The organization operates in a reactive mode: work is logged but not systematically planned or dispatched. The data foundation for FSM is being established — labor records, craft classifications, calendar/shift definitions, and basic job plan templates. Scheduled dates on work orders and the ownership-vs-assignment distinction are the defining Level 1 signals.",
       "valueStatement": "Establishes baseline scheduling discipline and digital labor records — moving away from unstructured verbal dispatch to formal scheduled dates and distinct work assignments in Maximo Manage.",
-      "readinessText": null,
       "potentialOutcomes": [
         {
           "stat": "Elimination",
@@ -10991,11 +11242,6 @@ const journey = {
           "stat": "Baseline",
           "label": "tracking of work order scheduled start and finish targets"
         }
-      ],
-      "keyMoves": [
-        "Establish formal Assignment records for all active work orders.",
-        "Define technician craft, shift, and calendar records.",
-        "Ensure all active work orders carry scheduled start and finish dates."
       ],
       "products": [
         {
@@ -11021,7 +11267,6 @@ const journey = {
       "name": "Coordinated Operations",
       "description": "Work orders carry scheduled dates and a forward planning horizon is established (weekly to monthly). A centralized scheduler or dispatcher role is active and using Assignment Manager. Workforce availability data is enriched with exceptions. Job plans are enriched with materials, tools, and classifications. HSE, Inspections, and Inventory management enter at this stage as parallel capability layers.",
       "valueStatement": "Centralizes schedule coordination and field dispatch — providing single-pane visibility across labor and crew capacity, extending forward planning horizons, and deploying mobile work execution to eliminate paper delays.",
-      "readinessText": null,
       "potentialOutcomes": [
         {
           "stat": "10–15%",
@@ -11035,12 +11280,6 @@ const journey = {
           "stat": "Multi-week",
           "label": "forward planning horizon actively managed in Assignment Manager"
         }
-      ],
-      "keyMoves": [
-        "Stand up a central scheduler/dispatcher role in Assignment Manager.",
-        "Enrich workforce availability with shifts, exceptions, and crafts.",
-        "Add materials, tools, and classifications to job plans.",
-        "Roll out mobile work execution to field crews."
       ],
       "products": [
         {
@@ -11071,7 +11310,6 @@ const journey = {
       "name": "Structured Scheduling",
       "description": "Forward planning extends to rolling windows with predecessor and hierarchy constraints. System-suggested dispatch based on effective availability is active. Job plans are scoped to asset classes, include hierarchies and predecessors, and are linked to asset data. Inspection results feed condition data and inventory is planned against work requirements.",
       "valueStatement": "Optimizes crew productivity and work preparation — enriching job plans with planned materials and tool requirements, sequencing work by dependencies, and routing technicians by geographic proximity.",
-      "readinessText": null,
       "potentialOutcomes": [
         {
           "stat": "15–25%",
@@ -11085,12 +11323,6 @@ const journey = {
           "stat": "Real-time",
           "label": "effective capacity calculation accounting for leaves and active assignments"
         }
-      ],
-      "keyMoves": [
-        "Move to rolling planning windows with predecessor constraints.",
-        "Enable system-suggested dispatch on effective availability.",
-        "Scope job plans to asset classes and hierarchies.",
-        "Feed inspection results into asset condition data."
       ],
       "products": [
         {
@@ -11126,7 +11358,6 @@ const journey = {
       "name": "Intelligent Field Coordination",
       "description": "The Optimizer runs automatically via cron-based scheduling. Assignments are system-generated based on constraints, skills, and optimized availability. Planning, Scheduling, and Dispatch dashboards are live with cost, resource, and compliance views. Condition-based inspection and optimized inventory management are active.",
       "valueStatement": "Automates schedule optimization and exception handling — using constraint-based algorithms to match technicians by skill and location, dynamically inject emergency break-in work, and integrate storeroom inventory at the point of work.",
-      "readinessText": null,
       "potentialOutcomes": [
         {
           "stat": "≥80%",
@@ -11140,12 +11371,6 @@ const journey = {
           "stat": "Real-time",
           "label": "storeroom balance visibility and mobile material issuance from the field"
         }
-      ],
-      "keyMoves": [
-        "Introduce optimization-driven scheduling across crews and territories.",
-        "Connect condition and IoT signals to trigger work automatically.",
-        "Plan inventory and logistics against forecast work demand.",
-        "Measure schedule compliance and wrench time continuously."
       ],
       "products": [
         {
@@ -11186,7 +11411,6 @@ const journey = {
       "name": "Optimized Field Operations",
       "description": "The Optimizer operates fully autonomously for routine scheduling and dispatch. Humans are approvers and exception handlers only. Strategic inventory, AIP-connected job plans, and GenAI-assisted work execution complete the full FSM maturity picture.",
       "valueStatement": "Achieves autonomous, end-to-end field workforce execution — leveraging automated cron-based optimization, GenAI point-of-work troubleshooting, and real-time field actuals to drive continuous schedule refinement.",
-      "readinessText": null,
       "potentialOutcomes": [
         {
           "stat": "Up to 26%",
@@ -11200,12 +11424,6 @@ const journey = {
           "stat": "Closed-loop",
           "label": "feedback from field actuals directly into job plan durations and inventory forecasts"
         }
-      ],
-      "keyMoves": [
-        "Run continuous, AI-assisted schedule optimization.",
-        "Close the loop from asset health to planning and dispatch.",
-        "Standardize KPIs and benchmarks across all regions.",
-        "Embed field feedback into job-plan and reliability improvement."
       ],
       "products": [
         {
@@ -12662,8 +12880,8 @@ function growthAppetitePass5(answers, assessment) {
     answered++;
     totalScore += (opt.score ?? 0);
     signals.push({
-      label:          opt.signalLabel     || "",
-      interpretation: opt.interpretation  || "",
+      label:          opt.signalLabel    || "",
+      interpretation: opt.interpretation || "",
     });
   });
 
@@ -12712,9 +12930,6 @@ score = async function(answers, assessment) {
     return acc;
   }, { MET: 0, UNMET: 0, UNKNOWN: 0 });
 
-  // Pass 5 — Growth Appetite (follow-up only, does not affect milestone/stage logic)
-  const growthAppetite = growthAppetitePass5(answers, assessment);
-
   return {
     contact: {
       name:         answers["__contact_name"]         || "",
@@ -12745,7 +12960,7 @@ score = async function(answers, assessment) {
     objectiveLabels: pass3.objectiveLabels,
     actionPlan,
     milestoneCounts: counts,
-    growthAppetite,
+    growthAppetite: growthAppetitePass5(answers, assessment),
     _milestoneStates: milestoneStates, // kept for debugging
   };
 }
@@ -12943,12 +13158,12 @@ const PICTOGRAM_QA = `<img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIG
 
 const PICTOGRAM_TREE_MAP = `
   <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <g clip-path="url(#clip0_flexibility_js)">
+    <g clip-path="url(#clip0_flexibility_root)">
       <rect width="32" height="32" fill="white" fill-opacity="0.01"/>
       <path d="M19.3612 30.9992H18.6412V15.9992C18.6412 14.6982 19.7002 13.6392 21.0012 13.6392H30.1322L27.7462 11.2532L28.2562 10.7442L31.5102 13.9992L28.2562 17.2542L27.7462 16.7452L30.1322 14.3592H21.0012C20.0972 14.3592 19.3612 15.0952 19.3612 15.9992V30.9992ZM16.3612 30.9992H15.6412V1.86823L13.2552 4.25323L12.7462 3.74423L16.0012 0.490234L19.2562 3.74523L18.7462 4.25423L16.3612 1.86823V30.9992ZM13.3612 30.9992H12.6412V20.9992C12.6412 20.0952 11.9052 19.3592 11.0012 19.3592H1.87019L4.25519 21.7442L3.74619 22.2542L0.492188 18.9992L3.74719 15.7452L4.25619 16.2542L1.87019 18.6392H11.0012C12.3022 18.6392 13.3612 19.6982 13.3612 20.9992V30.9992Z" fill="white"/>
     </g>
     <defs>
-      <clipPath id="clip0_flexibility_js">
+      <clipPath id="clip0_flexibility_root">
         <rect width="32" height="32" fill="white"/>
       </clipPath>
     </defs>
@@ -13363,7 +13578,12 @@ function renderExpansionCard(containerId, track, trackResult) {
     </div>
     </div>
 
-    `;
+    <div class="expansion-card__actions">
+      <cds-button kind="tertiary" size="lg">
+        Talk to a seller
+        ${ICON_USER_SERVICE}
+      </cds-button>
+    </div>`;
 
   const railEl = el.querySelector(".stage-rail");
   // Use hover mode on desktop, tap/button mode on mobile
@@ -13532,11 +13752,11 @@ function renderActionPlan(actionPlan) {
             <p class="bonus-resource__title">Asset Performance Management &amp; Field Service Management maturity maps</p>
             <p class="bonus-resource__desc">Explore the journey from foundational asset management and coordinated field operations to predictive reliability, intelligent scheduling, and fully optimized enterprise performance.</p>
             <div class="bonus-resource__action bonus-resource__action--row">
-              <cds-button kind="tertiary" size="lg" href="docs/apm-maturity-map.html" target="_blank" rel="noopener noreferrer">
+              <cds-button kind="tertiary" size="lg" href="apm-maturity-map.html" target="_blank" rel="noopener noreferrer">
                 APM Maturity map
                 <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 28H6a2 2 0 01-2-2V6a2 2 0 012-2h10v2H6v20h20V16h2v10a2 2 0 01-2 2z"/><path d="M21 2v2h5.59L18 12.59 19.41 14 28 5.41V11h2V2z"/></svg>
               </cds-button>
-              <cds-button kind="tertiary" size="lg" href="docs/fsm-maturity-map.html" target="_blank" rel="noopener noreferrer">
+              <cds-button kind="tertiary" size="lg" href="fsm-maturity-map.html" target="_blank" rel="noopener noreferrer">
                 FSM Maturity map
                 <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 28H6a2 2 0 01-2-2V6a2 2 0 012-2h10v2H6v20h20V16h2v10a2 2 0 01-2 2z"/><path d="M21 2v2h5.59L18 12.59 19.41 14 28 5.41V11h2V2z"/></svg>
               </cds-button>
@@ -13551,11 +13771,11 @@ function renderActionPlan(actionPlan) {
         <div class="bonus-resource__inner">
           <div class="bonus-resource__icon">${PICTOGRAM_QA}</div>
           <div class="bonus-resource__body">
-            <p class="bonus-resource__title">View your responses to the Assessment</p>
-            <p class="bonus-resource__desc">Keep a copy of your assessment answers to share with colleagues who weren't in the room, or to revisit your thinking before your next planning conversation.</p>
+            <p class="bonus-resource__title">Your responses are included in the PDF</p>
+            <p class="bonus-resource__desc">The Download PDF above includes a full copy of your assessment answers — every question with the answer given — appended after the report.</p>
             <div class="bonus-resource__action">
-              <cds-button kind="tertiary" size="lg" disabled data-download="responses">
-                Download responses
+              <cds-button kind="primary" size="lg" data-download="pdf">
+                Download PDF
                 <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4z"/><path d="M26 14l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
               </cds-button>
             </div>
@@ -13947,12 +14167,10 @@ function initPrint(contact) {
     // already-opened page as the state to restore, and the tabs and stage
     // cards would stay open after printing — so it only ever runs once.
     if (document.documentElement.classList.contains("is-printing")) return;
-    // The responses download sets its own title; leave that one alone.
-    if (!document.documentElement.classList.contains("is-printing-responses")) {
-      titleBeforePrint = document.title;
-      document.title = reportTitle;
-    }
+    titleBeforePrint = document.title;
+    document.title = `${reportTitle} — with responses`;
     document.documentElement.classList.add("is-printing");
+    document.documentElement.classList.add("is-printing-combined");
     // Tab panels: remember the inline value so the tab state survives the print.
     $$(".established-panel").forEach(panel => {
       panel.dataset.printDisplay = panel.style.display;
@@ -13972,6 +14190,7 @@ function initPrint(contact) {
       titleBeforePrint = null;
     }
     document.documentElement.classList.remove("is-printing");
+    document.documentElement.classList.remove("is-printing-combined");
     $$(".established-panel").forEach(panel => {
       panel.style.display = panel.dataset.printDisplay || "";
       delete panel.dataset.printDisplay;
@@ -13987,7 +14206,7 @@ function initPrint(contact) {
   window.addEventListener("beforeprint", openEverything);
   window.addEventListener("afterprint", restore);
 
-  $$('cds-menu-item[data-download="pdf"]').forEach(item => {
+  $$('[data-download="pdf"]').forEach(item => {
     item.addEventListener("click", () => {
       // print() lays the page out for paper itself, so it is called straight
       // away. Waiting a frame first would stall indefinitely in a tab that is
@@ -14141,7 +14360,7 @@ function renderResponsesDoc(stored, contact, growthAppetite) {
     stored.sample  ? "Sample answers — complete the assessment to download your own" :
     stored.missing ? "Your answers were not saved in this browser tab — complete the assessment again to include them" :
                      `Answers submitted on ${submitted}`;
-  const pages = [SESSION_DETAILS_PAGE, ...(assessment.pages || [])];
+  const pages = [...(assessment.pages || [])];
 
   const body = pages.map((page, i) => {
     const sections = page.sections.map(section => {
@@ -14179,10 +14398,6 @@ function renderResponsesDoc(stored, contact, growthAppetite) {
       <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiBmaWxsPSJ3aGl0ZSIgZmlsbC1vcGFjaXR5PSIwLjAxIi8+CjxtYXNrIGlkPSJtYXNrMF8xMjAzXzI2MDI0IiBzdHlsZT0ibWFzay10eXBlOmx1bWluYW5jZSIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeD0iMiIgeT0iNCIgd2lkdGg9IjYwIiBoZWlnaHQ9IjU3Ij4KPHBhdGggZD0iTTYxLjc1IDMxLjAzMDRMNTQuMDkgMTcuMjQ0NEM1Ni4yNTYgMTcuODk4NCA1OC44NCAxOC42Njg0IDU4Ljg0IDE4LjY2ODRMNjAuMDAyIDE0Ljg0MDRMNDguNTE4IDExLjM1NjRMNDUuMDM0IDIyLjg0MDRMNDguODYyIDI0LjAwMjRMNTAuNDE4IDE4Ljg3MDRMNTcuNyAzMS45Nzg0TDQ0Ljg1MiA1NC4wMDI0SDIwVjU4LjAwMjRINDZDNDYuMzQ5NiA1OC4wMDI1IDQ2LjY5MzEgNTcuOTExIDQ2Ljk5NjMgNTcuNzM3QzQ3LjI5OTUgNTcuNTYyOSA0Ny41NTE4IDU3LjMxMjQgNDcuNzI4IDU3LjAxMDRMNjEuNzI4IDMzLjAxMDRDNjEuOTAzMSAzMi43MTEgNjEuOTk3MSAzMi4zNzEgNjIuMDAwNiAzMi4wMjQxQzYyLjAwNDEgMzEuNjc3MiA2MS45MTcgMzEuMzM1NCA2MS43NDggMzEuMDMyNEw2MS43NSAzMS4wMzA0WiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTE4IDYwLjM4ODdWNTAuMzg4N0gzNlY2MC4zODg3SDE4WiIgZmlsbD0idXJsKCNwYWludDBfbGluZWFyXzEyMDNfMjYwMjQpIi8+CjxwYXRoIGQ9Ik0xOC4wMDA3IDYuMDAwMDlDMTcuNjUxMSA1Ljk5OTk5IDE3LjMwNzUgNi4wOTE1MyAxNy4wMDQzIDYuMjY1NTlDMTYuNzAxMSA2LjQzOTY1IDE2LjQ0ODkgNi42OTAxNCAxNi4yNzI3IDYuOTkyMDlMMi4yNzI2NyAzMC45OTIxQzIuMDk3NTYgMzEuMjkxNiAyLjAwMzYxIDMxLjYzMTUgMi4wMDAxIDMxLjk3ODRDMS45OTY1OSAzMi4zMjUzIDIuMDgzNjUgMzIuNjY3MSAyLjI1MjY3IDMyLjk3MDFMOS45MTI2NyA0Ni43NTYxQzcuNzQ2NjcgNDYuMTAyMSA1LjE2MjY3IDQ1LjMzMjEgNS4xNjI2NyA0NS4zMzIxTDQuMDAwNjcgNDkuMTYwMUwxNS40ODQ3IDUyLjY0NDFMMTguOTY4NyA0MS4xNjAxTDE1LjE0MDcgMzkuOTk4MUwxMy41ODQ3IDQ1LjEyODFMNi4zMDI2NyAzMi4wMjAxTDE5LjE1MDcgOS45OTYwOUg0NC4wMDI3VjUuOTk2MDlIMTguMDAyN0wxOC4wMDA3IDYuMDAwMDlaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNNDYgNC42NDg0NFYxNC42NDg0TDI4IDE0LjY0ODRWNC42NDg0NEw0NiA0LjY0ODQ0WiIgZmlsbD0idXJsKCNwYWludDFfbGluZWFyXzEyMDNfMjYwMjQpIi8+CjwvbWFzaz4KPGcgbWFzaz0idXJsKCNtYXNrMF8xMjAzXzI2MDI0KSI+CjxyZWN0IHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgZmlsbD0idXJsKCNwYWludDJfbGluZWFyXzEyMDNfMjYwMjQpIi8+CjwvZz4KPHBhdGggZD0iTTMyIDQyQzI2LjQ4NiA0MiAyMiAzNy41MTQgMjIgMzJDMjIgMjYuNDg2IDI2LjQ4NiAyMiAzMiAyMkMzNy41MTQgMjIgNDIgMjYuNDg2IDQyIDMyQzQyIDM3LjUxNCAzNy41MTQgNDIgMzIgNDJaTTMyIDI2QzI4LjY5MiAyNiAyNiAyOC42OTIgMjYgMzJDMjYgMzUuMzA4IDI4LjY5MiAzOCAzMiAzOEMzNS4zMDggMzggMzggMzUuMzA4IDM4IDMyQzM4IDI4LjY5MiAzNS4zMDggMjYgMzIgMjZaIiBmaWxsPSIjMDAxRDZDIi8+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9InBhaW50MF9saW5lYXJfMTIwM18yNjAyNCIgeDE9IjM2IiB5MT0iNTUuMzg4NyIgeDI9IjE4IiB5Mj0iNTUuMzg4NyIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLW9wYWNpdHk9IjAiLz4KPHN0b3Agb2Zmc2V0PSIwLjkiLz4KPC9saW5lYXJHcmFkaWVudD4KPGxpbmVhckdyYWRpZW50IGlkPSJwYWludDFfbGluZWFyXzEyMDNfMjYwMjQiIHgxPSIyOCIgeTE9IjkuNjQ4NDQiIHgyPSI0NiIgeTI9IjkuNjQ4NDQiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KPHN0b3Agc3RvcC1vcGFjaXR5PSIwIi8+CjxzdG9wIG9mZnNldD0iMC45Ii8+CjwvbGluZWFyR3JhZGllbnQ+CjxsaW5lYXJHcmFkaWVudCBpZD0icGFpbnQyX2xpbmVhcl8xMjAzXzI2MDI0IiB4MT0iLTQuNzY4MzdlLTA3IiB5MT0iNjQiIHgyPSI2NCIgeTI9Ii00Ljc2ODM3ZS0wNyIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBvZmZzZXQ9IjAuMSIgc3RvcC1jb2xvcj0iI0E1NkVGRiIvPgo8c3RvcCBvZmZzZXQ9IjAuOSIgc3RvcC1jb2xvcj0iIzAwNDNDRSIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjwvc3ZnPgo=" alt="" width="32" height="32" />
       <h1 class="report-sidebar__title">Your assessment<br>responses</h1>
       <p class="report-sidebar__version">beta v3</p>
-      <div class="report-sidebar__meta">
-        ${contactLines(contact)}
-        <p class="meta-date">${escHtml(provenance)}</p>
-      </div>
     </header>
     <p class="report-body-text responses-doc__intro">Every question from the MAS Growth Readiness Assessment, with the answer given. Your roadmap is built from these.</p>
     ${body}`;
@@ -14220,10 +14435,8 @@ function initResponsesDownload(contact, isDemoReport, growthAppetite) {
    Bootstrap
    -------------------------------------------------------------------------- */
 initReport = async function(result) {
-  // In the standalone build, app.js passes the result directly to avoid
-  // sessionStorage and page navigation.  On report.html, fall back to
-  // sessionStorage (or the mock when nothing has been stored yet).
-  let result = injectedResult ?? MOCK_RESULT;
+  // Load scoring result from sessionStorage, fall back to mock
+  result = result ?? MOCK_RESULT;
 
   // Render all sections
   renderSidebarMeta(result.contact);
@@ -14245,12 +14458,18 @@ initReport = async function(result) {
 
 // ── Standalone bridge ─────────────────────────────────────────────────────
 // Replaces the sessionStorage + window.location redirect used in the
-// multi-page version. After scoring finishes, app.js calls this instead.
+// multi-page version.  After scoring finishes, app.js calls this instead.
 
 window.__showReport = async function(result, answers) {
+  // Store on window so report init() can read it (report.js checks
+  // sessionStorage first; we pre-populate it here as a fallback store).
   try { sessionStorage.setItem("scoringResult", JSON.stringify(result)); } catch(_) {}
+  // "Your responses" reads the answers from sessionStorage on the site. Hand
+  // them over directly too, so the download still works where a browser keeps
+  // no storage for files opened from disk.
   window.__assessmentResponses = { submittedAt: new Date().toISOString(), answers: answers || {} };
 
+  // Hide assessment, show report
   document.getElementById("view-assessment").style.display = "none";
   const reportView = document.getElementById("view-report");
   reportView.style.display = "block";
@@ -14258,8 +14477,10 @@ window.__showReport = async function(result, answers) {
   document.body.classList.add("report-page");
   window.scrollTo({ top: 0, behavior: "instant" });
 
+  // Run the report renderer (already loaded in this scope)
   await initReport(result);
 };
+
 
 
 // ── js/app.js ──────────────────────────────────────────────────────────
@@ -14851,6 +15072,208 @@ const getNextLabel = () =>
   Array.from(els.btnNext.childNodes).find(
     (n) => n.nodeType === Node.TEXT_NODE && n.textContent.trim()
   );
+
+
+
+    /* ── Inline Maturity Map Controller ── */
+    const SVG_CHECK = `<svg viewBox="0 0 32 32" width="16" height="16" fill="none" stroke="#161616" stroke-width="2" aria-hidden="true"><circle cx="16" cy="16" r="13"/><polyline points="10,16 14,20 22,12"/></svg>`;
+    const SVG_UP    = `<svg class="arrow-up-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true" style="color:#161616"><path d="M16 4l-10 10h6v14h8V14h6z"/></svg>`;
+    const SVG_DOWN  = `<svg class="arrow-down-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true" style="color:#161616"><path d="M16 28l10-10h-6V4h-8v14H6z"/></svg>`;
+
+    const APM_METRICS = {
+      APM2: [
+        { direction: 'up',   dots: 1, label: 'Unplanned downtime' },
+        { direction: 'down', dots: 1, label: 'Labour productivity' },
+        { direction: 'up',   dots: 1, label: 'MRO capital spend'  },
+      ],
+      APM3: [
+        { direction: 'up',   dots: 2, label: 'Unplanned downtime' },
+        { direction: 'down', dots: 2, label: 'Labour productivity' },
+        { direction: 'up',   dots: 2, label: 'MRO capital spend'  },
+      ],
+      APM4: [
+        { direction: 'up',   dots: 3, label: 'Unplanned downtime' },
+        { direction: 'down', dots: 3, label: 'Labour productivity' },
+        { direction: 'up',   dots: 3, label: 'MRO capital spend'  },
+      ],
+      APM5: [
+        { direction: 'up',   dots: 4, label: 'Unplanned downtime' },
+        { direction: 'down', dots: 4, label: 'Labour productivity' },
+        { direction: 'up',   dots: 4, label: 'MRO capital spend'  },
+      ],
+    };
+
+    const FSM_METRICS = {
+      FSM2: [
+        { direction: 'up',   dots: 1, label: 'Technician productivity' },
+        { direction: 'down', dots: 1, label: 'Dispatch overhead'       },
+        { direction: 'up',   dots: 1, label: 'First-time fix rate'     },
+      ],
+      FSM3: [
+        { direction: 'up',   dots: 2, label: 'Technician productivity' },
+        { direction: 'down', dots: 2, label: 'Dispatch overhead'       },
+        { direction: 'up',   dots: 2, label: 'First-time fix rate'     },
+      ],
+      FSM4: [
+        { direction: 'up',   dots: 3, label: 'Technician productivity' },
+        { direction: 'down', dots: 3, label: 'Dispatch overhead'       },
+        { direction: 'up',   dots: 3, label: 'First-time fix rate'     },
+      ],
+      FSM5: [
+        { direction: 'up',   dots: 4, label: 'Technician productivity' },
+        { direction: 'down', dots: 4, label: 'Dispatch overhead'       },
+        { direction: 'up',   dots: 4, label: 'First-time fix rate'     },
+      ],
+    };
+
+    function embedDots(count, purple) {
+      const cls = purple ? 'metric-dot--purple' : 'metric-dot--blue';
+      return Array.from({ length: 4 }, (_, i) =>
+        `<div class="metric-dot${i < count ? ' ' + cls : ''}"></div>`
+      ).join('');
+    }
+
+    function renderEmbedMetrics(journeyType, stageId, purple) {
+      const registry = journeyType === 'apm' ? APM_METRICS : FSM_METRICS;
+      const metrics = registry[stageId] || [];
+      return metrics.map(m => `
+        <div class="metric-item">
+          ${m.direction === 'up' ? SVG_UP : SVG_DOWN}
+          <div class="metric-item__dots">${embedDots(m.dots, purple)}</div>
+          <span class="metric-item__label">${m.label}</span>
+        </div>`).join('');
+    }
+
+    window.switchEmbedTab = function(type) {
+      const fsmBtn = document.getElementById('embed-btn-fsm');
+      const apmBtn = document.getElementById('embed-btn-apm');
+      const pageTitle = document.getElementById('embed-map-title');
+      const pageSubtitle = document.getElementById('embed-map-subtitle');
+      const grid = document.getElementById('embed-map-grid');
+
+      if (type === 'apm') {
+        fsmBtn.classList.remove('active');
+        fsmBtn.setAttribute('aria-selected', 'false');
+        apmBtn.classList.add('active');
+        apmBtn.setAttribute('aria-selected', 'true');
+
+        pageTitle.innerText = "Assess, Advance, Achieve";
+        pageSubtitle.innerText = "Assess where you are today and advance towards reliability-driven operations with Asset Performance Management.";
+
+        const apmStages = journey.apm.filter(s => s.stage >= 2);
+        grid.innerHTML = apmStages.map(stage => renderEmbedStageCard('apm', stage)).join('');
+      } else {
+        apmBtn.classList.remove('active');
+        apmBtn.setAttribute('aria-selected', 'false');
+        fsmBtn.classList.add('active');
+        fsmBtn.setAttribute('aria-selected', 'true');
+
+        pageTitle.innerText = "Plan your next move";
+        pageSubtitle.innerText = "Assess where field operations stand today and advance toward autonomous, self-optimizing field service.";
+
+        const fsmStages = journey.fsm.filter(s => s.stage >= 2);
+        grid.innerHTML = fsmStages.map(stage => renderEmbedStageCard('fsm', stage)).join('');
+      }
+    };
+
+    function renderEmbedStageCard(journeyType, stage) {
+      const from  = stage.stage - 1;
+      const to    = stage.stage;
+      const purple = stage.stage >= 4;
+      const accentCls = purple ? ' stage-label__target--purple' : '';
+      const bulletCls = purple ? ' stage-list__bullet--purple' : '';
+      const arrowCls  = purple ? ' stage-list__arrow--purple'  : '';
+      const readyCls  = purple ? ' stage-ready--purple' : '';
+
+      const gainItems = stage.potentialOutcomes.map(o => `
+        <li class="stage-list__item">
+          <span class="stage-list__bullet${bulletCls}" aria-hidden="true">•</span>
+          <span class="stage-list__text"><strong>${o.stat}</strong> ${o.label}</span>
+        </li>`).join('');
+
+      const moveItems = (stage.keyMoves || []).map(m => `
+        <li class="stage-list__item">
+          <span class="stage-list__arrow${arrowCls}" aria-hidden="true">→</span>
+          <span class="stage-list__text">${m}</span>
+        </li>`).join('');
+
+      return `
+      <article class="stage-card">
+        <div class="stage-card__body">
+          <p class="stage-label">STAGE ${from} → <span class="stage-label__target${accentCls}">STAGE ${to}</span></p>
+          <h2 class="stage-name">${stage.name}</h2>
+          <p class="stage-quote">"${stage.description}"</p>
+
+          <div class="stage-ready${readyCls}">
+            <div class="stage-ready__header">
+              ${SVG_CHECK}
+              <span class="stage-ready__label">Are you ready?</span>
+            </div>
+            <p class="stage-ready__text">${stage.readinessText || stage.valueStatement}</p>
+          </div>
+
+          <p class="stage-section-label">What you gain</p>
+          <ul class="stage-list" aria-label="What you gain at ${stage.name} stage">${gainItems}</ul>
+
+          <p class="stage-section-label">Key moves to get there</p>
+          <ul class="stage-list" aria-label="Key moves for ${stage.name} stage">${moveItems}</ul>
+        </div>
+
+        <div class="stage-card__metrics">${renderEmbedMetrics(journeyType, stage.id, purple)}</div>
+      </article>`;
+    }
+
+    window.showEmbedMap = function(type) {
+      document.getElementById('view-report').style.display = 'none';
+      document.getElementById('view-maturity-map').style.display = 'block';
+      window.switchEmbedTab(type);
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    };
+
+    window.hideEmbedMap = function() {
+      document.getElementById('view-maturity-map').style.display = 'none';
+      document.getElementById('view-report').style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Intercept any map buttons and back buttons
+      const setupHandlers = () => {
+        const backBtn = document.getElementById('map-back-btn');
+        if (backBtn) {
+          backBtn.style.cursor = 'pointer';
+          backBtn.onclick = (e) => {
+            e.preventDefault();
+            window.hideEmbedMap();
+          };
+        }
+
+        document.querySelectorAll('cds-button, a').forEach(btn => {
+          const href = btn.getAttribute('href') || '';
+          if (href.includes('apm-maturity-map.html') || href.endsWith('#apm') || href.includes('journeys.html#apm')) {
+            btn.removeAttribute('href');
+            btn.style.cursor = 'pointer';
+            btn.onclick = (e) => {
+              e.preventDefault();
+              window.showEmbedMap('apm');
+            };
+          } else if (href.includes('fsm-maturity-map.html') || href.endsWith('#fsm') || href.includes('journeys.html#fsm')) {
+            btn.removeAttribute('href');
+            btn.style.cursor = 'pointer';
+            btn.onclick = (e) => {
+              e.preventDefault();
+              window.showEmbedMap('fsm');
+            };
+          }
+        });
+      };
+
+      setupHandlers();
+      // Polling hooks to intercept after Carbon upgrades elements
+      setTimeout(setupHandlers, 500);
+      setTimeout(setupHandlers, 1500);
+      setTimeout(setupHandlers, 3000);
+    });
 
 render(); // no await in standalone — Carbon upgrades asynchronously
 updateProgressOffset();

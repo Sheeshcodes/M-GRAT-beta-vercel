@@ -4,6 +4,17 @@ A high-level record of what changed in M-GRAT and when. This focuses on what sel
 
 ---
 
+## Week of 2–8 Oct 2026
+
+### ✦ New capabilities
+- **Maturity map fully embedded in the self-serve tool** — The APM and FSM maturity maps now render entirely inside `MAS-growth-assessment-self-serve.html`. Stage cards, key moves, metrics, and the APM/FSM tab switcher all load without leaving the tool or opening a new tab.
+- **Combined PDF: report and responses in a single print run** — A new print mode (`is-printing-combined`) lets the tool produce one PDF that contains both the full report and the customer's question responses, eliminating the need for two separate downloads.
+
+### ◎ Changed behaviour
+- **"Act to Improve" feedback prints for both Yes and No answers** — Previously, only a "Yes" response was carried into the PDF. Now both Yes and No (including any comment) appear under the question in print, so the full feedback record is always captured.
+
+---
+
 ## Week of 29 Sep – 1 Oct 2026
 
 ### ✦ New capabilities
@@ -24,6 +35,7 @@ A high-level record of what changed in M-GRAT and when. This focuses on what sel
 
 ### ⚑ Infrastructure
 - **Consolidated single-command build pipeline and modular Python architecture** — Centralized spreadsheet parsing, data generation, and offline bundle assembly into clean pipeline stages with a unified build runner (`python3 scripts/build_all.py`).
+- **Clean Code & Python modularization** — Extracted shared workbook utilities (`read_workbook`, slug/text helpers) into `scripts/common.py`, eliminated inter-script runtime path hacks, added full type annotations, and decomposed `scripts/bundle.py` into distinct functional stages.
 - **GitHub Pages seller landing page launched** — A public-facing landing page and seller guide were added under `docs/`, accessible at the IBM GitHub Pages URL. This is the primary link sellers use for the facilitated session.
 - **Vercel hosting set up** — The tool is now deployed on Vercel for the public-facing self-serve path. Pushes to `main` deploy automatically.
 - **IBM GitHub mirror configured** — The repo automatically mirrors from the internal IBM GitHub to a public GitHub.com mirror on every push, enabling external access without manual syncing.

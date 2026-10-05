@@ -2149,6 +2149,10 @@ html, body { overflow-x: clip; }
     line-height: 20px;
     color: var(--cds-text-primary);
   }
+  #act-improve .feedback__question {
+    font-size: 20px;
+    line-height: 28px;
+  }
 
   /* ── Single column; the sidebar becomes a compact cover block ────────── */
   /* The report is set for a screen: 16px body, 40px headings. On paper that is
