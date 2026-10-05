@@ -4230,7 +4230,7 @@ cds-menu-item::part(list-item) {
   gap: 8px;
 }
 
-/* Print only — the "Yes" under the question once it has been answered. */
+/* Print only — the answer under the question once it has been answered. */
 .feedback__answer {
   display: none;
 }
@@ -4714,15 +4714,15 @@ html, body { overflow-x: clip; }
   .expansion-card__actions,
   .expansion-card > div:last-child:has(cds-button),
   .accelerate-card cds-button,
-  #act-improve:not(.is-useful),
+  #act-improve:not(.is-answered),
   #act-improve .feedback__text,
   #act-improve .feedback__actions,
   cds-tooltip {
     display: none !important;
   }
 
-  /* Answered "Yes": the question and its answer, kept together. */
-  #act-improve.is-useful {
+  /* Answered (Yes or No): the question and its answer, kept together. */
+  #act-improve.is-answered {
     break-inside: avoid;
   }
   #act-improve .feedback {
@@ -4734,6 +4734,10 @@ html, body { overflow-x: clip; }
     font-size: 14px;
     line-height: 20px;
     color: var(--cds-text-primary);
+  }
+  #act-improve .feedback__question {
+    font-size: 20px;
+    line-height: 28px;
   }
 
   /* ── Single column; the sidebar becomes a compact cover block ────────── */
@@ -13797,12 +13801,15 @@ function wireFeedback() {
   const send = (value, comment) => {
     document.dispatchEvent(new CustomEvent("report:feedback", { detail: { value, comment: comment || "" } }));
     el.innerHTML = `<p class="feedback__thanks">Thanks — noted.</p>`;
-    // A "Yes" goes into the PDF too: the section prints with the answer under
-    // the question. Unanswered (or "No") it stays out, as before.
-    if (value === "yes") {
-      el.closest("#act-improve")?.classList.add("is-useful");
-      el.insertAdjacentHTML("beforebegin", `<p class="feedback__answer">Yes</p>`);
-    }
+    // Both "Yes" and "No" print in the PDF. The section is shown whenever
+    // answered; the answer (and optional comment for "No") appear under the question.
+    el.closest("#act-improve")?.classList.add("is-answered");
+    const answerText = value === "yes"
+      ? "Yes"
+      : comment
+        ? `No — ${comment}`
+        : "No";
+    el.insertAdjacentHTML("beforebegin", `<p class="feedback__answer">${answerText}</p>`);
   };
 
   // "No" asks what would make the report more useful before sending.

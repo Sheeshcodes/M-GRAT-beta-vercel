@@ -4,6 +4,17 @@ A high-level record of what changed in M-GRAT and when. This focuses on what sel
 
 ---
 
+## Week of 2–8 Oct 2026
+
+### ✦ New capabilities
+- **Maturity map fully embedded in the self-serve tool** — The APM and FSM maturity maps now render entirely inside `MAS-growth-assessment-self-serve.html`. Stage cards, key moves, metrics, and the APM/FSM tab switcher all load without leaving the tool or opening a new tab.
+- **Combined PDF: report and responses in a single print run** — A new print mode (`is-printing-combined`) lets the tool produce one PDF that contains both the full report and the customer's question responses, eliminating the need for two separate downloads.
+
+### ◎ Changed behaviour
+- **"Act to Improve" feedback prints for both Yes and No answers** — Previously, only a "Yes" response was carried into the PDF. Now both Yes and No (including any comment) appear under the question in print, so the full feedback record is always captured.
+
+---
+
 ## Week of 29 Sep – 1 Oct 2026
 
 ### ✦ New capabilities
