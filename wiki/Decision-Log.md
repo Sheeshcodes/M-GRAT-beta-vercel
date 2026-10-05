@@ -4,7 +4,7 @@ A record of significant decisions made during the design and build of M-GRAT —
 
 ---
 
-## DEC-001 · Two delivery modes: facilitated and self-serve
+## Two delivery modes: facilitated and self-serve
 **Date:** 30 Sep 2026  
 **Status:** Active
 
@@ -16,7 +16,7 @@ A record of significant decisions made during the design and build of M-GRAT —
 
 ---
 
-## DEC-002 · Host on Vercel (interim), not IBM-managed infrastructure
+## Host on Vercel (interim), not IBM-managed infrastructure
 **Date:** 22–23 Sep 2026  
 **Status:** Interim — under review
 
@@ -30,7 +30,7 @@ A record of significant decisions made during the design and build of M-GRAT —
 
 ---
 
-## DEC-003 · Excel as the single source of truth for all content
+## Excel as the single source of truth for all content
 **Date:** 18 Sep 2026  
 **Status:** Active
 
@@ -42,7 +42,7 @@ A record of significant decisions made during the design and build of M-GRAT —
 
 ---
 
-## DEC-004 · Remove stage gating milestone assignments
+## Remove stage gating milestone assignments
 **Date:** 1 Oct 2026  
 **Status:** Active
 
@@ -54,7 +54,7 @@ A record of significant decisions made during the design and build of M-GRAT —
 
 ---
 
-## DEC-005 · Inline all data — no runtime file fetching
+## Inline all data — no runtime file fetching
 **Date:** 1 Oct 2026  
 **Status:** Active
 
@@ -66,7 +66,7 @@ A record of significant decisions made during the design and build of M-GRAT —
 
 ---
 
-## DEC-006 · Remove Investment Readiness section from PDF
+## Remove Investment Readiness section from PDF
 **Date:** 1 Oct 2026  
 **Status:** Active (section removed; may return)
 
@@ -78,7 +78,7 @@ A record of significant decisions made during the design and build of M-GRAT —
 
 ---
 
-## DEC-007 · Combine report and responses into a single PDF download
+## Combine report and responses into a single PDF download
 **Date:** 30 Sep 2026  
 **Status:** Active
 
@@ -90,7 +90,7 @@ A record of significant decisions made during the design and build of M-GRAT —
 
 ---
 
-## DEC-008 · Mirror IBM GitHub repo to public GitHub.com
+## Mirror IBM GitHub repo to public GitHub.com
 **Date:** 23 Sep 2026  
 **Status:** Active
 
