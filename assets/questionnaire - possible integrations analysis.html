@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Questionnaire Tool Integration Analysis — M-GRAT</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:        #0043ce;
+      --blue-dark:   #002d9c;
+      --blue-bg:     #edf5ff;
+      --green:       #24a148;
+      --green-bg:    #defbe6;
+      --red:         #da1e28;
+      --red-bg:      #fff1f1;
+      --orange:      #ff832b;
+      --orange-bg:   #fff2e8;
+      --yellow-bg:   #fcf4d6;
+      --yellow-text: #7a5800;
+      --gray-10:     #f4f4f4;
+      --gray-20:     #e0e0e0;
+      --gray-70:     #525252;
+      --gray-90:     #262626;
+      --gray-100:    #161616;
+      --purple:      #8b5cf6;
+      --purple-bg:   #f5f3ff;
+      --teal:        #009d9a;
+      --teal-bg:     #d9fbfb;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+      color: var(--gray-100);
+      background: #fff;
+      line-height: 1.65;
+      font-size: 15px;
+    }
+
+    /* ── Layout ── */
+    .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      position: sticky; top: 0; height: 100vh; overflow-y: auto;
+      background: var(--gray-100); color: #fff;
+      padding: 1.75rem 1.25rem;
+      display: flex; flex-direction: column; gap: 0.1rem;
+    }
+    .sidebar-logo  { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-20); margin-bottom: 1.25rem; }
+    .sidebar-title { font-size: 0.8rem; font-weight: 600; color: #fff; line-height: 1.4; margin-bottom: 0.25rem; }
+    .nav-section   { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-20); margin: 1.1rem 0 0.3rem; }
+    .sidebar a { display: block; font-size: 0.78rem; color: var(--gray-20); text-decoration: none; padding: 0.3rem 0.4rem; border-radius: 2px; }
+    .sidebar a:hover { background: rgba(255,255,255,0.08); color: #fff; }
+    .sidebar a.verdict-yes    { color: #6ee7b7; }
+    .sidebar a.verdict-no     { color: #fca5a5; }
+    .sidebar a.verdict-maybe  { color: #fcd34d; }
+
+    /* ── Main ── */
+    main { padding: 3rem 3.5rem; max-width: 980px; }
+
+    .page-header { border-bottom: 3px solid var(--blue); padding-bottom: 1.5rem; margin-bottom: 2.5rem; }
+    .page-label  { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 0.4rem; }
+    h1 { font-size: 1.85rem; font-weight: 300; line-height: 1.2; margin-bottom: 0.6rem; }
+    .page-meta { font-size: 0.875rem; color: var(--gray-70); }
+
+    h2 { font-size: 1.2rem; font-weight: 600; margin: 2.5rem 0 1rem; padding-top: 2.5rem; border-top: 1px solid var(--gray-20); }
+    h2:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+    h3 { font-size: 0.95rem; font-weight: 600; margin: 1.25rem 0 0.5rem; color: var(--gray-90); }
+
+    /* ── Verdict strip ── */
+    .verdict-strip { display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 1.25rem 0 2rem; }
+    .verdict-chip  { display: flex; align-items: center; gap: 0.5rem; border: 1px solid var(--gray-20); border-radius: 4px; padding: 0.6rem 1rem; font-size: 0.8rem; flex: 1; min-width: 140px; }
+    .verdict-chip strong { font-size: 0.8rem; }
+    .verdict-chip.yes    { background: var(--green-bg);  border-color: var(--green);  }
+    .verdict-chip.no     { background: var(--red-bg);    border-color: var(--red);    }
+    .verdict-chip.maybe  { background: var(--yellow-bg); border-color: #cab641;       }
+
+    /* ── Intro notes ── */
+    .intro-note { background: var(--gray-10); border-left: 4px solid var(--gray-20); padding: 0.85rem 1.1rem; border-radius: 0 4px 4px 0; font-size: 0.875rem; color: var(--gray-90); margin-bottom: 1.5rem; }
+    .intro-note strong { display: block; margin-bottom: 0.2rem; color: var(--gray-100); }
+
+    /* ── Banners ── */
+    .banner { display: flex; align-items: flex-start; gap: 1rem; padding: 0.9rem 1.1rem; border-radius: 0 4px 4px 0; margin-bottom: 1.25rem; }
+    .banner-green  { background: var(--green-bg);  border-left: 4px solid var(--green); }
+    .banner-yellow { background: var(--yellow-bg); border-left: 4px solid #cab641;      }
+    .banner-red    { background: var(--red-bg);    border-left: 4px solid var(--red);   }
+    .banner-blue   { background: var(--blue-bg);   border-left: 4px solid var(--blue);  }
+    .banner-icon   { font-size: 1.25rem; flex-shrink: 0; line-height: 1; }
+    .banner-text   { font-size: 0.875rem; }
+    .banner-text strong { display: block; margin-bottom: 0.2rem; font-size: 0.9375rem; }
+
+    /* ── Tables ── */
+    table { width: 100%; border-collapse: collapse; font-size: 0.8375rem; margin: 0.75rem 0 1.75rem; }
+    th { background: var(--gray-100); color: #fff; font-weight: 600; font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.55rem 0.875rem; text-align: left; }
+    td { padding: 0.55rem 0.875rem; border-bottom: 1px solid var(--gray-20); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:nth-child(even) td { background: var(--gray-10); }
+
+    /* ── Badges ── */
+    .badge { display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.72rem; font-weight: 600; padding: 0.18rem 0.5rem; border-radius: 2px; white-space: nowrap; }
+    .badge-green  { background: var(--green-bg);  color: #166534; }
+    .badge-yellow { background: var(--yellow-bg); color: var(--yellow-text); }
+    .badge-red    { background: var(--red-bg);    color: var(--red); }
+    .badge-orange { background: var(--orange-bg); color: #7c3410; }
+    .badge-gray   { background: var(--gray-20);   color: var(--gray-90); }
+    .badge-blue   { background: var(--blue-bg);   color: var(--blue-dark); }
+    .badge-purple { background: var(--purple-bg); color: #5b21b6; }
+    .badge-teal   { background: var(--teal-bg);   color: #004144; }
+
+    /* ── Tool section headers ── */
+    .tool-h2 { display: flex; align-items: center; gap: 0.75rem; }
+    .tool-h2 .tool-badge { font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 2px; }
+
+    /* ── Pro/con lists ── */
+    .pro-con { list-style: none; display: flex; flex-direction: column; gap: 0.45rem; font-size: 0.875rem; margin: 0.5rem 0 1rem; }
+    .pro-con li { padding-left: 1.5rem; position: relative; }
+    .pro-con li.pro::before  { content: "✓"; position: absolute; left: 0; color: var(--green); font-weight: 700; }
+    .pro-con li.con::before  { content: "✗"; position: absolute; left: 0; color: var(--red); font-weight: 700; }
+    .pro-con li.warn::before { content: "~"; position: absolute; left: 0; color: var(--orange); font-weight: 700; }
+
+    /* ── Blocker cards ── */
+    .blockers { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin: 0.75rem 0 1.5rem; }
+    .blocker-card { border: 1px solid var(--gray-20); border-radius: 4px; overflow: hidden; }
+    .blocker-card-head { padding: 0.65rem 1rem; font-size: 0.8rem; font-weight: 600; }
+    .blocker-card-body { padding: 0.65rem 1rem; font-size: 0.82rem; color: var(--gray-90); }
+    .blocker-card-head.red    { background: var(--red-bg);    border-bottom: 3px solid var(--red); }
+    .blocker-card-head.orange { background: var(--orange-bg); border-bottom: 3px solid var(--orange); }
+    .blocker-card-head.gray   { background: var(--gray-10);   border-bottom: 3px solid var(--gray-20); }
+
+    code { font-family: "IBM Plex Mono","Courier New",monospace; font-size: 0.8em; background: var(--gray-10); border: 1px solid var(--gray-20); border-radius: 2px; padding: 0.08em 0.3em; color: var(--blue-dark); }
+
+    .divider { border: none; border-top: 1px solid var(--gray-20); margin: 2rem 0; }
+
+    .page-footer { margin-top: 3.5rem; padding-top: 1.25rem; border-top: 1px solid var(--gray-20); font-size: 0.72rem; color: var(--gray-70); text-align: center; }
+
+    @media (max-width: 860px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      main { padding: 2rem 1.25rem; max-width: 100%; }
+      .blockers { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- ── Sidebar ── -->
+  <nav class="sidebar" aria-label="Page navigation">
+    <div class="sidebar-logo">M-GRAT</div>
+    <div class="sidebar-title">Questionnaire Tool<br>Integration Analysis</div>
+
+    <div class="nav-section">Summary</div>
+    <a href="#verdicts">Verdicts at a glance</a>
+    <a href="#comparison">Head-to-head table</a>
+    <a href="#requirements">M-GRAT requirements</a>
+
+    <div class="nav-section">Viable</div>
+    <a href="#qualtrics" class="verdict-yes">✓ Qualtrics</a>
+    <a href="#msforms" class="verdict-maybe">~ Microsoft Forms</a>
+
+    <div class="nav-section">Not recommended</div>
+    <a href="#monday" class="verdict-no">✗ Monday.com WorkForms</a>
+    <a href="#walkme" class="verdict-no">✗ WalkMe Surveys</a>
+    <a href="#aem" class="verdict-no">✗ AEM Forms</a>
+    <a href="#marketo" class="verdict-no">✗ Marketo Forms</a>
+  </nav>
+
+  <!-- ── Main ── -->
+  <main>
+
+    <header class="page-header">
+      <div class="page-label">MAS Growth Readiness Assessment · Integration Analysis</div>
+      <h1>Questionnaire Tool<br>Integration Analysis</h1>
+      <p class="page-meta">Assessment of six candidate tools for hosting the M-GRAT questionnaire externally, connecting responses to the scoring engine (<code>scoring.js</code>), and generating the M-GRAT report — with zero changes to the scoring engine or report renderer.</p>
+    </header>
+
+    <!-- ── Scope note ── -->
+    <div class="intro-note">
+      <strong>Three tools were ruled out before deep evaluation</strong>
+      <strong>Monday.com WorkForms</strong> has no matrix question type, no multi-page support, and cannot pass a response ID in the post-submit redirect URL — three hard structural blockers.
+      <strong>WalkMe Surveys</strong> is a Digital Adoption Platform overlay, not a standalone questionnaire tool: it requires WalkMe deployed on the host app, has no matrix type, no post-submit redirect, and no programmatic API for individual response retrieval.
+      <strong>Marketo Forms</strong> is a marketing-automation lead-capture tool: it has no matrix question type, no conditional branching, no anonymous survey option, and stores responses as lead attributes (not discrete response objects). All three are documented below for completeness but are not viable candidates.
+    </div>
+
+    <!-- ── Verdicts ── -->
+    <section id="verdicts">
+      <h2>Verdicts at a Glance</h2>
+      <div class="verdict-strip">
+        <div class="verdict-chip yes">
+          <span style="font-size:1.1rem">✅</span>
+          <div><strong>Qualtrics</strong><br>Fully viable — purpose-built for this use case</div>
+        </div>
+        <div class="verdict-chip maybe">
+          <span style="font-size:1.1rem">⚠️</span>
+          <div><strong>Microsoft Forms</strong><br>Viable with workaround — no native response ID passthrough</div>
+        </div>
+        <div class="verdict-chip no">
+          <span style="font-size:1.1rem">🚫</span>
+          <div><strong>Monday.com WorkForms</strong><br>3 hard blockers — not viable</div>
+        </div>
+        <div class="verdict-chip no">
+          <span style="font-size:1.1rem">🚫</span>
+          <div><strong>WalkMe Surveys</strong><br>Wrong tool category — not viable</div>
+        </div>
+        <div class="verdict-chip no">
+          <span style="font-size:1.1rem">🚫</span>
+          <div><strong>AEM Forms</strong><br>Requires full CMS deployment — not practical</div>
+        </div>
+        <div class="verdict-chip no">
+          <span style="font-size:1.1rem">🚫</span>
+          <div><strong>Marketo Forms</strong><br>Marketing automation, not a survey tool</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Requirements ── -->
+    <section id="requirements">
+      <h2>M-GRAT Integration Requirements</h2>
+      <p style="font-size:0.875rem;margin-bottom:1rem;color:var(--gray-70)">For a tool to be viable, it must satisfy all five core requirements below. Any hard blocker against a requirement disqualifies the tool.</p>
+      <table>
+        <thead><tr><th>#</th><th>Requirement</th><th>Why it matters</th></tr></thead>
+        <tbody>
+          <tr><td>R1</td><td><strong>Matrix question type</strong> (rows × 3 columns: Met / Unmet / Unknown)</td><td>M-GRAT uses 3 matrix groups covering 11 milestone rows. No workaround preserves the UX at comparable effort.</td></tr>
+          <tr><td>R2</td><td><strong>Multi-page / paginated survey</strong></td><td>Assessment spans 4 pages (Goals, Maintenance Ops, Field Service, Asset Performance). Single-page scroll is not acceptable.</td></tr>
+          <tr><td>R3</td><td><strong>Unique response ID passed to redirect URL</strong> after submission</td><td>The landing page must know <em>which</em> response to retrieve. Without this, matching the response requires brittle workarounds (timestamp, email, browser fingerprint).</td></tr>
+          <tr><td>R4</td><td><strong>Programmatic API to retrieve individual responses</strong></td><td>The backend must fetch a specific response and map it to <code>state.answers</code>. Bulk CSV export or dashboard-only data is insufficient.</td></tr>
+          <tr><td>R5</td><td><strong>Standalone shareable link for external respondents</strong> (no account required)</td><td>M-GRAT is distributed to customers and prospects who have no account on the survey platform.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── Head-to-head ── -->
+    <section id="comparison">
+      <h2>Head-to-Head Comparison</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Requirement</th>
+            <th>Qualtrics</th>
+            <th>MS Forms</th>
+            <th>Monday WorkForms</th>
+            <th>WalkMe</th>
+            <th>AEM Forms</th>
+            <th>Marketo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>R1</strong> Matrix question</td>
+            <td><span class="badge badge-green">✓ Native</span></td>
+            <td><span class="badge badge-green">✓ Native</span></td>
+            <td><span class="badge badge-red">✗ None</span></td>
+            <td><span class="badge badge-red">✗ None</span></td>
+            <td><span class="badge badge-yellow">~ Custom dev</span></td>
+            <td><span class="badge badge-red">✗ None</span></td>
+          </tr>
+          <tr>
+            <td><strong>R2</strong> Multi-page</td>
+            <td><span class="badge badge-green">✓ Native</span></td>
+            <td><span class="badge badge-green">✓ Native</span></td>
+            <td><span class="badge badge-red">✗ Scroll only</span></td>
+            <td><span class="badge badge-green">✓ Overlay pages</span></td>
+            <td><span class="badge badge-green">✓ Wizard panels</span></td>
+            <td><span class="badge badge-yellow">~ Progressive only</span></td>
+          </tr>
+          <tr>
+            <td><strong>R3</strong> Response ID in redirect</td>
+            <td><span class="badge badge-green">✓ Piped text</span></td>
+            <td><span class="badge badge-red">✗ Not supported</span></td>
+            <td><span class="badge badge-red">✗ Static URL only</span></td>
+            <td><span class="badge badge-red">✗ No redirect</span></td>
+            <td><span class="badge badge-yellow">~ Custom dev</span></td>
+            <td><span class="badge badge-yellow">~ Token possible</span></td>
+          </tr>
+          <tr>
+            <td><strong>R4</strong> Retrieve individual response via API</td>
+            <td><span class="badge badge-green">✓ v3 REST API</span></td>
+            <td><span class="badge badge-yellow">~ Graph API (complex)</span></td>
+            <td><span class="badge badge-yellow">~ GraphQL (fragile)</span></td>
+            <td><span class="badge badge-red">✗ No API</span></td>
+            <td><span class="badge badge-yellow">~ REST (needs auth)</span></td>
+            <td><span class="badge badge-yellow">~ Lead API (not per-response)</span></td>
+          </tr>
+          <tr>
+            <td><strong>R5</strong> Standalone link, no account needed</td>
+            <td><span class="badge badge-green">✓ Anonymous link</span></td>
+            <td><span class="badge badge-green">✓ Public link</span></td>
+            <td><span class="badge badge-green">✓ Public link</span></td>
+            <td><span class="badge badge-red">✗ In-app only</span></td>
+            <td><span class="badge badge-yellow">~ Public URL (infra needed)</span></td>
+            <td><span class="badge badge-green">✓ Landing page</span></td>
+          </tr>
+          <tr>
+            <td>Conditional logic</td>
+            <td><span class="badge badge-green">✓ All plans</span></td>
+            <td><span class="badge badge-green">✓ Branching</span></td>
+            <td><span class="badge badge-red">✗ Enterprise only</span></td>
+            <td><span class="badge badge-orange">~ Page-level only</span></td>
+            <td><span class="badge badge-green">✓ Rule-based</span></td>
+            <td><span class="badge badge-red">✗ None</span></td>
+          </tr>
+          <tr>
+            <td>Scoring engine changes needed</td>
+            <td><span class="badge badge-green">✓ Zero</span></td>
+            <td><span class="badge badge-green">✓ Zero</span></td>
+            <td><span class="badge badge-green">✓ Zero</span></td>
+            <td><span class="badge badge-green">✓ Zero</span></td>
+            <td><span class="badge badge-green">✓ Zero</span></td>
+            <td><span class="badge badge-green">✓ Zero</span></td>
+          </tr>
+          <tr>
+            <td>Implementation effort (backend)</td>
+            <td><span class="badge badge-teal">Medium — mapper + backend</span></td>
+            <td><span class="badge badge-yellow">Medium-high — workaround for ID</span></td>
+            <td><span class="badge badge-red">High — blockers unresolvable</span></td>
+            <td><span class="badge badge-red">Not feasible</span></td>
+            <td><span class="badge badge-red">Very high — full CMS</span></td>
+            <td><span class="badge badge-red">Not feasible</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- ── QUALTRICS ── -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <h2 id="qualtrics" class="tool-h2" style="border-top-color: var(--purple);">
+      Qualtrics
+      <span class="tool-badge badge badge-green">✓ Recommended</span>
+    </h2>
+
+    <div class="banner banner-green">
+      <div class="banner-icon">✅</div>
+      <div class="banner-text">
+        <strong>Fully viable — purpose-built for this use case</strong>
+        All five M-GRAT requirements are met natively. The v3 REST API supports the complete retrieve-map-score pipeline. The scoring engine and report renderer require zero changes.
+      </div>
+    </div>
+
+    <ul class="pro-con">
+      <li class="pro">Native Matrix Table question type — maps directly to M-GRAT's Met/Unmet/Unknown rows</li>
+      <li class="pro">Multi-page surveys with page breaks and block-level display logic (all plans)</li>
+      <li class="pro">Post-submit redirect URL with piped text <code>{e://Field/ResponseID}</code> — response ID arrives in the URL automatically</li>
+      <li class="pro">v3 REST API: 3-step async export/poll/download retrieves a single response by ID</li>
+      <li class="pro">Anonymous shareable links — no respondent account required</li>
+      <li class="pro">Conditional display logic (branch on any prior answer) on all plan tiers</li>
+      <li class="warn">Async export adds ~2–5 s latency — show a loading state on the landing page</li>
+      <li class="warn">Datacenter ID mandatory in API base URL — wrong ID returns a silent 404</li>
+      <li class="warn">Options flagged "Exclude from analysis" are silently dropped from exports — never use that flag</li>
+    </ul>
+
+    <h3>Integration architecture</h3>
+    <table>
+      <thead><tr><th>Step</th><th>What happens</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Respondent completes Qualtrics survey</td><td>Hosted on Qualtrics domain — no app changes</td></tr>
+        <tr><td>2</td><td>Qualtrics redirects to <code>/landing?responseId=R_xxxxx</code></td><td>Response ID injected via piped text</td></tr>
+        <tr><td>3</td><td>Landing page calls <code>GET /api/report?responseId=R_xxxxx</code></td><td>Backend holds API token — never reaches browser</td></tr>
+        <tr><td>4</td><td>Backend runs 3-step export: POST → poll → download</td><td>Exponential backoff, max 30 s</td></tr>
+        <tr><td>5</td><td><code>mapQualtricsResponse(rawRow)</code> → <code>state.answers</code></td><td>Declarative config driven by <code>data/assessment.js</code></td></tr>
+        <tr><td>6</td><td><code>score(answers, assessment)</code> → <code>scoringResult</code></td><td>Runs in Node.js — identical engine, zero changes</td></tr>
+        <tr><td>7</td><td>Landing page writes <code>sessionStorage["scoringResult"]</code> → redirects to <code>report.html</code></td><td><code>report.js</code> unchanged</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Key encoding decisions</h3>
+    <table>
+      <thead><tr><th>Decision</th><th>Recommendation</th></tr></thead>
+      <tbody>
+        <tr><td>Question export tag</td><td>Set = M-GRAT question ID (e.g. <code>Q-OBJ</code>, <code>grp-asset</code>)</td></tr>
+        <tr><td>Matrix column recodes</td><td><code>MET</code> / <code>UNMET</code> / <code>UNKNOWN</code> (uppercase)</td></tr>
+        <tr><td>Matrix row recodes</td><td>Row <code>id</code> (e.g. <code>Q-AD1</code>) — export column becomes <code>grp-asset_Q-AD1</code></td></tr>
+        <tr><td>Checkbox / radio option recodes</td><td>M-GRAT <code>value</code> string (e.g. <code>reduce-unplanned-downtime</code>)</td></tr>
+        <tr><td>"None of the above" option</td><td>Use <strong>Mutually exclusive</strong> checkbox — NOT "Exclude from analysis"</td></tr>
+        <tr><td>Auth method</td><td>Static <code>X-API-TOKEN</code> for PoC · OAuth 2.0 Client Credentials for production</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- ── MICROSOFT FORMS ── -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <h2 id="msforms" class="tool-h2" style="border-top-color: #0078d4;">
+      Microsoft Forms
+      <span class="tool-badge badge badge-yellow">⚠ Viable with workaround</span>
+    </h2>
+
+    <div class="banner banner-yellow">
+      <div class="banner-icon">⚠️</div>
+      <div class="banner-text">
+        <strong>Viable — but with one significant workaround required</strong>
+        Microsoft Forms meets 4 of 5 requirements natively. The critical gap is R3: there is no native mechanism to append a unique response ID to the post-submit redirect URL. A workaround exists (correlation token via hidden field), but adds implementation complexity and a small residual reliability risk. If your team already uses Microsoft 365 and does not want to procure Qualtrics, this is the next-best option.
+      </div>
+    </div>
+
+    <ul class="pro-con">
+      <li class="pro">Native Matrix / Rating Grid question type — rows × columns, maps to Met/Unmet/Unknown</li>
+      <li class="pro">Multi-section forms with branching (page-break equivalent via sections)</li>
+      <li class="pro">Public anonymous shareable links — no Microsoft account required for respondents</li>
+      <li class="pro">Microsoft Graph API allows reading form responses programmatically</li>
+      <li class="pro">Already included in Microsoft 365 licences — no extra procurement</li>
+      <li class="pro">Conditional branching (show/hide sections based on prior answers)</li>
+      <li class="con"><strong>No native response ID passthrough</strong> — redirect URL is static; Forms does not append the submission ID</li>
+      <li class="con">Graph API for Forms responses is partially undocumented / uses internal endpoints — not officially stable for production use</li>
+      <li class="con">Correlation workaround required: embed a hidden GUID field in the form, pass it via redirect, then query Graph API filtering by that GUID</li>
+      <li class="warn">Graph API requires delegated or app-level M365 permission (not a simple API token) — OAuth 2.0 app registration in Azure AD is mandatory</li>
+      <li class="warn">Response retrieval is not real-time: Graph API does not have a filter-by-ID endpoint for anonymous Forms — you must poll the full response list and find the matching GUID</li>
+    </ul>
+
+    <h3>Workaround for R3 — response ID passthrough</h3>
+    <div class="intro-note">
+      <strong>How it works:</strong>
+      1. Generate a UUID correlation token and pass it to the Forms URL as a query parameter (e.g. <code>?token=abc123</code>).
+      2. In the form, use a hidden pre-populated field that reads the token from the URL via a Power Automate flow or a thin redirect wrapper page.
+      3. On submit, Forms redirects to a static URL. Your landing page has already stored the token in <code>sessionStorage</code> before launching the form window.
+      4. On return, the landing page reads the stored token, queries Graph API for responses, finds the entry where the hidden field equals the token, and proceeds with scoring.
+    </div>
+
+    <h3>Integration architecture</h3>
+    <table>
+      <thead><tr><th>Step</th><th>What happens</th><th>Complexity vs Qualtrics</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Landing page generates UUID, stores in <code>sessionStorage</code>, opens Forms URL in same tab</td><td>Extra step not needed in Qualtrics</td></tr>
+        <tr><td>2</td><td>Hidden form field pre-filled with UUID (requires Power Automate prefill or URL parameter)</td><td>Extra survey design step</td></tr>
+        <tr><td>3</td><td>Respondent submits → redirects to static landing URL</td><td>Same</td></tr>
+        <tr><td>4</td><td>Landing page reads stored UUID, calls backend with it</td><td>Same concept, but token-based not ID-based</td></tr>
+        <tr><td>5</td><td>Backend queries Graph API: list all responses, find entry where hidden field = UUID</td><td>More complex — list + filter vs direct fetch by ID</td></tr>
+        <tr><td>6</td><td>Map → score → write <code>sessionStorage["scoringResult"]</code> → redirect to <code>report.html</code></td><td>Identical</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Additional requirements</h3>
+    <table>
+      <thead><tr><th>Item</th><th>Detail</th></tr></thead>
+      <tbody>
+        <tr><td>Azure AD app registration</td><td>Required for Graph API access — needs <code>Forms.Read</code> or <code>Forms.Read.All</code> delegated permission</td></tr>
+        <tr><td>Microsoft 365 plan</td><td>Graph Forms API access documented for Business Standard / E3+; exact tier requirements should be verified with Microsoft</td></tr>
+        <tr><td>Response latency</td><td>Graph API response list query can be slow on large forms datasets — index the response by hidden token to minimise scan</td></tr>
+        <tr><td>Answer mapping</td><td>Matrix responses export as per-row column values, similar to Qualtrics — mapper logic is directly reusable</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- ── MONDAY.COM ── -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <h2 id="monday" class="tool-h2" style="border-top-color: #ff642e;">
+      Monday.com WorkForms
+      <span class="tool-badge badge badge-red">✗ Not recommended</span>
+    </h2>
+
+    <div class="banner banner-red">
+      <div class="banner-icon">🚫</div>
+      <div class="banner-text">
+        <strong>Three hard structural blockers — not viable</strong>
+        No matrix question type, single-page scroll only (no multi-page), and no response ID in post-submit redirect URL. These are platform-level constraints that cannot be worked around without replacing the WorkForms module entirely.
+      </div>
+    </div>
+
+    <div class="blockers">
+      <div class="blocker-card">
+        <div class="blocker-card-head red">🚫 No matrix question type</div>
+        <div class="blocker-card-body">M-GRAT requires a rows × 3-columns matrix for Met/Unmet/Unknown capture. WorkForms has no equivalent. Splitting into 11 individual radio questions destroys the UX and creates a fragile mapping layer.</div>
+      </div>
+      <div class="blocker-card">
+        <div class="blocker-card-head red">🚫 No multi-page / pagination</div>
+        <div class="blocker-card-body">WorkForms is single-page scroll only. M-GRAT spans 4 thematic pages. No page-break or wizard capability in Standard or Pro plans.</div>
+      </div>
+      <div class="blocker-card">
+        <div class="blocker-card-head red">🚫 No response ID in redirect URL</div>
+        <div class="blocker-card-body">Post-submit redirect is a static URL. There is no equivalent of Qualtrics' piped text. The landing page has no reliable way to identify which submission to retrieve.</div>
+      </div>
+      <div class="blocker-card">
+        <div class="blocker-card-head orange">⚠ Conditional logic — Enterprise only</div>
+        <div class="blocker-card-body">Show/hide logic on Standard and Pro plans is not available. M-GRAT's <code>skipCondition</code> fields would require Enterprise licensing.</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- ── WALKME ── -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <h2 id="walkme" class="tool-h2" style="border-top-color: #0ea5e9;">
+      WalkMe Surveys
+      <span class="tool-badge badge badge-red">✗ Wrong tool category</span>
+    </h2>
+
+    <div class="banner banner-red">
+      <div class="banner-icon">🚫</div>
+      <div class="banner-text">
+        <strong>Designed for in-app Digital Adoption overlays — not standalone assessments</strong>
+        WalkMe Surveys are triggered inside a WalkMe-enabled web application and close on completion. They cannot be distributed as a standalone link, have no matrix question type, produce no post-submit page navigation, and expose no API endpoint for retrieving individual responses.
+      </div>
+    </div>
+
+    <div class="blockers">
+      <div class="blocker-card">
+        <div class="blocker-card-head red">🚫 Not a standalone survey tool</div>
+        <div class="blocker-card-body">WalkMe must be deployed on the host web application. External respondents with no access to the WalkMe-enabled app cannot take the survey.</div>
+      </div>
+      <div class="blocker-card">
+        <div class="blocker-card-head red">🚫 No post-submit redirect</div>
+        <div class="blocker-card-body">Surveys are overlays — they close on completion. No page navigation occurs, so there is no mechanism to pass a response ID to a landing page.</div>
+      </div>
+      <div class="blocker-card">
+        <div class="blocker-card-head red">🚫 No programmatic response API</div>
+        <div class="blocker-card-body">The WalkMe REST API (<code>api.walkme.com</code>) has no survey-response endpoint. Response data is accessible only inside the WalkMe Insights dashboard.</div>
+      </div>
+      <div class="blocker-card">
+        <div class="blocker-card-head red">🚫 No matrix question type</div>
+        <div class="blocker-card-body">Supports single-choice, multi-choice, rating, NPS, and open text. No matrix / Likert-table type for the Met/Unmet/Unknown milestone rows.</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- ── AEM FORMS ── -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <h2 id="aem" class="tool-h2" style="border-top-color: #e84940;">
+      Adobe Experience Manager (AEM) Forms
+      <span class="tool-badge badge badge-red">✗ Not practical</span>
+    </h2>
+
+    <div class="banner banner-red">
+      <div class="banner-icon">🚫</div>
+      <div class="banner-text">
+        <strong>Technically capable but requires a full enterprise CMS deployment</strong>
+        AEM Forms can build complex adaptive forms with multi-page layouts, rule-based conditional logic, and REST-based submission handling. However, it is a component of the Adobe Experience Manager CMS platform — not a hosted survey service. Deploying AEM Forms for this use case requires provisioning and maintaining an AEM instance (cloud or on-premise), significant upfront configuration, and Adobe licensing. The engineering overhead dwarfs the value for a questionnaire of this scope.
+      </div>
+    </div>
+
+    <ul class="pro-con">
+      <li class="pro">Adaptive Forms support complex field types including repeatable panels (closest to matrix)</li>
+      <li class="pro">Multi-page wizard layouts with panel-based navigation</li>
+      <li class="pro">Rule-based conditional logic (show/hide, calculate, validate)</li>
+      <li class="pro">REST endpoint for form submission retrieval — <code>POST /submit</code> can forward data to external REST endpoints</li>
+      <li class="pro">Public form URLs possible — anonymous external access supported via AEM publish tier</li>
+      <li class="con"><strong>Requires a full AEM instance</strong> — AEM Cloud Service or on-premise AEM 6.5+. This is a multi-week infrastructure project, not a survey tool sign-up.</li>
+      <li class="con">AEM Forms does not have a native matrix question type — a repeatable panel approximation requires custom component development</li>
+      <li class="con">No hosted "survey service" — you own and maintain the infrastructure</li>
+      <li class="con">Adobe Experience Manager licensing is significantly more expensive than dedicated survey tools</li>
+      <li class="con">API authentication for response retrieval requires AEM service credentials — cannot use a simple API token like Qualtrics</li>
+      <li class="warn">If your organisation already runs AEM for its web platform, this becomes more viable — but still requires custom form component development for the matrix type</li>
+    </ul>
+
+    <h3>When AEM Forms could be reconsidered</h3>
+    <div class="intro-note">
+      AEM Forms becomes practical only if: (a) your organisation already operates an AEM instance for its web presence, (b) an AEM-certified developer is available, and (c) the assessment must live within the same CMS for brand or governance reasons. Even then, the matrix question type requires custom component development.
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- ── MARKETO ── -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <h2 id="marketo" class="tool-h2" style="border-top-color: #5c2d91;">
+      Marketo Forms (Adobe Marketo Engage)
+      <span class="tool-badge badge badge-red">✗ Wrong tool category</span>
+    </h2>
+
+    <div class="banner banner-red">
+      <div class="banner-icon">🚫</div>
+      <div class="banner-text">
+        <strong>Marketo is a marketing automation platform, not a survey tool</strong>
+        Marketo Forms are designed for lead capture — collecting contact data to feed CRM workflows and email nurture programmes. They have no matrix question type, no conditional branching, no anonymous response option, and store form submissions as lead record attributes (not discrete response objects). It is the wrong tool category for this use case and should not be evaluated further.
+      </div>
+    </div>
+
+    <ul class="pro-con">
+      <li class="pro">Standalone public landing pages — no respondent account required</li>
+      <li class="pro">REST API can retrieve lead records (form submission data is stored as lead attributes)</li>
+      <li class="pro">Post-submit redirect URL with some URL token injection</li>
+      <li class="con"><strong>No matrix question type</strong> — only text, email, phone, dropdown, checkbox, radio</li>
+      <li class="con"><strong>No conditional branching</strong> — show/hide logic is not available</li>
+      <li class="con"><strong>No anonymous responses</strong> — all submissions are tied to a lead record (requires an email address or cookie identification)</li>
+      <li class="con">Responses stored as lead field values, not as discrete response objects — there is no unique "response ID"</li>
+      <li class="con">API returns lead records, not form submissions — retrieving the correct entry requires filtering by email or custom field, not by a submission ID</li>
+      <li class="con">Designed for CRM lead pipeline; using it for assessment data collection is a significant misuse of the platform</li>
+      <li class="con">Marketo licensing is scoped to marketing automation use cases — using it as a survey tool may violate licence terms</li>
+    </ul>
+
+    <h3>Bottom line</h3>
+    <div class="intro-note">
+      <strong>Do not use Marketo for this use case.</strong>
+      Even setting aside the missing features, the fundamental data model mismatch — lead records vs response objects — makes it technically impossible to build a reliable per-submission retrieval and scoring pipeline without a completely custom data layer that would cost more to build than procuring a proper survey tool.
+    </div>
+
+    <!-- ── Summary recommendation ── -->
+    <hr class="divider" />
+    <section>
+      <h2 id="recommendation" style="border-top:none;padding-top:0;margin-top:0">Summary Recommendation</h2>
+      <div class="banner banner-green">
+        <div class="banner-icon">💡</div>
+        <div class="banner-text">
+          <strong>Use Qualtrics.</strong>
+          It is the only tool that meets all five M-GRAT requirements natively, with a documented and stable API for individual response retrieval. Microsoft Forms is a credible second option if your organisation is already on Microsoft 365 and wants to avoid a new procurement — but it requires an additional correlation-token workaround and Azure AD app registration. All other tools evaluated (Monday.com WorkForms, WalkMe Surveys, AEM Forms, Marketo Forms) have structural blockers that make them unsuitable for this use case.
+        </div>
+      </div>
+
+      <table>
+        <thead><tr><th>Tool</th><th>Verdict</th><th>Main blocker / caveat</th><th>Effort to integrate</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Qualtrics</strong></td><td><span class="badge badge-green">✓ Recommended</span></td><td>None — all requirements met natively</td><td>Medium (mapper + backend)</td></tr>
+          <tr><td><strong>Microsoft Forms</strong></td><td><span class="badge badge-yellow">~ If already on M365</span></td><td>No native response ID passthrough — needs correlation token workaround</td><td>Medium-high</td></tr>
+          <tr><td><strong>Monday.com WorkForms</strong></td><td><span class="badge badge-red">✗ Not viable</span></td><td>No matrix type · no multi-page · no response ID in redirect</td><td>Not feasible</td></tr>
+          <tr><td><strong>WalkMe Surveys</strong></td><td><span class="badge badge-red">✗ Not viable</span></td><td>In-app overlay only · no standalone link · no response API</td><td>Not feasible</td></tr>
+          <tr><td><strong>AEM Forms</strong></td><td><span class="badge badge-red">✗ Not practical</span></td><td>Full CMS deployment required · no native matrix type</td><td>Very high (infra + custom dev)</td></tr>
+          <tr><td><strong>Marketo Forms</strong></td><td><span class="badge badge-red">✗ Not viable</span></td><td>Lead-capture tool · no matrix · no anonymous survey · no response IDs</td><td>Not feasible</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer class="page-footer">Made with IBM Bob</footer>
+
+  </main>
+</div>
+</body>
+</html>
