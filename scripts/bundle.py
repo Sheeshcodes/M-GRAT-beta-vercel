@@ -243,20 +243,39 @@ def patch_report_js(source: str) -> str:
         "window.__MOCK_RESULT__ = MOCK_RESULT = {",
     )
 
-    old_read_regex = re.compile(
-        r'let result;\s*if\s*\(\s*injectedResult\s*\)\s*\{.*?\}\s*else\s*\{.*?\}\s*\}',
-        re.DOTALL,
-    )
-    source = old_read_regex.sub("let result = injectedResult ?? MOCK_RESULT;", source)
-
-    old_read_fallback = """  let result;
-  try {
-    const stored = sessionStorage.getItem("scoringResult");
-    result = stored ? JSON.parse(stored) : MOCK_RESULT;
-  } catch {
-    result = MOCK_RESULT;
-  }"""
-    source = source.replace(old_read_fallback, "  let result = result ?? MOCK_RESULT;")
+    # Replace the entire if/else block that reads injectedResult or sessionStorage.
+    # After patch_report_js renames init(injectedResult) → initReport(result), the
+    # parameter is already called "result" so we must not re-declare it — just
+    # assign to the existing parameter using the nullish fallback.
+    # Uses brace counting to consume the nested try/catch inside the else branch.
+    target = "  let result;\n  if (injectedResult) {"
+    idx = source.find(target)
+    if idx != -1:
+        # Scan from the start of "if (" to find the end of the whole if/else block.
+        scan_start = idx + len("  let result;\n")
+        depth = 0
+        end = scan_start
+        i = scan_start
+        while i < len(source):
+            if source[i] == "{":
+                depth += 1
+            elif source[i] == "}":
+                depth -= 1
+                if depth == 0:
+                    end = i + 1
+                    # Consume a trailing " else { ... }" if present
+                    rest = source[end:]
+                    else_match = re.match(r"\s*else\s*\{", rest)
+                    if else_match:
+                        end += else_match.end()
+                        depth = 1
+                        i = end - 1  # continue scanning inside else block
+                    else:
+                        break
+            i += 1
+        # The function parameter is already named "result" after the rename above,
+        # so use plain assignment (no let/const) to avoid a redeclaration error.
+        source = source[:idx] + "  result = result ?? MOCK_RESULT;" + source[end:]
 
     anchor = "function loadStoredResponses() {\n"
     if anchor not in source:
