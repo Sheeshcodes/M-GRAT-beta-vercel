@@ -20,4 +20,4 @@ jobs:
           git remote add ibm https://${{ secrets.IBM_GH_TOKEN }}@github.ibm.com/ALM-Consumability/M-GRAT.git
           git fetch ibm main
           git reset --hard ibm/main
-          git push origin main --force
+          git push https://x-access-token:${{ secrets.PERSONAL_GITHUB_TOKEN }}@github.com/Sheeshcodes/M-GRAT-beta-vercel.git main --force
