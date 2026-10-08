@@ -17,7 +17,7 @@ jobs:
 
       - name: Pull from IBM and push to mirror
         run: |
-          git remote add ibm https://${{ secrets.IBM_GH_TOKEN2 }}@github.ibm.com/ALM-Consumability/M-GRAT.git
+          git remote add ibm https://${{ secrets.IBM_GH_TOKEN }}@github.ibm.com/ALM-Consumability/M-GRAT.git
           git fetch ibm main
           git reset --hard ibm/main
-          git push https://x-access-token:${{ secrets.IBM_GITHUB_TOKEN }}@github.com/Sheeshcodes/M-GRAT-beta-vercel.git main --force
+          git push https://x-access-token:${{ secrets.MIRROR_PUSH_TOKEN }}@github.com/Sheeshcodes/M-GRAT-beta-vercel.git main --force
