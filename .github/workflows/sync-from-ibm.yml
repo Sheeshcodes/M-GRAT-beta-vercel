@@ -20,7 +20,8 @@ jobs:
           IBM_GH_TOKEN: ${{ secrets.IBM_GH_TOKEN }}
           MIRROR_PUSH_TOKEN: ${{ secrets.MIRROR_PUSH_TOKEN }}
         run: |
-          # Configure credentials for github.ibm.com
+          # Override the checkout action's credential helper so our PAT is used for github.com
+          git config --global --unset-all credential.helper || true
           git config --global credential.helper store
           echo "https://x-access-token:${IBM_GH_TOKEN}@github.ibm.com" >> ~/.git-credentials
           echo "https://x-access-token:${MIRROR_PUSH_TOKEN}@github.com" >> ~/.git-credentials
