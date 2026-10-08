@@ -54,6 +54,10 @@ Two delivery modes:
 
 `bundle.py` has a [`verify_bundle()`](scripts/bundle.py) check — it will hard-exit with a list of missing/present strings before writing the file. If the bundle fails this check after a JS edit, read the must_have/must_not_have dicts to understand why.
 
+## Print / PDF
+
+Any change that affects what prints (layout, collapsed content, new sections, the Download menu) must follow [PRINT-GUIDE.md](PRINT-GUIDE.md). Check the result with a real PDF, not print preview.
+
 ## Data files — do not hand-edit
 
 `data/assessment.js`, `data/report_data.js`, `data/journey.js`, `data/milestone-actions.js` are all generated. Editing them directly will be overwritten on the next build. All content changes go through the Excel workbooks in `Logic/`.
