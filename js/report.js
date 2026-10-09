@@ -611,7 +611,7 @@ function renderExpansionCard(containerId, track, trackResult) {
     </div>
 
     <div class="expansion-card__actions">
-      <cds-button kind="tertiary" size="lg">
+      <cds-button kind="tertiary" size="lg" data-autotrack-id="report__btn--talk-to-seller-expansion-${track.toLowerCase()}">
         Talk to a seller
         ${ICON_USER_SERVICE}
       </cds-button>
@@ -765,7 +765,7 @@ function renderActionPlan(actionPlan) {
               <cds-tag size="lg" type="green">${ICON_USER}IT / System Administrator</cds-tag>
             </div>
             <div class="bonus-resource__action">
-              <cds-button kind="tertiary" size="lg" disabled>
+              <cds-button kind="tertiary" size="lg" disabled data-autotrack-id="report__btn--download-checklist">
                 Download checklist
                 <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4z"/><path d="M26 14l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
               </cds-button>
@@ -784,11 +784,11 @@ function renderActionPlan(actionPlan) {
             <p class="bonus-resource__title">Asset Performance Management &amp; Field Service Management maturity maps</p>
             <p class="bonus-resource__desc">Explore the journey from foundational asset management and coordinated field operations to predictive reliability, intelligent scheduling, and fully optimized enterprise performance.</p>
             <div class="bonus-resource__action bonus-resource__action--row">
-              <cds-button kind="tertiary" size="lg" href="docs/apm-maturity-map.html" target="_blank" rel="noopener noreferrer">
+              <cds-button kind="tertiary" size="lg" href="docs/apm-maturity-map.html" target="_blank" rel="noopener noreferrer" data-autotrack-id="report__btn--open-apm-maturity-map">
                 APM Maturity map
                 <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 28H6a2 2 0 01-2-2V6a2 2 0 012-2h10v2H6v20h20V16h2v10a2 2 0 01-2 2z"/><path d="M21 2v2h5.59L18 12.59 19.41 14 28 5.41V11h2V2z"/></svg>
               </cds-button>
-              <cds-button kind="tertiary" size="lg" href="docs/fsm-maturity-map.html" target="_blank" rel="noopener noreferrer">
+              <cds-button kind="tertiary" size="lg" href="docs/fsm-maturity-map.html" target="_blank" rel="noopener noreferrer" data-autotrack-id="report__btn--open-fsm-maturity-map">
                 FSM Maturity map
                 <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 28H6a2 2 0 01-2-2V6a2 2 0 012-2h10v2H6v20h20V16h2v10a2 2 0 01-2 2z"/><path d="M21 2v2h5.59L18 12.59 19.41 14 28 5.41V11h2V2z"/></svg>
               </cds-button>
@@ -806,7 +806,7 @@ function renderActionPlan(actionPlan) {
             <p class="bonus-resource__title">View your responses to the Assessment</p>
             <p class="bonus-resource__desc">Keep a copy of your assessment answers to share with colleagues who weren't in the room, or to revisit your thinking before your next planning conversation.</p>
             <div class="bonus-resource__action">
-              <cds-button kind="tertiary" size="lg" disabled data-download="responses">
+              <cds-button kind="tertiary" size="lg" disabled data-download="responses" data-autotrack-id="report__btn--download-responses">
                 Download responses
                 <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4z"/><path d="M26 14l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
               </cds-button>
@@ -823,7 +823,7 @@ function renderActionPlan(actionPlan) {
       <div class="accelerate-card__body">
         <p class="accelerate-card__title">Accelerate your Maximo Journey</p>
         <p class="accelerate-card__desc">Discuss these prioritized immediate actions and review the full roadmap with an IBM Maximo and APM specialist to estimate ROI, run scoping exercises, or schedule a deep-dive product demonstration.</p>
-        <cds-button kind="tertiary" size="lg">
+        <cds-button kind="tertiary" size="lg" data-autotrack-id="report__btn--schedule-ibm-review">
           Schedule a review with an IBM specialist
           ${ICON_USER_SERVICE}
         </cds-button>
@@ -866,10 +866,11 @@ function wireFeedback() {
           label="What would have made this more useful?"
           placeholder="Tell us what was missing, unclear, or wrong."
           rows="4"
+          data-autotrack-id="report__textarea--feedback-comment"
         ></cds-textarea>
         <div class="feedback__form-actions">
-          <cds-button kind="primary" size="lg" type="button" data-feedback-submit>Submit feedback</cds-button>
-          <cds-button kind="ghost" size="lg" type="button" data-feedback-cancel>Cancel</cds-button>
+          <cds-button kind="primary" size="lg" type="button" data-feedback-submit data-autotrack-id="report__btn--feedback-submit">Submit feedback</cds-button>
+          <cds-button kind="ghost" size="lg" type="button" data-feedback-cancel data-autotrack-id="report__btn--feedback-cancel">Cancel</cds-button>
         </div>
       </div>`;
     el.querySelector("cds-textarea")?.focus();

@@ -205,45 +205,8 @@ p { margin: 0; }
   padding: 26px 0 30px;
 }
 
-/* Session details — free-text answers on the page before the questions.
-   Carbon's text-input look (field fill, bottom rule, focus outline) without
-   pulling in another component bundle. */
+/* Session details — wraps cds-text-input on the "About this session" page. */
 .text-field { padding-top: 22px; width: 100%; }
-.text-field__input {
-  display: block;
-  width: 100%;
-  height: 48px;
-  padding: 0 16px;
-  font-family: var(--font-sans);
-  font-size: 16px;
-  line-height: 22px;
-  color: var(--cds-text-primary);
-  background-color: var(--cds-layer);
-  border: none;
-  border-bottom: 1px solid var(--cds-border-strong);
-  border-radius: 0;
-  outline: 2px solid transparent;
-  outline-offset: -2px;
-  transition: outline-color 70ms cubic-bezier(0.2, 0, 0.38, 0.9);
-  box-sizing: border-box;
-  -webkit-appearance: none;
-  appearance: none;
-}
-.text-field__input::placeholder { color: var(--cds-text-placeholder); }
-.text-field__input:focus {
-  outline-color: var(--cds-focus);
-  border-bottom-color: transparent;
-}
-.text-field__error {
-  display: none;
-  padding-top: 8px;
-  font-size: 12px;
-  line-height: 16px;
-  letter-spacing: 0.32px;
-  color: var(--cds-text-error);
-}
-.text-field.is-invalid .text-field__input { outline-color: var(--cds-support-error); }
-.text-field.is-invalid .text-field__error { display: block; }
 .divider {
   display: flex;
   align-items: center;

@@ -127,6 +127,7 @@ const matrixTemplate = (q) => {
           value="${escapeHtml(c.value)}"
           label-text="${escapeHtml(row.label)}: ${escapeHtml(c.label)}"
           hide-label
+          data-autotrack-id="assessment__radio--${q.id}-${row.id}-${escapeHtml(c.value)}"
           ${answer[row.id] === c.value ? "checked" : ""}></cds-radio-button>
       </div>`
         )
@@ -149,7 +150,7 @@ const tilesTemplate = (q) => {
         const checked = isCheckbox ? answer.includes(o.value) : answer === o.value;
         return `
     <div class="tile${checked ? " is-selected" : ""}">
-      <${tag} name="${q.id}" value="${escapeHtml(o.value)}" label-text="${escapeHtml(o.label)}" ${checked ? "checked" : ""}></${tag}>
+      <${tag} name="${q.id}" value="${escapeHtml(o.value)}" label-text="${escapeHtml(o.label)}" data-autotrack-id="assessment__${isCheckbox ? "checkbox" : "radio"}--${q.id}-${escapeHtml(o.value)}" ${checked ? "checked" : ""}></${tag}>
     </div>`;
       })
       .join("")}
@@ -159,17 +160,17 @@ const tilesTemplate = (q) => {
 
 const textFieldTemplate = (q) => `
   <div class="text-field" data-question="${q.id}" data-type="text" ${q.required ? "data-required" : ""}>
-    <input
-      type="text"
+    <cds-text-input
       id="field-${q.id}"
-      class="text-field__input"
       data-text-answer="${q.id}"
-      aria-labelledby="${q.id}-title"
+      label-text="${escapeHtml(q.title ?? "")}"
       placeholder="${escapeHtml(q.placeholder ?? "")}"
       value="${escapeHtml(state.answers[q.id] ?? "")}"
       autocomplete="${q.autocomplete ?? "off"}"
-      ${q.required ? 'required aria-required="true"' : ""} />
-    <p class="text-field__error">${escapeHtml(q.error ?? "Enter an answer to continue")}</p>
+      invalid-text="${escapeHtml(q.error ?? "Enter an answer to continue")}"
+      data-autotrack-id="assessment__text-input--${q.id}"
+      ${q.required ? 'required' : ""}
+    ></cds-text-input>
   </div>`;
 
 const questionTemplate = (q) => {
@@ -310,10 +311,7 @@ const syncTiles = (group) => {
 
 const setInvalid = (el, invalid) => {
   el.classList.toggle("is-invalid", invalid);
-  el.querySelectorAll(".text-field__input").forEach((input) => {
-    input.setAttribute("aria-invalid", String(invalid));
-  });
-  el.querySelectorAll("cds-radio-button, cds-checkbox").forEach((c) => {
+  el.querySelectorAll("cds-text-input, cds-radio-button, cds-checkbox").forEach((c) => {
     c.invalid = invalid;
   });
 };
@@ -339,10 +337,10 @@ const onControlChanged = (event) => {
 
 els.sections.addEventListener("cds-checkbox-changed", onControlChanged);
 els.sections.addEventListener("cds-radio-button-changed", onControlChanged);
-els.sections.addEventListener("input", (event) => {
+els.sections.addEventListener("cds-text-input-input", (event) => {
   const id = event.target?.dataset?.textAnswer;
   if (!id) return;
-  state.answers[id] = event.target.value.trim();
+  state.answers[id] = event.detail.value.trim();
   const field = event.target.closest(".text-field");
   if (field?.classList.contains("is-invalid") && state.answers[id]) setInvalid(field, false);
   if (!findFirstInvalid(false)) els.formError.hidden = true;
@@ -468,7 +466,7 @@ const handleNext = (event) => {
   if (firstInvalid) {
     els.formError.hidden = false;
     firstInvalid.scrollIntoView({ behavior: "smooth", block: "center" });
-    firstInvalid.querySelector("cds-radio-button, cds-checkbox, input")?.focus();
+    firstInvalid.querySelector("cds-radio-button, cds-checkbox, cds-text-input, input")?.focus();
     return;
   }
   if (state.page === pages.length - 1) {
