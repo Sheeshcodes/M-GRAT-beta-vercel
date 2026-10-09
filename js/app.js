@@ -337,10 +337,12 @@ const onControlChanged = (event) => {
 
 els.sections.addEventListener("cds-checkbox-changed", onControlChanged);
 els.sections.addEventListener("cds-radio-button-changed", onControlChanged);
-els.sections.addEventListener("cds-text-input-input", (event) => {
+// Native "input" is composed, so it reaches here from the text input's shadow
+// root with the host as target; current Carbon no longer emits a custom event.
+els.sections.addEventListener("input", (event) => {
   const id = event.target?.dataset?.textAnswer;
   if (!id) return;
-  state.answers[id] = event.detail.value.trim();
+  state.answers[id] = (event.target.value ?? "").trim();
   const field = event.target.closest(".text-field");
   if (field?.classList.contains("is-invalid") && state.answers[id]) setInvalid(field, false);
   if (!findFirstInvalid(false)) els.formError.hidden = true;
