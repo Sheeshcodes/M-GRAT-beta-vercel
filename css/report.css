@@ -330,7 +330,7 @@ cds-menu-item::part(list-item) {
   display: flex;
   flex-wrap: wrap;
   gap: 32px 130px;
-  align-items: center;
+  align-items: flex-start;
   padding: 47px 32px 32px;
   min-height: 271px;
 }

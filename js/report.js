@@ -242,7 +242,7 @@ function renderMaturityBanner(result) {
       <p class="maturity-level-label">${escHtml(result.maturity.levelLabel)}</p>
     </div>
     <div class="maturity-strengths-cell">
-      <p class="maturity-strengths-label">Your strongest capabilities</p>
+      <p class="maturity-strengths-label">Your Strongest Capabilities</p>
       <ul class="maturity-strengths-list">
         ${topDims.map(d => `<li>${escHtml(keepTail(d.name))}</li>`).join("")}
       </ul>
