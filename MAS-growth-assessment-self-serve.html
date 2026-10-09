@@ -2791,6 +2791,13 @@ cds-menu-item::part(list-item) {
   gap: 32px;
 }
 
+/* Groups a section's eyebrow, heading, intro and lead block so they print
+   together. On screen it is not there: its children stay items of the
+   section's own flex column. */
+.section-opener {
+  display: contents;
+}
+
 .report-eyebrow-row {
   display: flex;
   align-items: center;
@@ -2876,7 +2883,7 @@ cds-menu-item::part(list-item) {
   display: flex;
   flex-wrap: wrap;
   gap: 32px 130px;
-  align-items: center;
+  align-items: flex-start;
   padding: 47px 32px 32px;
   min-height: 271px;
 }
@@ -4751,7 +4758,41 @@ html, body { overflow-x: clip; }
 
   .report-content {
     max-width: none;
-    gap: 64px;
+  }
+
+  /* ── Page-level stacks print as block flow ──────────────────────────────
+     On screen these are flex columns spaced with gap. Chrome cannot paginate
+     that safely: when a block inside a flex column is pushed to the next page
+     to keep it whole, what follows is not always pushed with it, and the next
+     heading prints on top of it. In block flow the page breaks are reliable
+     and "keep with next" works, so the same spacing is set with margins. */
+  .report-content,
+  .report-section,
+  .section-opener,
+  .established-card,
+  .established-panel,
+  .expansion-card,
+  #action-plan-container {
+    display: block !important;
+  }
+
+  .report-content > * + * {
+    margin-top: 64px;
+  }
+
+  /* !important: some intro paragraphs carry an inline margin-top: 0. */
+  .report-section > * + *,
+  .section-opener > * + * {
+    margin-top: 32px !important;
+  }
+
+  .established-panel > * + *,
+  .expansion-card > * + * {
+    margin-top: 24px;
+  }
+
+  #action-plan-container > * + * {
+    margin-top: 16px;
   }
 
   .report-section {
@@ -4771,6 +4812,9 @@ html, body { overflow-x: clip; }
   }
 
   /* ── 1 + 2. Established capabilities: every panel, each with its name ── */
+  /* Every tab's panel prints, including the ones the tabs hide with an inline
+     display:none. The panel is a block like the other page-level stacks (see
+     "Page-level stacks" below), which also spaces its parts. */
   .established-panel {
     display: block !important;
   }
@@ -4781,8 +4825,10 @@ html, body { overflow-x: clip; }
     border-top: 1px solid var(--cds-border-subtle);
   }
 
+  /* The panel's own spacing (below) already separates the heading from its text. */
   .established-panel__title {
     display: block;
+    margin: 0;
     break-after: avoid;
   }
 
@@ -4841,6 +4887,12 @@ html, body { overflow-x: clip; }
     min-height: 0;
   }
 
+  /* "APM / Foundation" breaks onto two lines for the narrow desktop rail. The
+     printed cards are wide, so the title reads on one line as it does on a
+     phone. */
+  .stage-card__title-break  { display: none; }
+  .stage-card__title-inline { display: inline; }
+
   .stage-card__details,
   .stage-card.is-expanded .stage-card__details {
     position: static;
@@ -4881,6 +4933,14 @@ html, body { overflow-x: clip; }
     break-after: avoid;
   }
 
+  /* A section's opening run — eyebrow, heading, intro, lead block — is one
+     unbreakable piece, so the heading never sits at the foot of a page with
+     its banner on the next. */
+  .section-opener {
+    display: block;
+  }
+
+  .section-opener,
   .maturity-banner,
   .dimension-grid,
   .expansion-intro,
@@ -4949,7 +5009,6 @@ html, body { overflow-x: clip; }
     background: none;
     border-radius: 0;
     padding: 0;
-    gap: 24px;
   }
 
   .stage-card--future,
@@ -4963,7 +5022,6 @@ html, body { overflow-x: clip; }
 
   .established-panel {
     padding: 0;
-    gap: 24px;
   }
 
   /* The meters animate their width in from 0; a print can arrive before that
@@ -5339,6 +5397,8 @@ html, body { overflow-x: clip; }
 
         <!-- ACT 2 ── Opportunities to increase ROI -->
         <section id="act-roi" class="report-section">
+          <!-- Opener: eyebrow, heading, intro and banner print as one block. -->
+          <div class="section-opener">
           <div class="report-eyebrow-row">
             <p class="report-eyebrow">Expansion paths</p>
             <div class="report-rule" aria-hidden="true"></div>
@@ -5368,6 +5428,7 @@ html, body { overflow-x: clip; }
                 <p class="expansion-intro__body">By coordinating scheduling, dispatch, and mobile work execution, FSM helps reduce travel time, improve first-time fix rates, increase workforce utilization, and provide real-time visibility into active work.</p>
               </div>
             </div>
+          </div>
           </div>
 
           <!-- APM expansion path card -->
@@ -12961,13 +13022,13 @@ function renderMaturityBanner(result) {
 
   el.innerHTML = `
     <div class="maturity-score-cell">
-      <p class="maturity-score-label">Your Maturity index score</p>
+      <p class="maturity-score-label">Your Value Capture score</p>
       <p class="maturity-score-value">${escHtml(result.maturity.score)}/100</p>
       <p class="maturity-level">Level ${escHtml(result.maturity.level)}</p>
       <p class="maturity-level-label">${escHtml(result.maturity.levelLabel)}</p>
     </div>
     <div class="maturity-strengths-cell">
-      <p class="maturity-strengths-label">Your strongest capabilities</p>
+      <p class="maturity-strengths-label">Your Strongest Capabilities</p>
       <ul class="maturity-strengths-list">
         ${topDims.map(d => `<li>${escHtml(keepTail(d.name))}</li>`).join("")}
       </ul>
@@ -13475,7 +13536,7 @@ function renderActionPlan(actionPlan) {
           <div class="bonus-resource__body">
             <p class="bonus-resource__title">Complete checklist</p>
             <div class="bonus-resource__desc">
-              <p>Reach a 100% on your <a class="report-inline-link" href="#act-today" data-section="act-today">maturity index score.</a></p>
+              <p>Reach a 100% on your <a class="report-inline-link" href="#act-today" data-section="act-today">Value Capture score.</a></p>
               <p>This roadmap shows the complete picture: all 60 milestones across APM and FSM, so you can see the full journey ahead, not only the next move.</p>
             </div>
             <div class="bonus-resource__tags">

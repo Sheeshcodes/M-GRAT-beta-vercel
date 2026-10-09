@@ -13,11 +13,21 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: false
 
       - name: Pull from IBM and push to mirror
+        env:
+          IBM_GH_TOKEN: ${{ secrets.IBM_GH_TOKEN }}
+          MIRROR_PUSH_TOKEN: ${{ secrets.MIRROR_PUSH_TOKEN }}
         run: |
-          git remote add ibm https://${{ secrets.IBM_GH_TOKEN }}@github.ibm.com/ALM-Consumability/M-GRAT.git
+          # Override the checkout action's credential helper so our PAT is used for github.com
+          git config --global --unset-all credential.helper || true
+          git config --global credential.helper store
+          echo "https://x-access-token:${IBM_GH_TOKEN}@github.ibm.com" >> ~/.git-credentials
+          echo "https://x-access-token:${MIRROR_PUSH_TOKEN}@github.com" >> ~/.git-credentials
+
+          git remote add ibm https://github.ibm.com/ALM-Consumability/M-GRAT.git
           git fetch ibm main
           git reset --hard ibm/main
+          git remote set-url origin https://github.com/Sheeshcodes/M-GRAT-beta-vercel.git
           git push origin main --force

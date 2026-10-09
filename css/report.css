@@ -238,6 +238,13 @@ cds-menu-item::part(list-item) {
   gap: 32px;
 }
 
+/* Groups a section's eyebrow, heading, intro and lead block so they print
+   together. On screen it is not there: its children stay items of the
+   section's own flex column. */
+.section-opener {
+  display: contents;
+}
+
 .report-eyebrow-row {
   display: flex;
   align-items: center;
@@ -323,7 +330,7 @@ cds-menu-item::part(list-item) {
   display: flex;
   flex-wrap: wrap;
   gap: 32px 130px;
-  align-items: center;
+  align-items: flex-start;
   padding: 47px 32px 32px;
   min-height: 271px;
 }
@@ -2198,7 +2205,41 @@ html, body { overflow-x: clip; }
 
   .report-content {
     max-width: none;
-    gap: 64px;
+  }
+
+  /* ── Page-level stacks print as block flow ──────────────────────────────
+     On screen these are flex columns spaced with gap. Chrome cannot paginate
+     that safely: when a block inside a flex column is pushed to the next page
+     to keep it whole, what follows is not always pushed with it, and the next
+     heading prints on top of it. In block flow the page breaks are reliable
+     and "keep with next" works, so the same spacing is set with margins. */
+  .report-content,
+  .report-section,
+  .section-opener,
+  .established-card,
+  .established-panel,
+  .expansion-card,
+  #action-plan-container {
+    display: block !important;
+  }
+
+  .report-content > * + * {
+    margin-top: 64px;
+  }
+
+  /* !important: some intro paragraphs carry an inline margin-top: 0. */
+  .report-section > * + *,
+  .section-opener > * + * {
+    margin-top: 32px !important;
+  }
+
+  .established-panel > * + *,
+  .expansion-card > * + * {
+    margin-top: 24px;
+  }
+
+  #action-plan-container > * + * {
+    margin-top: 16px;
   }
 
   .report-section {
@@ -2218,6 +2259,9 @@ html, body { overflow-x: clip; }
   }
 
   /* ── 1 + 2. Established capabilities: every panel, each with its name ── */
+  /* Every tab's panel prints, including the ones the tabs hide with an inline
+     display:none. The panel is a block like the other page-level stacks (see
+     "Page-level stacks" below), which also spaces its parts. */
   .established-panel {
     display: block !important;
   }
@@ -2228,8 +2272,10 @@ html, body { overflow-x: clip; }
     border-top: 1px solid var(--cds-border-subtle);
   }
 
+  /* The panel's own spacing (below) already separates the heading from its text. */
   .established-panel__title {
     display: block;
+    margin: 0;
     break-after: avoid;
   }
 
@@ -2288,6 +2334,12 @@ html, body { overflow-x: clip; }
     min-height: 0;
   }
 
+  /* "APM / Foundation" breaks onto two lines for the narrow desktop rail. The
+     printed cards are wide, so the title reads on one line as it does on a
+     phone. */
+  .stage-card__title-break  { display: none; }
+  .stage-card__title-inline { display: inline; }
+
   .stage-card__details,
   .stage-card.is-expanded .stage-card__details {
     position: static;
@@ -2328,6 +2380,14 @@ html, body { overflow-x: clip; }
     break-after: avoid;
   }
 
+  /* A section's opening run — eyebrow, heading, intro, lead block — is one
+     unbreakable piece, so the heading never sits at the foot of a page with
+     its banner on the next. */
+  .section-opener {
+    display: block;
+  }
+
+  .section-opener,
   .maturity-banner,
   .dimension-grid,
   .expansion-intro,
@@ -2396,7 +2456,6 @@ html, body { overflow-x: clip; }
     background: none;
     border-radius: 0;
     padding: 0;
-    gap: 24px;
   }
 
   .stage-card--future,
@@ -2410,7 +2469,6 @@ html, body { overflow-x: clip; }
 
   .established-panel {
     padding: 0;
-    gap: 24px;
   }
 
   /* The meters animate their width in from 0; a print can arrive before that
