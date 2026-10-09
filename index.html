@@ -21,6 +21,10 @@
   <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/toggle-tip.min.js"></script>
   <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/progress-bar.min.js"></script>
   <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/notification.min.js"></script>
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/text-input.min.js"></script>
+
+  <!-- Carbon Autotrack -->
+  <script type="module">import "https://1.www.s81c.com/common/carbon/autotrack/tag/v1/latest/autotrack.min.js";</script>
 
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/splash.css" />
@@ -42,7 +46,7 @@
           <p class="splash-hero__body">Identify where your capabilities are strong, where improvement could have the greatest impact, and what to prioritize next.</p>
           <div class="splash-hero__cta">
             <div class="splash-hero__btn-row">
-              <cds-button kind="primary" size="lg" onclick="startAssessment()">
+              <cds-button kind="primary" size="lg" onclick="startAssessment()" data-autotrack-id="splash__btn--start-hero">
                 Start assessment
                 <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18 6L16.57 7.393 26.188 17H2v2h24.188L16.57 28.573 18 30l12-12L18 6z"/></svg>
               </cds-button>
@@ -147,7 +151,7 @@
             </div>
             <div class="splash-cta__actions">
               <div class="splash-cta__btn-row">
-                <cds-button kind="primary" size="lg" onclick="startAssessment()">
+                <cds-button kind="primary" size="lg" onclick="startAssessment()" data-autotrack-id="splash__btn--start-cta">
                   Start assessment
                   <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18 6L16.57 7.393 26.188 17H2v2h24.188L16.57 28.573 18 30l12-12L18 6z"/></svg>
                 </cds-button>
@@ -219,8 +223,8 @@
 
         <div class="actions-bar" id="actions-bar">
           <div class="actions">
-            <cds-button id="btn-back" kind="secondary" size="lg" type="button">Back</cds-button>
-            <cds-button id="btn-next" kind="primary" size="lg" type="submit">
+            <cds-button id="btn-back" kind="secondary" size="lg" type="button" data-autotrack-id="assessment__btn--back">Back</cds-button>
+            <cds-button id="btn-next" kind="primary" size="lg" type="submit" data-autotrack-id="assessment__btn--next">
               Next
               <svg slot="icon" class="btn-icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
                 <path d="M18 6 16.57 7.393 24.15 15 4 15 4 17 24.15 17 16.57 24.573 18 26 28 16 18 6z"/>
