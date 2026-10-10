@@ -28,6 +28,18 @@ jobs:
 
           git remote add ibm https://github.ibm.com/ALM-Consumability/M-GRAT.git
           git fetch ibm main
+
+          # Only push and deploy if there are new commits
+          LOCAL=$(git rev-parse HEAD)
+          REMOTE=$(git rev-parse ibm/main)
+          if [ "$LOCAL" = "$REMOTE" ]; then
+            echo "No new commits — skipping push and deploy."
+            exit 0
+          fi
+
           git reset --hard ibm/main
           git remote set-url origin https://github.com/Sheeshcodes/M-GRAT-beta-vercel.git
           git push origin main --force
+
+      - name: Trigger Vercel deploy
+        run: curl -s -X POST "${{ secrets.VERCEL_DEPLOY_HOOK }}"
