@@ -14708,6 +14708,18 @@ els.sections.addEventListener("click", (event) => {
 /* ----------------------------------------------------------------------
    Validation
    ---------------------------------------------------------------------- */
+
+/**
+ * Flush any text-field values that were filled by browser autofill (which
+ * doesn't fire `cds-text-input-input`) into state.answers before validating.
+ */
+const syncTextAnswers = () => {
+  els.sections.querySelectorAll("[data-text-answer]").forEach((input) => {
+    const id = input.dataset.textAnswer;
+    if (id) state.answers[id] = (input.value ?? "").trim();
+  });
+};
+
 const isAnswered = (q) => {
   const a = state.answers[q.id];
   switch (q.type) {
@@ -14763,6 +14775,7 @@ const goTo = (index) => {
 // form-associated: drive submission from the host's click (and Enter on the form).
 const handleNext = (event) => {
   event.preventDefault();
+  syncTextAnswers();
   const firstInvalid = findFirstInvalid(true);
   if (firstInvalid) {
     els.formError.hidden = false;

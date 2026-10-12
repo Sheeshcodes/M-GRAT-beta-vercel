@@ -4,6 +4,23 @@ A high-level record of what changed in M-GRAT and when. This focuses on what sel
 
 ---
 
+## Week of 9–15 Oct 2026
+
+### ✦ New capabilities
+- **Carbon Design System text input component** — Replaced native HTML inputs on the session details page with the official Carbon `<cds-text-input>` web component, improving accessibility, validation states, and visual consistency with IBM Design standards.
+- **Carbon Autotrack & interactive element registry** — Integrated Carbon Autotrack telemetry across assessment and report views, instrumenting interactive elements with a formal `data-autotrack-id` taxonomy for product analytics and drop-off analysis.
+- **Dynamic logic validation harness** — Added an automated verification suite (`scripts/validate.py` integrated into `scripts/build_all.py`) validating relational graph DAG integrity, milestone freshness, and scoring invariants (monotonicity, Stage 0 bounds, prerequisite unlock chains).
+
+### ◎ Changed behaviour
+- **Maturity Index Score renamed to "Value Capture Score"** — Updated the primary report score label to "Value Capture score" across the report banner and action plan to align with customer-centric value language.
+- **Report banner typography & alignment** — Adjusted the maturity score header banner alignment to top and refined capitalisation for "Your Strongest Capabilities".
+- **Print / PDF layout & pagination overhaul** — Restructured print styles from CSS grid/flex to block flow pagination, ensuring section openers, cards, and headings avoid awkward page breaks across multi-page PDF exports.
+
+### ⚑ Infrastructure
+- **Automated mirror sync & Vercel deployment** — Added background mirror synchronization scripts and configured Vercel deployment hooks for seamless live updates from IBM GitHub.
+
+---
+
 ## Week of 2–8 Oct 2026
 
 ### ✦ New capabilities
