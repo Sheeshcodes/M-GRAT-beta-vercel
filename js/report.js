@@ -236,13 +236,13 @@ function renderMaturityBanner(result) {
 
   el.innerHTML = `
     <div class="maturity-score-cell">
-      <p class="maturity-score-label">Your Value Capture score</p>
+      <p class="maturity-score-label">Your value realization snapshot</p>
       <p class="maturity-score-value">${escHtml(result.maturity.score)}/100</p>
       <p class="maturity-level">Level ${escHtml(result.maturity.level)}</p>
       <p class="maturity-level-label">${escHtml(result.maturity.levelLabel)}</p>
     </div>
     <div class="maturity-strengths-cell">
-      <p class="maturity-strengths-label">Your Strongest Capabilities</p>
+      <p class="maturity-strengths-label">Your strongest capabilities</p>
       <ul class="maturity-strengths-list">
         ${topDims.map(d => `<li>${escHtml(keepTail(d.name))}</li>`).join("")}
       </ul>
@@ -572,7 +572,7 @@ function renderExpansionCard(containerId, track, trackResult) {
   const targetIndex  = targetStage - 1;
   const targetStageData = journeyStages[targetIndex];
 
-  const trackLabel = track === "APM" ? "APM expansion path" : "FSM expansion path";
+  const trackLabel = track === "APM" ? "APM path" : "FSM path";
 
   // Potential outcomes
   const outcomesHtml = (targetStageData.potentialOutcomes || []).map(o => `
