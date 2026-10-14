@@ -551,7 +551,7 @@
       transition: background 0.1s;
     }
     .accordion-trigger:hover { background: #f4f4f4; }
-    .accordion-trigger[aria-expanded="true"] { background: #edf5ff; }
+    .accordion-trigger[aria-expanded="true"] { background: none; }
     .accordion-step {
       font-family: 'IBM Plex Sans', sans-serif;
       font-size: 16px;
@@ -836,23 +836,24 @@
       gap: 24px;
       align-items: start;
     }
-    /* Left card */
     .report-card {
-      background: #ffffff;
-      border: 1px solid #e0e0e0;
+      background: #f4f4f4;
+      border: 1px solid #dde1e6;
       border-radius: 4px;
       padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
     .report-card-header {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       gap: 16px;
-      margin-bottom: 16px;
     }
     .report-card-icon {
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
+      width: 84px;
+      height: 84px;
+      border-radius: 1000px;
       background: #0f62fe;
       display: flex;
       align-items: center;
@@ -860,8 +861,8 @@
       flex-shrink: 0;
     }
     .report-card-icon img {
-      width: 28px;
-      height: 28px;
+      width: 48px;
+      height: 48px;
       filter: brightness(0) invert(1);
     }
     .report-card-title {
@@ -876,31 +877,20 @@
       color: #525252;
       line-height: 1.55;
     }
-    /* Dimension grid inside left card */
-    .dim-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px 24px;
-      margin-top: 20px;
+    /* GIF preview inside report cards */
+    .report-card-preview {
+      border: 1px solid #F4F4F4;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #F4F4F4;
+      padding: 16px;
     }
-    .dim-name {
-      font-size: 13px;
-      font-weight: 600;
-      color: #161616;
-      margin-bottom: 4px;
+    .report-card-gif {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 4px;
     }
-    .dim-status {
-      font-size: 12px;
-      color: #525252;
-      margin-bottom: 6px;
-    }
-    .dim-bar {
-      height: 4px;
-      border-radius: 2px;
-    }
-    .dim-bar--green  { background: #24a148; width: 100%; }
-    .dim-bar--blue   { background: #0f62fe; width: 65%; }
-    .dim-bar--red    { background: #da1e28; width: 28%; }
     /* Right column: stacked cards */
     .report-right {
       display: flex;
@@ -935,6 +925,7 @@
     .report-action-icon img {
       width: 48px;
       height: 48px;
+      filter: brightness(0) invert(1);
     }
     .report-action-title {
       font-size: 16px;
@@ -1025,8 +1016,13 @@
 
     /* ── Additional Resources (green) ───────────────────────── */
     .resources-section {
+      background: #ffffff;
+      padding: 0 0 64px;
+    }
+    .resources-card {
       background: #198038;
-      padding: 64px 0;
+      border-radius: 4px;
+      padding: 32px;
     }
     .resources-heading {
       font-family: 'IBM Plex Sans', sans-serif;
@@ -1087,12 +1083,13 @@
       padding: 32px;
       display: flex;
       flex-direction: column;
-      gap: 64px;
+      gap: 32px;
     }
     .cta-block {
       display: flex;
       flex-direction: column;
       gap: 16px;
+      max-width: 540px;
     }
     .cta-heading {
       font-family: 'IBM Plex Sans', sans-serif;
@@ -1103,7 +1100,7 @@
       margin: 0;
     }
     .cta-sub {
-      font-size: 15px;
+      font-size: 14px;
       color: #525252;
       line-height: 1.5;
       margin: 0;
@@ -1136,7 +1133,7 @@
       font-weight: 400;
       color: #161616;
       line-height: 1.29;
-      margin: 0;
+      margin: 0 0 8px;
     }
     .beta-body {
       display: flex;
@@ -1533,49 +1530,8 @@
               <p class="report-card-body">The assessment analyzes customer responses to highlight established strengths, areas requiring attention, and opportunities for further progress.</p>
             </div>
           </div>
-          <!-- Dimension grid -->
-          <div class="dim-grid">
-            <div class="dim-item">
-              <div class="dim-name">Asset data</div>
-              <div class="dim-status">Established</div>
-              <div class="dim-bar dim-bar--green"></div>
-            </div>
-            <div class="dim-item">
-              <div class="dim-name">Work management</div>
-              <div class="dim-status">Established</div>
-              <div class="dim-bar dim-bar--green"></div>
-            </div>
-            <div class="dim-item">
-              <div class="dim-name">Inspections and condition capture</div>
-              <div class="dim-status">Needs attention</div>
-              <div class="dim-bar dim-bar--red"></div>
-            </div>
-            <div class="dim-item">
-              <div class="dim-name">Supply chain and inventory</div>
-              <div class="dim-status">Growing</div>
-              <div class="dim-bar dim-bar--blue"></div>
-            </div>
-            <div class="dim-item">
-              <div class="dim-name">Scheduling</div>
-              <div class="dim-status">Growing</div>
-              <div class="dim-bar dim-bar--blue"></div>
-            </div>
-            <div class="dim-item">
-              <div class="dim-name">Reliability practices</div>
-              <div class="dim-status">Needs attention</div>
-              <div class="dim-bar dim-bar--red"></div>
-            </div>
-            <div class="dim-item">
-              <div class="dim-name">Condition monitoring and prediction</div>
-              <div class="dim-status">Needs attention</div>
-              <div class="dim-bar dim-bar--red"></div>
-            </div>
-            <div class="dim-item">
-              <div class="dim-name">Assignment and dispatch</div>
-              <div class="dim-status">Growing</div>
-              <div class="dim-bar dim-bar--blue"></div>
-            </div>
-          </div>
+          <!-- GIF preview -->
+          <img src="assets/card 1 dimentions.svg" alt="Preview of capability dimensions" class="report-card-gif" />
         </div>
 
         <!-- Right: two stacked cards -->
@@ -1592,18 +1548,9 @@
                 <p class="report-card-body">The assessment maps the results to relevant APM and FSM applications and identifies prioritized opportunities for improvement.</p>
               </div>
             </div>
-            <!-- Stage preview tiles -->
-            <div class="stage-preview">
-              <div class="stage-tile stage-tile--current">
-                <div class="stage-tile__label">Your current stage</div>
-                <div class="stage-tile__num">01</div>
-                <div class="stage-tile__name">Digital Maintenance Foundation</div>
-              </div>
-              <div class="stage-tile stage-tile--target">
-                <div class="stage-tile__label">Your target stage</div>
-                <div class="stage-tile__num">02</div>
-                <div class="stage-tile__name">APM foundation</div>
-              </div>
+            <!-- GIF preview -->
+            <div class="report-card-preview">
+              <img src="assets/Stages 2.svg" alt="Preview of stage progression" class="report-card-gif" />
             </div>
           </div>
 
@@ -1790,7 +1737,7 @@
         <div class="cta-block">
           <div>
             <h2 class="cta-heading">Ready to uncover your customer's next opportunity?</h2>
-            <p class="cta-sub" style="margin-top:8px;">Invite the customer to complete the assessment or guide them through it live.</p>
+            <p class="cta-sub">Invite the customer to complete the assessment or guide them through it live.</p>
           </div>
           <div class="cta-actions">
             <a href="https://m-grat-beta-vercel.vercel.app/" target="_blank" rel="noopener noreferrer" class="btn-primary">
@@ -1807,7 +1754,7 @@
         <!-- Block 2: Beta notice -->
         <div class="cta-block">
           <h2 class="beta-heading">This assessment is currently in beta.</h2>
-          <div class="beta-body" style="padding-top:6px;">
+          <div class="beta-body">
             <p><strong>Your feedback helps to shape this tool.</strong></p>
             <p>Use the assessment with customers and share your feedback to help shape future enhancements. Submit feedback through the feedback form or Slack channel.</p>
           </div>
@@ -1834,6 +1781,7 @@
   <!-- ═══════════════ ADDITIONAL RESOURCES ═════════════════ -->
   <section class="resources-section" id="additional-resources">
     <div class="container">
+      <div class="resources-card">
       <h2 class="resources-heading">Additional resources</h2>
       <div class="resources-grid">
 
@@ -1871,6 +1819,7 @@
           </div>
         </div>
 
+      </div>
       </div>
     </div>
   </section>
