@@ -254,9 +254,9 @@
       padding: 24px 32px;
     }
     .metric-value {
-      font-family: 'IBM Plex Sans', sans-serif;
+      font-family: 'IBM Plex Serif', serif;
       font-size: 28px;
-      font-weight: 300;
+      font-weight: 400;
       color: #0f62fe;
       line-height: 1;
       margin-bottom: 6px;
@@ -395,66 +395,99 @@
     }
     .option-card {
       background: #ffffff;
-      border: 1px solid #e0e0e0;
-      padding: 32px;
+      border: 1px solid #dde1e6;
+      border-radius: 4px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
     }
-    .option-badge {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      color: #0043ce;
-      background: #edf5ff;
-      border: 1px solid #d0e2ff;
-      padding: 3.2px 9.6px;
-      display: inline-block;
-      margin-bottom: 16px;
-    }
-    .option-title {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 18px;
-      font-weight: 600;
-      color: #161616;
-      margin-bottom: 6px;
-    }
-    .option-sub {
-      font-family: 'IBM Plex Sans Condensed', sans-serif;
-      font-size: 13px;
-      color: #525252;
-      margin-bottom: 20px;
-    }
-    .option-how-label {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #525252;
-      margin-bottom: 8px;
-    }
-    .option-body {
-      font-size: 14px;
-      color: #525252;
-      line-height: 1.6;
-      margin-bottom: 20px;
-    }
-    .option-link-row {
+    .option-card-header {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 12px 16px;
-      background: #f4f4f4;
-      border: 1px solid #e0e0e0;
-      margin-bottom: 20px;
+      gap: 16px;
     }
-    .option-url {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 12px;
-      color: #525252;
-      flex: 1;
+    .option-card-pictogram {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: #0f62fe;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .option-card-pictogram img {
+      width: 36px;
+      height: 36px;
+    }
+    .option-card-label {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 400;
+      color: #161616;
+      line-height: 1.25;
+      margin-bottom: 2px;
+    }
+    .option-card-title {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: #161616;
+      line-height: 1.25;
+      margin-bottom: 2px;
+    }
+    .option-card-sub {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 400;
+      color: #161616;
+      line-height: 1.375;
+    }
+    .option-steps-wrap {
+      background: #f4f4f4;
+      border: 1px solid #dde1e6;
+      border-radius: 12px;
+      box-shadow: 0 8px 8px rgba(0,0,0,0.06);
       overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      flex: 1;
+    }
+    .option-steps {
+      list-style: none;
+      counter-reset: step;
+      padding: 0;
+      margin: 0;
+    }
+    .option-steps li {
+      counter-increment: step;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 16px;
+      border-bottom: 1px solid #dde1e6;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 14px;
+      color: #161616;
+      line-height: 1.5;
+      min-height: 52px;
+    }
+    .option-steps li:last-child { border-bottom: none; }
+    .option-steps li::before {
+      content: counter(step) ".";
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      color: #161616;
+      flex-shrink: 0;
+      min-width: 20px;
+      margin-top: 0;
+    }
+    .option-steps li.step-empty {
+      color: transparent;
+      pointer-events: none;
+    }
+    .option-steps li.step-empty::before {
+      color: transparent;
     }
     .btn-copy {
       font-family: 'IBM Plex Sans', sans-serif;
@@ -462,66 +495,13 @@
       font-weight: 600;
       color: #0f62fe;
       background: none;
-      border: 1px solid #0f62fe;
-      padding: 5px 12px;
-      cursor: pointer;
-      transition: background 0.1s, color 0.1s;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-    .btn-copy:hover { background: #edf5ff; }
-    .btn-copy.copied { color: #0e6027; border-color: #0e6027; background: #defbe6; }
-    .option-outcome {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      background: #defbe6;
-      border-left: 3px solid #0e6027;
-      padding: 10px 14px;
-      font-size: 13px;
-      color: #0e6027;
-      font-weight: 500;
-    }
-    .option-steps {
-      list-style: none;
-      counter-reset: step;
+      border: none;
       padding: 0;
+      cursor: pointer;
+      white-space: nowrap;
     }
-    .option-steps li {
-      counter-increment: step;
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 10px 0;
-      border-bottom: 1px solid #f4f4f4;
-      font-size: 14px;
-      color: #525252;
-      line-height: 1.5;
-    }
-    .option-steps li:last-child { border-bottom: none; }
-    .option-steps li::before {
-      content: counter(step);
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 12px;
-      font-weight: 600;
-      color: #0f62fe;
-      background: #edf5ff;
-      width: 22px;
-      height: 22px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      border-radius: 50%;
-      margin-top: 1px;
-    }
-    .option-step-content {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex: 1;
-    }
+    .btn-copy:hover { text-decoration: underline; }
+    .btn-copy.copied { color: #0e6027; }
     .btn-download {
       font-family: 'IBM Plex Sans', sans-serif;
       font-size: 12px;
@@ -843,7 +823,7 @@
 
     /* ── Report Contents Section ──────────────────────────── */
     .report-section {
-      background: #f4f4f4;
+      background: #ffffff;
       padding: 64px 0;
     }
     .report-section-heading {
@@ -1165,71 +1145,61 @@
 
     /* ── Approach Section ─────────────────────────────────── */
     .approach-section {
-      background: #ffffff;
-      padding: 64px 0;
+      background: #f4f4f4;
+      padding: 80px 0;
     }
     .approach-inner {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 64px;
-      align-items: center;
+      grid-template-columns: 1fr auto;
+      gap: 40px;
+      align-items: start;
+      margin-bottom: 48px;
     }
     .approach-heading {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 36px;
+      font-size: 42px;
       font-weight: 300;
       color: #161616;
-      line-height: 1.15;
-      margin-bottom: 28px;
-    }
-    .approach-list {
-      list-style: none;
-      padding: 0;
-      margin: 0 0 24px;
-    }
-    .approach-list li {
-      font-size: 16px;
-      color: #161616;
-      padding: 6px 0;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .approach-list li::before {
-      content: counter(approach-item);
-      counter-increment: approach-item;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 12px;
-      font-weight: 600;
-      color: #0f62fe;
-      min-width: 20px;
-    }
-    .approach-list {
-      counter-reset: approach-item;
+      line-height: 1.18;
+      margin-bottom: 0;
     }
     .approach-note {
-      font-size: 15px;
-      color: #525252;
-      line-height: 1.6;
-      max-width: 44ch;
+      font-size: 16px;
+      color: #161616;
+      line-height: 1.5;
+      max-width: 42ch;
+      margin-top: auto;
+    }
+    .approach-heading-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 40px;
     }
     .approach-visual {
-      background: #f4f4f4;
-      border: 1px solid #e0e0e0;
+      background: #e8e8e8;
       border-radius: 8px;
       overflow: hidden;
       display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 360px;
+      align-items: stretch;
+      width: 538px;
+      height: 328px;
+      flex-shrink: 0;
     }
     .approach-visual img {
       width: 100%;
-      height: auto;
+      height: 100%;
+      object-fit: cover;
+    }
+    .approach-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
     }
     @media (max-width: 900px) {
       .approach-inner { grid-template-columns: 1fr; gap: 32px; }
-      .approach-visual { min-height: 220px; }
+      .approach-visual { width: 100%; height: 260px; }
+      .approach-options { grid-template-columns: 1fr; }
     }
 
     /* ── Quote Section ────────────────────────────────────── */
@@ -1238,7 +1208,7 @@
       padding: 64px 0 48px;
     }
     .quote-text {
-      font-family: 'IBM Plex Serif', serif;
+      font-family: 'IBM Plex Sans', sans-serif;
       font-size: 32px;
       font-weight: 300;
       font-style: italic;
@@ -1260,8 +1230,9 @@
     }
     .quote-scroll {
       display: flex;
-      align-items: center;
-      gap: 8px;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
       font-family: 'IBM Plex Sans', sans-serif;
       font-size: 14px;
       color: #525252;
@@ -1399,19 +1370,87 @@
   <!-- ═══════════════ APPROACH SECTION ═════════════════════ -->
   <section class="approach-section">
     <div class="container">
+      <!-- Header row: heading left, illo card right -->
       <div class="approach-inner">
-        <div class="approach-content">
+        <div class="approach-heading-col">
           <h2 class="approach-heading">Choose the approach<br>that best fits the customer<br>conversation.</h2>
-          <ol class="approach-list">
-            <li>Guided live session</li>
-            <li>Customer-led</li>
-          </ol>
           <p class="approach-note">Both options produce the same personalized opportunity roadmap.</p>
         </div>
         <div class="approach-visual" aria-hidden="true">
-          <img src="assets/Group-1.svg" alt="" />
+          <img src="assets/sellers-illo-header.svg" alt="" />
         </div>
       </div>
+
+      <!-- Two option cards -->
+      <div class="approach-options">
+
+        <!-- Option 1: Guided live session -->
+        <div class="option-card">
+          <div class="option-card-header">
+            <div class="option-card-pictogram">
+              <img src="assets/video--chat.svg" alt="" aria-hidden="true" />
+            </div>
+            <div>
+              <p class="option-card-label">Option 1</p>
+              <p class="option-card-title">Guided live session</p>
+              <p class="option-card-sub">Complete the assessment with the customer</p>
+            </div>
+          </div>
+          <div class="option-steps-wrap">
+            <ol class="option-steps">
+              <li>
+                <div style="display:flex;flex-direction:column;gap:4px;">
+                  <span>Open the live assessment, or copy the link:</span>
+                  <span style="display:flex;align-items:center;gap:8px;">
+                    <a href="https://m-grat-beta-vercel.vercel.app/" target="_blank" rel="noopener noreferrer" style="color:#0f62fe;font-weight:600;white-space:nowrap;">https://m-grat-beta-vercel.vercel.app</a>
+                    <button class="btn-copy" onclick="navigator.clipboard.writeText('https://m-grat-beta-vercel.vercel.app/').then(()=>{this.textContent='Copied!';this.classList.add('copied');setTimeout(()=>{this.textContent='Click to copy';this.classList.remove('copied')},2000)})">Click to copy</button>
+                  </span>
+                </div>
+              </li>
+              <li>Drive the questions.</li>
+              <li>Capture the customer's answers.<br>The report is generated automatically upon completion.</li>
+              <li>Walk through the report in real time.</li>
+              <li class="step-empty">&nbsp;</li>
+            </ol>
+          </div>
+          <div style="display:flex;justify-content:flex-end;">
+            <a href="https://m-grat-beta-vercel.vercel.app/" target="_blank" rel="noopener noreferrer" class="btn-primary">
+              Launch live assessment
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M26 28H6a2 2 0 01-2-2V6a2 2 0 012-2h9v2H6v20h20v-9h2v9a2 2 0 01-2 2z"/><path d="M21 2v2h5.59L17 13.41 18.59 15 28 5.59V11h2V2z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Option 2: Customer-led -->
+        <div class="option-card">
+          <div class="option-card-header">
+            <div class="option-card-pictogram">
+              <img src="assets/Option 2 customer led.png" alt="" aria-hidden="true" style="width: 64px; height: 64px;" />
+            </div>
+            <div>
+              <p class="option-card-label">Option 2</p>
+              <p class="option-card-title">Customer-led</p>
+              <p class="option-card-sub">Send the assessment for independent completion</p>
+            </div>
+          </div>
+          <div class="option-steps-wrap">
+            <ol class="option-steps">
+              <li>Download the assessment file.</li>
+              <li>Send the attached file to the user through an approved channel: email, Box, or OneDrive.</li>
+              <li>The customer opens the file, completes the assessment, and saves the report as a PDF.</li>
+              <li>The customer sends the report back.</li>
+              <li>Schedule a follow-up conversation.</li>
+            </ol>
+          </div>
+          <div style="display:flex;justify-content:flex-end;">
+            <a href="MAS-growth-assessment-self-serve.html" download="MAS-growth-assessment-self-serve.html" class="btn-primary">
+              Download assessment
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4zm0-10l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
+            </a>
+          </div>
+        </div>
+
+      </div><!-- end approach-options -->
     </div>
   </section>
 
