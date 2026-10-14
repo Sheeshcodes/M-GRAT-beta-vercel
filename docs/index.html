@@ -177,7 +177,7 @@
     .btn-primary {
       font-family: 'IBM Plex Sans', sans-serif;
       font-size: 14px;
-      font-weight: 600;
+      font-weight: 400;
       color: #ffffff;
       background: #0f62fe;
       border: none;
@@ -193,7 +193,7 @@
     .btn-secondary-link {
       font-size: 14px;
       color: #0f62fe;
-      font-weight: 500;
+      font-weight: 400;
       display: flex;
       align-items: center;
       gap: 6px;
@@ -240,6 +240,7 @@
     /* ── Metric Badges ────────────────────────────────────── */
     .metric-strip {
       background: #f4f4f4;
+      border-top: 1px solid #e0e0e0;
       border-bottom: 1px solid #e0e0e0;
     }
     .metric-strip .container {
@@ -251,9 +252,7 @@
       flex: 1;
       text-align: left;
       padding: 24px 32px;
-      border-left: 1px solid #e0e0e0;
     }
-    .metric-item:first-child { border-left: none; }
     .metric-value {
       font-family: 'IBM Plex Sans', sans-serif;
       font-size: 28px;
@@ -1289,7 +1288,7 @@
     }
     @media (max-width: 600px) {
       .metric-strip .container { flex-direction: column; }
-      .metric-item { border-left: none; border-bottom: 1px solid #e0e0e0; }
+      .metric-item { border-bottom: 1px solid #e0e0e0; }
       .site-nav a { font-size: 12px; padding: 0 10px; }
       .hero-headline { font-size: 32px; }
       .section-title { font-size: 24px; }
@@ -1375,7 +1374,7 @@
         <div class="metric-label">Client-ready report</div>
       </div>
       <div class="metric-item">
-        <div class="metric-value">3–4</div>
+        <div class="metric-value">Three</div>
         <div class="metric-label">Prioritized next actions</div>
       </div>
       <div class="metric-item">
