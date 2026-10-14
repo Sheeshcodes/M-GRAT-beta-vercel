@@ -33,64 +33,52 @@
       position: sticky;
       top: 0;
       z-index: 200;
-      background: #0043ce;
-      border-bottom: 1px solid #002d9c;
+      background: #262626;
+      border-bottom: 1px solid #525252;
       height: 48px;
     }
-    .site-header .container {
+    .site-header-inner {
       height: 100%;
       display: flex;
       align-items: center;
-      gap: 0;
+      padding: 0 1rem;
     }
-    .header-wordmark {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin-right: auto;
+    .header-sitename {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: #f4f4f4;
+      letter-spacing: 0.16px;
+      white-space: nowrap;
+      padding: 0 2rem 0 0.5rem;
       flex-shrink: 0;
     }
-    .header-wordmark img {
-      height: 18px;
-      filter: brightness(0) invert(1);
-    }
-    .header-wordmark-text {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.8125rem;
+    .header-sitename strong {
       font-weight: 600;
-      color: #ffffff;
-      white-space: nowrap;
-    }
-    .header-wordmark-text span {
-      font-weight: 300;
-      color: rgba(255,255,255,0.7);
     }
     .site-nav {
       display: flex;
-      align-items: center;
+      align-items: stretch;
+      height: 48px;
       gap: 0;
+      border-left: 1px solid #525252;
     }
     .site-nav a {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.8125rem;
-      color: rgba(255,255,255,0.8);
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: #c6c6c6;
+      letter-spacing: 0.16px;
       padding: 0 1rem;
       height: 48px;
       display: flex;
       align-items: center;
-      border-bottom: 2px solid transparent;
+      border-bottom: 3px solid transparent;
       transition: color 0.1s, border-color 0.1s, background 0.1s;
+      white-space: nowrap;
     }
-    .site-nav a:hover { background: rgba(255,255,255,0.08); color: #fff; }
-    .site-nav a.active { color: #fff; border-bottom-color: #fff; }
-    .site-nav a.nav-cta {
-      background: rgba(255,255,255,0.12);
-      color: #fff;
-      margin-left: 0.5rem;
-      border-radius: 0;
-      font-weight: 500;
-    }
-    .site-nav a.nav-cta:hover { background: rgba(255,255,255,0.22); }
+    .site-nav a:hover { background: rgba(255,255,255,0.08); color: #f4f4f4; }
+    .site-nav a.active { color: #f4f4f4; border-bottom-color: #4589ff; }
 
     /* ── Hero ─────────────────────────────────────────────── */
     .hero {
@@ -1303,7 +1291,7 @@
     @media (max-width: 600px) {
       .metric-strip .container { flex-direction: column; }
       .metric-item { border-left: none; border-bottom: 1px solid #e0e0e0; }
-      .site-nav a { font-size: 0.75rem; padding: 0 0.5rem; }
+      .site-nav a { font-size: 0.75rem; padding: 0 0.625rem; }
       .hero-headline { font-size: 2rem; }
       .section-title { font-size: 1.5rem; }
       .feedback-tab { display: none; }
@@ -1317,18 +1305,11 @@
 
   <!-- ═══════════════ HEADER ════════════════════════════════ -->
   <header class="site-header">
-    <div class="container">
-      <div class="header-wordmark">
-        <img src="assets/IBM Maximo Application Suite.svg" alt="IBM MAS" />
-        <span class="header-wordmark-text">
-          M-GRAT <span>· MAS Growth Readiness Assessment</span>
-        </span>
-      </div>
+    <div class="site-header-inner">
+      <span class="header-sitename">IBM <strong>Maximo Growth Opportunity Assessment Tool</strong></span>
       <nav class="site-nav" aria-label="Primary">
         <a href="#" class="active">Overview</a>
-        <a href="journeys.html">Growth Journeys</a>
-        <a href="https://m-grat-beta-vercel.vercel.app/" target="_blank" class="nav-cta">Launch Tool ↗</a>
-        <a href="https://wkf.ms/4y6RVgc" target="_blank" rel="noopener noreferrer" class="nav-cta">Feedback ↗</a>
+        <a href="journeys.html">Opportunity paths</a>
       </nav>
     </div>
   </header>
