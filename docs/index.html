@@ -220,12 +220,16 @@
       position: fixed;
       right: 0;
       top: 50%;
-      transform: translateY(-50%) rotate(180deg);
+      transform: translateY(-50%) rotate(180deg) translateZ(0);
+      -webkit-transform: translateY(-50%) rotate(180deg) translateZ(0);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      -webkit-font-smoothing: subpixel-antialiased;
       z-index: 300;
       background: #0f62fe;
       color: #ffffff;
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 600;
       writing-mode: vertical-rl;
       text-orientation: mixed;
