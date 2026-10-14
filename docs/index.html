@@ -912,46 +912,77 @@
     }
     /* Blue action card */
     .report-action-card {
-      background: #0f62fe;
+      background: #f4f4f4;
+      border: 1px solid #dde1e6;
       border-radius: 4px;
       padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
     .report-action-header {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       gap: 16px;
-      margin-bottom: 12px;
     }
     .report-action-icon {
-      width: 40px;
-      height: 40px;
+      width: 84px;
+      height: 84px;
       flex-shrink: 0;
+      background: #0f62fe;
+      border-radius: 1000px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .report-action-icon img {
-      width: 40px;
-      height: 40px;
-      filter: brightness(0) invert(1);
+      width: 48px;
+      height: 48px;
     }
     .report-action-title {
-      font-size: 15px;
-      font-weight: 700;
-      color: #ffffff;
+      font-size: 16px;
+      font-weight: 600;
+      color: #161616;
       margin-bottom: 4px;
+      line-height: 1.375;
     }
     .report-action-body {
       font-size: 14px;
-      color: rgba(255,255,255,0.85);
-      line-height: 1.55;
+      color: #161616;
+      line-height: 1.43;
+    }
+    .report-action-step-block {
+      background: #0f62fe;
+      padding: 32px 24px;
+      border-radius: 0;
+    }
+    .report-action-step-inner {
+      display: flex;
+      align-items: flex-start;
+      gap: 26px;
+    }
+    .report-action-step-inner img {
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+      filter: brightness(0) invert(1);
+    }
+    .report-action-step-text {
+      font-size: 16px;
+      color: #ffffff;
+      line-height: 1.375;
+    }
+    .report-action-step-text strong {
+      font-weight: 600;
     }
     .report-action-footnote {
       font-size: 13px;
-      color: rgba(255,255,255,0.75);
-      margin-top: 16px;
-      border-top: 1px solid rgba(255,255,255,0.2);
+      color: #525252;
+      border-top: 1px solid #dde1e6;
       padding-top: 12px;
     }
     .report-action-footnote a {
-      color: #ffffff;
+      color: #0f62fe;
       text-decoration: underline;
     }
     /* Stage visual inside right-top card */
@@ -1545,7 +1576,7 @@
             </div>
           </div>
 
-          <!-- Turn insights into actions (blue card) -->
+          <!-- Turn insights into actions -->
           <div class="report-action-card">
             <div class="report-action-header">
               <div class="report-action-icon">
@@ -1556,13 +1587,12 @@
                 <p class="report-action-body">The report provides recommended next steps, conversation starters, and opportunities to get more value from the customer's existing AppPoints investment.</p>
               </div>
             </div>
-            <div style="background:rgba(255,255,255,0.12);border-radius:4px;padding:16px 20px;">
-              <div style="display:flex;align-items:flex-start;gap:12px;">
-                <img src="assets/data--scientist.svg" width="32" height="32" alt="" aria-hidden="true" style="filter:brightness(0) invert(1);flex-shrink:0;" />
-                <p style="font-size:14px;color:#ffffff;line-height:1.55;"><strong>Step 01:</strong> Collect periodic condition readings in Maximo Manage to trigger maintenance work when predefined operating limits are breached.</p>
+            <div class="report-action-step-block">
+              <div class="report-action-step-inner">
+                <img src="assets/data--scientist.svg" alt="" aria-hidden="true" />
+                <p class="report-action-step-text"><strong>Step 01:</strong><br>Collect periodic condition readings in Maximo Manage to trigger maintenance work when predefined operating limits are breached.</p>
               </div>
             </div>
-            <p class="report-action-footnote">Foundational pre-requisite for <a href="journeys.html">APM Stage 01</a></p>
           </div>
 
         </div>
