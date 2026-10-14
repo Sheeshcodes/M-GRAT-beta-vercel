@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>M-GRAT · MAS Growth Readiness Assessment Tool</title>
+  <title>M-GOAT · MAS Growth Opportunity Assessment Tool</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Serif:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -25,7 +25,7 @@
     .container {
       max-width: 1056px;
       margin: 0 auto;
-      padding: 0 1rem;
+      padding: 0 16px;
     }
 
     /* ── Header ───────────────────────────────────────────── */
@@ -41,16 +41,16 @@
       height: 100%;
       display: flex;
       align-items: center;
-      padding: 0 1rem;
+      padding: 0 16px;
     }
     .header-sitename {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.875rem;
+      font-size: 14px;
       font-weight: 400;
       color: #f4f4f4;
       letter-spacing: 0.16px;
       white-space: nowrap;
-      padding: 0 2rem 0 0.5rem;
+      padding: 0 32px 0 8px;
       flex-shrink: 0;
     }
     .header-sitename strong {
@@ -65,11 +65,11 @@
     }
     .site-nav a {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.875rem;
+      font-size: 14px;
       font-weight: 400;
       color: #c6c6c6;
       letter-spacing: 0.16px;
-      padding: 0 1rem;
+      padding: 0 16px;
       height: 48px;
       display: flex;
       align-items: center;
@@ -93,7 +93,7 @@
       align-items: center;
     }
     .hero-content {
-      padding: 5rem 3rem 5rem 0;
+      padding: 80px 48px 80px 0;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -101,8 +101,8 @@
     .hero-wordmark {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 1.75rem;
+      gap: 12px;
+      margin-bottom: 28px;
     }
     .hero-wordmark img {
       width: 52px;
@@ -111,7 +111,7 @@
     }
     .hero-wordmark-text {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 1.25rem;
+      font-size: 20px;
       font-weight: 400;
       color: #161616;
       line-height: 1.2;
@@ -121,11 +121,11 @@
     }
     .hero-headline {
       font-family: 'IBM Plex Serif', serif;
-      font-size: 3rem;
+      font-size: 48px;
       font-weight: 300;
       line-height: 1.1;
       color: #161616;
-      margin-bottom: 1.5rem;
+      margin-bottom: 24px;
     }
     .hero-headline strong {
       font-weight: 700;
@@ -134,70 +134,70 @@
     .hero-label-row {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 1.5rem;
+      gap: 12px;
+      margin-bottom: 24px;
     }
     .hero-label {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 1rem;
+      font-size: 24px;
       font-style: italic;
       color: #8a3ffc;
     }
     .hero-version-tag {
       display: inline-flex;
       align-items: center;
-      gap: 0.35rem;
+      gap: 5.6px;
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.8125rem;
+      font-size: 13px;
       color: #161616;
       border: 1px solid #161616;
-      border-radius: 2rem;
-      padding: 0.2rem 0.75rem;
+      border-radius: 32px;
+      padding: 3.2px 12px;
     }
     .hero-version-tag svg {
       display: inline-block;
       flex-shrink: 0;
     }
     .hero-body {
-      font-size: 0.9375rem;
+      font-size: 15px;
       color: #161616;
       line-height: 1.6;
       max-width: 48ch;
-      margin-bottom: 0.875rem;
+      margin-bottom: 14px;
     }
     .hero-body + .hero-body {
       margin-top: 0;
-      margin-bottom: 2rem;
+      margin-bottom: 32px;
     }
     .hero-actions {
       display: flex;
       align-items: center;
-      gap: 1.25rem;
+      gap: 20px;
       flex-wrap: wrap;
     }
     .btn-primary {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.875rem;
+      font-size: 14px;
       font-weight: 600;
       color: #ffffff;
       background: #0f62fe;
       border: none;
-      padding: 0.75rem 1.5rem;
+      padding: 12px 24px;
       cursor: pointer;
       transition: background 0.15s;
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 8px;
       text-decoration: none;
     }
     .btn-primary:hover { background: #0043ce; }
     .btn-secondary-link {
-      font-size: 0.875rem;
+      font-size: 14px;
       color: #0f62fe;
       font-weight: 500;
       display: flex;
       align-items: center;
-      gap: 0.375rem;
+      gap: 6px;
       transition: color 0.1s;
     }
     .btn-secondary-link:hover { color: #0043ce; text-decoration: underline; }
@@ -226,11 +226,11 @@
       background: #0f62fe;
       color: #ffffff;
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.8125rem;
+      font-size: 13px;
       font-weight: 600;
       writing-mode: vertical-rl;
       text-orientation: mixed;
-      padding: 0.875rem 0.5rem;
+      padding: 14px 8px;
       cursor: pointer;
       text-decoration: none;
       letter-spacing: 0.04em;
@@ -251,21 +251,21 @@
     .metric-item {
       flex: 1;
       text-align: left;
-      padding: 1.5rem 2rem;
+      padding: 24px 32px;
       border-left: 1px solid #e0e0e0;
     }
     .metric-item:first-child { border-left: none; }
     .metric-value {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 1.75rem;
+      font-size: 28px;
       font-weight: 300;
       color: #0f62fe;
       line-height: 1;
-      margin-bottom: 0.375rem;
+      margin-bottom: 6px;
     }
     .metric-label {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.875rem;
+      font-size: 14px;
       font-weight: 400;
       color: #161616;
       letter-spacing: 0;
@@ -273,7 +273,7 @@
 
     /* ── Section Shared ───────────────────────────────────── */
     .section {
-      padding: 4rem 0;
+      padding: 64px 0;
     }
     .section-alt { background: #f4f4f4; }
     .section-white { background: #ffffff; }
@@ -297,15 +297,15 @@
       gap: 32px;
     }
     .maturity-maps-block__title {
-      font-size: 1rem;
+      font-size: 16px;
       font-weight: 600;
       line-height: 1.375;
       color: #fff;
-      margin: 0 0 0.5rem;
+      margin: 0 0 8px;
       max-width: 34ch;
     }
     .maturity-maps-block__desc {
-      font-size: 1rem;
+      font-size: 16px;
       line-height: 1.375;
       color: #fff;
       margin: 0;
@@ -319,28 +319,28 @@
     /* Override section-eyebrow colour on green background */
     .section-green .section-eyebrow { color: rgba(255,255,255,0.7); }
     .section-header {
-      margin-bottom: 2.5rem;
+      margin-bottom: 40px;
     }
     .section-eyebrow {
       font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.6875rem;
+      font-size: 11px;
       font-weight: 600;
       letter-spacing: 0.1em;
       color: #0f62fe;
       text-transform: uppercase;
-      margin-bottom: 0.75rem;
+      margin-bottom: 12px;
     }
     .section-title {
       font-family: 'IBM Plex Serif', serif;
-      font-size: 1.875rem;
+      font-size: 30px;
       font-weight: 300;
       color: #161616;
       line-height: 1.25;
-      margin-bottom: 0.75rem;
+      margin-bottom: 12px;
     }
     .section-subtitle {
       font-family: 'IBM Plex Sans Condensed', sans-serif;
-      font-size: 0.9375rem;
+      font-size: 15px;
       color: #525252;
       max-width: 60ch;
     }
@@ -359,32 +359,32 @@
     }
     .value-card {
       background: #ffffff;
-      padding: 2rem 1.75rem;
+      padding: 32px 28px;
       border-right: 1px solid #e0e0e0;
     }
     .value-card:last-child { border-right: none; }
     .value-icon {
       width: 48px;
       height: 48px;
-      margin-bottom: 1.25rem;
+      margin-bottom: 20px;
     }
     .value-number {
       font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.75rem;
+      font-size: 12px;
       font-weight: 600;
       color: #0f62fe;
       letter-spacing: 0.08em;
-      margin-bottom: 0.5rem;
+      margin-bottom: 8px;
     }
     .value-title {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 1.0625rem;
+      font-size: 17px;
       font-weight: 600;
       color: #161616;
-      margin-bottom: 0.75rem;
+      margin-bottom: 12px;
     }
     .value-body {
-      font-size: 0.875rem;
+      font-size: 14px;
       color: #525252;
       line-height: 1.6;
     }
@@ -393,65 +393,65 @@
     .options-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
+      gap: 24px;
     }
     .option-card {
       background: #ffffff;
       border: 1px solid #e0e0e0;
-      padding: 2rem;
+      padding: 32px;
     }
     .option-badge {
       font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.6875rem;
+      font-size: 11px;
       font-weight: 600;
       letter-spacing: 0.08em;
       color: #0043ce;
       background: #edf5ff;
       border: 1px solid #d0e2ff;
-      padding: 0.2rem 0.6rem;
+      padding: 3.2px 9.6px;
       display: inline-block;
-      margin-bottom: 1rem;
+      margin-bottom: 16px;
     }
     .option-title {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 1.125rem;
+      font-size: 18px;
       font-weight: 600;
       color: #161616;
-      margin-bottom: 0.375rem;
+      margin-bottom: 6px;
     }
     .option-sub {
       font-family: 'IBM Plex Sans Condensed', sans-serif;
-      font-size: 0.8125rem;
+      font-size: 13px;
       color: #525252;
-      margin-bottom: 1.25rem;
+      margin-bottom: 20px;
     }
     .option-how-label {
       font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.6875rem;
+      font-size: 11px;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       color: #525252;
-      margin-bottom: 0.5rem;
+      margin-bottom: 8px;
     }
     .option-body {
-      font-size: 0.875rem;
+      font-size: 14px;
       color: #525252;
       line-height: 1.6;
-      margin-bottom: 1.25rem;
+      margin-bottom: 20px;
     }
     .option-link-row {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      padding: 0.75rem 1rem;
+      gap: 12px;
+      padding: 12px 16px;
       background: #f4f4f4;
       border: 1px solid #e0e0e0;
-      margin-bottom: 1.25rem;
+      margin-bottom: 20px;
     }
     .option-url {
       font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.75rem;
+      font-size: 12px;
       color: #525252;
       flex: 1;
       overflow: hidden;
@@ -460,12 +460,12 @@
     }
     .btn-copy {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.75rem;
+      font-size: 12px;
       font-weight: 600;
       color: #0f62fe;
       background: none;
       border: 1px solid #0f62fe;
-      padding: 0.3125rem 0.75rem;
+      padding: 5px 12px;
       cursor: pointer;
       transition: background 0.1s, color 0.1s;
       white-space: nowrap;
@@ -476,11 +476,11 @@
     .option-outcome {
       display: flex;
       align-items: flex-start;
-      gap: 0.5rem;
+      gap: 8px;
       background: #defbe6;
       border-left: 3px solid #0e6027;
-      padding: 0.625rem 0.875rem;
-      font-size: 0.8125rem;
+      padding: 10px 14px;
+      font-size: 13px;
       color: #0e6027;
       font-weight: 500;
     }
@@ -493,10 +493,10 @@
       counter-increment: step;
       display: flex;
       align-items: flex-start;
-      gap: 0.75rem;
-      padding: 0.625rem 0;
+      gap: 12px;
+      padding: 10px 0;
       border-bottom: 1px solid #f4f4f4;
-      font-size: 0.875rem;
+      font-size: 14px;
       color: #525252;
       line-height: 1.5;
     }
@@ -504,7 +504,7 @@
     .option-steps li::before {
       content: counter(step);
       font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.75rem;
+      font-size: 12px;
       font-weight: 600;
       color: #0f62fe;
       background: #edf5ff;
@@ -515,30 +515,30 @@
       justify-content: center;
       flex-shrink: 0;
       border-radius: 50%;
-      margin-top: 0.0625rem;
+      margin-top: 1px;
     }
     .option-step-content {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 0.75rem;
+      gap: 12px;
       flex: 1;
     }
     .btn-download {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.75rem;
+      font-size: 12px;
       font-weight: 600;
       color: #0f62fe;
       background: none;
       border: 1px solid #0f62fe;
-      padding: 0.3125rem 0.75rem;
+      padding: 5px 12px;
       cursor: pointer;
       transition: background 0.1s, color 0.1s;
       white-space: nowrap;
       flex-shrink: 0;
       display: inline-flex;
       align-items: center;
-      gap: 0.375rem;
+      gap: 6px;
       text-decoration: none;
     }
     .btn-download:hover { background: #edf5ff; }
@@ -565,29 +565,29 @@
       background: none;
       border: none;
       text-align: left;
-      padding: 1.25rem 1.5rem;
+      padding: 20px 24px;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 16px;
       transition: background 0.1s;
     }
     .accordion-trigger:hover { background: #f4f4f4; }
     .accordion-trigger[aria-expanded="true"] { background: #edf5ff; }
     .accordion-step {
       font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.6875rem;
+      font-size: 11px;
       font-weight: 600;
       color: #0f62fe;
       background: #edf5ff;
       border: 1px solid #d0e2ff;
-      padding: 0.2rem 0.55rem;
+      padding: 3.2px 8.8px;
       white-space: nowrap;
       flex-shrink: 0;
     }
     .accordion-title {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 1rem;
+      font-size: 16px;
       font-weight: 600;
       color: #161616;
       flex: 1;
@@ -602,23 +602,23 @@
     .accordion-trigger[aria-expanded="true"] .accordion-chevron { transform: rotate(180deg); }
     .accordion-panel {
       display: none;
-      padding: 0 1.5rem 1.5rem 4rem;
+      padding: 0 24px 24px 64px;
     }
     .accordion-panel.open { display: block; }
     .accordion-panel p {
-      font-size: 0.9375rem;
+      font-size: 15px;
       color: #525252;
       line-height: 1.7;
     }
-    .accordion-panel p + p { margin-top: 0.75rem; }
+    .accordion-panel p + p { margin-top: 12px; }
     .accordion-panel ul {
-      margin: 0.75rem 0 0 1.25rem;
+      margin: 12px 0 0 20px;
     }
     .accordion-panel ul li {
-      font-size: 0.9375rem;
+      font-size: 15px;
       color: #525252;
       line-height: 1.6;
-      margin-bottom: 0.375rem;
+      margin-bottom: 6px;
     }
     .dim-tooltip-btn {
       display: inline-flex;
@@ -627,7 +627,7 @@
       width: 15px;
       height: 15px;
       font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.625rem;
+      font-size: 10px;
       font-weight: 700;
       color: #0f62fe;
       background: #edf5ff;
@@ -636,7 +636,7 @@
       cursor: pointer;
       position: relative;
       vertical-align: middle;
-      margin-left: 0.25rem;
+      margin-left: 4px;
       padding: 0;
       line-height: 1;
     }
@@ -651,10 +651,10 @@
       background: #161616;
       color: #f4f4f4;
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.75rem;
+      font-size: 12px;
       font-weight: 400;
       line-height: 1.5;
-      padding: 0.5rem 0.75rem;
+      padding: 8px 12px;
       border-radius: 0;
       white-space: normal;
       z-index: 100;
@@ -671,7 +671,7 @@
     }
     .dim-tooltip-btn.open .dim-tooltip-text { display: block; }
     .panel-subsection {
-      padding: 1rem 0;
+      padding: 16px 0;
       border-top: 1px solid #e0e0e0;
     }
     .panel-subsection--last {
@@ -679,21 +679,21 @@
     }
     .panel-subsection-label {
       font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.6875rem;
+      font-size: 11px;
       font-weight: 600;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: #0f62fe;
-      margin-bottom: 0.625rem;
+      margin-bottom: 10px;
     }
     .stage-pill {
       display: inline-block;
       font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.6875rem;
+      font-size: 11px;
       font-weight: 600;
-      padding: 0.15rem 0.55rem;
+      padding: 2.4px 8.8px;
       border-radius: 0;
-      margin: 0.125rem 0.125rem 0.125rem 0;
+      margin: 2px 2px 2px 0;
     }
     .stage-1 { background: #f4f4f4; color: #525252; border: 1px solid #e0e0e0; }
     .stage-2 { background: #edf5ff; color: #0043ce; border: 1px solid #d0e2ff; }
@@ -705,51 +705,51 @@
     .journey-banner {
       background: #161616;
       color: #ffffff;
-      padding: 3.5rem 0;
+      padding: 56px 0;
     }
     .journey-banner-inner {
       display: grid;
       grid-template-columns: 1fr auto;
       align-items: center;
-      gap: 2rem;
+      gap: 32px;
     }
     .journey-banner-eyebrow {
       font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.6875rem;
+      font-size: 11px;
       font-weight: 600;
       letter-spacing: 0.1em;
       color: #78a9ff;
       text-transform: uppercase;
-      margin-bottom: 0.75rem;
+      margin-bottom: 12px;
     }
     .journey-banner-title {
       font-family: 'IBM Plex Serif', serif;
-      font-size: 1.625rem;
+      font-size: 26px;
       font-weight: 300;
       color: #f4f4f4;
       line-height: 1.3;
-      margin-bottom: 0.75rem;
+      margin-bottom: 12px;
     }
     .journey-banner-body {
-      font-size: 0.9375rem;
+      font-size: 15px;
       color: #a8a8a8;
       max-width: 60ch;
       line-height: 1.6;
     }
     .btn-outline-white {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.875rem;
+      font-size: 14px;
       font-weight: 600;
       color: #ffffff;
       border: 2px solid #ffffff;
-      padding: 0.75rem 1.5rem;
+      padding: 12px 24px;
       background: none;
       cursor: pointer;
       transition: background 0.15s, color 0.15s;
       white-space: nowrap;
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 8px;
     }
     .btn-outline-white:hover { background: #ffffff; color: #161616; }
 
@@ -757,7 +757,7 @@
     .feedback-card {
       background: #ffffff;
       border: 1px solid #e0e0e0;
-      padding: 2.5rem;
+      padding: 40px;
       max-width: 640px;
       margin: 0 auto;
       text-align: center;
@@ -765,44 +765,44 @@
     .feedback-card img {
       width: 56px;
       height: 56px;
-      margin: 0 auto 1.25rem;
+      margin: 0 auto 20px;
     }
     .feedback-card-title {
       font-family: 'IBM Plex Serif', serif;
-      font-size: 1.5rem;
+      font-size: 24px;
       font-weight: 300;
       color: #161616;
-      margin-bottom: 0.625rem;
+      margin-bottom: 10px;
     }
     .feedback-card-body {
-      font-size: 0.9375rem;
+      font-size: 15px;
       color: #525252;
       line-height: 1.6;
-      margin-bottom: 0.75rem;
+      margin-bottom: 12px;
     }
     .feedback-note {
       font-family: 'IBM Plex Sans Condensed', sans-serif;
-      font-size: 0.8125rem;
+      font-size: 13px;
       color: #525252;
       background: #fff8e1;
       border-left: 3px solid #f1c21b;
-      padding: 0.625rem 0.875rem;
+      padding: 10px 14px;
       text-align: left;
-      margin-bottom: 1.5rem;
+      margin-bottom: 24px;
     }
     .btn-primary-ghost {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.875rem;
+      font-size: 14px;
       font-weight: 600;
       color: #0f62fe;
       border: 1px solid #0f62fe;
       background: none;
-      padding: 0.75rem 1.5rem;
+      padding: 12px 24px;
       cursor: pointer;
       transition: background 0.15s, color 0.15s;
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 8px;
       text-decoration: none;
     }
     .btn-primary-ghost:hover { background: #0f62fe; color: #fff; }
@@ -811,12 +811,12 @@
     .site-footer {
       background: #161616;
       border-top: 1px solid #393939;
-      padding: 2rem 0;
+      padding: 32px 0;
     }
     .footer-inner {
       display: flex;
       align-items: center;
-      gap: 2rem;
+      gap: 32px;
       flex-wrap: wrap;
     }
     .footer-logo {
@@ -835,9 +835,9 @@
     }
     .footer-legal-nav a {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.8125rem;
+      font-size: 13px;
       color: #c6c6c6;
-      padding: 0.25rem 1.25rem 0.25rem 0;
+      padding: 4px 20px 4px 0;
       transition: color 0.1s;
       white-space: nowrap;
     }
@@ -846,19 +846,19 @@
     /* ── Report Contents Section ──────────────────────────── */
     .report-section {
       background: #f4f4f4;
-      padding: 4rem 0;
+      padding: 64px 0;
     }
     .report-section-heading {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 2rem;
+      font-size: 32px;
       font-weight: 300;
       color: #161616;
-      margin-bottom: 2rem;
+      margin-bottom: 32px;
     }
     .report-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
+      gap: 24px;
       align-items: start;
     }
     /* Left card */
@@ -866,13 +866,13 @@
       background: #ffffff;
       border: 1px solid #e0e0e0;
       border-radius: 4px;
-      padding: 1.5rem;
+      padding: 24px;
     }
     .report-card-header {
       display: flex;
       align-items: flex-start;
-      gap: 1rem;
-      margin-bottom: 1rem;
+      gap: 16px;
+      margin-bottom: 16px;
     }
     .report-card-icon {
       width: 52px;
@@ -891,13 +891,13 @@
     }
     .report-card-title {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.9375rem;
+      font-size: 15px;
       font-weight: 600;
       color: #161616;
-      margin-bottom: 0.375rem;
+      margin-bottom: 6px;
     }
     .report-card-body {
-      font-size: 0.875rem;
+      font-size: 14px;
       color: #525252;
       line-height: 1.55;
     }
@@ -905,19 +905,19 @@
     .dim-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1rem 1.5rem;
-      margin-top: 1.25rem;
+      gap: 16px 24px;
+      margin-top: 20px;
     }
     .dim-name {
-      font-size: 0.8125rem;
+      font-size: 13px;
       font-weight: 600;
       color: #161616;
-      margin-bottom: 0.25rem;
+      margin-bottom: 4px;
     }
     .dim-status {
-      font-size: 0.75rem;
+      font-size: 12px;
       color: #525252;
-      margin-bottom: 0.375rem;
+      margin-bottom: 6px;
     }
     .dim-bar {
       height: 4px;
@@ -930,19 +930,19 @@
     .report-right {
       display: flex;
       flex-direction: column;
-      gap: 1.5rem;
+      gap: 24px;
     }
     /* Blue action card */
     .report-action-card {
       background: #0f62fe;
       border-radius: 4px;
-      padding: 1.5rem;
+      padding: 24px;
     }
     .report-action-header {
       display: flex;
       align-items: flex-start;
-      gap: 1rem;
-      margin-bottom: 0.75rem;
+      gap: 16px;
+      margin-bottom: 12px;
     }
     .report-action-icon {
       width: 40px;
@@ -955,22 +955,22 @@
       filter: brightness(0) invert(1);
     }
     .report-action-title {
-      font-size: 0.9375rem;
+      font-size: 15px;
       font-weight: 700;
       color: #ffffff;
-      margin-bottom: 0.25rem;
+      margin-bottom: 4px;
     }
     .report-action-body {
-      font-size: 0.875rem;
+      font-size: 14px;
       color: rgba(255,255,255,0.85);
       line-height: 1.55;
     }
     .report-action-footnote {
-      font-size: 0.8125rem;
+      font-size: 13px;
       color: rgba(255,255,255,0.75);
-      margin-top: 1rem;
+      margin-top: 16px;
       border-top: 1px solid rgba(255,255,255,0.2);
-      padding-top: 0.75rem;
+      padding-top: 12px;
     }
     .report-action-footnote a {
       color: #ffffff;
@@ -979,13 +979,13 @@
     /* Stage visual inside right-top card */
     .stage-preview {
       display: flex;
-      gap: 0.5rem;
-      margin-top: 1rem;
+      gap: 8px;
+      margin-top: 16px;
     }
     .stage-tile {
       flex: 1;
       border-radius: 4px;
-      padding: 0.875rem 0.75rem;
+      padding: 14px 12px;
       font-family: 'IBM Plex Sans', sans-serif;
     }
     .stage-tile--current {
@@ -995,23 +995,23 @@
       background: #42be65;
     }
     .stage-tile__label {
-      font-size: 0.6875rem;
+      font-size: 11px;
       font-weight: 600;
       color: rgba(0,0,0,0.6);
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      margin-bottom: 0.25rem;
+      margin-bottom: 4px;
     }
     .stage-tile__num {
-      font-size: 2rem;
+      font-size: 32px;
       font-weight: 300;
       color: #161616;
       line-height: 1;
     }
     .stage-tile__name {
-      font-size: 0.75rem;
+      font-size: 12px;
       color: #161616;
-      margin-top: 0.25rem;
+      margin-top: 4px;
     }
     @media (max-width: 900px) {
       .report-grid { grid-template-columns: 1fr; }
@@ -1020,23 +1020,23 @@
     /* ── Additional Resources (green) ───────────────────────── */
     .resources-section {
       background: #198038;
-      padding: 4rem 0;
+      padding: 64px 0;
     }
     .resources-heading {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 1.5rem;
+      font-size: 24px;
       font-weight: 300;
       color: #ffffff;
-      margin-bottom: 2rem;
+      margin-bottom: 32px;
     }
     .resources-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 3rem;
+      gap: 48px;
     }
     .resource-item {
       display: flex;
-      gap: 1rem;
+      gap: 16px;
       align-items: flex-start;
     }
     .resource-icon {
@@ -1049,21 +1049,21 @@
     .resource-body { flex: 1; }
     .resource-title {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 1rem;
+      font-size: 16px;
       font-weight: 600;
       color: #ffffff;
-      margin-bottom: 0.625rem;
+      margin-bottom: 10px;
     }
     .resource-desc {
-      font-size: 0.875rem;
+      font-size: 14px;
       color: rgba(255,255,255,0.85);
       line-height: 1.6;
-      margin-bottom: 1.25rem;
+      margin-bottom: 20px;
     }
     .resource-actions {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.75rem;
+      gap: 12px;
     }
     @media (max-width: 900px) {
       .resources-grid { grid-template-columns: 1fr; }
@@ -1072,11 +1072,11 @@
     /* ── CTA + Beta Section ───────────────────────────────── */
     .cta-section {
       background: #f4f4f4;
-      padding: 4rem 0;
+      padding: 64px 0;
     }
     .cta-block {
-      padding-bottom: 2.5rem;
-      margin-bottom: 2.5rem;
+      padding-bottom: 40px;
+      margin-bottom: 40px;
       border-bottom: 1px solid #e0e0e0;
     }
     .cta-block:last-child {
@@ -1086,65 +1086,65 @@
     }
     .cta-heading {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 1.75rem;
+      font-size: 28px;
       font-weight: 300;
       color: #161616;
       line-height: 1.2;
-      margin-bottom: 0.5rem;
+      margin-bottom: 8px;
     }
     .cta-sub {
-      font-size: 0.9375rem;
+      font-size: 15px;
       color: #525252;
-      margin-bottom: 1.5rem;
+      margin-bottom: 24px;
       max-width: 56ch;
     }
     .cta-actions {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 16px;
       flex-wrap: wrap;
     }
     .btn-dark {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.875rem;
+      font-size: 14px;
       font-weight: 600;
       color: #ffffff;
       background: #393939;
       border: none;
-      padding: 0.75rem 1.5rem;
+      padding: 12px 24px;
       cursor: pointer;
       transition: background 0.15s;
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 8px;
       text-decoration: none;
     }
     .btn-dark:hover { background: #161616; }
     .beta-heading {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 1.5rem;
+      font-size: 24px;
       font-weight: 300;
       color: #161616;
-      margin-bottom: 0.875rem;
+      margin-bottom: 14px;
     }
     .beta-note {
-      font-size: 0.9375rem;
+      font-size: 15px;
       color: #161616;
       line-height: 1.6;
       max-width: 52ch;
-      margin-bottom: 1.5rem;
+      margin-bottom: 24px;
     }
     .beta-note strong { font-weight: 600; }
 
     /* ── Guiding Section ─────────────────────────────────── */
     .guiding-section {
       background: #f4f4f4;
-      padding: 4rem 0;
+      padding: 64px 0;
     }
     .guiding-inner {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 3rem;
+      gap: 48px;
       align-items: start;
     }
     .guiding-video {
@@ -1168,49 +1168,49 @@
     /* ── Approach Section ─────────────────────────────────── */
     .approach-section {
       background: #ffffff;
-      padding: 4rem 0;
+      padding: 64px 0;
     }
     .approach-inner {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 4rem;
+      gap: 64px;
       align-items: center;
     }
     .approach-heading {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 2.25rem;
+      font-size: 36px;
       font-weight: 300;
       color: #161616;
       line-height: 1.15;
-      margin-bottom: 1.75rem;
+      margin-bottom: 28px;
     }
     .approach-list {
       list-style: none;
       padding: 0;
-      margin: 0 0 1.5rem;
+      margin: 0 0 24px;
     }
     .approach-list li {
-      font-size: 1rem;
+      font-size: 16px;
       color: #161616;
-      padding: 0.375rem 0;
+      padding: 6px 0;
       display: flex;
       align-items: center;
-      gap: 0.625rem;
+      gap: 10px;
     }
     .approach-list li::before {
       content: counter(approach-item);
       counter-increment: approach-item;
       font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.75rem;
+      font-size: 12px;
       font-weight: 600;
       color: #0f62fe;
-      min-width: 1.25rem;
+      min-width: 20px;
     }
     .approach-list {
       counter-reset: approach-item;
     }
     .approach-note {
-      font-size: 0.9375rem;
+      font-size: 15px;
       color: #525252;
       line-height: 1.6;
       max-width: 44ch;
@@ -1230,44 +1230,44 @@
       height: auto;
     }
     @media (max-width: 900px) {
-      .approach-inner { grid-template-columns: 1fr; gap: 2rem; }
+      .approach-inner { grid-template-columns: 1fr; gap: 32px; }
       .approach-visual { min-height: 220px; }
     }
 
     /* ── Quote Section ────────────────────────────────────── */
     .quote-section {
       background: #ffffff;
-      padding: 4rem 0 3rem;
+      padding: 64px 0 48px;
     }
     .quote-text {
       font-family: 'IBM Plex Serif', serif;
-      font-size: 2rem;
+      font-size: 32px;
       font-weight: 300;
       font-style: italic;
       color: #0f62fe;
       line-height: 1.3;
       max-width: 640px;
-      margin-bottom: 1.75rem;
+      margin-bottom: 28px;
     }
     .quote-text strong {
       font-weight: 600;
     }
     .quote-sub {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.9375rem;
+      font-size: 15px;
       color: #161616;
       line-height: 1.6;
       max-width: 52ch;
-      margin-bottom: 0.625rem;
+      margin-bottom: 10px;
     }
     .quote-scroll {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 8px;
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.875rem;
+      font-size: 14px;
       color: #525252;
-      margin-top: 0.5rem;
+      margin-top: 8px;
     }
     .quote-scroll img {
       display: inline-block;
@@ -1279,21 +1279,21 @@
     @media (max-width: 900px) {
       .hero-inner { grid-template-columns: 1fr; }
       .hero-visual { min-height: 280px; }
-      .hero-content { padding: 3rem 0 2rem; }
+      .hero-content { padding: 48px 0 32px; }
       .value-grid { grid-template-columns: 1fr; }
       .value-card { border-right: none; border-bottom: 1px solid #e0e0e0; }
       .value-card:last-child { border-bottom: none; }
       .options-grid { grid-template-columns: 1fr; }
       .journey-banner-inner { grid-template-columns: 1fr; }
-      .footer-top { flex-direction: column; gap: 2rem; }
-      .footer-links { flex-direction: column; gap: 1.5rem; }
+      .footer-top { flex-direction: column; gap: 32px; }
+      .footer-links { flex-direction: column; gap: 24px; }
     }
     @media (max-width: 600px) {
       .metric-strip .container { flex-direction: column; }
       .metric-item { border-left: none; border-bottom: 1px solid #e0e0e0; }
-      .site-nav a { font-size: 0.75rem; padding: 0 0.625rem; }
-      .hero-headline { font-size: 2rem; }
-      .section-title { font-size: 1.5rem; }
+      .site-nav a { font-size: 12px; padding: 0 10px; }
+      .hero-headline { font-size: 32px; }
+      .section-title { font-size: 24px; }
       .feedback-tab { display: none; }
     }
   </style>
@@ -1519,10 +1519,10 @@
                 <p class="report-action-body">The report provides recommended next steps, conversation starters, and opportunities to get more value from the customer's existing AppPoints investment.</p>
               </div>
             </div>
-            <div style="background:rgba(255,255,255,0.12);border-radius:4px;padding:1rem 1.25rem;">
-              <div style="display:flex;align-items:flex-start;gap:0.75rem;">
+            <div style="background:rgba(255,255,255,0.12);border-radius:4px;padding:16px 20px;">
+              <div style="display:flex;align-items:flex-start;gap:12px;">
                 <img src="assets/data--scientist.svg" width="32" height="32" alt="" aria-hidden="true" style="filter:brightness(0) invert(1);flex-shrink:0;" />
-                <p style="font-size:0.875rem;color:#ffffff;line-height:1.55;"><strong>Step 01:</strong> Collect periodic condition readings in Maximo Manage to trigger maintenance work when predefined operating limits are breached.</p>
+                <p style="font-size:14px;color:#ffffff;line-height:1.55;"><strong>Step 01:</strong> Collect periodic condition readings in Maximo Manage to trigger maintenance work when predefined operating limits are breached.</p>
               </div>
             </div>
             <p class="report-action-footnote">Foundational pre-requisite for <a href="journeys.html">APM Stage 01</a></p>
@@ -1537,7 +1537,7 @@
   <section class="guiding-section">
     <div class="container">
       <div class="section-header">
-        <h2 class="section-title" style="font-size:1.75rem;font-weight:300;">Guiding the customer</h2>
+        <h2 class="section-title" style="font-size:28px;font-weight:300;">Guiding the customer</h2>
         <p class="section-subtitle">You are the expert relationship-builder in each customer conversation.<br>Give yourself a moment to prepare.</p>
       </div>
       <div class="guiding-inner">
@@ -1578,7 +1578,7 @@
             <div class="panel-subsection">
               <p class="panel-subsection-label">Overall Maturity</p>
               <p>The report opens with an <strong>overall maturity score</strong> mapped to one of five descriptive levels. This tells you where the customer stands today across their full Maximo environment — use it to set shared context at the start of the conversation, not as a target.</p>
-              <p style="margin-top:0.625rem">
+              <p style="margin-top:10px">
                 <span class="stage-pill stage-1">1 · Foundational</span>
                 <span class="stage-pill stage-2">2 · Core Operations</span>
                 <span class="stage-pill stage-3">3 · Connected</span>
@@ -1600,7 +1600,7 @@
                 <li><strong>Reliability Practices</strong> — Failure code governance and reliability strategies <button class="dim-tooltip-btn" onclick="toggleTooltip(this)" aria-label="More info">?<span class="dim-tooltip-text">Whether failure codes feed FMEA, reliability strategies tie PMs to failure modes, and the knowledge base improves over time.</span></button></li>
                 <li><strong>Condition Monitoring &amp; Prediction</strong> — Condition visibility and predictive capability <button class="dim-tooltip-btn" onclick="toggleTooltip(this)" aria-label="More info">?<span class="dim-tooltip-text">From low-frequency manual readings and condition-driven alerts through to real-time telemetry, health scoring, and forward-looking risk prediction.</span></button></li>
               </ul>
-              <p style="margin-top:0.625rem">Any dimension rated <em>Emerging</em> is often the most impactful conversation opener — it signals where a targeted investment would have the greatest lift on the overall score.</p>
+              <p style="margin-top:10px">Any dimension rated <em>Emerging</em> is often the most impactful conversation opener — it signals where a targeted investment would have the greatest lift on the overall score.</p>
             </div>
 
             <div class="panel-subsection">
@@ -1640,8 +1640,8 @@
               <li><strong>Look beyond the current track.</strong> If the customer's results focus on APM milestones, review what FSM milestones they're also missing — and vice versa. This surfaces a broader expansion story beyond the immediate next step.</li>
               <li><strong>Cross-reference milestones.</strong> The Journeys page details each milestone's description, value statement, and Maximo touchpoints — helping you map the customer's gaps to specific MAS modules and IBM services.</li>
             </ul>
-            <p style="margin-top:0.75rem">
-              <a href="journeys.html" style="display:inline-flex;align-items:center;gap:0.375rem;font-size:0.875rem;color:#0f62fe;font-weight:500;">
+            <p style="margin-top:12px">
+              <a href="journeys.html" style="display:inline-flex;align-items:center;gap:6px;font-size:14px;color:#0f62fe;font-weight:500;">
                 Explore the Growth Journeys →
               </a>
             </p>
