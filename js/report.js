@@ -1261,6 +1261,30 @@ function initPrint(contact) {
 }
 
 /* --------------------------------------------------------------------------
+   Native download menus — wire the .dl-menu trigger + list in mobile nav
+   and footer. Opens/closes on click, closes on outside tap, calls the
+   registered pdf/responses actions when an item is tapped.
+   -------------------------------------------------------------------------- */
+function initNativeDownloadMenus() {
+  $$(".dl-menu").forEach(menu => {
+    const trigger = menu.querySelector(".dl-menu__trigger");
+    const list    = menu.querySelector(".dl-menu__list");
+    if (!trigger || !list) return;
+
+    const open  = () => { list.hidden = false; trigger.setAttribute("aria-expanded", "true"); };
+    const close = () => { list.hidden = true;  trigger.setAttribute("aria-expanded", "false"); };
+    const toggle = () => list.hidden ? open() : close();
+
+    trigger.addEventListener("click", toggle);
+
+    // Close when anything outside the menu is tapped
+    document.addEventListener("click", e => {
+      if (!menu.contains(e.target)) close();
+    }, { capture: true });
+  });
+}
+
+/* --------------------------------------------------------------------------
    Download responses
 
    The assessment saves its answers to sessionStorage on submit. This turns
@@ -1511,6 +1535,7 @@ async function init(injectedResult) {
   wireFeedback();
   initScrollSpy();
   fitMenuButtons();
+  initNativeDownloadMenus();
   initPrint(result.contact);
   closeTooltipsOnOutsideClick();
   wireSellerButtons(result);

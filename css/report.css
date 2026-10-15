@@ -2079,13 +2079,17 @@ html, body { overflow-x: clip; }
   line-height: 20px;
   color: var(--cds-text-primary);
 }
-
 /* --------------------------------------------------------------------------
-   Plain download buttons — used in mobile nav panel and footer instead of
-   cds-menu-button which has unreliable touch behaviour on mobile.
-   Styled to match Carbon's tertiary button (outlined, 48px height).
+   Native download menu — replaces cds-menu-button in mobile nav + footer.
+   A plain <button> trigger + <ul> popover, no shadow DOM, works on mobile.
    -------------------------------------------------------------------------- */
-.dl-btn {
+.dl-menu {
+  position: relative;
+  display: inline-block;
+}
+
+/* Trigger styled to match Carbon tertiary button */
+.dl-menu__trigger {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2095,24 +2099,58 @@ html, body { overflow-x: clip; }
   border: 1px solid var(--cds-button-tertiary, #0f62fe);
   background: transparent;
   color: var(--cds-button-tertiary, #0f62fe);
-  font-family: var(--cds-body-short-01-font-family, 'IBM Plex Sans', sans-serif);
+  font-family: inherit;
   font-size: 14px;
   font-weight: 400;
-  line-height: 1;
   letter-spacing: 0.16px;
   cursor: pointer;
   white-space: nowrap;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
+  width: 192px;
 }
-.dl-btn:hover { background: var(--cds-button-tertiary-hover, #0353e9); color: #fff; border-color: var(--cds-button-tertiary-hover, #0353e9); }
-.dl-btn:active { background: var(--cds-button-tertiary-active, #002d9c); color: #fff; border-color: var(--cds-button-tertiary-active, #002d9c); }
-.dl-btn:focus-visible { outline: 2px solid var(--cds-focus, #0f62fe); outline-offset: -2px; }
-.dl-btn:disabled { border-color: var(--cds-button-disabled, #c6c6c6); color: var(--cds-text-disabled, #8d8d8d); cursor: not-allowed; }
+.dl-menu__trigger:hover { background: var(--cds-button-tertiary-hover, #0353e9); color: #fff; border-color: transparent; }
+.dl-menu__trigger:active { background: var(--cds-button-tertiary-active, #002d9c); color: #fff; border-color: transparent; }
+.dl-menu__trigger:focus-visible { outline: 2px solid var(--cds-focus, #0f62fe); outline-offset: -2px; }
+.dl-menu__trigger[aria-expanded="true"] .dl-menu__chevron { transform: rotate(180deg); }
 
-/* size dl-btn same as cds-button in these containers */
-.mobile-nav__actions .dl-btn,
-.report-end-actions .dl-btn { width: 192px; }
+/* Dropdown list */
+.dl-menu__list {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 2px);
+  min-width: 192px;
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+  background: var(--cds-layer, #f4f4f4);
+  border: 1px solid var(--cds-border-subtle, #e0e0e0);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 9999;
+}
+.dl-menu__list--up {
+  top: auto;
+  bottom: calc(100% + 2px);
+}
+.dl-menu__list[hidden] { display: none; }
+
+.dl-menu__item {
+  display: block;
+  width: 100%;
+  padding: 11px 16px;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 14px;
+  text-align: left;
+  color: var(--cds-text-primary, #161616);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.dl-menu__item:hover { background: var(--cds-layer-hover, #e8e8e8); }
+.dl-menu__item:disabled { color: var(--cds-text-disabled, #8d8d8d); cursor: not-allowed; }
+
 
 @media print {
   /* Each assessment page is one section of the document and is short enough to
