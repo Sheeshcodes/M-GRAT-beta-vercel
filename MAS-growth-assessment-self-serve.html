@@ -14602,6 +14602,11 @@ function buildSellerEmailText(result, stored) {
     provenance,
   ].filter(Boolean).join("\n");
 
+  // Indent helper — prefix every line with two spaces to visually
+  // distinguish the responses section from the intro (plain text has no
+  // font sizes; indentation is the standard plain-text equivalent).
+  const indent = (text) => text.split("\n").map(l => `  ${l}`).join("\n");
+
   const responsePages = pages.map((page, i) => {
     const heading = `Page ${i + 1} of ${totalPages} — ${page.title}`;
     const rule    = "-".repeat(heading.length);
@@ -14618,14 +14623,14 @@ function buildSellerEmailText(result, stored) {
       });
     });
 
-    return [heading, rule, ...qBlocks].join("\n\n");
+    return indent([heading, rule, ...qBlocks].join("\n\n"));
   });
 
   const responsesSection = [
     SEP,
     "ASSESSMENT RESPONSES",
     SEP,
-    contactBlock,
+    indent(contactBlock),
     "",
     responsePages.join("\n\n"),
   ].join("\n");
