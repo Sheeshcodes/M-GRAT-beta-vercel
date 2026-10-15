@@ -1,0 +1,305 @@
+
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Scoring Audit — Pre-Maximo Root Cause</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #1f2328;
+    background: #ffffff;
+    padding: 40px 24px 64px;
+  }
+  .page { max-width: 760px; margin: 0 auto; }
+
+  /* Header */
+  .header { border-bottom: 2px solid #1f2328; padding-bottom: 16px; margin-bottom: 32px; }
+  .header__eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #57606a; margin-bottom: 6px; }
+  .header__title { font-size: 22px; font-weight: 700; line-height: 1.3; }
+  .header__sub { font-size: 14px; color: #57606a; margin-top: 6px; }
+
+  /* Section */
+  .section { margin-bottom: 36px; }
+  .section__label {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    color: #57606a; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section__label::after { content: ""; flex: 1; height: 1px; background: #e5e7eb; }
+
+  /* Verdict box */
+  .verdict {
+    background: #fef3c7; border: 1px solid #f59e0b; border-radius: 4px;
+    padding: 16px 20px; margin-bottom: 32px;
+  }
+  .verdict__heading { font-weight: 700; font-size: 15px; margin-bottom: 6px; }
+  .verdict__body { font-size: 14px; line-height: 1.7; }
+
+  /* Chain steps */
+  .chain { display: flex; flex-direction: column; gap: 0; }
+  .chain-step {
+    display: grid; grid-template-columns: 32px 1fr;
+    gap: 0 16px; position: relative;
+  }
+  .chain-step__line {
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .chain-step__dot {
+    width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px; color: #fff;
+  }
+  .chain-step__connector {
+    width: 2px; flex: 1; min-height: 16px;
+    background: #e5e7eb; margin: 0 auto;
+  }
+  .chain-step--last .chain-step__connector { display: none; }
+  .chain-step__body { padding: 4px 0 20px; }
+  .chain-step__heading { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+  .chain-step__text { font-size: 13px; color: #3b3f44; line-height: 1.65; }
+
+  .dot-q  { background: #3b82d4; }
+  .dot-l  { background: #e85c2b; }
+  .dot-p  { background: #7c5cd8; }
+  .dot-r  { background: #1f7a4a; }
+
+  /* Code pill */
+  .pill {
+    display: inline-block; font-family: "SF Mono", "Fira Code", monospace;
+    font-size: 11.5px; background: #f0f1f3; border: 1px solid #d0d3d8;
+    border-radius: 3px; padding: 1px 6px; color: #1f2328;
+    white-space: nowrap;
+  }
+  .pill--red { background: #fde8e8; border-color: #f5b7b7; color: #9b1c1c; }
+  .pill--green { background: #e6f4ea; border-color: #a8d5b5; color: #145a32; }
+  .pill--orange { background: #fef3c7; border-color: #f59e0b; color: #7c4c00; }
+  .pill--blue { background: #e8f0fd; border-color: #a8c2f5; color: #1a3a7a; }
+
+  /* Table */
+  .table-wrap { overflow-x: auto; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th {
+    text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.06em; color: #57606a; padding: 8px 10px;
+    background: #f7f8fa; border-bottom: 1px solid #e5e7eb;
+  }
+  td { padding: 8px 10px; border-bottom: 1px solid #f0f1f3; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  .winner { background: #fef3c7; }
+
+  /* Callout */
+  .callout {
+    border-left: 3px solid #3b82d4; background: #f0f5ff;
+    padding: 12px 16px; border-radius: 0 4px 4px 0; margin-top: 12px;
+    font-size: 13px; line-height: 1.65;
+  }
+  .callout--red { border-color: #e85c2b; background: #fff5f2; }
+  .callout--green { border-color: #1f7a4a; background: #f0faf4; }
+  .callout strong { font-weight: 700; }
+
+  /* Fix options */
+  .fix-list { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
+  .fix { background: #f7f8fa; border: 1px solid #e5e7eb; border-radius: 4px; padding: 14px 16px; }
+  .fix__label { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+  .fix__text { font-size: 13px; color: #3b3f44; line-height: 1.65; }
+  .fix__badge {
+    display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase; padding: 2px 7px; border-radius: 2px;
+    margin-left: 8px; vertical-align: middle;
+  }
+  .badge--simple { background: #e6f4ea; color: #145a32; }
+  .badge--data   { background: #e8f0fd; color: #1a3a7a; }
+  .badge--safe   { background: #fef3c7; color: #7c4c00; }
+
+  /* Footer */
+  .footer {
+    margin-top: 48px; padding-top: 16px; border-top: 1px solid #e5e7eb;
+    text-align: center; font-size: 12px; color: #57606a;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <p class="header__eyebrow">Scoring Engine Audit</p>
+    <h1 class="header__title">Why the report shows "Pre-Maximo" as the next step</h1>
+    <p class="header__sub">Trace from question → Pass 1 logic → stage gating → hero selection → rendered output</p>
+  </div>
+
+  
+  <div class="verdict">
+    <p class="verdict__heading">Summary finding</p>
+    <p class="verdict__body">
+      Two "pre-Maximo credit" milestones — <span class="pill pill--red">IC-1-PROG</span> and <span class="pill pill--red">SC-1-REG</span> — were marked <strong>UNMET</strong> by the scoring engine because the user skipped their checkbox options in favour of higher-level options in the same question. Both milestones gate <strong>FSM Stage 1</strong>, so the engine treats the user as not having completed Stage 1 at all, surfaces them as the top priority actions, and the details card renders IC-1-PROG's only touchpoint — <em>"Pre-Maximo — Paper / Spreadsheet / Standalone Inspection Tool"</em> — as a blue product tag labelled <strong>Pre-Maximo</strong>.
+    </p>
+  </div>
+
+  
+  <div class="section">
+    <p class="section__label">The causal chain — step by step</p>
+
+    <div class="chain">
+
+      
+      <div class="chain-step">
+        <div class="chain-step__line">
+          <div class="chain-step__dot dot-q">1</div>
+          <div class="chain-step__connector"></div>
+        </div>
+        <div class="chain-step__body">
+          <p class="chain-step__heading">Question <span class="pill">Q-IC-MULTI</span> — Inspections &amp; condition capture</p>
+          <p class="chain-step__text">
+            The user selected two options: <em>Digital inspection records captured in Maximo</em> (<span class="pill pill--green">IC-2-INSB</span>) and <em>Meter readings logged in Maximo</em> (<span class="pill pill--green">IC-3-METB</span>).<br /><br />
+            They did <strong>not</strong> select the first option: <em>"A repeatable inspection program exists for critical assets, even if not yet in Maximo"</em> — the option that maps to <span class="pill pill--red">IC-1-PROG</span>. This is a pre-Maximo credit for customers who still use paper or spreadsheets. Someone already doing digital inspections in Maximo would naturally skip it.
+          </p>
+        </div>
+      </div>
+
+      
+      <div class="chain-step">
+        <div class="chain-step__line">
+          <div class="chain-step__dot dot-l">2</div>
+          <div class="chain-step__connector"></div>
+        </div>
+        <div class="chain-step__body">
+          <p class="chain-step__heading">Pass 1 rule — multiselect "not selected = UNMET"</p>
+          <p class="chain-step__text">
+            For <span class="pill">milestone-multiselect</span> questions, the engine applies this rule in <span class="pill">scoring.js</span>:<br /><br />
+            <em>"If other options were selected but this one was not → mark it UNMET."</em><br /><br />
+            Result: <span class="pill pill--red">IC-1-PROG = UNMET</span> — even though having digital inspections <em>in</em> Maximo is a strict superset of having an inspection program that isn't yet in Maximo. The rule has no implied-met awareness; it treats every unchecked option as a denial.
+          </p>
+          <div class="callout callout--red">
+            <strong>Same pattern hits SC-1-REG.</strong> On the spare parts question (Q-SC-MULTI), the user selected SC-2-BASICS and SC-4-OPT but skipped the first option ("parts tracked somewhere, even outside Maximo") that maps to <span class="pill pill--red">SC-1-REG</span>. It is also marked UNMET for the same reason.
+          </div>
+        </div>
+      </div>
+
+      
+      <div class="chain-step">
+        <div class="chain-step__line">
+          <div class="chain-step__dot dot-p">3</div>
+          <div class="chain-step__connector"></div>
+        </div>
+        <div class="chain-step__body">
+          <p class="chain-step__heading">Pass 2 — Both milestones gate FSM Stage 1 → attainedFSMStage = 0</p>
+          <p class="chain-step__text">
+            Both <span class="pill pill--red">IC-1-PROG</span> and <span class="pill pill--red">SC-1-REG</span> have <span class="pill">fsmStage = 1</span>. The <span class="pill">attainedStage("FSM")</span> function walks stages 1 → 5, stops the moment any assessed gating milestone is not MET. Stage 1 has two UNMET milestones, so the walk stops immediately.<br /><br />
+            <span class="pill pill--orange">attainedFSMStage = 0</span>  →  <span class="pill">nextFSMStage = 1</span><br /><br />
+            For reference, APM is unaffected — IC-1-PROG has <span class="pill">apmStage = null</span> — but CM-2-TRIG is UNMET and gates APM Stage 2, so <span class="pill pill--orange">attainedAPMStage = 1</span>, <span class="pill">nextAPMStage = 2</span>.
+          </p>
+        </div>
+      </div>
+
+      
+      <div class="chain-step">
+        <div class="chain-step__line">
+          <div class="chain-step__dot dot-p">4</div>
+          <div class="chain-step__connector"></div>
+        </div>
+        <div class="chain-step__body">
+          <p class="chain-step__heading">Pass 3 — Target stages from objectives</p>
+          <p class="chain-step__text">
+            Objectives selected: <em>Reduce maintenance costs</em> (APM 2/3, FSM 2/3) and <em>Improve MRO inventory efficiency</em> (APM 3/4, FSM 3/4). Combined target: <span class="pill pill--blue">targetAPMStage = 4</span>, <span class="pill pill--blue">targetFSMStage = 4</span>.<br /><br />
+            Both IC-1-PROG (fsmStage 1 ≤ 4) and SC-1-REG (fsmStage 1 ≤ 4) fall within the target range and are valid action candidates.
+          </p>
+        </div>
+      </div>
+
+      
+      <div class="chain-step">
+        <div class="chain-step__line">
+          <div class="chain-step__dot dot-p">5</div>
+          <div class="chain-step__connector"></div>
+        </div>
+        <div class="chain-step__body">
+          <p class="chain-step__heading">Pass 4 — Hero selection sort</p>
+          <p class="chain-step__text">
+            Three milestones tie on the top two sort keys — <span class="pill">isGatingNext = 1</span> (they gate the very next unattained stage) and <span class="pill">isUnlocked = 1</span> (all prerequisites already met):
+          </p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Milestone</th>
+                  <th>isGatingNext</th>
+                  <th>isUnlocked</th>
+                  <th>Level</th>
+                  <th>Obstacle</th>
+                  <th>ID sort</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="winner">
+                  <td><span class="pill pill--red">IC-1-PROG</span></td>
+                  <td>1</td><td>1</td><td><strong>1</strong></td><td>0</td><td><strong>"IC…" wins</strong></td>
+                </tr>
+                <tr>
+                  <td><span class="pill pill--red">SC-1-REG</span></td>
+                  <td>1</td><td>1</td><td>1</td><td>0</td><td>loses to IC</td>
+                </tr>
+                <tr>
+                  <td><span class="pill">CM-2-TRIG</span></td>
+                  <td>1</td><td>1</td><td>2</td><td>0</td><td>loses on level</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="chain-step__text" style="margin-top:10px">
+            Level 1 beats Level 2, then ID alphabetical order breaks the tie: <em>"IC-1-PROG" &lt; "SC-1-REG"</em>. <strong>IC-1-PROG is Step 01.</strong>
+          </p>
+        </div>
+      </div>
+
+      
+      <div class="chain-step chain-step--last">
+        <div class="chain-step__line">
+          <div class="chain-step__dot dot-r">6</div>
+        </div>
+        <div class="chain-step__body">
+          <p class="chain-step__heading">Render — "Pre-Maximo" appears as a product tag</p>
+          <p class="chain-step__text">
+            <span class="pill">renderDetailsCard()</span> in <span class="pill">report.js</span> extracts product names from each touchpoint string by splitting on <span class="pill">" — "</span>. IC-1-PROG has exactly one touchpoint:<br /><br />
+            <code style="font-family:monospace;font-size:12px;background:#f0f1f3;padding:4px 8px;border-radius:3px;display:inline-block">"Pre-Maximo — Paper / Spreadsheet / Standalone Inspection Tool"</code><br /><br />
+            The left-hand side of the split — <strong>"Pre-Maximo"</strong> — becomes the product tag label, rendered as a blue <span class="pill pill--blue">cds-tag</span> under "Required Maximo modules". That is the text the user sees as their next step.
+          </p>
+          <div class="callout callout--red">
+            The label "Required Maximo modules" is also misleading here — IC-1-PROG explicitly requires <em>no</em> Maximo modules. The touchpoint was written as a data convention to credit pre-Maximo practice, not to describe a product requirement.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  
+  <div class="section">
+    <p class="section__label">Three ways to fix it</p>
+    <div class="fix-list">
+
+      <div class="fix">
+        <p class="fix__label">Option A — Implied-met logic in Pass 1 <span class="fix__badge badge--simple">Code change</span></p>
+        <p class="fix__text">After resolving multiselect questions, walk the prerequisite graph and promote any UNMET milestone to MET if a milestone that already resolved to MET lists it as a prerequisite. This mirrors the implied-met logic the ladder questions already use, and fixes the pattern for any future milestones that have the same relationship. Change is isolated to <span class="pill">scoring.js resolvePass1()</span>.</p>
+      </div>
+
+      <div class="fix">
+        <p class="fix__label">Option B — Mark pre-Maximo milestones as implied in the binder <span class="fix__badge badge--data">Data change</span></p>
+        <p class="fix__text">Add an <span class="pill">implied</span> flag to the IC-1-PROG and SC-1-REG question options so Pass 1 knows selecting IC-2-INSB automatically implies IC-1-PROG is met. Change lives in <span class="pill">Logic/Question_Binder.xlsx</span> and flows through to <span class="pill">data/assessment.js</span> on rebuild. Requires a small code hook in Pass 1 to read the flag.</p>
+      </div>
+
+      <div class="fix">
+        <p class="fix__label">Option C — Remove IC-1-PROG and SC-1-REG from FSM Stage 1 gating <span class="fix__badge badge--safe">Register change — no code</span></p>
+        <p class="fix__text">Set <span class="pill">fsmStage = null</span> for both milestones in the Milestone Register. They are "pre-Maximo credit" milestones that were never meant to block a customer already operating in Maximo. Removing them from the stage walk means they cannot gate attainedFSMStage and will not surface as hero actions for mature users. Rebuild with <span class="pill">build_report_data.py</span>. No scoring code changes required — this is the lowest-risk, fastest fix.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="footer">Made with IBM Bob</div>
+</div>
+</body>
+</html>
