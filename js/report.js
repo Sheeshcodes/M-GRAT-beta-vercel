@@ -1164,22 +1164,29 @@ function fixMenuButtonMobileTap() {
    item itself) so the action runs on the very first touch.
    -------------------------------------------------------------------------- */
 function fixMenuItemMobileTap() {
-  customElements.whenDefined("cds-menu-item").then(() => {
-    $$("cds-menu-item").forEach(item => {
-      item.addEventListener("touchend", e => {
-        // Don't interfere with disabled items
-        if (item.hasAttribute("disabled")) return;
-        e.preventDefault();
-        // Try the inner interactive element first; fall back to the host itself
-        const inner = item.shadowRoot?.querySelector("li, button, [role='menuitem']");
-        if (inner) {
-          inner.click();
-        } else {
-          item.click();
-        }
-      }, { passive: false });
-    });
-  });
+  if (!("ontouchstart" in window)) return;
+
+  // pointerdown fires while the menu is still open; record which item was
+  // pressed. pointerup (same item, no scroll in between) triggers the action
+  // directly — bypassing click entirely, which Carbon's menu closes before
+  // the browser ever dispatches a synthetic click event on mobile.
+  let pendingItem = null;
+
+  document.addEventListener("pointerdown", e => {
+    const item = e.target.closest("cds-menu-item");
+    pendingItem = (item && !item.hasAttribute("disabled")) ? item : null;
+  }, { passive: true });
+
+  document.addEventListener("pointerup", e => {
+    const item = e.target.closest("cds-menu-item");
+    if (item && item === pendingItem && !item.hasAttribute("disabled")) {
+      // Dispatch a real click on the host — the 50ms gap lets Carbon finish
+      // closing the menu so the print dialog doesn't open on top of it.
+      const target = item;
+      setTimeout(() => target.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true })), 50);
+    }
+    pendingItem = null;
+  }, { passive: true });
 }
 
 /* --------------------------------------------------------------------------
@@ -1278,13 +1285,21 @@ function initPrint(contact) {
   window.addEventListener("beforeprint", openEverything);
   window.addEventListener("afterprint", restore);
 
+  const isMobile = "ontouchstart" in window;
+
   $$('cds-menu-item[data-download="pdf"]').forEach(item => {
     item.addEventListener("click", () => {
-      // print() lays the page out for paper itself, so it is called straight
-      // away. Waiting a frame first would stall indefinitely in a tab that is
-      // not visible, leaving the page opened up with the print title.
-      openEverything();
-      window.print();
+      if (isMobile) {
+        // window.print() is unreliable on mobile browsers — it either does
+        // nothing, crashes, or produces a broken layout. Instead open the
+        // report in a new tab where the user can use the browser's native
+        // Share → Save as PDF / Print from the address bar.
+        window.open(location.href, "_blank", "noopener");
+      } else {
+        // Desktop: expand everything and call print() directly.
+        openEverything();
+        window.print();
+      }
     });
   });
 }
