@@ -18,6 +18,7 @@ from typing import Match
 from common import ROOT_DIR
 
 OUTPUT_HTML = os.path.join(ROOT_DIR, "MAS-growth-assessment-self-serve.html")
+DOCS_OUTPUT_HTML = os.path.join(ROOT_DIR, "docs", "MAS-growth-assessment-self-serve.html")
 
 MIME_TYPES: dict[str, str] = {
     ".mp4": "video/mp4",
@@ -556,6 +557,10 @@ def build_bundle() -> None:
 
     with open(OUTPUT_HTML, "w", encoding="utf-8") as f:
         f.write(html_content)
+
+    if os.path.isdir(os.path.dirname(DOCS_OUTPUT_HTML)):
+        with open(DOCS_OUTPUT_HTML, "w", encoding="utf-8") as f:
+            f.write(html_content)
 
     size_kb = os.path.getsize(OUTPUT_HTML) / 1024
     print(f"✓  Bundled → {os.path.basename(OUTPUT_HTML)} ({size_kb:.1f} KB)")

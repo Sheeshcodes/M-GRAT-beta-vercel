@@ -368,7 +368,11 @@ def main(argv: list[str]) -> int:
         path = argv[1]
     else:
         candidates = sorted(
-            glob.glob(os.path.join(ROOT_DIR, "Logic", "Question_Binder*.xlsx")),
+            (
+                f
+                for f in glob.glob(os.path.join(ROOT_DIR, "Logic", "Question_Binder*.xlsx"))
+                if not os.path.basename(f).startswith("~$")
+            ),
             key=os.path.getmtime,
         )
         if not candidates:
