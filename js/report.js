@@ -1240,17 +1240,9 @@ function initPrint(contact) {
   window.addEventListener("beforeprint", openEverything);
   window.addEventListener("afterprint", restore);
 
-  const isMobile = "ontouchstart" in window;
-
   const pdfAction = () => {
-    if (isMobile) {
-      // window.print() is unreliable on mobile — open the report in a new
-      // tab so the user can use the browser's native Share → Save as PDF.
-      window.open(location.href, "_blank", "noopener");
-    } else {
-      openEverything();
-      window.print();
-    }
+    openEverything();
+    window.print();
   };
 
   // Covers both plain <button data-download="pdf"> (mobile nav / footer)
