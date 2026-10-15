@@ -1083,6 +1083,16 @@
       background: rgba(255,255,255,0.1);
       border-color: rgba(167,240,186,0.7);
     }
+    .btn-outline-white--disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .resource-helper {
+      font-size: 12px;
+      color: rgba(255,255,255,0.6);
+      margin-top: 8px;
+    }
     @media (max-width: 1024px) {
       .resources-grid { grid-template-columns: 1fr 1fr; }
     }
@@ -1812,10 +1822,11 @@
               <p class="resource-desc">Explore all opportunities identified across APM and FSM. This roadmap provides a complete view of the milestones, recommended actions, and potential value ahead, helping you plan beyond the immediate next steps.</p>
             </div>
             <div class="resource-actions">
-              <a href="#" class="btn-outline-white">
+              <p class="resource-helper">Coming soon</p>
+              <button class="btn-outline-white btn-outline-white--disabled" disabled aria-disabled="true">
                 Download checklist
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4zm0-10l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
-              </a>
+              </button>
             </div>
           </div>
         </div>
