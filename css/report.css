@@ -2503,3 +2503,158 @@ html, body { overflow-x: clip; }
     zoom: 0.84;
   }
 }
+
+/* ============================================================
+   Share-with-IBM modal
+   Matches Figma node 2172:15302
+   ============================================================ */
+
+.share-modal {
+  display: contents; /* hidden state: DOM present, nothing rendered */
+}
+
+.share-modal[hidden] {
+  display: none;
+}
+
+/* Backdrop */
+.share-modal__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(22, 22, 22, 0.5);
+  z-index: 6000;
+}
+
+/* Dialog panel */
+.share-modal__dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 6001;
+  background: #ffffff;
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.share-modal__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px;
+  position: relative;
+}
+
+.share-modal__title {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  color: #161616;
+  flex: 1;
+  margin: 0;
+  padding-right: 60px; /* space for close button */
+}
+
+.share-modal__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: #161616;
+  flex-shrink: 0;
+}
+
+.share-modal__close:focus-visible {
+  outline: 2px solid #0f62fe;
+  outline-offset: 2px;
+}
+
+/* Body */
+.share-modal__body {
+  padding: 0 16px 48px;
+}
+
+.share-modal__text {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 0.16px;
+  color: #161616;
+  margin: 0;
+}
+
+/* Footer buttons — two equal columns with 1px gap (Figma: gap-px) */
+.share-modal__footer {
+  display: flex;
+  gap: 1px;
+  background: #e0e0e0; /* gap colour shows through between buttons */
+}
+
+.share-modal__btn {
+  flex: 1;
+  height: 64px;
+  border: none;
+  cursor: pointer;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 18px;
+  letter-spacing: 0.16px;
+  color: #ffffff;
+  text-align: left;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  transition: background 70ms ease;
+}
+
+.share-modal__btn--cancel {
+  background: #393939;
+}
+
+.share-modal__btn--cancel:hover {
+  background: #4c4c4c;
+}
+
+.share-modal__btn--send {
+  background: #0f62fe;
+}
+
+.share-modal__btn--send:hover {
+  background: #0353e9;
+}
+
+.share-modal__btn:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: -4px;
+}
+
+/* Trap scroll on body when modal is open */
+body.share-modal-open {
+  overflow: hidden;
+}
+
+@media (max-width: 671px) {
+  .share-modal__dialog {
+    max-width: 100%;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    transform: none;
+  }
+}

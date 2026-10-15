@@ -1519,6 +1519,7 @@ async function init(injectedResult) {
   fixMenuButtonMobileTap();
   closeTooltipsOnOutsideClick();
   wireSellerButtons(result);
+  initShareModal(result);
 }
 
 /* --------------------------------------------------------------------------
@@ -1681,6 +1682,70 @@ function wireSellerButtons(result) {
   });
 }
 
+
+
+/* --------------------------------------------------------------------------
+   Share-with-IBM modal
+   --------------------------------------------------------------------------
+   Shows once when the user reaches the bottom feedback section (IntersectionObserver).
+   The Send button opens the same pre-built mailto as the seller buttons.
+   Dismissed with Cancel or the close button; never shown again in the same tab.
+   -------------------------------------------------------------------------- */
+function initShareModal(result) {
+  const modal      = document.getElementById("share-modal");
+  const sendBtn    = document.getElementById("share-modal-send");
+  const cancelBtn  = document.getElementById("share-modal-cancel");
+  const closeBtn   = document.getElementById("share-modal-close");
+  const backdrop   = modal?.querySelector(".share-modal__backdrop");
+  const trigger    = document.getElementById("act-improve"); // feedback section
+  if (!modal || !sendBtn || !cancelBtn || !closeBtn || !trigger) return;
+
+  let shown = false;
+
+  // Build the mailto href the same way wireSellerButtons does
+  const SELLER_EMAIL = "mas-growth-assessment@ibm.com";
+  const stored = loadStoredResponses() ?? { answers: {}, submittedAt: null, missing: true };
+  const body    = buildSellerEmailText(result, stored);
+  const subject = encodeURIComponent("MAS Growth Readiness Assessment — results");
+  const href    = `mailto:${SELLER_EMAIL}?subject=${subject}&body=${encodeURIComponent(body)}`;
+
+  function openModal() {
+    modal.removeAttribute("hidden");
+    document.body.classList.add("share-modal-open");
+    closeBtn.focus();
+  }
+
+  function closeModal() {
+    modal.setAttribute("hidden", "");
+    document.body.classList.remove("share-modal-open");
+  }
+
+  sendBtn.addEventListener("click", () => {
+    window.location.href = href;
+    closeModal();
+  });
+
+  cancelBtn.addEventListener("click", closeModal);
+  closeBtn.addEventListener("click", closeModal);
+  backdrop?.addEventListener("click", closeModal);
+
+  // Close on Escape key
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !modal.hasAttribute("hidden")) closeModal();
+  });
+
+  // Show once when the feedback section enters the viewport
+  const observer = new IntersectionObserver((entries) => {
+    if (shown) return;
+    if (entries[0].isIntersecting) {
+      shown = true;
+      observer.disconnect();
+      setTimeout(openModal, 600);
+    }
+  }, { threshold: 0.4 });
+
+  observer.observe(trigger);
+}
 
 
 init().catch(console.error);
