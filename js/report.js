@@ -1165,35 +1165,36 @@ function fixMenuButtonMobileTap() {
 }
 
 /* --------------------------------------------------------------------------
-   Fix cds-menu-item requiring two taps to activate on mobile. Carbon registers
-   a focus step on first tap before firing the click — intercept touchend on
-   each item and fire a synthetic click directly on the inner <li> (or the
-   item itself) so the action runs on the very first touch.
+   Fix cds-menu-item not responding to taps on mobile.
+
+   Two constraints make this hard:
+   1. Carbon closes the menu on touchend/pointerup, which happens before the
+      browser dispatches a synthetic "click" — so click handlers never fire.
+   2. window.open() and window.print() are only allowed inside a trusted user
+      gesture. Any setTimeout delay breaks that requirement on mobile browsers.
+
+   Solution: attach a touchstart listener (earliest trusted event, menu still
+   open) directly on each cds-menu-item. Read the data-download attribute and
+   call the right action synchronously. touchstart is cancelable so we also
+   call preventDefault() to suppress the redundant emulated mouse events that
+   would otherwise double-fire on desktop fallback paths.
    -------------------------------------------------------------------------- */
 function fixMenuItemMobileTap() {
   if (!("ontouchstart" in window)) return;
 
-  // pointerdown fires while the menu is still open; record which item was
-  // pressed. pointerup (same item, no scroll in between) triggers the action
-  // directly — bypassing click entirely, which Carbon's menu closes before
-  // the browser ever dispatches a synthetic click event on mobile.
-  let pendingItem = null;
-
-  document.addEventListener("pointerdown", e => {
-    const item = e.target.closest("cds-menu-item");
-    pendingItem = (item && !item.hasAttribute("disabled")) ? item : null;
-  }, { passive: true });
-
-  document.addEventListener("pointerup", e => {
-    const item = e.target.closest("cds-menu-item");
-    if (item && item === pendingItem && !item.hasAttribute("disabled")) {
-      // Dispatch a real click on the host — the 50ms gap lets Carbon finish
-      // closing the menu so the print dialog doesn't open on top of it.
-      const target = item;
-      setTimeout(() => target.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true })), 50);
-    }
-    pendingItem = null;
-  }, { passive: true });
+  // Called by initPrint / initResponsesDownload once their action fns exist.
+  // Registers a touchstart handler directly on every matching menu item.
+  window.__bindMenuItemTouch = (selector, fn) => {
+    $$(selector).forEach(item => {
+      if (item.dataset.touchBound) return; // idempotent
+      item.dataset.touchBound = "1";
+      item.addEventListener("touchstart", e => {
+        if (item.hasAttribute("disabled")) return;
+        e.preventDefault(); // suppress emulated mouse events
+        fn();
+      }, { passive: false });
+    });
+  };
 }
 
 /* --------------------------------------------------------------------------
@@ -1294,21 +1295,25 @@ function initPrint(contact) {
 
   const isMobile = "ontouchstart" in window;
 
+  const pdfAction = () => {
+    if (isMobile) {
+      // window.print() is unreliable on mobile — open the report in a new
+      // tab so the user can use the browser's native Share → Save as PDF.
+      window.open(location.href, "_blank", "noopener");
+    } else {
+      openEverything();
+      window.print();
+    }
+  };
+
   $$('cds-menu-item[data-download="pdf"]').forEach(item => {
-    item.addEventListener("click", () => {
-      if (isMobile) {
-        // window.print() is unreliable on mobile browsers — it either does
-        // nothing, crashes, or produces a broken layout. Instead open the
-        // report in a new tab where the user can use the browser's native
-        // Share → Save as PDF / Print from the address bar.
-        window.open(location.href, "_blank", "noopener");
-      } else {
-        // Desktop: expand everything and call print() directly.
-        openEverything();
-        window.print();
-      }
-    });
+    item.addEventListener("click", pdfAction);
   });
+
+  // On mobile, click never reliably fires on cds-menu-item (Carbon closes the
+  // menu before the browser dispatches it). Bind a touchstart handler that
+  // calls the action synchronously while the gesture is still trusted.
+  window.__bindMenuItemTouch?.('cds-menu-item[data-download="pdf"]', pdfAction);
 }
 
 /* --------------------------------------------------------------------------
@@ -1529,6 +1534,10 @@ function initResponsesDownload(contact, isDemoReport, growthAppetite) {
     control.removeAttribute("disabled");
     control.addEventListener("click", printResponses);
   });
+
+
+  // Same touchstart binding for the responses menu items on mobile.
+  window.__bindMenuItemTouch?.('cds-menu-item[data-download="responses"]', printResponses);
 }
 
 /* --------------------------------------------------------------------------
@@ -1558,13 +1567,13 @@ async function init(injectedResult) {
   renderExpansionCard("apm-expansion-card", "APM", result.apm);
   renderExpansionCard("fsm-expansion-card", "FSM", result.fsm);
   renderActionPlan(result.actionPlan);
+  fixMenuItemMobileTap(); // must run before initPrint/initResponsesDownload so __bindMenuItemTouch exists
   initResponsesDownload(result.contact, result === MOCK_RESULT, result.growthAppetite ?? null);
   wireFeedback();
   initScrollSpy();
   fitMenuButtons();
   initPrint(result.contact);
   fixMenuButtonMobileTap();
-  fixMenuItemMobileTap();
   closeTooltipsOnOutsideClick();
   wireSellerButtons(result);
   initShareModal(result);
