@@ -1145,59 +1145,6 @@ function fitMenuButtons() {
 }
 
 /* --------------------------------------------------------------------------
-   Fix cds-menu-button requiring two taps to open on mobile. Carbon registers
-   a focus step on first tap before opening — intercept touchend on the host
-   and fire a synthetic click on the internal trigger button so the menu opens
-   on the very first touch.
-   -------------------------------------------------------------------------- */
-function fixMenuButtonMobileTap() {
-  customElements.whenDefined("cds-menu-button").then(() => {
-    $$("cds-menu-button").forEach(mb => {
-      mb.addEventListener("touchend", e => {
-        // Only act when the menu is currently closed
-        if (mb.hasAttribute("open")) return;
-        e.preventDefault();
-        const btn = mb.shadowRoot?.querySelector("button");
-        if (btn) btn.click();
-      }, { passive: false });
-    });
-  });
-}
-
-/* --------------------------------------------------------------------------
-   Fix cds-menu-item not responding to taps on mobile.
-
-   Two constraints make this hard:
-   1. Carbon closes the menu on touchend/pointerup, which happens before the
-      browser dispatches a synthetic "click" — so click handlers never fire.
-   2. window.open() and window.print() are only allowed inside a trusted user
-      gesture. Any setTimeout delay breaks that requirement on mobile browsers.
-
-   Solution: attach a touchstart listener (earliest trusted event, menu still
-   open) directly on each cds-menu-item. Read the data-download attribute and
-   call the right action synchronously. touchstart is cancelable so we also
-   call preventDefault() to suppress the redundant emulated mouse events that
-   would otherwise double-fire on desktop fallback paths.
-   -------------------------------------------------------------------------- */
-function fixMenuItemMobileTap() {
-  if (!("ontouchstart" in window)) return;
-
-  // Called by initPrint / initResponsesDownload once their action fns exist.
-  // Registers a touchstart handler directly on every matching menu item.
-  window.__bindMenuItemTouch = (selector, fn) => {
-    $$(selector).forEach(item => {
-      if (item.dataset.touchBound) return; // idempotent
-      item.dataset.touchBound = "1";
-      item.addEventListener("touchstart", e => {
-        if (item.hasAttribute("disabled")) return;
-        e.preventDefault(); // suppress emulated mouse events
-        fn();
-      }, { passive: false });
-    });
-  };
-}
-
-/* --------------------------------------------------------------------------
    Tooltip dismiss — close any open cds-tooltip when clicking outside it or
    its trigger button, or when clicking the trigger while it is already open.
    -------------------------------------------------------------------------- */
@@ -1306,14 +1253,11 @@ function initPrint(contact) {
     }
   };
 
-  $$('cds-menu-item[data-download="pdf"]').forEach(item => {
-    item.addEventListener("click", pdfAction);
+  // Covers both plain <button data-download="pdf"> (mobile nav / footer)
+  // and the remaining cds-menu-item (desktop sidebar).
+  $$('[data-download="pdf"]').forEach(el => {
+    el.addEventListener("click", pdfAction);
   });
-
-  // On mobile, click never reliably fires on cds-menu-item (Carbon closes the
-  // menu before the browser dispatches it). Bind a touchstart handler that
-  // calls the action synchronously while the gesture is still trusted.
-  window.__bindMenuItemTouch?.('cds-menu-item[data-download="pdf"]', pdfAction);
 }
 
 /* --------------------------------------------------------------------------
@@ -1534,10 +1478,6 @@ function initResponsesDownload(contact, isDemoReport, growthAppetite) {
     control.removeAttribute("disabled");
     control.addEventListener("click", printResponses);
   });
-
-
-  // Same touchstart binding for the responses menu items on mobile.
-  window.__bindMenuItemTouch?.('cds-menu-item[data-download="responses"]', printResponses);
 }
 
 /* --------------------------------------------------------------------------
@@ -1567,13 +1507,11 @@ async function init(injectedResult) {
   renderExpansionCard("apm-expansion-card", "APM", result.apm);
   renderExpansionCard("fsm-expansion-card", "FSM", result.fsm);
   renderActionPlan(result.actionPlan);
-  fixMenuItemMobileTap(); // must run before initPrint/initResponsesDownload so __bindMenuItemTouch exists
   initResponsesDownload(result.contact, result === MOCK_RESULT, result.growthAppetite ?? null);
   wireFeedback();
   initScrollSpy();
   fitMenuButtons();
   initPrint(result.contact);
-  fixMenuButtonMobileTap();
   closeTooltipsOnOutsideClick();
   wireSellerButtons(result);
   initShareModal(result);

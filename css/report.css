@@ -2080,6 +2080,40 @@ html, body { overflow-x: clip; }
   color: var(--cds-text-primary);
 }
 
+/* --------------------------------------------------------------------------
+   Plain download buttons — used in mobile nav panel and footer instead of
+   cds-menu-button which has unreliable touch behaviour on mobile.
+   Styled to match Carbon's tertiary button (outlined, 48px height).
+   -------------------------------------------------------------------------- */
+.dl-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 16px;
+  border: 1px solid var(--cds-button-tertiary, #0f62fe);
+  background: transparent;
+  color: var(--cds-button-tertiary, #0f62fe);
+  font-family: var(--cds-body-short-01-font-family, 'IBM Plex Sans', sans-serif);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.16px;
+  cursor: pointer;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.dl-btn:hover { background: var(--cds-button-tertiary-hover, #0353e9); color: #fff; border-color: var(--cds-button-tertiary-hover, #0353e9); }
+.dl-btn:active { background: var(--cds-button-tertiary-active, #002d9c); color: #fff; border-color: var(--cds-button-tertiary-active, #002d9c); }
+.dl-btn:focus-visible { outline: 2px solid var(--cds-focus, #0f62fe); outline-offset: -2px; }
+.dl-btn:disabled { border-color: var(--cds-button-disabled, #c6c6c6); color: var(--cds-text-disabled, #8d8d8d); cursor: not-allowed; }
+
+/* size dl-btn same as cds-button in these containers */
+.mobile-nav__actions .dl-btn,
+.report-end-actions .dl-btn { width: 192px; }
+
 @media print {
   /* Each assessment page is one section of the document and is short enough to
      fit a sheet, so it moves whole rather than starting at the foot of one

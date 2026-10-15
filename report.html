@@ -60,13 +60,14 @@
         <cds-button kind="primary" size="lg" data-autotrack-id="report__btn--talk-to-seller-mobile-nav">Talk to a seller
           <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M25.334,11.95l1.2055-1.206a1.178,1.178,0,0,1,1.2593-.2584l1.4693.5868A1.1736,1.1736,0,0,1,30,12.1489v2.692A1.1681,1.1681,0,0,1,28.8229,16l-.05-.0015C18.4775,15.3578,16.4,6.6357,16.0073,3.2976a1.1681,1.1681,0,0,1,1.0315-1.29A1.1492,1.1492,0,0,1,17.1751,2h2.5994a1.1626,1.1626,0,0,1,1.0764.7322l.5866,1.47a1.1635,1.1635,0,0,1-.2529,1.26L19.9791,6.668S20.6733,11.3682,25.334,11.95Z"/><path d="M16,30H14V25a3.0033,3.0033,0,0,0-3-3H7a3.0033,3.0033,0,0,0-3,3v5H2V25a5.0059,5.0059,0,0,1,5-5h4a5.0059,5.0059,0,0,1,5,5Z"/><path d="M9,10a3,3,0,1,1-3,3,3,3,0,0,1,3-3M9,8a5,5,0,1,0,5,5A5,5,0,0,0,9,8Z"/></svg>
         </cds-button>
-        <cds-menu-button kind="tertiary" label="Download" menu-alignment="bottom" size="lg" data-autotrack-id="report__menu-btn--download-mobile-nav">
-          <cds-menu>
-            <cds-menu-item label="Full PDF report" data-download="pdf" data-autotrack-id="report__menu-item--download-pdf-mobile-nav"></cds-menu-item>
-            <cds-menu-item label="Full checklist" disabled></cds-menu-item>
-            <cds-menu-item label="Your responses" disabled data-download="responses" data-autotrack-id="report__menu-item--download-responses-mobile-nav"></cds-menu-item>
-          </cds-menu>
-        </cds-menu-button>
+        <button type="button" class="dl-btn" data-download="pdf" data-autotrack-id="report__btn--download-pdf-mobile-nav">
+          <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 0 0 2 2h20a2 2 0 0 0 2-2v-4z"/><path d="M26 14l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10z"/></svg>
+          Open PDF
+        </button>
+        <button type="button" class="dl-btn" data-download="responses" data-autotrack-id="report__btn--download-responses-mobile-nav" disabled>
+          <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 0 0 2 2h20a2 2 0 0 0 2-2v-4z"/><path d="M26 14l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10z"/></svg>
+          Your responses
+        </button>
       </div>
     </div>
   </div>
@@ -251,13 +252,14 @@
           <cds-button kind="primary" size="lg" data-autotrack-id="report__btn--talk-to-seller-footer">Talk to a seller
             <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M25.334,11.95l1.2055-1.206a1.178,1.178,0,0,1,1.2593-.2584l1.4693.5868A1.1736,1.1736,0,0,1,30,12.1489v2.692A1.1681,1.1681,0,0,1,28.8229,16l-.05-.0015C18.4775,15.3578,16.4,6.6357,16.0073,3.2976a1.1681,1.1681,0,0,1,1.0315-1.29A1.1492,1.1492,0,0,1,17.1751,2h2.5994a1.1626,1.1626,0,0,1,1.0764.7322l.5866,1.47a1.1635,1.1635,0,0,1-.2529,1.26L19.9791,6.668S20.6733,11.3682,25.334,11.95Z"/><path d="M16,30H14V25a3.0033,3.0033,0,0,0-3-3H7a3.0033,3.0033,0,0,0-3,3v5H2V25a5.0059,5.0059,0,0,1,5-5h4a5.0059,5.0059,0,0,1,5,5Z"/><path d="M9,10a3,3,0,1,1-3,3,3,3,0,0,1,3-3M9,8a5,5,0,1,0,5,5A5,5,0,0,0,9,8Z"/></svg>
           </cds-button>
-          <cds-menu-button kind="tertiary" label="Download" menu-alignment="top" size="lg" data-autotrack-id="report__menu-btn--download-footer">
-            <cds-menu>
-              <cds-menu-item label="Full PDF report" data-download="pdf" data-autotrack-id="report__menu-item--download-pdf-footer"></cds-menu-item>
-              <cds-menu-item label="Full checklist" disabled></cds-menu-item>
-              <cds-menu-item label="Your responses" disabled data-download="responses" data-autotrack-id="report__menu-item--download-responses-footer"></cds-menu-item>
-            </cds-menu>
-          </cds-menu-button>
+          <button type="button" class="dl-btn" data-download="pdf" data-autotrack-id="report__btn--download-pdf-footer">
+            <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 0 0 2 2h20a2 2 0 0 0 2-2v-4z"/><path d="M26 14l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10z"/></svg>
+            Open PDF
+          </button>
+          <button type="button" class="dl-btn" data-download="responses" data-autotrack-id="report__btn--download-responses-footer" disabled>
+            <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 0 0 2 2h20a2 2 0 0 0 2-2v-4z"/><path d="M26 14l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10z"/></svg>
+            Your responses
+          </button>
         </div>
 
       </main>
