@@ -302,6 +302,20 @@ p { margin: 0; }
 .matrix__th--theme { justify-content: flex-start; padding-left: 0; text-align: left; }
 
 .matrix__row { display: contents; }
+
+/* Sticky header row — subgrid spans all columns so sticky works per-cell */
+.matrix__row--head {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+  position: sticky;
+  /* sit just below the progress bar (32px tall) */
+  top: calc(var(--progress-top, 0px) + 32px);
+  z-index: 10;
+  background: var(--cds-background);
+  /* soft shadow so rows slide under cleanly */
+  box-shadow: 0 4px 8px -4px var(--cds-background);
+}
 .matrix__td {
   display: flex;
   align-items: center;

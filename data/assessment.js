@@ -1,6 +1,6 @@
 /**
  * GENERATED FILE — do not edit by hand.
- * Built from Logic/Question_Binder_Sep30.xlsx by scripts/build_assessment.py.
+ * Built from Logic/Question_Binder_Oct14.xlsx by scripts/build_assessment.py.
  * To update the questions: edit the workbook, then run
  *   python3 scripts/build_assessment.py
  *
@@ -12,7 +12,7 @@ export default {
   "product": "Maximo Application Suite",
   "subtitle": "Growth readiness assessment",
   "version": "beta v3",
-  "source": "Question_Binder_Sep30.xlsx",
+  "source": "Question_Binder_Oct14.xlsx",
   "pages": [
     {
       "id": "goals",
@@ -222,7 +222,8 @@ export default {
                 }
               ],
               "required": true,
-              "skipCondition": null
+              "skipCondition": null,
+              "binderType": "milestone-group"
             }
           ]
         },
@@ -274,7 +275,8 @@ export default {
                 }
               ],
               "required": true,
-              "skipCondition": null
+              "skipCondition": null,
+              "binderType": "milestone-group"
             }
           ]
         },
@@ -572,7 +574,8 @@ export default {
                 }
               ],
               "required": true,
-              "skipCondition": null
+              "skipCondition": null,
+              "binderType": "milestone-group"
             }
           ]
         },
@@ -670,6 +673,104 @@ export default {
               "skipCondition": null,
               "binderType": "milestone-multiselect",
               "scope": "APM"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "maximo-usage",
+      "title": "Your Maximo capabilities",
+      "sections": [
+        {
+          "id": "grp-usage",
+          "label": "Maximo usage",
+          "questions": [
+            {
+              "id": "grp-usage",
+              "type": "matrix",
+              "title": "Which Maximo capabilities does your team use today?",
+              "guidance": null,
+              "rowHeader": "Capability",
+              "columns": [
+                {
+                  "value": "actively-using",
+                  "label": "Actively using"
+                },
+                {
+                  "value": "exploring",
+                  "label": "Exploring"
+                },
+                {
+                  "value": "interested-but-haven-t-tried",
+                  "label": "Interested but haven't tried"
+                },
+                {
+                  "value": "don-t-use",
+                  "label": "Don't use"
+                }
+              ],
+              "rows": [
+                {
+                  "id": "Q-USE-1",
+                  "label": "Manage",
+                  "description": "Core EAM — assets, work orders, preventive maintenance, and job plans.",
+                  "milestoneId": null,
+                  "scope": null
+                },
+                {
+                  "id": "Q-USE-2",
+                  "label": "Mobile",
+                  "description": "Maximo Mobile for field technician work execution on iOS/Android.",
+                  "milestoneId": null,
+                  "scope": null
+                },
+                {
+                  "id": "Q-USE-3",
+                  "label": "Scheduler",
+                  "description": "Maximo Scheduler for graphical drag-and-drop work scheduling.",
+                  "milestoneId": null,
+                  "scope": null
+                },
+                {
+                  "id": "Q-USE-4",
+                  "label": "Health",
+                  "description": "Maximo Health for asset health scoring and fleet condition dashboards.",
+                  "milestoneId": null,
+                  "scope": null
+                },
+                {
+                  "id": "Q-USE-5",
+                  "label": "Monitor",
+                  "description": "Maximo Monitor for real-time IoT sensor data ingestion and alerting.",
+                  "milestoneId": null,
+                  "scope": null
+                },
+                {
+                  "id": "Q-USE-6",
+                  "label": "Predict",
+                  "description": "Maximo Predict for ML-driven predictive failure risk scoring.",
+                  "milestoneId": null,
+                  "scope": null
+                },
+                {
+                  "id": "Q-USE-7",
+                  "label": "Reliability Strategies",
+                  "description": "Maximo Reliability Strategies for FMEA and RCM-based strategy management.",
+                  "milestoneId": null,
+                  "scope": null
+                },
+                {
+                  "id": "Q-USE-8",
+                  "label": "Visual Inspection",
+                  "description": "Maximo Visual Inspection for AI-powered image and video defect detection.",
+                  "milestoneId": null,
+                  "scope": null
+                }
+              ],
+              "required": false,
+              "skipCondition": null,
+              "binderType": "usage-group"
             }
           ]
         }
