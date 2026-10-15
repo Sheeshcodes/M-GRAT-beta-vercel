@@ -5210,8 +5210,10 @@ html, body { overflow-x: clip; }
   outline-offset: -4px;
 }
 
-/* Trap scroll on body when modal is open */
-body.share-modal-open {
+/* Trap scroll on body when modal is open.
+   Set on <html> not <body> — body.overflow:hidden would break
+   position:sticky on the sidebar and mobile nav. */
+html:has(body.share-modal-open) {
   overflow: hidden;
 }
 
