@@ -1036,17 +1036,24 @@ function initScrollSpy() {
 
   /* scrollIntoView puts the target flush against the top of the viewport, which
      on a phone parks it underneath the pinned bar — the heading you asked for
-     ends up hidden. Measure the bar and land the section just below it. Not
-     every target is a .report-section (the resources block is not), so the
+     ends up hidden. Measure the full sticky nav wrapper (not just the inner bar)
+     and scroll to the section heading rather than the section element, which has
+     padding above the heading that would put the heading below the visible area.
+     Not every target is a .report-section (the resources block is not), so the
      offset is computed here rather than left to scroll-margin-top. */
+  const mobileNav = $(".report-mobile-nav");
   const goTo = (sectionId) => {
-    const target = $(`#${sectionId}`);
-    if (!target) return;
-    // On desktop the bar is inside a hidden wrapper, so it still reports a
-    // display value — its measured height is what tells us it is really there.
-    const barHeight = bar ? bar.getBoundingClientRect().height : 0;
-    const offset = barHeight ? barHeight + 8 : 24;
-    const top = window.scrollY + target.getBoundingClientRect().top - offset;
+    const section = $(`#${sectionId}`);
+    if (!section) return;
+    // Prefer the heading inside the section so we land on the text, not on
+    // the section's top padding. Fall back to the section itself.
+    const heading = section.querySelector(".report-section__heading, h2, h3") || section;
+    // The whole .report-mobile-nav wrapper is sticky at top:0 on mobile.
+    // On desktop it is display:none so its height is 0 — use the sidebar instead.
+    const stickyEl = (mobileNav && mobileNav.offsetParent !== null) ? mobileNav : bar;
+    const stickyHeight = stickyEl ? stickyEl.getBoundingClientRect().height : 0;
+    const offset = stickyHeight + 12;
+    const top = window.scrollY + heading.getBoundingClientRect().top - offset;
     window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
     setActive(sectionId);
   };
