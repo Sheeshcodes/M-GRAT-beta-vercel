@@ -14771,18 +14771,18 @@ function wireSellerButtons(result) {
 /* --------------------------------------------------------------------------
    Share-with-IBM modal
    --------------------------------------------------------------------------
-   Shows once when the user reaches the bottom feedback section (IntersectionObserver).
+   Shows once after the user returns from the PDF print/save dialog.
    The Send button opens the same pre-built mailto as the seller buttons.
-   Dismissed with Cancel or the close button; never shown again in the same tab.
+   Dismissed with Cancel, close button, backdrop click, or Escape.
+   Never shown again in the same tab once dismissed or sent.
    -------------------------------------------------------------------------- */
 function initShareModal(result) {
-  const modal      = document.getElementById("share-modal");
-  const sendBtn    = document.getElementById("share-modal-send");
-  const cancelBtn  = document.getElementById("share-modal-cancel");
-  const closeBtn   = document.getElementById("share-modal-close");
-  const backdrop   = modal?.querySelector(".share-modal__backdrop");
-  const trigger    = document.getElementById("act-improve"); // feedback section
-  if (!modal || !sendBtn || !cancelBtn || !closeBtn || !trigger) return;
+  const modal     = document.getElementById("share-modal");
+  const sendBtn   = document.getElementById("share-modal-send");
+  const cancelBtn = document.getElementById("share-modal-cancel");
+  const closeBtn  = document.getElementById("share-modal-close");
+  const backdrop  = modal?.querySelector(".share-modal__backdrop");
+  if (!modal || !sendBtn || !cancelBtn || !closeBtn) return;
 
   let shown = false;
 
@@ -14794,6 +14794,8 @@ function initShareModal(result) {
   const href    = `mailto:${SELLER_EMAIL}?subject=${subject}&body=${encodeURIComponent(body)}`;
 
   function openModal() {
+    if (shown) return;
+    shown = true;
     modal.removeAttribute("hidden");
     document.body.classList.add("share-modal-open");
     closeBtn.focus();
@@ -14813,22 +14815,17 @@ function initShareModal(result) {
   closeBtn.addEventListener("click", closeModal);
   backdrop?.addEventListener("click", closeModal);
 
-  // Close on Escape key
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && !modal.hasAttribute("hidden")) closeModal();
   });
 
-  // Show once when the feedback section enters the viewport
-  const observer = new IntersectionObserver((entries) => {
-    if (shown) return;
-    if (entries[0].isIntersecting) {
-      shown = true;
-      observer.disconnect();
-      setTimeout(openModal, 600);
-    }
-  }, { threshold: 0.4 });
-
-  observer.observe(trigger);
+  // Trigger: fire once when the user returns from the print/save dialog.
+  // afterprint fires in all major browsers when window.print() completes
+  // (whether the user saved the PDF, printed, or cancelled).
+  window.addEventListener("afterprint", () => {
+    // Small delay so the page has fully restored before the modal appears
+    setTimeout(openModal, 400);
+  });
 }
 }
 
