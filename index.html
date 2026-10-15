@@ -35,11 +35,11 @@
     <!-- ============================================================ -->
     <!-- Splash screen                                                 -->
     <!-- ============================================================ -->
-    <div id="splash-screen" class="splash-screen">
-      <section class="splash-hero">
+    <div id="splash-screen" class="splash-screen" role="region" aria-label="Maximo Growth Assessment Introduction">
+      <section class="splash-hero" aria-labelledby="splash-hero-title">
         <div class="splash-hero__content">
           <img src="assets/IBM Maximo Application Suite.svg" alt="IBM Maximo Application Suite" class="splash-hero__icon" width="64" height="64" />
-          <h1 class="splash-hero__headline">
+          <h1 class="splash-hero__headline" id="splash-hero-title">
             <span class="splash-hero__headline--black">Find your best path to greater value</span>
             <span class="splash-hero__headline--purple">from Maximo</span>
           </h1>
@@ -48,10 +48,10 @@
             <div class="splash-hero__btn-row">
               <cds-button kind="primary" size="lg" onclick="startAssessment()" data-autotrack-id="splash__btn--start-hero">
                 Start assessment
-                <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18 6L16.57 7.393 26.188 17H2v2h24.188L16.57 28.573 18 30l12-12L18 6z"/></svg>
+                <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true" focusable="false"><path d="M18 6L16.57 7.393 26.188 17H2v2h24.188L16.57 28.573 18 30l12-12L18 6z"/></svg>
               </cds-button>
-              <div class="splash-hero__clock">
-                <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M16 2a14 14 0 1 0 14 14A14 14 0 0 0 16 2zm0 26a12 12 0 1 1 12-12 12 12 0 0 1-12 12z"/><path d="M20.59 22L15 16.41V7h2v8.58l5 5.01L20.59 22z"/></svg>
+              <div class="splash-hero__clock" aria-label="Estimated completion time: approximately 10 minutes">
+                <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true" focusable="false"><path d="M16 2a14 14 0 1 0 14 14A14 14 0 0 0 16 2zm0 26a12 12 0 1 1 12-12 12 12 0 0 1-12 12z"/><path d="M20.59 22L15 16.41V7h2v8.58l5 5.01L20.59 22z"/></svg>
                 <em>Approx 10 minutes</em>
               </div>
             </div>
@@ -59,40 +59,40 @@
           </div>
         </div>
         <div class="splash-hero__illustration" aria-hidden="true">
-          <video src="assets/mgrat-splash-anim.mp4" autoplay muted loop playsinline></video>
+          <video src="assets/mgrat-splash-anim.mp4" autoplay muted loop playsinline tabindex="-1"></video>
         </div>
       </section>
-      <section class="splash-quote">
+      <section class="splash-quote" aria-label="Assessment purpose">
         <div class="splash-quote__box">
           <p class="splash-quote__text">You have goals to achieve.<br class="splash-quote__break"> The challenge is knowing which improvement will create the <strong>biggest business impact.</strong></p>
-          <div class="splash-quote__scroll">
+          <div class="splash-quote__scroll" aria-hidden="true">
             <p>Scroll down to learn more about the assessment</p>
-            <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M24.59 16.59L17 24.17V4h-2v20.17l-7.59-7.58L6 18l10 10 10-10-1.41-1.41z"/></svg>
+            <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" focusable="false"><path d="M24.59 16.59L17 24.17V4h-2v20.17l-7.59-7.58L6 18l10 10 10-10-1.41-1.41z"/></svg>
           </div>
         </div>
       </section>
-      <section class="splash-value">
+      <section class="splash-value" aria-labelledby="splash-value-heading">
         <div class="splash-value__header">
-          <h2 class="splash-value__heading">Turn assessment<br>insights into action</h2>
+          <h2 class="splash-value__heading" id="splash-value-heading">Turn assessment<br>insights into action</h2>
           <p class="splash-value__desc">See what you're doing well, uncover the biggest opportunities to create value, and get a practical roadmap to achieve your goals.</p>
         </div>
         <div class="splash-value__grid">
           <!-- Card 1 -->
           <!-- Mobile connector: Card 1 → Card 2 -->
           <div class="splash-connector splash-connector--card1" aria-hidden="true">
-            <svg viewBox="0 0 2 35" width="2" height="35" fill="none"><line x1="1" y1="0" x2="1" y2="35" stroke="#c6c6c6" stroke-width="1.5"/></svg>
+            <svg viewBox="0 0 2 35" width="2" height="35" fill="none" focusable="false"><line x1="1" y1="0" x2="1" y2="35" stroke="#c6c6c6" stroke-width="1.5"/></svg>
           </div>
-          <div class="splash-value__card splash-value__card--1">
-            <div class="splash-pictogram">
+          <article class="splash-value__card splash-value__card--1">
+            <div class="splash-pictogram" aria-hidden="true">
               <img src="assets/Pictogram.svg" loading="lazy" decoding="async" alt="" width="48" height="48" />
             </div>
-            <p class="splash-value__card-label">Know your strengths and opportunities</p>
-            <div class="splash-media-container">
-              <video src="assets/progress-anim.mp4" muted loop playsinline preload="none" data-lazy-video></video>
+            <h3 class="splash-value__card-label">Know your strengths and opportunities</h3>
+            <div class="splash-media-container" aria-hidden="true">
+              <video src="assets/progress-anim.mp4" muted loop playsinline preload="none" tabindex="-1" data-lazy-video></video>
             </div>
             <!-- Desktop connector: Card 1 → Card 2 (anchored to Card 1 center-right) -->
             <div class="splash-connector--desktop splash-connector--h" aria-hidden="true">
-              <svg width="32" height="24" viewBox="0 0 32 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg width="32" height="24" viewBox="0 0 32 24" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false">
                 <!-- horizontal line straight across from left to right -->
                 <line x1="0" y1="12" x2="26" y2="12" stroke="#c6c6c6" stroke-width="1.5"/>
                 <!-- arrowhead pointing right -->
@@ -101,25 +101,25 @@
                 <circle cx="2" cy="12" r="3" fill="#c6c6c6"/>
               </svg>
             </div>
-          </div>
+          </article>
           <!-- Right column: Card 2 + Card 3 stacked -->
           <div class="splash-value__right">
-            <div class="splash-value__card splash-value__card--2">
-              <div class="splash-pictogram">
+            <article class="splash-value__card splash-value__card--2">
+              <div class="splash-pictogram" aria-hidden="true">
                 <img src="assets/Pictogram-1.svg" loading="lazy" decoding="async" alt="" width="48" height="48" />
               </div>
-              <p class="splash-value__card-label">Prioritize your next move</p>
-              <div class="splash-media-container">
-                <video src="assets/steps-anim.mp4" muted loop playsinline preload="none" data-lazy-video></video>
+              <h3 class="splash-value__card-label">Prioritize your next move</h3>
+              <div class="splash-media-container" aria-hidden="true">
+                <video src="assets/steps-anim.mp4" muted loop playsinline preload="none" tabindex="-1" data-lazy-video></video>
               </div>
-            </div>
+            </article>
             <!-- Mobile connector: Card 2 → Card 3 -->
             <div class="splash-connector" aria-hidden="true">
-              <svg viewBox="0 0 2 35" width="2" height="35" fill="none"><line x1="1" y1="0" x2="1" y2="35" stroke="#c6c6c6" stroke-width="1.5"/></svg>
+              <svg viewBox="0 0 2 35" width="2" height="35" fill="none" focusable="false"><line x1="1" y1="0" x2="1" y2="35" stroke="#c6c6c6" stroke-width="1.5"/></svg>
             </div>
             <!-- Desktop connector: Card 2 → Card 3 (bottom-center of Card 2 to top-center of Card 3) -->
             <div class="splash-connector--desktop splash-connector--v" aria-hidden="true">
-              <svg width="24" height="40" viewBox="0 0 24 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg width="24" height="40" viewBox="0 0 24 40" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false">
                 <!-- vertical line straight down from top-center to bottom -->
                 <line x1="12" y1="0" x2="12" y2="34" stroke="#c6c6c6" stroke-width="1.5"/>
                 <!-- arrowhead pointing down -->
@@ -128,35 +128,35 @@
                 <circle cx="12" cy="2" r="3" fill="#c6c6c6"/>
               </svg>
             </div>
-            <div class="splash-value__card splash-value__card--3">
-              <div class="splash-pictogram">
+            <article class="splash-value__card splash-value__card--3">
+              <div class="splash-pictogram" aria-hidden="true">
                 <img src="assets/Pictogram-2.svg" loading="lazy" decoding="async" alt="" width="48" height="48" />
               </div>
-              <p class="splash-value__card-label">Take action with confidence</p>
-              <div class="splash-media-container">
-                <video src="assets/cards-anim.mp4" muted loop playsinline preload="none" data-lazy-video></video>
+              <h3 class="splash-value__card-label">Take action with confidence</h3>
+              <div class="splash-media-container" aria-hidden="true">
+                <video src="assets/cards-anim.mp4" muted loop playsinline preload="none" tabindex="-1" data-lazy-video></video>
               </div>
-            </div>
+            </article>
           </div>
 
         </div>
       </section>
-      <section class="splash-cta">
+      <section class="splash-cta" aria-labelledby="splash-cta-heading">
         <div class="splash-cta__inner">
-          <img class="splash-cta__illustration" src="assets/What%27s%20on%20supervisor%27s%20mind_.svg" loading="lazy" decoding="async" alt="" width="275" />
+          <img class="splash-cta__illustration" src="assets/What%27s%20on%20supervisor%27s%20mind_.svg" loading="lazy" decoding="async" alt="" width="275" aria-hidden="true" />
           <div class="splash-cta__content">
             <div class="splash-cta__copy">
-              <p class="splash-cta__heading">Get more value from Maximo</p>
+              <h2 class="splash-cta__heading" id="splash-cta-heading">Get more value from Maximo</h2>
               <p class="splash-cta__desc">Answer a few questions to get a personalized view of where you are today, where to focus next, and the recommended steps for moving forward.</p>
             </div>
             <div class="splash-cta__actions">
               <div class="splash-cta__btn-row">
                 <cds-button kind="primary" size="lg" onclick="startAssessment()" data-autotrack-id="splash__btn--start-cta">
                   Start assessment
-                  <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18 6L16.57 7.393 26.188 17H2v2h24.188L16.57 28.573 18 30l12-12L18 6z"/></svg>
+                  <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true" focusable="false"><path d="M18 6L16.57 7.393 26.188 17H2v2h24.188L16.57 28.573 18 30l12-12L18 6z"/></svg>
                 </cds-button>
-                <div class="splash-hero__clock">
-                  <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M16 2a14 14 0 1 0 14 14A14 14 0 0 0 16 2zm0 26a12 12 0 1 1 12-12 12 12 0 0 1-12 12z"/><path d="M20.59 22L15 16.41V7h2v8.58l5 5.01L20.59 22z"/></svg>
+                <div class="splash-hero__clock" aria-label="Estimated completion time: approximately 10 minutes">
+                  <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true" focusable="false"><path d="M16 2a14 14 0 1 0 14 14A14 14 0 0 0 16 2zm0 26a12 12 0 1 1 12-12 12 12 0 0 1-12 12z"/><path d="M20.59 22L15 16.41V7h2v8.58l5 5.01L20.59 22z"/></svg>
                   <em>Approx 10 minutes</em>
                 </div>
               </div>
@@ -184,7 +184,7 @@
         <p class="sidebar__page" id="page-counter" aria-live="polite"></p>
       </div>
 
-      <a class="sidebar__logo" href="https://www.ibm.com" aria-label="IBM">
+      <a class="sidebar__logo" href="https://www.ibm.com" aria-label="IBM" target="_blank" rel="noopener noreferrer">
         <img src="assets/ibm-logo.svg" loading="lazy" decoding="async" alt="IBM" width="54" height="20" />
       </a>
       <div class="sidebar__art" aria-hidden="true">
@@ -195,7 +195,7 @@
     <!-- ============================================================ -->
     <!-- Main content — sections are rendered from data/assessment.js -->
     <!-- ============================================================ -->
-    <main class="main">
+    <main class="main" id="main-content">
       <form class="content" id="assessment-form" novalidate>
         <div class="progress">
           <cds-progress-bar
