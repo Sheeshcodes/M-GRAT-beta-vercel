@@ -1721,7 +1721,7 @@ function buildSellerEmailText(result, stored) {
  * @param {object} result  - scoring result
  */
 function wireSellerButtons(result) {
-  const SELLER_EMAIL = "mas-growth-assessment@ibm.com";
+  const SELLER_EMAIL = "alm.growth.assessment@ibm.com";
 
   const stored = loadStoredResponses() ?? {
     answers: {},
@@ -1765,7 +1765,7 @@ function initShareModal(result) {
   let shown = false;
 
   // Build the mailto href the same way wireSellerButtons does
-  const SELLER_EMAIL = "mas-growth-assessment@ibm.com";
+  const SELLER_EMAIL = "alm.growth.assessment@ibm.com";
   const stored = loadStoredResponses() ?? { answers: {}, submittedAt: null, missing: true };
   const body    = buildSellerEmailText(result, stored);
   const subject = encodeURIComponent("MAS Growth Readiness Assessment — results");
