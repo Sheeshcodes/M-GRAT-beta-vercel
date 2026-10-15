@@ -46,6 +46,11 @@ PAGES_CONFIG: list[dict[str, Any]] = [
         "groups": ["GRP-RP", "GRP-CM", "GRP-CM-ADV"],
     },
     {
+        "id": "maximo-usage",
+        "title": "Your Maximo capabilities",
+        "groups": ["GRP-USAGE"],
+    },
+    {
         "id": "follow-up",
         "title": "Your organisational appetite",
         "groups": ["GRP-APPETITE"],
@@ -60,6 +65,7 @@ SHEET_FOR_TYPE: dict[str, str] = {
     "milestone-multiselect": "Milestone Qs — Multiselect",
     "milestone-ladder": "Milestone Qs — Ladder",
     "growth-appetite": "Growth Appetite",
+    "usage-group": "Usage Qs — Group",
 }
 
 
@@ -186,29 +192,44 @@ def build_growth_appetite_question(question_id: str, sheet_rows: list[dict[str, 
     return question
 
 
+def _discover_option_columns(row: dict[str, str]) -> list[dict[str, str]]:
+    """Return columns derived from 'Option — <suffix>' keys present in a row, in key order."""
+    columns = []
+    for key in row:
+        if key.startswith("Option — "):
+            suffix = key[len("Option — "):]
+            columns.append({"value": slugify(suffix), "label": row[key]})
+    return columns
+
+
 def build_matrix_question(
     group_id: str,
     title: str,
     question_ids: list[str],
     sheet_rows: list[dict[str, str]],
+    row_header: str = "Themes",
 ) -> tuple[dict[str, Any], str]:
-    """Build matrix question combining multiple milestone-group items."""
+    """Build matrix question combining multiple group items.
+
+    Columns are discovered dynamically from the 'Option — <suffix>' headers present
+    in sheet_rows, in sheet order.  For the existing milestone-group sheet the headers
+    are 'Option — Met', 'Option — Unmet', 'Option — Unknown', so their slugified values
+    remain 'met', 'unmet', 'unknown' — scoring is unchanged.
+    For usage-group sheets the headers produce whatever slugs are defined there.
+    """
     rows = [r for r in sheet_rows if r.get("Question ID") in question_ids]
     rows.sort(key=lambda r: question_ids.index(r["Question ID"]))
     if not rows:
         raise KeyError(", ".join(question_ids))
     first_row = rows[0]
+    columns = _discover_option_columns(first_row)
     matrix: dict[str, Any] = {
         "id": group_id,
         "type": "matrix",
         "title": title,
         "guidance": None,
-        "rowHeader": "Themes",
-        "columns": [
-            {"value": "met", "label": first_row.get("Option — Met", "Met")},
-            {"value": "unmet", "label": first_row.get("Option — Unmet", "Unmet")},
-            {"value": "unknown", "label": first_row.get("Option — Unknown", "Unknown")},
-        ],
+        "rowHeader": row_header,
+        "columns": columns,
         "rows": [
             {
                 "id": r["Question ID"],
@@ -267,16 +288,22 @@ def compile_workbook(path: str) -> tuple[dict[str, Any], list[str]]:
             "questions": [],
         }
 
-        if qtype_set == {"milestone-group"}:
+        if qtype_set <= {"milestone-group", "usage-group"} and qtype_set:
+            qtype = next(iter(qtype_set))
             qids = [r["Question ID"] for r in group["rows"]]
+            row_header = "Capability" if qtype == "usage-group" else "Themes"
             matrix, group_label = build_matrix_question(
-                slugify(gid), group["displayText"], qids, content[SHEET_FOR_TYPE["milestone-group"]]
+                slugify(gid), group["displayText"], qids, content[SHEET_FOR_TYPE[qtype]],
+                row_header=row_header,
             )
+            if qtype == "usage-group":
+                matrix["columns"] = list(reversed(matrix["columns"]))
             matrix["required"] = all(r["Required"].lower() == "required" for r in group["rows"])
             matrix["skipCondition"] = next(
                 (blank_to_none(r["Skip Condition"]) for r in group["rows"] if blank_to_none(r["Skip Condition"])),
                 None,
             )
+            matrix["binderType"] = qtype
             section["label"] = group_label or section["label"]
             section["questions"].append(matrix)
         else:
