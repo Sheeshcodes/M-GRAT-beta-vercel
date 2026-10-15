@@ -1158,6 +1158,31 @@ function fixMenuButtonMobileTap() {
 }
 
 /* --------------------------------------------------------------------------
+   Fix cds-menu-item requiring two taps to activate on mobile. Carbon registers
+   a focus step on first tap before firing the click — intercept touchend on
+   each item and fire a synthetic click directly on the inner <li> (or the
+   item itself) so the action runs on the very first touch.
+   -------------------------------------------------------------------------- */
+function fixMenuItemMobileTap() {
+  customElements.whenDefined("cds-menu-item").then(() => {
+    $$("cds-menu-item").forEach(item => {
+      item.addEventListener("touchend", e => {
+        // Don't interfere with disabled items
+        if (item.hasAttribute("disabled")) return;
+        e.preventDefault();
+        // Try the inner interactive element first; fall back to the host itself
+        const inner = item.shadowRoot?.querySelector("li, button, [role='menuitem']");
+        if (inner) {
+          inner.click();
+        } else {
+          item.click();
+        }
+      }, { passive: false });
+    });
+  });
+}
+
+/* --------------------------------------------------------------------------
    Tooltip dismiss — close any open cds-tooltip when clicking outside it or
    its trigger button, or when clicking the trigger while it is already open.
    -------------------------------------------------------------------------- */
@@ -1517,6 +1542,7 @@ async function init(injectedResult) {
   fitMenuButtons();
   initPrint(result.contact);
   fixMenuButtonMobileTap();
+  fixMenuItemMobileTap();
   closeTooltipsOnOutsideClick();
   wireSellerButtons(result);
   initShareModal(result);

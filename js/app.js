@@ -590,6 +590,41 @@ stackedLayout.addEventListener("change", () => { sidebar.classList.remove("is-co
 new ResizeObserver(updateProgressOffset).observe(sidebar);
 
 /* ----------------------------------------------------------------------
+   Prevent iOS Safari from zooming when tapping a text input. iOS zooms
+   whenever the focused input's font-size is below 16px. Carbon renders
+   its own <input> inside the shadow root at a smaller size, so we pierce
+   the shadow and inject a minimal stylesheet that bumps it to 16px.
+   A MutationObserver ensures any inputs added by render() later are
+   also patched. The override only activates on touch devices so desktop
+   rendering is unchanged.
+   ---------------------------------------------------------------------- */
+function preventInputZoom() {
+  // Only apply on touch-capable devices (avoids unnecessary shadow patching on desktop)
+  if (!("ontouchstart" in window)) return;
+  const STYLE_MARKER = "data-no-zoom";
+  const patch = (el) => {
+    if (!el.shadowRoot) return;
+    if (el.shadowRoot.querySelector(`style[${STYLE_MARKER}]`)) return;
+    const s = document.createElement("style");
+    s.setAttribute(STYLE_MARKER, "");
+    s.textContent = "input { font-size: 16px !important; }";
+    el.shadowRoot.append(s);
+  };
+  const patchAll = () =>
+    document.querySelectorAll("cds-text-input").forEach(patch);
+
+  customElements.whenDefined("cds-text-input").then(() => {
+    patchAll();
+    // Watch for inputs added dynamically (page navigation re-renders the form)
+    new MutationObserver(patchAll).observe(els.sections, {
+      childList: true,
+      subtree: true,
+    });
+  });
+}
+preventInputZoom();
+
+/* ----------------------------------------------------------------------
    Boot
    ---------------------------------------------------------------------- */
 els.product.textContent = assessment.product;
