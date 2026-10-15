@@ -263,6 +263,28 @@
       </main>
     </div>
   </div>
+<!-- Share-with-IBM modal -->
+<div id="share-modal" class="share-modal" role="dialog" aria-modal="true" aria-labelledby="share-modal-title" hidden>
+  <div class="share-modal__backdrop"></div>
+  <div class="share-modal__dialog">
+    <div class="share-modal__header">
+      <p class="share-modal__title" id="share-modal-title">Explore your next steps</p>
+      <button class="share-modal__close" id="share-modal-close" aria-label="Close" data-autotrack-id="report__btn--share-modal-close">
+        <svg viewBox="0 0 20 20" width="20" height="20" fill="none" aria-hidden="true">
+          <path d="M15 5.875L14.125 5L10 9.125L5.875 5L5 5.875L9.125 10L5 14.125L5.875 15L10 10.875L14.125 15L15 14.125L10.875 10L15 5.875Z" fill="#161616"/>
+        </svg>
+      </button>
+    </div>
+    <div class="share-modal__body">
+      <p class="share-modal__text">Send your report to our growth accelerator team to explore opportunities for growth and discuss your next steps.</p>
+    </div>
+    <div class="share-modal__footer">
+      <button class="share-modal__btn share-modal__btn--cancel" id="share-modal-cancel" data-autotrack-id="report__btn--share-modal-cancel">Cancel</button>
+      <button class="share-modal__btn share-modal__btn--send" id="share-modal-send" data-autotrack-id="report__btn--share-modal-send">Send report</button>
+    </div>
+  </div>
+</div>
+
 
   <script type="module" src="js/report.js"></script>
   <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>

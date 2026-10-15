@@ -5071,6 +5071,161 @@ html, body { overflow-x: clip; }
   }
 }
 
+/* ============================================================
+   Share-with-IBM modal
+   Matches Figma node 2172:15302
+   ============================================================ */
+
+.share-modal {
+  display: contents; /* hidden state: DOM present, nothing rendered */
+}
+
+.share-modal[hidden] {
+  display: none;
+}
+
+/* Backdrop */
+.share-modal__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(22, 22, 22, 0.5);
+  z-index: 6000;
+}
+
+/* Dialog panel */
+.share-modal__dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 6001;
+  background: #ffffff;
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.share-modal__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px;
+  position: relative;
+}
+
+.share-modal__title {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  color: #161616;
+  flex: 1;
+  margin: 0;
+  padding-right: 60px; /* space for close button */
+}
+
+.share-modal__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: #161616;
+  flex-shrink: 0;
+}
+
+.share-modal__close:focus-visible {
+  outline: 2px solid #0f62fe;
+  outline-offset: 2px;
+}
+
+/* Body */
+.share-modal__body {
+  padding: 0 16px 48px;
+}
+
+.share-modal__text {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 0.16px;
+  color: #161616;
+  margin: 0;
+}
+
+/* Footer buttons — two equal columns with 1px gap (Figma: gap-px) */
+.share-modal__footer {
+  display: flex;
+  gap: 1px;
+  background: #e0e0e0; /* gap colour shows through between buttons */
+}
+
+.share-modal__btn {
+  flex: 1;
+  height: 64px;
+  border: none;
+  cursor: pointer;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 18px;
+  letter-spacing: 0.16px;
+  color: #ffffff;
+  text-align: left;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  transition: background 70ms ease;
+}
+
+.share-modal__btn--cancel {
+  background: #393939;
+}
+
+.share-modal__btn--cancel:hover {
+  background: #4c4c4c;
+}
+
+.share-modal__btn--send {
+  background: #0f62fe;
+}
+
+.share-modal__btn--send:hover {
+  background: #0353e9;
+}
+
+.share-modal__btn:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: -4px;
+}
+
+/* Trap scroll on body when modal is open */
+body.share-modal-open {
+  overflow: hidden;
+}
+
+@media (max-width: 671px) {
+  .share-modal__dialog {
+    max-width: 100%;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    transform: none;
+  }
+}
+
 
 /* === print: assessment shell === */
 
@@ -5526,6 +5681,27 @@ html, body { overflow-x: clip; }
       </main>
     </div>
   </div>
+<!-- Share-with-IBM modal -->
+<div id="share-modal" class="share-modal" role="dialog" aria-modal="true" aria-labelledby="share-modal-title" hidden>
+  <div class="share-modal__backdrop"></div>
+  <div class="share-modal__dialog">
+    <div class="share-modal__header">
+      <p class="share-modal__title" id="share-modal-title">Explore your next steps</p>
+      <button class="share-modal__close" id="share-modal-close" aria-label="Close" data-autotrack-id="report__btn--share-modal-close">
+        <svg viewBox="0 0 20 20" width="20" height="20" fill="none" aria-hidden="true">
+          <path d="M15 5.875L14.125 5L10 9.125L5.875 5L5 5.875L9.125 10L5 14.125L5.875 15L10 10.875L14.125 15L15 14.125L10.875 10L15 5.875Z" fill="#161616"/>
+        </svg>
+      </button>
+    </div>
+    <div class="share-modal__body">
+      <p class="share-modal__text">Send your report to our growth accelerator team to explore opportunities for growth and discuss your next steps.</p>
+    </div>
+    <div class="share-modal__footer">
+      <button class="share-modal__btn share-modal__btn--cancel" id="share-modal-cancel" data-autotrack-id="report__btn--share-modal-cancel">Cancel</button>
+      <button class="share-modal__btn share-modal__btn--send" id="share-modal-send" data-autotrack-id="report__btn--share-modal-send">Send report</button>
+    </div>
+  </div>
+</div>
 </div><!-- /#view-report -->
 
   <script>
@@ -5533,7 +5709,7 @@ html, body { overflow-x: clip; }
 // ── data/assessment.js ─────────────────────────────────────────
 /**
  * GENERATED FILE — do not edit by hand.
- * Built from Logic/Question_Binder_Oct14.xlsx by scripts/build_assessment.py.
+ * Built from Logic/Question_Binder_Sep30.xlsx by scripts/build_assessment.py.
  * To update the questions: edit the workbook, then run
  *   python3 scripts/build_assessment.py
  *
@@ -5545,7 +5721,7 @@ const assessmentData = {
   "product": "Maximo Application Suite",
   "subtitle": "Growth readiness assessment",
   "version": "beta v3",
-  "source": "Question_Binder_Oct14.xlsx",
+  "source": "Question_Binder_Sep30.xlsx",
   "pages": [
     {
       "id": "goals",
@@ -6206,104 +6382,6 @@ const assessmentData = {
               "skipCondition": null,
               "binderType": "milestone-multiselect",
               "scope": "APM"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "maximo-usage",
-      "title": "Your Maximo capabilities",
-      "sections": [
-        {
-          "id": "grp-usage",
-          "label": "Maximo usage",
-          "questions": [
-            {
-              "id": "grp-usage",
-              "type": "matrix",
-              "title": "Which Maximo capabilities does your team use today?",
-              "guidance": null,
-              "rowHeader": "Capability",
-              "columns": [
-                {
-                  "value": "actively-using",
-                  "label": "Actively using"
-                },
-                {
-                  "value": "exploring",
-                  "label": "Exploring"
-                },
-                {
-                  "value": "interested-but-haven-t-tried",
-                  "label": "Interested but haven't tried"
-                },
-                {
-                  "value": "don-t-use",
-                  "label": "Don't use"
-                }
-              ],
-              "rows": [
-                {
-                  "id": "Q-USE-1",
-                  "label": "Manage",
-                  "description": "Core EAM — assets, work orders, preventive maintenance, and job plans.",
-                  "milestoneId": null,
-                  "scope": null
-                },
-                {
-                  "id": "Q-USE-2",
-                  "label": "Mobile",
-                  "description": "Maximo Mobile for field technician work execution on iOS/Android.",
-                  "milestoneId": null,
-                  "scope": null
-                },
-                {
-                  "id": "Q-USE-3",
-                  "label": "Scheduler",
-                  "description": "Maximo Scheduler for graphical drag-and-drop work scheduling.",
-                  "milestoneId": null,
-                  "scope": null
-                },
-                {
-                  "id": "Q-USE-4",
-                  "label": "Health",
-                  "description": "Maximo Health for asset health scoring and fleet condition dashboards.",
-                  "milestoneId": null,
-                  "scope": null
-                },
-                {
-                  "id": "Q-USE-5",
-                  "label": "Monitor",
-                  "description": "Maximo Monitor for real-time IoT sensor data ingestion and alerting.",
-                  "milestoneId": null,
-                  "scope": null
-                },
-                {
-                  "id": "Q-USE-6",
-                  "label": "Predict",
-                  "description": "Maximo Predict for ML-driven predictive failure risk scoring.",
-                  "milestoneId": null,
-                  "scope": null
-                },
-                {
-                  "id": "Q-USE-7",
-                  "label": "Reliability Strategies",
-                  "description": "Maximo Reliability Strategies for FMEA and RCM-based strategy management.",
-                  "milestoneId": null,
-                  "scope": null
-                },
-                {
-                  "id": "Q-USE-8",
-                  "label": "Visual Inspection",
-                  "description": "Maximo Visual Inspection for AI-powered image and video defect detection.",
-                  "milestoneId": null,
-                  "scope": null
-                }
-              ],
-              "required": false,
-              "skipCondition": null,
-              "binderType": "usage-group"
             }
           ]
         }
@@ -14420,6 +14498,7 @@ initReport = async function(result) {
   fixMenuButtonMobileTap();
   closeTooltipsOnOutsideClick();
   wireSellerButtons(result);
+  initShareModal(result);
 }
 
 /* --------------------------------------------------------------------------
@@ -14580,6 +14659,71 @@ function wireSellerButtons(result) {
       btn.removeAttribute("disabled");
     });
   });
+}
+
+
+
+/* --------------------------------------------------------------------------
+   Share-with-IBM modal
+   --------------------------------------------------------------------------
+   Shows once when the user reaches the bottom feedback section (IntersectionObserver).
+   The Send button opens the same pre-built mailto as the seller buttons.
+   Dismissed with Cancel or the close button; never shown again in the same tab.
+   -------------------------------------------------------------------------- */
+function initShareModal(result) {
+  const modal      = document.getElementById("share-modal");
+  const sendBtn    = document.getElementById("share-modal-send");
+  const cancelBtn  = document.getElementById("share-modal-cancel");
+  const closeBtn   = document.getElementById("share-modal-close");
+  const backdrop   = modal?.querySelector(".share-modal__backdrop");
+  const trigger    = document.getElementById("act-improve"); // feedback section
+  if (!modal || !sendBtn || !cancelBtn || !closeBtn || !trigger) return;
+
+  let shown = false;
+
+  // Build the mailto href the same way wireSellerButtons does
+  const SELLER_EMAIL = "mas-growth-assessment@ibm.com";
+  const stored = loadStoredResponses() ?? { answers: {}, submittedAt: null, missing: true };
+  const body    = buildSellerEmailText(result, stored);
+  const subject = encodeURIComponent("MAS Growth Readiness Assessment — results");
+  const href    = `mailto:${SELLER_EMAIL}?subject=${subject}&body=${encodeURIComponent(body)}`;
+
+  function openModal() {
+    modal.removeAttribute("hidden");
+    document.body.classList.add("share-modal-open");
+    closeBtn.focus();
+  }
+
+  function closeModal() {
+    modal.setAttribute("hidden", "");
+    document.body.classList.remove("share-modal-open");
+  }
+
+  sendBtn.addEventListener("click", () => {
+    window.location.href = href;
+    closeModal();
+  });
+
+  cancelBtn.addEventListener("click", closeModal);
+  closeBtn.addEventListener("click", closeModal);
+  backdrop?.addEventListener("click", closeModal);
+
+  // Close on Escape key
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !modal.hasAttribute("hidden")) closeModal();
+  });
+
+  // Show once when the feedback section enters the viewport
+  const observer = new IntersectionObserver((entries) => {
+    if (shown) return;
+    if (entries[0].isIntersecting) {
+      shown = true;
+      observer.disconnect();
+      setTimeout(openModal, 600);
+    }
+  }, { threshold: 0.4 });
+
+  observer.observe(trigger);
 }
 }
 
