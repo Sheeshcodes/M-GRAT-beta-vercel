@@ -1,221 +1,114 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>M-GOAT · MAS Growth Opportunity Assessment Tool</title>
+
+  <!-- IBM Plex Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Serif:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=IBM+Plex+Serif:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Carbon Web Components (v2) from IBM CDN -->
+  <link rel="preconnect" href="https://1.www.s81c.com" crossorigin />
+  <link rel="dns-prefetch" href="https://1.www.s81c.com" />
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/ui-shell.min.js"></script>
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/button.min.js"></script>
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/accordion.min.js"></script>
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/tag.min.js"></script>
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/tile.min.js"></script>
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/link.min.js"></script>
+
   <style>
+    /* ── Carbon Design System Tokens ───────────────────────── */
+    :root {
+      /* Colors */
+      --cds-background: #ffffff;
+      --cds-background-brand: #0f62fe;
+      --cds-layer-01: #f4f4f4;
+      --cds-layer-02: #ffffff;
+      --cds-layer-accent-01: #e0e0e0;
+      --cds-field-01: #f4f4f4;
+      --cds-border-subtle-01: #e0e0e0;
+      --cds-border-subtle: #e0e0e0;
+      --cds-border-strong-01: #8d8d8d;
+      --cds-border-interactive: #0f62fe;
+      --cds-text-primary: #161616;
+      --cds-text-secondary: #525252;
+      --cds-text-placeholder: #a8a8a8;
+      --cds-text-on-color: #ffffff;
+      --cds-text-inverse: #ffffff;
+      --cds-link-primary: #0f62fe;
+      --cds-link-primary-hover: #0043ce;
+      --cds-button-primary: #0f62fe;
+      --cds-button-primary-hover: #0043ce;
+      --cds-button-secondary: #393939;
+      --cds-button-secondary-hover: #474747;
+      --cds-support-success: #198038;
+      --cds-support-warning: #f1c21b;
+
+      /* Spacing */
+      --cds-spacing-01: 2px;
+      --cds-spacing-02: 4px;
+      --cds-spacing-03: 8px;
+      --cds-spacing-04: 12px;
+      --cds-spacing-05: 16px;
+      --cds-spacing-06: 24px;
+      --cds-spacing-07: 32px;
+      --cds-spacing-08: 40px;
+      --cds-spacing-09: 48px;
+      --cds-spacing-10: 64px;
+      --cds-spacing-11: 80px;
+
+      /* Typography */
+      --cds-font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --cds-font-serif: 'IBM Plex Serif', Georgia, 'Times New Roman', serif;
+      --cds-font-mono: 'IBM Plex Mono', Menlo, monospace;
+      --cds-font-condensed: 'IBM Plex Sans Condensed', var(--cds-font-sans);
+    }
+
     /* ── Reset & Base ─────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body {
-      font-family: 'IBM Plex Sans', sans-serif;
+      font-family: var(--cds-font-sans);
       font-size: 16px;
       line-height: 1.5;
-      color: #161616;
-      background: #f4f4f4;
+      color: var(--cds-text-primary);
+      background: var(--cds-layer-01);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
     a { color: inherit; text-decoration: none; }
     img, svg { display: block; max-width: 100%; }
 
-    /* ── Layout ───────────────────────────────────────────── */
-    .container {
+    /* ── Carbon Grid Container ────────────────────────────── */
+    .cds--grid {
+      width: 100%;
       max-width: 1056px;
       margin: 0 auto;
       padding: 0 16px;
     }
 
-    /* ── Header ───────────────────────────────────────────── */
-    .site-header {
+    /* ── Carbon UI Shell (Gray 10 Theme) ───────────────────── */
+    cds-header {
       position: sticky;
       top: 0;
-      z-index: 200;
-      background: #262626;
-      border-bottom: 1px solid #525252;
-      height: 48px;
-    }
-    .site-header-inner {
-      height: 100%;
-      display: flex;
-      align-items: center;
-      padding: 0 16px;
-    }
-    .header-sitename {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 14px;
-      font-weight: 400;
-      color: #f4f4f4;
-      letter-spacing: 0.16px;
-      white-space: nowrap;
-      padding: 0 32px 0 8px;
-      flex-shrink: 0;
-    }
-    .header-sitename strong {
-      font-weight: 600;
-    }
-    .site-nav {
-      display: flex;
-      align-items: stretch;
-      height: 48px;
-      gap: 0;
-      border-left: 1px solid #525252;
-    }
-    .site-nav a {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 14px;
-      font-weight: 400;
-      color: #c6c6c6;
-      letter-spacing: 0.16px;
-      padding: 0 16px;
-      height: 48px;
-      display: flex;
-      align-items: center;
-      border-bottom: 3px solid transparent;
-      transition: color 0.1s, border-color 0.1s, background 0.1s;
-      white-space: nowrap;
-    }
-    .site-nav a:hover { background: rgba(255,255,255,0.08); color: #f4f4f4; }
-    .site-nav a.active { color: #f4f4f4; border-bottom-color: #4589ff; }
-
-    /* ── Hero ─────────────────────────────────────────────── */
-    .hero {
+      z-index: 8000;
+      --cds-background: #f4f4f4;
       background: #f4f4f4;
-      overflow: hidden;
+      border-bottom: 1px solid var(--cds-border-subtle);
     }
-    .hero-inner {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0;
-      min-height: 560px;
-      align-items: center;
+    cds-header-name {
+      color: var(--cds-text-primary);
+      font-family: var(--cds-font-sans);
     }
-    .hero-content {
-      padding: 80px 48px 80px 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
+    cds-header-nav-item {
+      color: var(--cds-text-secondary);
     }
-    .hero-wordmark {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 28px;
-    }
-    .hero-wordmark img {
-      width: 52px;
-      height: 52px;
-      flex-shrink: 0;
-    }
-    .hero-wordmark-text {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 20px;
-      font-weight: 400;
-      color: #161616;
-      line-height: 1.2;
-    }
-    .hero-wordmark-text strong {
-      font-weight: 600;
-    }
-    .hero-headline {
-      font-family: 'IBM Plex Serif', serif;
-      font-size: 48px;
-      font-weight: 300;
-      line-height: 1.1;
-      color: #161616;
-      margin-bottom: 24px;
-    }
-    .hero-headline strong {
-      font-weight: 700;
-      display: block;
-    }
-    .hero-label-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-    .hero-label {
-      font-family: 'IBM Plex Serif', serif;
-      font-size: 24px;
-      color: #8a3ffc;
-    }
-    .hero-version-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 5.6px;
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 14px;
-      color: #161616;
-      border: 1px solid #161616;
-      border-radius: 32px;
-      padding: 3.2px 12px;
-    }
-    .hero-version-tag svg {
-      display: inline-block;
-      flex-shrink: 0;
-    }
-    .hero-body {
-      font-size: 15px;
-      color: #161616;
-      line-height: 1.6;
-      max-width: 48ch;
-      margin-bottom: 14px;
-    }
-    .hero-body + .hero-body {
-      margin-top: 0;
-      margin-bottom: 32px;
-    }
-    .hero-actions {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-    .btn-primary {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 14px;
-      font-weight: 400;
-      color: #ffffff;
-      background: #0f62fe;
-      border: none;
-      padding: 12px 24px;
-      cursor: pointer;
-      transition: background 0.15s;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      text-decoration: none;
-    }
-    .btn-primary:hover { background: #0043ce; }
-    .btn-secondary-link {
-      font-size: 14px;
-      color: #0f62fe;
-      font-weight: 400;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: color 0.1s;
-    }
-    .btn-secondary-link:hover { color: #0043ce; text-decoration: underline; }
-    .hero-visual {
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      min-height: 560px;
-    }
-    .hero-visual img,
-    .hero-visual object {
-      display: block;
-      width: 100%;
-      max-width: 520px;
-      height: auto;
-    }
-    /* ── Fixed Feedback Tab ───────────────────────────────── */
+
+    /* ── Fixed Feedback Floating Tab ──────────────────────── */
     .feedback-tab {
       position: fixed;
       right: 0;
@@ -225,10 +118,10 @@
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
       -webkit-font-smoothing: subpixel-antialiased;
-      z-index: 300;
-      background: #0f62fe;
-      color: #ffffff;
-      font-family: 'IBM Plex Sans', sans-serif;
+      z-index: 9000;
+      background: var(--cds-button-primary);
+      color: var(--cds-text-on-color);
+      font-family: var(--cds-font-sans);
       font-size: 14px;
       font-weight: 600;
       writing-mode: vertical-rl;
@@ -239,15 +132,142 @@
       letter-spacing: 0.04em;
       transition: background 0.15s;
     }
-    .feedback-tab:hover { background: #0043ce; color: #ffffff; }
-
-    /* ── Metric Badges ────────────────────────────────────── */
-    .metric-strip {
-      background: #f4f4f4;
-      border-top: 1px solid #e0e0e0;
-      border-bottom: 1px solid #e0e0e0;
+    .feedback-tab:hover {
+      background: var(--cds-button-primary-hover);
+      color: var(--cds-text-on-color);
     }
-    .metric-strip .container {
+
+    /* ── Hero Section ─────────────────────────────────────── */
+    .hero {
+      background: var(--cds-layer-01);
+      overflow: hidden;
+      padding-top: var(--cds-spacing-09);
+      padding-bottom: var(--cds-spacing-09);
+    }
+    .hero-inner {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: var(--cds-spacing-07);
+      min-height: 520px;
+      align-items: center;
+    }
+    .hero-content {
+      padding: var(--cds-spacing-08) var(--cds-spacing-06) var(--cds-spacing-08) 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .hero-wordmark {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: var(--cds-spacing-07);
+    }
+    .hero-wordmark img {
+      width: 52px;
+      height: 52px;
+      flex-shrink: 0;
+    }
+    .hero-wordmark-text {
+      font-family: var(--cds-font-sans);
+      font-size: 20px;
+      font-weight: 400;
+      color: var(--cds-text-primary);
+      line-height: 1.2;
+    }
+    .hero-wordmark-text strong {
+      font-weight: 600;
+    }
+    .hero-headline {
+      font-family: var(--cds-font-serif);
+      font-size: 48px;
+      font-weight: 300;
+      line-height: 1.125;
+      color: var(--cds-text-primary);
+      margin-bottom: var(--cds-spacing-06);
+      letter-spacing: -0.5px;
+    }
+    .hero-headline strong {
+      font-family: var(--cds-font-serif);
+      font-weight: 600;
+      display: block;
+    }
+    .hero-label-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: var(--cds-spacing-06);
+      flex-wrap: wrap;
+    }
+    .hero-label {
+      font-family: var(--cds-font-serif);
+      font-size: 24px;
+      color: #8a3ffc;
+      line-height: 1;
+    }
+    .hero-label-row cds-tag {
+      margin: 0;
+      align-self: center;
+    }
+    .hero-body {
+      font-size: 15px;
+      color: var(--cds-text-primary);
+      line-height: 1.6;
+      max-width: 52ch;
+      margin-bottom: 14px;
+    }
+    .hero-body + .hero-body {
+      margin-top: 0;
+      margin-bottom: var(--cds-spacing-07);
+    }
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--cds-spacing-05);
+      flex-wrap: wrap;
+    }
+    .hero-actions cds-button[kind="ghost"] {
+      color: #0f62fe;
+    }
+    .hero-actions cds-button[kind="ghost"]::part(button) {
+      padding-right: 16px;
+      padding-left: 16px;
+      justify-content: flex-start;
+      gap: 8px;
+    }
+    .hero-actions cds-button[kind="ghost"] svg[slot="icon"] {
+      fill: #0f62fe;
+      color: #0f62fe;
+      margin-left: 8px;
+      flex-shrink: 0;
+      transition: fill 0.15s ease;
+    }
+    .hero-actions cds-button[kind="ghost"]:hover svg[slot="icon"] {
+      fill: #0043ce;
+      color: #0043ce;
+    }
+    .hero-visual {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      min-height: 480px;
+    }
+    .hero-visual img {
+      display: block;
+      width: 100%;
+      max-width: 480px;
+      height: auto;
+    }
+
+    /* ── Metric Badges Strip ──────────────────────────────── */
+    .metric-strip {
+      background: var(--cds-layer-01);
+      border-top: 1px solid var(--cds-border-subtle);
+      border-bottom: 1px solid var(--cds-border-subtle);
+    }
+    .metric-strip .cds--grid {
       display: flex;
       align-items: stretch;
       gap: 0;
@@ -255,167 +275,171 @@
     .metric-item {
       flex: 1;
       text-align: left;
-      padding: 24px 32px;
+      padding: var(--cds-spacing-06) var(--cds-spacing-07);
+      border-right: 1px solid var(--cds-border-subtle);
+    }
+    .metric-item:last-child {
+      border-right: none;
     }
     .metric-value {
-      font-family: 'IBM Plex Serif', serif;
+      font-family: var(--cds-font-serif);
       font-size: 28px;
       font-weight: 400;
-      color: #0f62fe;
+      color: var(--cds-link-primary);
       line-height: 1;
-      margin-bottom: 6px;
+      margin-bottom: var(--cds-spacing-02);
     }
     .metric-label {
-      font-family: 'IBM Plex Sans', sans-serif;
+      font-family: var(--cds-font-sans);
       font-size: 14px;
       font-weight: 400;
-      color: #161616;
+      color: var(--cds-text-primary);
       letter-spacing: 0;
     }
 
     /* ── Section Shared ───────────────────────────────────── */
     .section {
-      padding: 64px 0;
+      padding: var(--cds-spacing-10) 0;
     }
-    .section-alt { background: #f4f4f4; }
-    .section-white { background: #ffffff; }
+    .section-alt { background: var(--cds-layer-01); }
+    .section-white { background: var(--cds-background); }
     .section-green { background: #198038; }
 
-    /* ── Maturity Maps resource block ─────────────────────────── */
-    .maturity-maps-block {
-      display: flex;
-      gap: 26px;
-      align-items: flex-start;
-    }
-    .maturity-maps-block__icon {
-      width: 32px;
-      height: 32px;
-      flex-shrink: 0;
-      color: #fff;
-    }
-    .maturity-maps-block__body {
-      display: flex;
-      flex-direction: column;
-      gap: 32px;
-    }
-    .maturity-maps-block__title {
-      font-size: 16px;
-      font-weight: 600;
-      line-height: 1.375;
-      color: #fff;
-      margin: 0 0 8px;
-      max-width: 34ch;
-    }
-    .maturity-maps-block__desc {
-      font-size: 16px;
-      line-height: 1.375;
-      color: #fff;
-      margin: 0;
-      max-width: 34ch;
-    }
-    .maturity-maps-block__actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-    /* Override section-eyebrow colour on green background */
-    .section-green .section-eyebrow { color: rgba(255,255,255,0.7); }
     .section-header {
-      margin-bottom: 40px;
-    }
-    .section-eyebrow {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      color: #0f62fe;
-      text-transform: uppercase;
-      margin-bottom: 12px;
+      margin-bottom: var(--cds-spacing-08);
     }
     .section-title {
-      font-family: 'IBM Plex Serif', serif;
-      font-size: 30px;
+      font-family: var(--cds-font-sans);
+      font-size: 42px;
       font-weight: 300;
-      color: #161616;
-      line-height: 1.25;
-      margin-bottom: 12px;
+      color: var(--cds-text-primary);
+      line-height: 1.19;
+      margin-bottom: var(--cds-spacing-04);
     }
     .section-subtitle {
-      font-family: 'IBM Plex Sans Condensed', sans-serif;
-      font-size: 15px;
-      color: #525252;
+      font-family: var(--cds-font-condensed);
+      font-size: 16px;
+      color: var(--cds-text-secondary);
       max-width: 60ch;
-    }
-    .rule {
-      border: none;
-      border-top: 1px solid #e0e0e0;
-      margin: 0;
+      line-height: 1.5;
     }
 
-    /* ── Value Framework ──────────────────────────────────── */
-    .value-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0;
-      border: 1px solid #e0e0e0;
+    /* ── Quote Section ────────────────────────────────────── */
+    .quote-section {
+      background: var(--cds-background);
+      padding: var(--cds-spacing-10) 0 var(--cds-spacing-09);
     }
-    .value-card {
-      background: #ffffff;
-      padding: 32px 28px;
-      border-right: 1px solid #e0e0e0;
+    .quote-text {
+      font-family: var(--cds-font-sans);
+      font-size: 32px;
+      font-weight: 300;
+      font-style: italic;
+      color: var(--cds-link-primary);
+      line-height: 1.3;
+      max-width: 640px;
+      margin-bottom: var(--cds-spacing-07);
     }
-    .value-card:last-child { border-right: none; }
-    .value-icon {
-      width: 48px;
-      height: 48px;
-      margin-bottom: 20px;
-    }
-    .value-number {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 12px;
+    .quote-text strong {
       font-weight: 600;
-      color: #0f62fe;
-      letter-spacing: 0.08em;
-      margin-bottom: 8px;
     }
-    .value-title {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 17px;
-      font-weight: 600;
-      color: #161616;
-      margin-bottom: 12px;
-    }
-    .value-body {
-      font-size: 14px;
-      color: #525252;
+    .quote-sub {
+      font-family: var(--cds-font-sans);
+      font-size: 15px;
+      color: var(--cds-text-primary);
       line-height: 1.6;
+      max-width: 52ch;
+      margin-bottom: 10px;
     }
-
-    /* ── Two Options ──────────────────────────────────────── */
-    .options-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
-    }
-    .option-card {
-      background: #ffffff;
-      border: 1px solid #dde1e6;
-      border-radius: 4px;
-      padding: 24px;
+    .quote-scroll {
       display: flex;
       flex-direction: column;
-      gap: 28px;
+      align-items: flex-start;
+      gap: 4px;
+      font-family: var(--cds-font-sans);
+      font-size: 14px;
+      color: var(--cds-text-secondary);
+      margin-top: 8px;
+    }
+    .quote-scroll img {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+    }
+
+    /* ── Approach Section ─────────────────────────────────── */
+    .approach-section {
+      background: var(--cds-layer-01);
+      padding: var(--cds-spacing-11) 0;
+    }
+    .approach-inner {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: var(--cds-spacing-08);
+      align-items: start;
+      margin-bottom: var(--cds-spacing-09);
+    }
+    .approach-heading {
+      font-family: var(--cds-font-sans);
+      font-size: 42px;
+      font-weight: 300;
+      color: var(--cds-text-primary);
+      line-height: 1.18;
+      margin-bottom: 0;
+    }
+    .approach-note {
+      font-size: 16px;
+      color: var(--cds-text-primary);
+      line-height: 1.5;
+      max-width: 42ch;
+      margin-top: auto;
+    }
+    .approach-heading-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: var(--cds-spacing-08);
+    }
+    .approach-visual {
+      background: #e8e8e8;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      align-items: stretch;
+      width: 538px;
+      height: 328px;
+      flex-shrink: 0;
+    }
+    .approach-visual img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .approach-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--cds-spacing-06);
+    }
+
+    /* Carbon Option Card */
+    .option-card {
+      background: var(--cds-background);
+      border: 1px solid #dde1e6;
+      border-radius: 4px;
+      padding: var(--cds-spacing-06);
+      display: flex;
+      flex-direction: column;
+      gap: var(--cds-spacing-07);
     }
     .option-card-header {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: var(--cds-spacing-05);
     }
     .option-card-pictogram {
       width: 64px;
       height: 64px;
       border-radius: 50%;
-      background: #0f62fe;
+      background: var(--cds-background-brand);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -426,30 +450,30 @@
       height: 36px;
     }
     .option-card-label {
-      font-family: 'IBM Plex Sans', sans-serif;
+      font-family: var(--cds-font-sans);
       font-size: 16px;
       font-weight: 400;
-      color: #161616;
+      color: var(--cds-text-primary);
       line-height: 1.25;
       margin-bottom: 2px;
     }
     .option-card-title {
-      font-family: 'IBM Plex Sans', sans-serif;
+      font-family: var(--cds-font-sans);
       font-size: 16px;
       font-weight: 600;
-      color: #161616;
+      color: var(--cds-text-primary);
       line-height: 1.25;
       margin-bottom: 2px;
     }
     .option-card-sub {
-      font-family: 'IBM Plex Sans', sans-serif;
+      font-family: var(--cds-font-sans);
       font-size: 16px;
       font-weight: 400;
-      color: #161616;
+      color: var(--cds-text-primary);
       line-height: 1.375;
     }
     .option-steps-wrap {
-      background: #f4f4f4;
+      background: var(--cds-layer-01);
       border: 1px solid #dde1e6;
       border-radius: 12px;
       box-shadow: 0 8px 8px rgba(0,0,0,0.06);
@@ -469,22 +493,21 @@
       gap: 12px;
       padding: 14px 16px;
       border-bottom: 1px solid #dde1e6;
-      font-family: 'IBM Plex Sans', sans-serif;
+      font-family: var(--cds-font-sans);
       font-size: 14px;
-      color: #161616;
+      color: var(--cds-text-primary);
       line-height: 1.5;
       min-height: 52px;
     }
     .option-steps li:last-child { border-bottom: none; }
     .option-steps li::before {
       content: counter(step) ".";
-      font-family: 'IBM Plex Sans', sans-serif;
+      font-family: var(--cds-font-sans);
       font-size: 14px;
       font-weight: 400;
-      color: #161616;
+      color: var(--cds-text-primary);
       flex-shrink: 0;
       min-width: 20px;
-      margin-top: 0;
     }
     .option-steps li.step-empty {
       color: transparent;
@@ -494,10 +517,10 @@
       color: transparent;
     }
     .btn-copy {
-      font-family: 'IBM Plex Sans', sans-serif;
+      font-family: var(--cds-font-sans);
       font-size: 12px;
       font-weight: 600;
-      color: #0f62fe;
+      color: var(--cds-link-primary);
       background: none;
       border: none;
       padding: 0;
@@ -506,342 +529,44 @@
     }
     .btn-copy:hover { text-decoration: underline; }
     .btn-copy.copied { color: #0e6027; }
-    .btn-download {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 12px;
-      font-weight: 600;
-      color: #0f62fe;
-      background: none;
-      border: 1px solid #0f62fe;
-      padding: 5px 12px;
-      cursor: pointer;
-      transition: background 0.1s, color 0.1s;
-      white-space: nowrap;
-      flex-shrink: 0;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      text-decoration: none;
-    }
-    .btn-download:hover { background: #edf5ff; }
-    code.inline {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.8em;
-      background: #f4f4f4;
-      border: 1px solid #e0e0e0;
-      padding: 0.1em 0.4em;
-      color: #161616;
-    }
-
-    /* ── Accordion ────────────────────────────────────────── */
-    .accordion {
-      border: 1px solid #e0e0e0;
-      background: #ffffff;
-    }
-    .accordion-item {
-      border-bottom: 1px solid #e0e0e0;
-    }
-    .accordion-item:last-child { border-bottom: none; }
-    .accordion-trigger {
-      width: 100%;
-      background: none;
-      border: none;
-      text-align: left;
-      padding: 20px 24px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      transition: background 0.1s;
-    }
-    .accordion-trigger:hover { background: #f4f4f4; }
-    .accordion-trigger[aria-expanded="true"] { background: none; }
-    .accordion-step {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 16px;
-      font-weight: 600;
-      color: #161616;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-    .accordion-title {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 16px;
-      font-weight: 600;
-      color: #161616;
-      flex: 1;
-    }
-    .accordion-chevron {
-      width: 20px;
-      height: 20px;
-      flex-shrink: 0;
-      transition: transform 0.2s;
-      color: #525252;
-    }
-    .accordion-trigger[aria-expanded="true"] .accordion-chevron { transform: rotate(180deg); }
-    .accordion-panel {
-      display: none;
-      padding: 0 24px 24px 64px;
-    }
-    .accordion-panel.open { display: block; }
-    .accordion-panel p {
-      font-size: 15px;
-      color: #525252;
-      line-height: 1.7;
-    }
-    .accordion-panel p + p { margin-top: 12px; }
-    .accordion-panel ul {
-      margin: 12px 0 0 20px;
-    }
-    .accordion-panel ul li {
-      font-size: 15px;
-      color: #525252;
-      line-height: 1.6;
-      margin-bottom: 6px;
-    }
-    .dim-tooltip-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 15px;
-      height: 15px;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 10px;
-      font-weight: 700;
-      color: #0f62fe;
-      background: #edf5ff;
-      border: 1px solid #d0e2ff;
-      border-radius: 50%;
-      cursor: pointer;
-      position: relative;
-      vertical-align: middle;
-      margin-left: 4px;
-      padding: 0;
-      line-height: 1;
-    }
-    .dim-tooltip-btn:hover { background: #d0e2ff; }
-    .dim-tooltip-text {
-      display: none;
-      position: absolute;
-      left: 50%;
-      bottom: calc(100% + 6px);
-      transform: translateX(-50%);
-      width: 260px;
-      background: #161616;
-      color: #f4f4f4;
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 12px;
-      font-weight: 400;
-      line-height: 1.5;
-      padding: 8px 12px;
-      border-radius: 0;
-      white-space: normal;
-      z-index: 100;
-      pointer-events: none;
-    }
-    .dim-tooltip-text::after {
-      content: '';
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      border: 5px solid transparent;
-      border-top-color: #161616;
-    }
-    .dim-tooltip-btn.open .dim-tooltip-text { display: block; }
-    .panel-subsection {
-      padding: 16px 0;
-      border-top: 1px solid #e0e0e0;
-    }
-    .panel-subsection--last {
-      padding-bottom: 0;
-    }
-    .panel-subsection-label {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #0f62fe;
-      margin-bottom: 10px;
-    }
-    .stage-pill {
-      display: inline-block;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 11px;
-      font-weight: 600;
-      padding: 2.4px 8.8px;
-      border-radius: 0;
-      margin: 2px 2px 2px 0;
-    }
-    .stage-1 { background: #f4f4f4; color: #525252; border: 1px solid #e0e0e0; }
-    .stage-2 { background: #edf5ff; color: #0043ce; border: 1px solid #d0e2ff; }
-    .stage-3 { background: #d0e2ff; color: #002d9c; border: 1px solid #a6c8ff; }
-    .stage-4 { background: #4589ff; color: #ffffff; border: 1px solid #4589ff; }
-    .stage-5 { background: #0043ce; color: #ffffff; border: 1px solid #002d9c; }
-
-    /* ── Journey Banner ───────────────────────────────────── */
-    .journey-banner {
-      background: #161616;
-      color: #ffffff;
-      padding: 56px 0;
-    }
-    .journey-banner-inner {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      align-items: center;
-      gap: 32px;
-    }
-    .journey-banner-eyebrow {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      color: #78a9ff;
-      text-transform: uppercase;
-      margin-bottom: 12px;
-    }
-    .journey-banner-title {
-      font-family: 'IBM Plex Serif', serif;
-      font-size: 26px;
-      font-weight: 300;
-      color: #f4f4f4;
-      line-height: 1.3;
-      margin-bottom: 12px;
-    }
-    .journey-banner-body {
-      font-size: 15px;
-      color: #a8a8a8;
-      max-width: 60ch;
-      line-height: 1.6;
-    }
-    /* ── Feedback Card ────────────────────────────────────── */
-    .feedback-card {
-      background: #ffffff;
-      border: 1px solid #e0e0e0;
-      padding: 40px;
-      max-width: 640px;
-      margin: 0 auto;
-      text-align: center;
-    }
-    .feedback-card img {
-      width: 56px;
-      height: 56px;
-      margin: 0 auto 20px;
-    }
-    .feedback-card-title {
-      font-family: 'IBM Plex Serif', serif;
-      font-size: 24px;
-      font-weight: 300;
-      color: #161616;
-      margin-bottom: 10px;
-    }
-    .feedback-card-body {
-      font-size: 15px;
-      color: #525252;
-      line-height: 1.6;
-      margin-bottom: 12px;
-    }
-    .feedback-note {
-      font-family: 'IBM Plex Sans Condensed', sans-serif;
-      font-size: 13px;
-      color: #525252;
-      background: #fff8e1;
-      border-left: 3px solid #f1c21b;
-      padding: 10px 14px;
-      text-align: left;
-      margin-bottom: 24px;
-    }
-    .btn-primary-ghost {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 14px;
-      font-weight: 600;
-      color: #0f62fe;
-      border: 1px solid #0f62fe;
-      background: none;
-      padding: 12px 24px;
-      cursor: pointer;
-      transition: background 0.15s, color 0.15s;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      text-decoration: none;
-    }
-    .btn-primary-ghost:hover { background: #0f62fe; color: #fff; }
-
-    /* ── Footer ───────────────────────────────────────────── */
-    .site-footer {
-      background: #161616;
-      border-top: 1px solid #393939;
-      padding: 32px 0;
-    }
-    .footer-inner {
-      display: flex;
-      align-items: center;
-      gap: 32px;
-      flex-wrap: wrap;
-    }
-    .footer-logo {
-      flex-shrink: 0;
-    }
-    .footer-logo img {
-      height: 32px;
-      filter: brightness(0) invert(1);
-      display: block;
-    }
-    .footer-legal-nav {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0;
-      flex: 1;
-    }
-    .footer-legal-nav a {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 13px;
-      color: #c6c6c6;
-      padding: 4px 20px 4px 0;
-      transition: color 0.1s;
-      white-space: nowrap;
-    }
-    .footer-legal-nav a:hover { color: #ffffff; }
 
     /* ── Report Contents Section ──────────────────────────── */
     .report-section {
-      background: #ffffff;
-      padding: 64px 0;
+      background: var(--cds-background);
+      padding: var(--cds-spacing-10) 0;
     }
     .report-section-heading {
-      font-family: 'IBM Plex Sans', sans-serif;
+      font-family: var(--cds-font-sans);
       font-size: 32px;
       font-weight: 300;
-      color: #161616;
-      margin-bottom: 32px;
+      color: var(--cds-text-primary);
+      margin-bottom: var(--cds-spacing-07);
     }
     .report-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 24px;
+      gap: var(--cds-spacing-06);
       align-items: start;
     }
     .report-card {
-      background: #f4f4f4;
+      background: var(--cds-layer-01);
       border: 1px solid #dde1e6;
       border-radius: 4px;
-      padding: 24px;
+      padding: var(--cds-spacing-06);
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: var(--cds-spacing-05);
     }
     .report-card-header {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: var(--cds-spacing-05);
     }
     .report-card-icon {
       width: 84px;
       height: 84px;
       border-radius: 1000px;
-      background: #0f62fe;
+      background: var(--cds-background-brand);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -853,23 +578,22 @@
       filter: brightness(0) invert(1);
     }
     .report-card-title {
-      font-family: 'IBM Plex Sans', sans-serif;
+      font-family: var(--cds-font-sans);
       font-size: 15px;
       font-weight: 600;
-      color: #161616;
+      color: var(--cds-text-primary);
       margin-bottom: 6px;
     }
     .report-card-body {
       font-size: 14px;
-      color: #525252;
+      color: var(--cds-text-secondary);
       line-height: 1.55;
     }
-    /* GIF preview inside report cards */
     .report-card-preview {
-      border: 1px solid #F4F4F4;
+      border: 1px solid var(--cds-layer-01);
       border-radius: 12px;
       overflow: hidden;
-      background: #F4F4F4;
+      background: var(--cds-layer-01);
       padding: 16px;
     }
     .report-card-gif {
@@ -878,32 +602,30 @@
       display: block;
       border-radius: 4px;
     }
-    /* Right column: stacked cards */
     .report-right {
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: var(--cds-spacing-06);
     }
-    /* Blue action card */
     .report-action-card {
-      background: #f4f4f4;
+      background: var(--cds-layer-01);
       border: 1px solid #dde1e6;
       border-radius: 4px;
-      padding: 24px;
+      padding: var(--cds-spacing-06);
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: var(--cds-spacing-05);
     }
     .report-action-header {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: var(--cds-spacing-05);
     }
     .report-action-icon {
       width: 84px;
       height: 84px;
       flex-shrink: 0;
-      background: #0f62fe;
+      background: var(--cds-background-brand);
       border-radius: 1000px;
       display: flex;
       align-items: center;
@@ -917,18 +639,18 @@
     .report-action-title {
       font-size: 16px;
       font-weight: 600;
-      color: #161616;
+      color: var(--cds-text-primary);
       margin-bottom: 4px;
       line-height: 1.375;
     }
     .report-action-body {
       font-size: 14px;
-      color: #161616;
+      color: var(--cds-text-primary);
       line-height: 1.43;
     }
     .report-action-step-block {
-      background: #0f62fe;
-      padding: 32px 24px;
+      background: var(--cds-background-brand);
+      padding: var(--cds-spacing-07) var(--cds-spacing-06);
       border-radius: 0;
     }
     .report-action-step-inner {
@@ -950,267 +672,16 @@
     .report-action-step-text strong {
       font-weight: 600;
     }
-    .report-action-footnote {
-      font-size: 13px;
-      color: #525252;
-      border-top: 1px solid #dde1e6;
-      padding-top: 12px;
-    }
-    .report-action-footnote a {
-      color: #0f62fe;
-      text-decoration: underline;
-    }
-    /* Stage visual inside right-top card */
-    .stage-preview {
-      display: flex;
-      gap: 8px;
-      margin-top: 16px;
-    }
-    .stage-tile {
-      flex: 1;
-      border-radius: 4px;
-      padding: 14px 12px;
-      font-family: 'IBM Plex Sans', sans-serif;
-    }
-    .stage-tile--current {
-      background: #f1c21b;
-    }
-    .stage-tile--target {
-      background: #42be65;
-    }
-    .stage-tile__label {
-      font-size: 11px;
-      font-weight: 600;
-      color: rgba(0,0,0,0.6);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 4px;
-    }
-    .stage-tile__num {
-      font-size: 32px;
-      font-weight: 300;
-      color: #161616;
-      line-height: 1;
-    }
-    .stage-tile__name {
-      font-size: 12px;
-      color: #161616;
-      margin-top: 4px;
-    }
-    @media (max-width: 900px) {
-      .report-grid { grid-template-columns: 1fr; }
-    }
 
-    /* ── Additional Resources ────────────────────────────────── */
-    .resources-section {
-      background: #198038;
-      padding: 48px 0;
-    }
-    .resources-heading {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 28px;
-      font-weight: 300;
-      color: #ffffff;
-      margin-bottom: 32px;
-    }
-    .resources-grid {
-      display: grid;
-      grid-template-columns: 1fr 1.5fr 1fr;
-      gap: 16px;
-    }
-    .resource-item {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(167,240,186,0.44);
-      padding: 16px;
-      min-height: 384px;
-    }
-    .resource-item-inner {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      flex: 1;
-      gap: 16px;
-    }
-    .resource-icon {
-      width: 48px;
-      height: 48px;
-      flex-shrink: 0;
-    }
-    .resource-copy {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    .resource-title {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 16px;
-      font-weight: 600;
-      color: #ffffff;
-      line-height: 1.375;
-      margin: 0;
-    }
-    .resource-desc {
-      font-size: 14px;
-      font-weight: 400;
-      color: #ffffff;
-      line-height: 1.572;
-      margin: 0;
-    }
-    .resource-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-    .btn-outline-white {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 14px;
-      font-weight: 600;
-      color: #ffffff;
-      border: 1px solid rgba(167,240,186,0.44);
-      padding: 12px 16px;
-      background: none;
-      cursor: pointer;
-      transition: background 0.15s, color 0.15s, border-color 0.15s;
-      white-space: nowrap;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .btn-outline-white:hover {
-      background: rgba(255,255,255,0.1);
-      border-color: rgba(167,240,186,0.7);
-    }
-    .btn-outline-white--disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-      pointer-events: none;
-    }
-    .resource-helper {
-      font-size: 12px;
-      color: rgba(255,255,255,0.6);
-      margin-top: 8px;
-    }
-    @media (max-width: 1024px) {
-      .resources-grid { grid-template-columns: 1fr 1fr; }
-    }
-    @media (max-width: 640px) {
-      .resources-grid { grid-template-columns: 1fr; }
-    }
-
-    /* ── CTA + Beta Section ───────────────────────────────── */
-    .cta-section {
-      background: #ffffff;
-      padding: 64px 0;
-    }
-    .cta-card {
-      background: #f4f4f4;
-      border: 1px solid #dde1e6;
-      border-radius: 4px;
-      padding: 32px;
-      display: flex;
-      flex-direction: column;
-      gap: 32px;
-    }
-    .cta-block {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      max-width: 540px;
-    }
-    .cta-heading {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 28px;
-      font-weight: 400;
-      color: #161616;
-      line-height: 1.29;
-      margin: 0;
-    }
-    .cta-sub {
-      font-size: 14px;
-      color: #525252;
-      line-height: 1.5;
-      margin: 0;
-    }
-    .cta-actions {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-    .btn-dark {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 14px;
-      font-weight: 600;
-      color: #ffffff;
-      background: #393939;
-      border: none;
-      padding: 14px 16px;
-      cursor: pointer;
-      transition: background 0.15s;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      text-decoration: none;
-    }
-    .btn-dark:hover { background: #161616; }
-    .beta-heading {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 28px;
-      font-weight: 400;
-      color: #161616;
-      line-height: 1.29;
-      margin: 0 0 8px;
-    }
-    .beta-body {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .beta-body p {
-      font-size: 14px;
-      color: #161616;
-      line-height: 1.43;
-      letter-spacing: 0.16px;
-      margin: 0;
-    }
-    .beta-body strong { font-weight: 600; }
-    .beta-limitations {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      padding-top: 6px;
-    }
-    .beta-limitations p {
-      font-size: 14px;
-      font-weight: 600;
-      color: #161616;
-      letter-spacing: 0.16px;
-      margin: 0;
-    }
-    .beta-limitations ul {
-      margin: 0;
-      padding-left: 20px;
-      list-style: disc;
-    }
-    .beta-limitations ul li {
-      font-size: 14px;
-      color: #161616;
-      line-height: 1.43;
-      letter-spacing: 0.16px;
-    }
-
-    /* ── Guiding Section ─────────────────────────────────── */
+    /* ── Guiding Section (Carbon Accordion) ────────────────── */
     .guiding-section {
-      background: #ffffff;
-      padding: 64px 0;
+      background: var(--cds-background);
+      padding: var(--cds-spacing-10) 0;
     }
     .guiding-inner {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 48px;
+      grid-template-columns: 1fr 1.15fr;
+      gap: var(--cds-spacing-09);
       align-items: start;
     }
     .guiding-video {
@@ -1227,131 +698,452 @@
       width: 48px;
       height: 48px;
     }
-    @media (max-width: 900px) {
-      .guiding-inner { grid-template-columns: 1fr; }
+    cds-accordion {
+      display: block;
+      width: 100%;
     }
-
-    /* ── Approach Section ─────────────────────────────────── */
-    .approach-section {
-      background: #f4f4f4;
-      padding: 80px 0;
+    cds-accordion-item p {
+      font-size: 15px;
+      color: var(--cds-text-secondary);
+      line-height: 1.7;
+      margin-bottom: 12px;
     }
-    .approach-inner {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 40px;
-      align-items: start;
-      margin-bottom: 48px;
-    }
-    .approach-heading {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 42px;
-      font-weight: 300;
-      color: #161616;
-      line-height: 1.18;
+    cds-accordion-item p:last-child {
       margin-bottom: 0;
     }
-    .approach-note {
-      font-size: 16px;
-      color: #161616;
-      line-height: 1.5;
-      max-width: 42ch;
-      margin-top: auto;
+    cds-accordion-item ul {
+      margin: 12px 0 16px 20px;
     }
-    .approach-heading-col {
+    cds-accordion-item ul li {
+      font-size: 15px;
+      color: var(--cds-text-secondary);
+      line-height: 1.6;
+      margin-bottom: 6px;
+    }
+    .panel-subsection {
+      padding: var(--cds-spacing-05) 0;
+      border-top: 1px solid var(--cds-border-subtle);
+    }
+    .panel-subsection--last {
+      padding-bottom: 0;
+    }
+    .panel-subsection-label {
+      font-family: var(--cds-font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--cds-link-primary);
+      margin-bottom: 10px;
+    }
+
+    /* ── CTA + Beta Section ───────────────────────────────── */
+    .cta-section {
+      background: var(--cds-background);
+      padding: var(--cds-spacing-10) 0;
+    }
+    .cta-card {
+      background: var(--cds-layer-01);
+      border: 1px solid #dde1e6;
+      border-radius: 4px;
+      padding: var(--cds-spacing-07);
+      display: flex;
+      flex-direction: column;
+      gap: var(--cds-spacing-07);
+    }
+    .cta-block {
+      display: flex;
+      flex-direction: column;
+      gap: var(--cds-spacing-05);
+      max-width: 560px;
+    }
+    .cta-heading {
+      font-family: var(--cds-font-sans);
+      font-size: 28px;
+      font-weight: 400;
+      color: var(--cds-text-primary);
+      line-height: 1.29;
+      margin: 0;
+    }
+    .cta-sub {
+      font-size: 14px;
+      color: var(--cds-text-secondary);
+      line-height: 1.5;
+      margin: 0;
+    }
+    .cta-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--cds-spacing-05);
+      flex-wrap: wrap;
+    }
+    .beta-heading {
+      font-family: var(--cds-font-sans);
+      font-size: 28px;
+      font-weight: 400;
+      color: var(--cds-text-primary);
+      line-height: 1.29;
+      margin: 0 0 8px;
+    }
+    .beta-body {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .beta-body p {
+      font-size: 14px;
+      color: var(--cds-text-primary);
+      line-height: 1.43;
+      letter-spacing: 0.16px;
+      margin: 0;
+    }
+    .beta-body strong { font-weight: 600; }
+    .beta-limitations {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding-top: 6px;
+    }
+    .beta-limitations p {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--cds-text-primary);
+      letter-spacing: 0.16px;
+      margin: 0;
+    }
+    .beta-limitations ul {
+      margin: 0;
+      padding-left: 20px;
+      list-style: disc;
+    }
+    .beta-limitations ul li {
+      font-size: 14px;
+      color: var(--cds-text-primary);
+      line-height: 1.43;
+      letter-spacing: 0.16px;
+    }
+
+    /* ── Additional Resources (Green Section) ─────────────── */
+    .resources-section {
+      background: #198038;
+      padding: var(--cds-spacing-09) 0;
+    }
+    .resources-heading {
+      font-family: var(--cds-font-sans);
+      font-size: 28px;
+      font-weight: 300;
+      color: #ffffff;
+      margin-bottom: var(--cds-spacing-07);
+    }
+    .resources-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr 1fr;
+      gap: var(--cds-spacing-05);
+    }
+    .resource-item {
+      display: flex;
+      flex-direction: column;
+      gap: var(--cds-spacing-05);
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(167,240,186,0.44);
+      padding: var(--cds-spacing-05);
+      min-height: 384px;
+    }
+    .resource-item-inner {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      gap: 40px;
+      flex: 1;
+      gap: var(--cds-spacing-05);
     }
-    .approach-visual {
-      background: #e8e8e8;
-      border-radius: 8px;
-      overflow: hidden;
-      display: flex;
-      align-items: stretch;
-      width: 538px;
-      height: 328px;
+    .resource-icon {
+      width: 48px;
+      height: 48px;
       flex-shrink: 0;
     }
-    .approach-visual img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .approach-options {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
-    }
-    @media (max-width: 900px) {
-      .approach-inner { grid-template-columns: 1fr; gap: 32px; }
-      .approach-visual { width: 100%; height: 260px; }
-      .approach-options { grid-template-columns: 1fr; }
-    }
-
-    /* ── Quote Section ────────────────────────────────────── */
-    .quote-section {
-      background: #ffffff;
-      padding: 64px 0 48px;
-    }
-    .quote-text {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 32px;
-      font-weight: 300;
-      font-style: italic;
-      color: #0f62fe;
-      line-height: 1.3;
-      max-width: 640px;
-      margin-bottom: 28px;
-    }
-    .quote-text strong {
-      font-weight: 600;
-    }
-    .quote-sub {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 15px;
-      color: #161616;
-      line-height: 1.6;
-      max-width: 52ch;
-      margin-bottom: 10px;
-    }
-    .quote-scroll {
+    .resource-copy {
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
-      gap: 4px;
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 14px;
-      color: #525252;
-      margin-top: 8px;
+      gap: var(--cds-spacing-05);
     }
-    .quote-scroll img {
-      display: inline-block;
-      width: 16px;
-      height: 16px;
+    .resource-title {
+      font-family: var(--cds-font-sans);
+      font-size: 16px;
+      font-weight: 600;
+      color: #ffffff;
+      line-height: 1.375;
+      margin: 0;
+    }
+    .resource-desc {
+      font-size: 14px;
+      font-weight: 400;
+      color: #ffffff;
+      line-height: 1.572;
+      margin: 0;
+    }
+    .resource-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--cds-spacing-05);
+      align-items: center;
+    }
+    .btn-outline-white {
+      font-family: var(--cds-font-sans);
+      font-size: 14px;
+      font-weight: 600;
+      color: #ffffff;
+      border: 1px solid rgba(167,240,186,0.44);
+      padding: 12px 16px;
+      background: none;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+    .btn-outline-white:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(167,240,186,0.7);
+    }
+    .btn-outline-white--disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .resource-helper {
+      font-size: 12px;
+      color: rgba(255,255,255,0.6);
+      margin-top: 8px;
+      width: 100%;
     }
 
-    /* ── Responsive ───────────────────────────────────────── */
-    @media (max-width: 900px) {
-      .hero-inner { grid-template-columns: 1fr; }
-      .hero-visual { min-height: 280px; }
-      .hero-content { padding: 48px 0 32px; }
-      .value-grid { grid-template-columns: 1fr; }
-      .value-card { border-right: none; border-bottom: 1px solid #e0e0e0; }
-      .value-card:last-child { border-bottom: none; }
-      .options-grid { grid-template-columns: 1fr; }
-      .journey-banner-inner { grid-template-columns: 1fr; }
-      .footer-top { flex-direction: column; gap: 32px; }
-      .footer-links { flex-direction: column; gap: 24px; }
+    /* ── Footer ───────────────────────────────────────────── */
+    .site-footer {
+      background: #161616;
+      border-top: 1px solid #393939;
+      padding: var(--cds-spacing-07) 0;
+    }
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      gap: var(--cds-spacing-07);
+      flex-wrap: wrap;
+    }
+    .footer-logo {
+      flex-shrink: 0;
+    }
+    .footer-logo img {
+      height: 32px;
+      filter: brightness(0) invert(1);
+      display: block;
+    }
+    .footer-legal-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0;
+      flex: 1;
+    }
+    .footer-legal-nav a {
+      font-family: var(--cds-font-sans);
+      font-size: 13px;
+      color: #c6c6c6;
+      padding: 4px 20px 4px 0;
+      transition: color 0.1s;
+      white-space: nowrap;
+    }
+    .footer-legal-nav a:hover { color: #ffffff; }
+
+    /* ── Responsive Mobile Rules ──────────────────────────── */
+    @media (max-width: 1024px) {
+      .resources-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 840px) {
+      .hero-inner {
+        grid-template-columns: 1fr;
+        gap: var(--cds-spacing-06);
+      }
+      .hero-visual {
+        min-height: auto;
+        max-width: 420px;
+        margin: 0 auto;
+      }
+      .hero-content {
+        padding: var(--cds-spacing-07) 0 0 0;
+      }
+      .hero-headline {
+        font-size: clamp(32px, 5.5vw, 42px);
+      }
+      .approach-inner {
+        grid-template-columns: 1fr;
+        gap: var(--cds-spacing-07);
+      }
+      .approach-visual {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 16 / 9;
+      }
+      .approach-options {
+        grid-template-columns: 1fr;
+      }
+      .report-grid {
+        grid-template-columns: 1fr;
+      }
+      .guiding-inner {
+        grid-template-columns: 1fr;
+        gap: var(--cds-spacing-07);
+      }
+      .metric-strip .cds--grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+      .metric-item {
+        border-right: 1px solid var(--cds-border-subtle);
+        border-bottom: 1px solid var(--cds-border-subtle);
+        padding: var(--cds-spacing-05) var(--cds-spacing-06);
+      }
+      .metric-item:nth-child(2n) {
+        border-right: none;
+      }
+      .metric-item:nth-child(3),
+      .metric-item:nth-child(4) {
+        border-bottom: none;
+      }
     }
     @media (max-width: 600px) {
-      .metric-strip .container { flex-direction: column; }
-      .metric-item { border-bottom: 1px solid #e0e0e0; }
-      .site-nav a { font-size: 12px; padding: 0 10px; }
-      .hero-headline { font-size: 32px; }
-      .section-title { font-size: 24px; }
-      .feedback-tab { display: none; }
+      .cds--grid {
+        padding: 0 16px;
+      }
+      .hero {
+        padding-top: var(--cds-spacing-07);
+        padding-bottom: var(--cds-spacing-07);
+      }
+      .hero-wordmark {
+        margin-bottom: var(--cds-spacing-05);
+      }
+      .hero-wordmark img {
+        width: 40px;
+        height: 40px;
+      }
+      .hero-wordmark-text {
+        font-size: 18px;
+      }
+      .hero-headline {
+        font-size: 30px;
+        line-height: 1.15;
+        margin-bottom: var(--cds-spacing-05);
+      }
+      .hero-label-row {
+        gap: 10px;
+        margin-bottom: var(--cds-spacing-05);
+      }
+      .hero-label {
+        font-size: 20px;
+      }
+      .hero-body {
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      .hero-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+      }
+      .hero-actions cds-button {
+        width: 100%;
+      }
+      .hero-visual {
+        max-width: 300px;
+        margin: var(--cds-spacing-06) auto 0;
+      }
+      .metric-strip .cds--grid {
+        grid-template-columns: 1fr;
+      }
+      .metric-item {
+        border-right: none;
+        border-bottom: 1px solid var(--cds-border-subtle);
+        padding: var(--cds-spacing-05) 0;
+      }
+      .metric-item:last-child {
+        border-bottom: none;
+      }
+      .metric-value {
+        font-size: 24px;
+      }
+      .section {
+        padding: var(--cds-spacing-08) 0;
+      }
+      .section-title, .approach-heading {
+        font-size: 28px;
+        line-height: 1.2;
+      }
+      .quote-section {
+        padding: var(--cds-spacing-08) 0;
+      }
+      .quote-text {
+        font-size: 22px;
+        margin-bottom: var(--cds-spacing-05);
+      }
+      .report-section {
+        padding: var(--cds-spacing-08) 0;
+      }
+      .report-section-heading {
+        font-size: 26px;
+        margin-bottom: var(--cds-spacing-06);
+      }
+      .report-card, .report-action-card, .option-card {
+        padding: var(--cds-spacing-05);
+      }
+      .report-action-step-block {
+        padding: var(--cds-spacing-05);
+      }
+      .report-action-step-inner {
+        gap: 16px;
+      }
+      .report-action-icon, .report-card-icon {
+        width: 64px;
+        height: 64px;
+      }
+      .report-action-icon img, .report-card-icon img {
+        width: 36px;
+        height: 36px;
+      }
+      .cta-card {
+        padding: var(--cds-spacing-05);
+        gap: var(--cds-spacing-06);
+      }
+      .cta-heading, .beta-heading {
+        font-size: 22px;
+      }
+      .cta-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .cta-actions cds-button {
+        width: 100%;
+      }
+      .resources-section {
+        padding: var(--cds-spacing-08) 0;
+      }
+      .resources-heading {
+        font-size: 24px;
+      }
+      .resources-grid {
+        grid-template-columns: 1fr;
+      }
+      .resource-item {
+        min-height: auto;
+        padding: var(--cds-spacing-05);
+      }
+      .footer-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--cds-spacing-05);
+      }
+      .feedback-tab {
+        display: none;
+      }
     }
   </style>
 </head>
@@ -1360,20 +1152,18 @@
   <!-- ═══════════════ FIXED FEEDBACK TAB ═══════════════════ -->
   <a href="https://wkf.ms/4y6RVgc" target="_blank" rel="noopener noreferrer" class="feedback-tab" aria-label="Share feedback">Feedback</a>
 
-  <!-- ═══════════════ HEADER ════════════════════════════════ -->
-  <header class="site-header">
-    <div class="site-header-inner">
-      <span class="header-sitename">IBM <strong>Maximo Growth Opportunity Assessment Tool</strong></span>
-      <nav class="site-nav" aria-label="Primary">
-        <a href="#" class="active">Overview</a>
-        <a href="journeys.html">Opportunity paths</a>
-      </nav>
-    </div>
-  </header>
+  <!-- ═══════════════ CARBON UI SHELL HEADER (GRAY 10) ══════ -->
+  <cds-header aria-label="IBM Maximo Growth Opportunity Assessment Tool" data-carbon-theme="g10">
+    <cds-header-name prefix="IBM" href="#">Maximo Growth Opportunity Assessment Tool</cds-header-name>
+    <cds-header-nav menu-bar-label="Primary navigation">
+      <cds-header-nav-item href="#" active>Overview</cds-header-nav-item>
+      <cds-header-nav-item href="journeys.html">Opportunity paths</cds-header-nav-item>
+    </cds-header-nav>
+  </cds-header>
 
   <!-- ═══════════════ HERO ══════════════════════════════════ -->
-  <section class="hero">
-    <div class="container">
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="cds--grid">
       <div class="hero-inner">
         <div class="hero-content">
           <!-- IBM Maximo wordmark -->
@@ -1382,17 +1172,17 @@
             <span class="hero-wordmark-text">IBM <strong>Maximo®</strong></span>
           </div>
           <!-- Heading -->
-          <h1 class="hero-headline">
+          <h1 class="hero-headline" id="hero-title">
             Turn customer uncertainty
             <strong>into a growth plan.</strong>
           </h1>
           <!-- Label + version tag -->
           <div class="hero-label-row">
             <span class="hero-label">IBM internal sales only</span>
-            <span class="hero-version-tag">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M17 22v-8h-4v2h2v6h-3v2h8v-2zM16 8a1.5 1.5 0 100 3 1.5 1.5 0 000-3z"/><path d="M16 30a14 14 0 110-28 14 14 0 010 28zm0-26a12 12 0 100 24 12 12 0 000-24z"/></svg>
+            <cds-tag type="outline" size="sm">
+              <svg slot="icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M17 22v-8h-4v2h2v6h-3v2h8v-2zM16 8a1.5 1.5 0 100 3 1.5 1.5 0 000-3z"/><path d="M16 30a14 14 0 110-28 14 14 0 010 28zm0-26a12 12 0 100 24 12 12 0 000-24z"/></svg>
               Beta v3
-            </span>
+            </cds-tag>
           </div>
           <!-- Body copy -->
           <p class="hero-body">
@@ -1403,14 +1193,19 @@
           </p>
           <!-- CTAs -->
           <div class="hero-actions">
-            <a href="https://m-grat-beta-vercel.vercel.app/" target="_blank" rel="noopener noreferrer" class="btn-primary">
+            <cds-button kind="primary" size="lg" href="https://m-grat-beta-vercel.vercel.app/" target="_blank" rel="noopener noreferrer">
               Launch live assessment
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M26 28H6a2 2 0 01-2-2V6a2 2 0 012-2h9v2H6v20h20v-9h2v9a2 2 0 01-2 2z"/><path d="M21 2v2h5.59L17 13.41 18.59 15 28 5.59V11h2V2z"/></svg>
-            </a>
-            <a href="#additional-resources" class="btn-secondary-link">
+              <svg slot="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M26 28H6a2 2 0 01-2-2V6a2 2 0 012-2h9v2H6v20h20v-9h2v9a2 2 0 01-2 2z"/><path d="M21 2v2h5.59L17 13.41 18.59 15 28 5.59V11h2V2z"/></svg>
+            </cds-button>
+            <cds-button kind="ghost" size="lg" href="#additional-resources">
               Explore additional resources
-              <img src="assets/Search--locate.svg" width="16" height="16" alt="" aria-hidden="true" style="display:inline-block;vertical-align:middle;" />
-            </a>
+              <svg slot="icon" width="16" height="16" viewBox="0 0 16 16" fill="#0f62fe" aria-hidden="true">
+                <path d="M15 14.2929L12.6558 11.9487C13.2823 11.1423 13.5779 10.1274 13.4824 9.11065C13.3869 8.0939 12.9075 7.15178 12.1417 6.47613C11.376 5.80048 10.3815 5.4421 9.36074 5.47398C8.34001 5.50585 7.36981 5.92558 6.6477 6.6477C5.92558 7.36981 5.50585 8.34001 5.47398 9.36074C5.4421 10.3815 5.80048 11.376 6.47613 12.1417C7.15178 12.9075 8.0939 13.3869 9.11065 13.4824C10.1274 13.5779 11.1423 13.2823 11.9487 12.6558L14.2929 15L15 14.2929ZM9.5 12.5C8.90666 12.5 8.32664 12.3241 7.83329 11.9944C7.33994 11.6648 6.95542 11.1962 6.72836 10.6481C6.5013 10.0999 6.44189 9.49667 6.55764 8.91473C6.6734 8.33279 6.95912 7.79824 7.37868 7.37868C7.79824 6.95912 8.33279 6.6734 8.91473 6.55764C9.49667 6.44189 10.0999 6.5013 10.6481 6.72836C11.1962 6.95542 11.6648 7.33994 11.9944 7.83329C12.3241 8.32664 12.5 8.90666 12.5 9.5C12.4991 10.2954 12.1828 11.0579 11.6204 11.6204C11.0579 12.1828 10.2954 12.4991 9.5 12.5Z"/>
+                <path d="M5 6H1V7H5V6Z"/>
+                <path d="M9 1H1V2H9V1Z"/>
+                <path d="M9 3.5H1V4.5H9V3.5Z"/>
+              </svg>
+            </cds-button>
           </div>
         </div>
         <!-- Seller illustration -->
@@ -1423,7 +1218,7 @@
 
   <!-- ═══════════════ METRIC STRIP ══════════════════════════ -->
   <div class="metric-strip" aria-label="Key metrics">
-    <div class="container">
+    <div class="cds--grid">
       <div class="metric-item">
         <div class="metric-value">10–15 min</div>
         <div class="metric-label">Average completion time</div>
@@ -1445,7 +1240,7 @@
 
   <!-- ═══════════════ QUOTE / GUIDANCE OVERVIEW ════════════ -->
   <section class="quote-section">
-    <div class="container">
+    <div class="cds--grid">
       <p class="quote-text">"Better conversations start<br>with a <strong>shared understanding."</strong></p>
       <p class="quote-sub">The assessment runs entirely in the browser, with no login required. Customer<br>responses are processed locally, and a personalized report is generated instantly.</p>
       <p class="quote-scroll">
@@ -1457,7 +1252,7 @@
 
   <!-- ═══════════════ APPROACH SECTION ═════════════════════ -->
   <section class="approach-section">
-    <div class="container">
+    <div class="cds--grid">
       <!-- Header row: heading left, illo card right -->
       <div class="approach-inner">
         <div class="approach-heading-col">
@@ -1490,7 +1285,7 @@
                 <div style="display:flex;flex-direction:column;gap:4px;">
                   <span>Open the live assessment, or copy the link:</span>
                   <span style="display:flex;align-items:center;gap:8px;">
-                    <a href="https://m-grat-beta-vercel.vercel.app/" target="_blank" rel="noopener noreferrer" style="color:#0f62fe;font-weight:600;white-space:nowrap;">https://m-grat-beta-vercel.vercel.app</a>
+                    <cds-link href="https://m-grat-beta-vercel.vercel.app/" target="_blank" rel="noopener noreferrer" style="font-weight:600;white-space:nowrap;">https://m-grat-beta-vercel.vercel.app</cds-link>
                     <button class="btn-copy" onclick="navigator.clipboard.writeText('https://m-grat-beta-vercel.vercel.app/').then(()=>{this.textContent='Copied!';this.classList.add('copied');setTimeout(()=>{this.textContent='Click to copy';this.classList.remove('copied')},2000)})">Click to copy</button>
                   </span>
                 </div>
@@ -1502,10 +1297,10 @@
             </ol>
           </div>
           <div style="display:flex;justify-content:flex-end;">
-            <a href="https://m-grat-beta-vercel.vercel.app/" target="_blank" rel="noopener noreferrer" class="btn-primary">
+            <cds-button kind="primary" size="md" href="https://m-grat-beta-vercel.vercel.app/" target="_blank" rel="noopener noreferrer">
               Launch live assessment
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M26 28H6a2 2 0 01-2-2V6a2 2 0 012-2h9v2H6v20h20v-9h2v9a2 2 0 01-2 2z"/><path d="M21 2v2h5.59L17 13.41 18.59 15 28 5.59V11h2V2z"/></svg>
-            </a>
+              <svg slot="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M26 28H6a2 2 0 01-2-2V6a2 2 0 012-2h9v2H6v20h20v-9h2v9a2 2 0 01-2 2z"/><path d="M21 2v2h5.59L17 13.41 18.59 15 28 5.59V11h2V2z"/></svg>
+            </cds-button>
           </div>
         </div>
 
@@ -1531,10 +1326,10 @@
             </ol>
           </div>
           <div style="display:flex;justify-content:flex-end;">
-            <a href="MAS-growth-assessment-self-serve.html" download="MAS-growth-assessment-self-serve.html" class="btn-primary">
+            <cds-button kind="primary" size="md" href="MAS-growth-assessment-self-serve.html" download="MAS-growth-assessment-self-serve.html">
               Download assessment
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4zm0-10l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
-            </a>
+              <svg slot="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4zm0-10l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
+            </cds-button>
           </div>
         </div>
 
@@ -1544,7 +1339,7 @@
 
   <!-- ═══════════════ WHAT IS IN THE REPORT ════════════════ -->
   <section class="report-section">
-    <div class="container">
+    <div class="cds--grid">
       <h2 class="report-section-heading">What is included in the report</h2>
       <div class="report-grid">
 
@@ -1607,11 +1402,11 @@
     </div>
   </section>
 
-  <!-- ═══════════════ GUIDING THE CUSTOMER ═════════════════ -->
+  <!-- ═══════════════ GUIDING THE CUSTOMER (CARBON ACCORDION) ════════════ -->
   <section class="guiding-section">
-    <div class="container">
+    <div class="cds--grid">
       <div class="section-header">
-        <h2 class="section-title" style="font-size:42px;font-weight:300;line-height:1.19;">Guiding the customer</h2>
+        <h2 class="section-title">Guiding the customer</h2>
         <p class="section-subtitle">Use these five steps to understand this tool and guide the next conversation with your customer.</p>
       </div>
       <div class="guiding-inner">
@@ -1621,137 +1416,100 @@
             <img src="assets/Play--filled.svg" alt="" class="guiding-video-play" />
           </div>
         </div>
-        <!-- Right: accordion -->
+        <!-- Right: Carbon Web Components Accordion -->
         <div>
-          <div class="accordion" role="list">
+          <cds-accordion>
 
-            <div class="accordion-item" role="listitem">
-              <button class="accordion-trigger" aria-expanded="true" aria-controls="panel-1" onclick="toggleAccordion(this)">
-                <span class="accordion-step">1.</span>
-                <span class="accordion-title">Start the growth opportunity conversation</span>
-                <svg class="accordion-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 22L6 12l1.4-1.4L16 19.2l8.6-8.6L26 12z"/></svg>
-              </button>
-              <div class="accordion-panel open" id="panel-1" role="region">
-                <p>Open the live assessment or share the self-service version, depending on how you are engaging with the customer.</p>
-                <p>Before beginning the assessment, set clear expectations:</p>
+            <cds-accordion-item title="1. Start the growth opportunity conversation" open>
+              <p>Open the live assessment or share the self-service version, depending on how you are engaging with the customer.</p>
+              <p>Before beginning the assessment, set clear expectations:</p>
+              <ul>
+                <li><strong>This is a diagnostic, not an audit.</strong> Honest answers help reveal the most relevant growth opportunities.</li>
+                <li>Focus the conversation on where the customer can gain more value, rather than on evaluating past performance.</li>
+                <li>Set aside 10–15 minutes for the assessment. For larger organizations, complete the assessment for one operational site or business unit at a time.</li>
+              </ul>
+            </cds-accordion-item>
+
+            <cds-accordion-item title="2. Understand the operational profile">
+              <div class="panel-subsection">
+                <p class="panel-subsection-label">Operational profile</p>
+                <p>The report turns the customer's responses into an operational profile that shows where Maximo is creating value today and where further opportunities may exist. It highlights verified value drivers, recommends paths to greater value, and identifies a practical next step based on the customer's capabilities and priorities.</p>
+              </div>
+
+              <div class="panel-subsection">
+                <p class="panel-subsection-label">Growth capabilities</p>
+                <p>The operational profile shows where the customer is currently realizing value and where additional capabilities could support further growth. It covers eight capability areas:</p>
                 <ul>
-                  <li><strong>This is a diagnostic, not an audit.</strong> Honest answers help reveal the most relevant growth opportunities.</li>
-                  <li>Focus the conversation on where the customer can gain more value, rather than on evaluating past performance.</li>
-                  <li>Set aside 10–15 minutes for the assessment. For larger organizations, complete the assessment for one operational site or business unit at a time.</li>
+                  <li><strong>Asset data:</strong> Asset data quality, criticality, and hierarchy</li>
+                  <li><strong>Work management:</strong> Job plan and preventive maintenance capabilities</li>
+                  <li><strong>Inspections and condition capture:</strong> Inspection programs and condition data</li>
+                  <li><strong>Supply chain and inventory:</strong> Storeroom and inventory readiness</li>
+                  <li><strong>Scheduling:</strong> Schedule planning and optimization</li>
+                  <li><strong>Assignment and dispatch:</strong> Work assignment and dispatch</li>
+                  <li><strong>Reliability practices:</strong> Failure-code governance and reliability strategies</li>
+                  <li><strong>Condition monitoring and prediction:</strong> Condition visibility and predictive capabilities</li>
                 </ul>
-              </div>
-            </div>
-
-            <div class="accordion-item" role="listitem">
-              <button class="accordion-trigger" aria-expanded="false" aria-controls="panel-2" onclick="toggleAccordion(this)">
-                <span class="accordion-step">2.</span>
-                <span class="accordion-title">Understand the operational profile</span>
-                <svg class="accordion-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 22L6 12l1.4-1.4L16 19.2l8.6-8.6L26 12z"/></svg>
-              </button>
-              <div class="accordion-panel" id="panel-2" role="region">
-
-                <div class="panel-subsection">
-                  <p class="panel-subsection-label">Operational profile</p>
-                  <p>The report turns the customer's responses into an operational profile that shows where Maximo is creating value today and where further opportunities may exist. It highlights verified value drivers, recommends paths to greater value, and identifies a practical next step based on the customer's capabilities and priorities.</p>
-                </div>
-
-                <div class="panel-subsection">
-                  <p class="panel-subsection-label">Growth capabilities</p>
-                  <p>The operational profile shows where the customer is currently realizing value and where additional capabilities could support further growth. It covers eight capability areas:</p>
-                  <ul>
-                    <li><strong>Asset data:</strong> Asset data quality, criticality, and hierarchy</li>
-                    <li><strong>Work management:</strong> Job plan and preventive maintenance capabilities</li>
-                    <li><strong>Inspections and condition capture:</strong> Inspection programs and condition data</li>
-                    <li><strong>Supply chain and inventory:</strong> Storeroom and inventory readiness</li>
-                    <li><strong>Scheduling:</strong> Schedule planning and optimization</li>
-                    <li><strong>Assignment and dispatch:</strong> Work assignment and dispatch</li>
-                    <li><strong>Reliability practices:</strong> Failure-code governance and reliability strategies</li>
-                    <li><strong>Condition monitoring and prediction:</strong> Condition visibility and predictive capabilities</li>
-                  </ul>
-                  <p>Each capability is shown as <em>Emerging</em>, <em>Growing</em>, or <em>Established</em>. These ratings help guide the conversation:</p>
-                  <ul>
-                    <li><strong>Established:</strong> Capabilities already supporting operational value</li>
-                    <li><strong>Growing:</strong> Capabilities with a foundation that can be expanded</li>
-                    <li><strong>Emerging:</strong> Capabilities that may present new growth opportunities</li>
-                  </ul>
-                  <p>Treat the ratings as conversation starters rather than final conclusions. Consider the customer's priorities, operating model, available information, and desired outcomes before identifying the most valuable opportunity.</p>
-                </div>
-
-                <div class="panel-subsection panel-subsection--last">
-                  <p class="panel-subsection-label">Verified value drivers</p>
-                  <p>The report highlights verified value drivers, which are capabilities already working well and contributing to the customer's operations. Use this section to:</p>
-                  <ul>
-                    <li>Recognize the progress the customer has already made.</li>
-                    <li>Connect existing capabilities to measurable or observable value.</li>
-                    <li>Build confidence in the results through supporting evidence.</li>
-                    <li>Identify strong foundations that can enable the customer's next growth opportunity.</li>
-                  </ul>
-                  <p>The conversation should begin with existing value, not capability gaps. This helps position the roadmap as an extension of the customer's success, rather than a corrective plan.</p>
-                </div>
-
-              </div>
-            </div>
-
-            <div class="accordion-item" role="listitem">
-              <button class="accordion-trigger" aria-expanded="false" aria-controls="panel-3" onclick="toggleAccordion(this)">
-                <span class="accordion-step">3.</span>
-                <span class="accordion-title">Explore APM and FSM paths to greater value</span>
-                <svg class="accordion-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 22L6 12l1.4-1.4L16 19.2l8.6-8.6L26 12z"/></svg>
-              </button>
-              <div class="accordion-panel" id="panel-3" role="region">
-                <p>The APM and FSM paths define specific routes to greater value. Each path includes a current stage and target stage, showing where the customer is today and where additional capabilities could create the most value.</p>
+                <p>Each capability is shown as <em>Emerging</em>, <em>Growing</em>, or <em>Established</em>. These ratings help guide the conversation:</p>
                 <ul>
-                  <li><strong>Review the target stage narrative.</strong> Use the business outcomes and potential improvements as conversation anchors.</li>
-                  <li><strong>Look beyond the primary path.</strong> If the customer's results emphasize APM, review the FSM path as well, and vice versa. This can reveal opportunities beyond the immediate next step.</li>
-                  <li><strong>Connect the path to Maximo.</strong> Use the recommended capabilities and supporting metrics to connect each opportunity to relevant Maximo solutions.</li>
-                  <li><strong>Confirm the opportunity.</strong> Ask whether the path and target stage align with the customer's priorities and desired outcomes.</li>
+                  <li><strong>Established:</strong> Capabilities already supporting operational value</li>
+                  <li><strong>Growing:</strong> Capabilities with a foundation that can be expanded</li>
+                  <li><strong>Emerging:</strong> Capabilities that may present new growth opportunities</li>
                 </ul>
-                <p style="margin-top:12px">
-                  <a href="journeys.html" style="display:inline-flex;align-items:center;gap:6px;font-size:14px;color:#0f62fe;font-weight:500;">
-                    Explore the paths to greater value →
-                  </a>
-                </p>
+                <p>Treat the ratings as conversation starters rather than final conclusions. Consider the customer's priorities, operating model, available information, and desired outcomes before identifying the most valuable opportunity.</p>
               </div>
-            </div>
 
-            <div class="accordion-item" role="listitem">
-              <button class="accordion-trigger" aria-expanded="false" aria-controls="panel-4" onclick="toggleAccordion(this)">
-                <span class="accordion-step">4.</span>
-                <span class="accordion-title">Review the action plan</span>
-                <svg class="accordion-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 22L6 12l1.4-1.4L16 19.2l8.6-8.6L26 12z"/></svg>
-              </button>
-              <div class="accordion-panel" id="panel-4" role="region">
-                <p>The action plan identifies the customer's highest-value next step and additional actions that can support continued growth. Use the plan to turn the paths to greater value into practical next steps.</p>
+              <div class="panel-subsection panel-subsection--last">
+                <p class="panel-subsection-label">Verified value drivers</p>
+                <p>The report highlights verified value drivers, which are capabilities already working well and contributing to the customer's operations. Use this section to:</p>
                 <ul>
-                  <li><strong>Start with the highest-value next step.</strong> Explain why this action was recommended and connect it to the customer's priorities, target stage, and potential value.</li>
-                  <li><strong>Review the foundational actions.</strong> Walk through what the customer can do now, which Maximo capabilities can help, and what support may be needed.</li>
-                  <li><strong>Consider the additional next steps.</strong> Show how the actions build on one another and help the customer continue progressing toward the target stage.</li>
-                  <li><strong>Use the supporting resources.</strong> Identify the guidance, Maximo capabilities, and IBM expertise that can help the customer move forward.</li>
-                  <li><strong>Let the customer lead.</strong> Ask which actions would create the most value now, then shape the next steps around the customer's response.</li>
+                  <li>Recognize the progress the customer has already made.</li>
+                  <li>Connect existing capabilities to measurable or observable value.</li>
+                  <li>Build confidence in the results through supporting evidence.</li>
+                  <li>Identify strong foundations that can enable the customer's next growth opportunity.</li>
                 </ul>
+                <p>The conversation should begin with existing value, not capability gaps. This helps position the roadmap as an extension of the customer's success, rather than a corrective plan.</p>
               </div>
-            </div>
+            </cds-accordion-item>
 
-            <div class="accordion-item" role="listitem">
-              <button class="accordion-trigger" aria-expanded="false" aria-controls="panel-5" onclick="toggleAccordion(this)">
-                <span class="accordion-step">5.</span>
-                <span class="accordion-title">Prepare for the follow-up conversation</span>
-                <svg class="accordion-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 22L6 12l1.4-1.4L16 19.2l8.6-8.6L26 12z"/></svg>
-              </button>
-              <div class="accordion-panel" id="panel-5" role="region">
-                <p>Bring together the customer's operational profile, paths to greater value, and action plan into a clear point of view for the follow-up conversation.</p>
-                <ul>
-                  <li><strong>Lead with verified value.</strong> Recognize the capabilities already creating value and use them as the foundation for the conversation.</li>
-                  <li><strong>Summarize the opportunity.</strong> Connect the customer's priorities to the selected path, target stage, and potential value.</li>
-                  <li><strong>Focus on the action plan.</strong> Be prepared to explain the highest-value next step, additional actions, and the support available to help the customer move forward.</li>
-                  <li><strong>Bring in the right people.</strong> Identify the customer stakeholders and IBM experts needed to validate the opportunity and support the next steps.</li>
-                  <li><strong>Set a clear next step.</strong> End the conversation with an agreed action, such as a follow-up workshop, technical discovery session, or deeper discussion of the recommended path.</li>
-                </ul>
-                <p>Use the report as a shared reference before and during the conversation. Share it with the customer and relevant stakeholders to help everyone align on the opportunity and next step.</p>
-              </div>
-            </div>
+            <cds-accordion-item title="3. Explore APM and FSM paths to greater value">
+              <p>The APM and FSM paths define specific routes to greater value. Each path includes a current stage and target stage, showing where the customer is today and where additional capabilities could create the most value.</p>
+              <ul>
+                <li><strong>Review the target stage narrative.</strong> Use the business outcomes and potential improvements as conversation anchors.</li>
+                <li><strong>Look beyond the primary path.</strong> If the customer's results emphasize APM, review the FSM path as well, and vice versa. This can reveal opportunities beyond the immediate next step.</li>
+                <li><strong>Connect the path to Maximo.</strong> Use the recommended capabilities and supporting metrics to connect each opportunity to relevant Maximo solutions.</li>
+                <li><strong>Confirm the opportunity.</strong> Ask whether the path and target stage align with the customer's priorities and desired outcomes.</li>
+              </ul>
+              <p style="margin-top:12px">
+                <cds-link href="journeys.html" size="md">
+                  Explore the paths to greater value →
+                </cds-link>
+              </p>
+            </cds-accordion-item>
 
-          </div><!-- end accordion -->
+            <cds-accordion-item title="4. Review the action plan">
+              <p>The action plan identifies the customer's highest-value next step and additional actions that can support continued growth. Use the plan to turn the paths to greater value into practical next steps.</p>
+              <ul>
+                <li><strong>Start with the highest-value next step.</strong> Explain why this action was recommended and connect it to the customer's priorities, target stage, and potential value.</li>
+                <li><strong>Review the foundational actions.</strong> Walk through what the customer can do now, which Maximo capabilities can help, and what support may be needed.</li>
+                <li><strong>Consider the additional next steps.</strong> Show how the actions build on one another and help the customer continue progressing toward the target stage.</li>
+                <li><strong>Use the supporting resources.</strong> Identify the guidance, Maximo capabilities, and IBM expertise that can help the customer move forward.</li>
+                <li><strong>Let the customer lead.</strong> Ask which actions would create the most value now, then shape the next steps around the customer's response.</li>
+              </ul>
+            </cds-accordion-item>
+
+            <cds-accordion-item title="5. Prepare for the follow-up conversation">
+              <p>Bring together the customer's operational profile, paths to greater value, and action plan into a clear point of view for the follow-up conversation.</p>
+              <ul>
+                <li><strong>Lead with verified value.</strong> Recognize the capabilities already creating value and use them as the foundation for the conversation.</li>
+                <li><strong>Summarize the opportunity.</strong> Connect the customer's priorities to the selected path, target stage, and potential value.</li>
+                <li><strong>Focus on the action plan.</strong> Be prepared to explain the highest-value next step, additional actions, and the support available to help the customer move forward.</li>
+                <li><strong>Bring in the right people.</strong> Identify the customer stakeholders and IBM experts needed to validate the opportunity and support the next steps.</li>
+                <li><strong>Set a clear next step.</strong> End the conversation with an agreed action, such as a follow-up workshop, technical discovery session, or deeper discussion of the recommended path.</li>
+              </ul>
+              <p>Use the report as a shared reference before and during the conversation. Share it with the customer and relevant stakeholders to help everyone align on the opportunity and next step.</p>
+            </cds-accordion-item>
+
+          </cds-accordion>
         </div><!-- end right column -->
       </div><!-- end guiding-inner -->
     </div>
@@ -1759,7 +1517,7 @@
 
   <!-- ═══════════════ CTA + BETA SECTION ═══════════════════ -->
   <section class="cta-section" id="feedback-section">
-    <div class="container">
+    <div class="cds--grid">
       <div class="cta-card">
 
         <!-- Block 1: Launch CTA -->
@@ -1769,14 +1527,14 @@
             <p class="cta-sub">Invite the customer to complete the assessment or guide them through it live.</p>
           </div>
           <div class="cta-actions">
-            <a href="https://m-grat-beta-vercel.vercel.app/" target="_blank" rel="noopener noreferrer" class="btn-primary">
+            <cds-button kind="primary" size="lg" href="https://m-grat-beta-vercel.vercel.app/" target="_blank" rel="noopener noreferrer">
               Launch live assessment
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M26 28H6a2 2 0 01-2-2V6a2 2 0 012-2h9v2H6v20h20v-9h2v9a2 2 0 01-2 2z"/><path d="M21 2v2h5.59L17 13.41 18.59 15 28 5.59V11h2V2z"/></svg>
-            </a>
-            <a href="MAS-growth-assessment-self-serve.html" download="MAS-growth-assessment-self-serve.html" class="btn-dark">
+              <svg slot="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M26 28H6a2 2 0 01-2-2V6a2 2 0 012-2h9v2H6v20h20v-9h2v9a2 2 0 01-2 2z"/><path d="M21 2v2h5.59L17 13.41 18.59 15 28 5.59V11h2V2z"/></svg>
+            </cds-button>
+            <cds-button kind="secondary" size="lg" href="MAS-growth-assessment-self-serve.html" download="MAS-growth-assessment-self-serve.html">
               Download assessment
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4zm0-10l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
-            </a>
+              <svg slot="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4zm0-10l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
+            </cds-button>
           </div>
         </div>
 
@@ -1796,10 +1554,10 @@
             </ul>
           </div>
           <div class="cta-actions">
-            <a href="https://wkf.ms/4y6RVgc" target="_blank" rel="noopener noreferrer" class="btn-primary">
+            <cds-button kind="primary" size="lg" href="https://wkf.ms/4y6RVgc" target="_blank" rel="noopener noreferrer">
               Share feedback
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M26 28H6a2 2 0 01-2-2V6a2 2 0 012-2h9v2H6v20h20v-9h2v9a2 2 0 01-2 2z"/><path d="M21 2v2h5.59L17 13.41 18.59 15 28 5.59V11h2V2z"/></svg>
-            </a>
+              <svg slot="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M26 28H6a2 2 0 01-2-2V6a2 2 0 012-2h9v2H6v20h20v-9h2v9a2 2 0 01-2 2z"/><path d="M21 2v2h5.59L17 13.41 18.59 15 28 5.59V11h2V2z"/></svg>
+            </cds-button>
           </div>
         </div>
 
@@ -1809,7 +1567,7 @@
 
   <!-- ═══════════════ ADDITIONAL RESOURCES ═════════════════ -->
   <section class="resources-section" id="additional-resources">
-    <div class="container">
+    <div class="cds--grid">
       <h2 class="resources-heading">Additional resources</h2>
       <div class="resources-grid">
 
@@ -1875,7 +1633,7 @@
 
   <!-- ═══════════════ FOOTER ════════════════════════════════ -->
   <footer class="site-footer">
-    <div class="container">
+    <div class="cds--grid">
       <div class="footer-inner">
         <div class="footer-logo">
           <img src="assets/Image - IBM Logo.svg" alt="IBM" />
@@ -1890,61 +1648,6 @@
       </div>
     </div>
   </footer>
-
-  <script>
-    /* ── Accordion ─────────────────────────────────────────── */
-    function toggleAccordion(trigger) {
-      const expanded = trigger.getAttribute('aria-expanded') === 'true';
-      const panelId = trigger.getAttribute('aria-controls');
-      const panel = document.getElementById(panelId);
-
-      // Capture the trigger's distance from the top of the viewport before any DOM changes
-      const triggerTop = trigger.getBoundingClientRect().top;
-
-      // Close all panels first
-      document.querySelectorAll('.accordion-trigger').forEach(function(t) {
-        t.setAttribute('aria-expanded', 'false');
-      });
-      document.querySelectorAll('.accordion-panel').forEach(function(p) {
-        p.classList.remove('open');
-      });
-
-      // If this one was closed, open it
-      if (!expanded) {
-        trigger.setAttribute('aria-expanded', 'true');
-        panel.classList.add('open');
-      }
-
-      // Re-anchor the viewport so the clicked trigger stays at the same visual position
-      const newTriggerTop = trigger.getBoundingClientRect().top;
-      const shift = newTriggerTop - triggerTop;
-      if (shift !== 0) {
-        window.scrollBy({ top: shift, behavior: 'instant' });
-      }
-    }
-
-    /* ── Dimension Tooltips ─────────────────────────────────── */
-    function toggleTooltip(btn) {
-      var isOpen = btn.classList.contains('open');
-      // Close any other open tooltips first
-      document.querySelectorAll('.dim-tooltip-btn.open').forEach(function(b) {
-        b.classList.remove('open');
-      });
-      if (!isOpen) {
-        btn.classList.add('open');
-        // Close on next outside click
-        setTimeout(function() {
-          document.addEventListener('click', function handler(e) {
-            if (!btn.contains(e.target)) {
-              btn.classList.remove('open');
-              document.removeEventListener('click', handler);
-            }
-          });
-        }, 0);
-      }
-    }
-
-  </script>
 
 </body>
 </html>
