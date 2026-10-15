@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>M-GRAT · MAS Growth Readiness Assessment Tool</title>
+  <title>M-GOAT · MAS Growth Opportunity Assessment Tool</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Serif:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -25,7 +25,7 @@
     .container {
       max-width: 1056px;
       margin: 0 auto;
-      padding: 0 1rem;
+      padding: 0 16px;
     }
 
     /* ── Header ───────────────────────────────────────────── */
@@ -33,178 +33,219 @@
       position: sticky;
       top: 0;
       z-index: 200;
-      background: #0043ce;
-      border-bottom: 1px solid #002d9c;
+      background: #262626;
+      border-bottom: 1px solid #525252;
       height: 48px;
     }
-    .site-header .container {
+    .site-header-inner {
       height: 100%;
       display: flex;
       align-items: center;
-      gap: 0;
+      padding: 0 16px;
     }
-    .header-wordmark {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin-right: auto;
+    .header-sitename {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      color: #f4f4f4;
+      letter-spacing: 0.16px;
+      white-space: nowrap;
+      padding: 0 32px 0 8px;
       flex-shrink: 0;
     }
-    .header-wordmark img {
-      height: 18px;
-      filter: brightness(0) invert(1);
-    }
-    .header-wordmark-text {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.8125rem;
+    .header-sitename strong {
       font-weight: 600;
-      color: #ffffff;
-      white-space: nowrap;
-    }
-    .header-wordmark-text span {
-      font-weight: 300;
-      color: rgba(255,255,255,0.7);
     }
     .site-nav {
       display: flex;
-      align-items: center;
+      align-items: stretch;
+      height: 48px;
       gap: 0;
+      border-left: 1px solid #525252;
     }
     .site-nav a {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.8125rem;
-      color: rgba(255,255,255,0.8);
-      padding: 0 1rem;
+      font-size: 14px;
+      font-weight: 400;
+      color: #c6c6c6;
+      letter-spacing: 0.16px;
+      padding: 0 16px;
       height: 48px;
       display: flex;
       align-items: center;
-      border-bottom: 2px solid transparent;
+      border-bottom: 3px solid transparent;
       transition: color 0.1s, border-color 0.1s, background 0.1s;
+      white-space: nowrap;
     }
-    .site-nav a:hover { background: rgba(255,255,255,0.08); color: #fff; }
-    .site-nav a.active { color: #fff; border-bottom-color: #fff; }
-    .site-nav a.nav-cta {
-      background: rgba(255,255,255,0.12);
-      color: #fff;
-      margin-left: 0.5rem;
-      border-radius: 0;
-      font-weight: 500;
-    }
-    .site-nav a.nav-cta:hover { background: rgba(255,255,255,0.22); }
+    .site-nav a:hover { background: rgba(255,255,255,0.08); color: #f4f4f4; }
+    .site-nav a.active { color: #f4f4f4; border-bottom-color: #4589ff; }
 
     /* ── Hero ─────────────────────────────────────────────── */
     .hero {
-      background: #ffffff;
-      border-bottom: 1px solid #e0e0e0;
+      background: #f4f4f4;
       overflow: hidden;
     }
     .hero-inner {
       display: grid;
-      grid-template-columns: 1fr 420px;
+      grid-template-columns: 1fr 1fr;
       gap: 0;
-      min-height: 480px;
+      min-height: 560px;
+      align-items: center;
     }
     .hero-content {
-      padding: 4rem 3rem 4rem 0;
+      padding: 80px 48px 80px 0;
       display: flex;
       flex-direction: column;
       justify-content: center;
     }
-    .hero-eyebrow {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.6875rem;
+    .hero-wordmark {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .hero-wordmark img {
+      width: 52px;
+      height: 52px;
+      flex-shrink: 0;
+    }
+    .hero-wordmark-text {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 20px;
+      font-weight: 400;
+      color: #161616;
+      line-height: 1.2;
+    }
+    .hero-wordmark-text strong {
       font-weight: 600;
-      letter-spacing: 0.1em;
-      color: #0f62fe;
-      text-transform: uppercase;
-      margin-bottom: 1.25rem;
     }
     .hero-headline {
       font-family: 'IBM Plex Serif', serif;
-      font-size: 2.625rem;
+      font-size: 48px;
       font-weight: 300;
-      line-height: 1.2;
+      line-height: 1.1;
       color: #161616;
-      margin-bottom: 1.25rem;
-      max-width: 26ch;
+      margin-bottom: 24px;
     }
-    .hero-headline em {
-      font-style: italic;
-      font-weight: 300;
+    .hero-headline strong {
+      font-weight: 700;
+      display: block;
+    }
+    .hero-label-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .hero-label {
+      font-family: 'IBM Plex Serif', serif;
+      font-size: 24px;
+      color: #8a3ffc;
+    }
+    .hero-version-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5.6px;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 14px;
+      color: #161616;
+      border: 1px solid #161616;
+      border-radius: 32px;
+      padding: 3.2px 12px;
+    }
+    .hero-version-tag svg {
+      display: inline-block;
+      flex-shrink: 0;
     }
     .hero-body {
-      font-size: 0.9375rem;
-      color: #525252;
+      font-size: 15px;
+      color: #161616;
       line-height: 1.6;
-      max-width: 52ch;
-      margin-bottom: 1.75rem;
+      max-width: 48ch;
+      margin-bottom: 14px;
     }
-    .hero-pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 2rem;
-    }
-    .pill {
-      font-family: 'IBM Plex Sans Condensed', sans-serif;
-      font-size: 0.75rem;
-      font-weight: 500;
-      color: #0043ce;
-      background: #edf5ff;
-      border: 1px solid #d0e2ff;
-      padding: 0.25rem 0.75rem;
-      border-radius: 1rem;
+    .hero-body + .hero-body {
+      margin-top: 0;
+      margin-bottom: 32px;
     }
     .hero-actions {
       display: flex;
       align-items: center;
-      gap: 1.25rem;
+      gap: 20px;
       flex-wrap: wrap;
     }
     .btn-primary {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.875rem;
-      font-weight: 600;
+      font-size: 14px;
+      font-weight: 400;
       color: #ffffff;
       background: #0f62fe;
       border: none;
-      padding: 0.75rem 1.5rem;
+      padding: 12px 24px;
       cursor: pointer;
       transition: background 0.15s;
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 8px;
       text-decoration: none;
     }
     .btn-primary:hover { background: #0043ce; }
     .btn-secondary-link {
-      font-size: 0.875rem;
+      font-size: 14px;
       color: #0f62fe;
-      font-weight: 500;
+      font-weight: 400;
       display: flex;
       align-items: center;
-      gap: 0.375rem;
+      gap: 6px;
       transition: color 0.1s;
     }
     .btn-secondary-link:hover { color: #0043ce; text-decoration: underline; }
     .hero-visual {
       position: relative;
       overflow: hidden;
-      background: #edf5ff;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      min-height: 560px;
     }
-    .hero-visual img {
-      position: absolute;
-      inset: 0;
+    .hero-visual img,
+    .hero-visual object {
+      display: block;
       width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center left;
+      max-width: 520px;
+      height: auto;
     }
+    /* ── Fixed Feedback Tab ───────────────────────────────── */
+    .feedback-tab {
+      position: fixed;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%) rotate(180deg) translateZ(0);
+      -webkit-transform: translateY(-50%) rotate(180deg) translateZ(0);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      -webkit-font-smoothing: subpixel-antialiased;
+      z-index: 300;
+      background: #0f62fe;
+      color: #ffffff;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      padding: 14px 8px;
+      cursor: pointer;
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      transition: background 0.15s;
+    }
+    .feedback-tab:hover { background: #0043ce; color: #ffffff; }
 
     /* ── Metric Badges ────────────────────────────────────── */
     .metric-strip {
-      background: #0043ce;
-      border-bottom: 2px solid #002d9c;
+      background: #f4f4f4;
+      border-top: 1px solid #e0e0e0;
+      border-bottom: 1px solid #e0e0e0;
     }
     .metric-strip .container {
       display: flex;
@@ -213,31 +254,28 @@
     }
     .metric-item {
       flex: 1;
-      text-align: center;
-      padding: 1.25rem 1rem;
-      border-right: 1px solid rgba(255,255,255,0.12);
+      text-align: left;
+      padding: 24px 32px;
     }
-    .metric-item:last-child { border-right: none; }
     .metric-value {
       font-family: 'IBM Plex Serif', serif;
-      font-size: 1.75rem;
-      font-weight: 300;
-      color: #ffffff;
+      font-size: 28px;
+      font-weight: 400;
+      color: #0f62fe;
       line-height: 1;
-      margin-bottom: 0.25rem;
+      margin-bottom: 6px;
     }
     .metric-label {
-      font-family: 'IBM Plex Sans Condensed', sans-serif;
-      font-size: 0.75rem;
-      font-weight: 500;
-      color: rgba(255,255,255,0.7);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      color: #161616;
+      letter-spacing: 0;
     }
 
     /* ── Section Shared ───────────────────────────────────── */
     .section {
-      padding: 4rem 0;
+      padding: 64px 0;
     }
     .section-alt { background: #f4f4f4; }
     .section-white { background: #ffffff; }
@@ -261,15 +299,15 @@
       gap: 32px;
     }
     .maturity-maps-block__title {
-      font-size: 1rem;
+      font-size: 16px;
       font-weight: 600;
       line-height: 1.375;
       color: #fff;
-      margin: 0 0 0.5rem;
+      margin: 0 0 8px;
       max-width: 34ch;
     }
     .maturity-maps-block__desc {
-      font-size: 1rem;
+      font-size: 16px;
       line-height: 1.375;
       color: #fff;
       margin: 0;
@@ -283,28 +321,28 @@
     /* Override section-eyebrow colour on green background */
     .section-green .section-eyebrow { color: rgba(255,255,255,0.7); }
     .section-header {
-      margin-bottom: 2.5rem;
+      margin-bottom: 40px;
     }
     .section-eyebrow {
       font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.6875rem;
+      font-size: 11px;
       font-weight: 600;
       letter-spacing: 0.1em;
       color: #0f62fe;
       text-transform: uppercase;
-      margin-bottom: 0.75rem;
+      margin-bottom: 12px;
     }
     .section-title {
       font-family: 'IBM Plex Serif', serif;
-      font-size: 1.875rem;
+      font-size: 30px;
       font-weight: 300;
       color: #161616;
       line-height: 1.25;
-      margin-bottom: 0.75rem;
+      margin-bottom: 12px;
     }
     .section-subtitle {
       font-family: 'IBM Plex Sans Condensed', sans-serif;
-      font-size: 0.9375rem;
+      font-size: 15px;
       color: #525252;
       max-width: 60ch;
     }
@@ -323,32 +361,32 @@
     }
     .value-card {
       background: #ffffff;
-      padding: 2rem 1.75rem;
+      padding: 32px 28px;
       border-right: 1px solid #e0e0e0;
     }
     .value-card:last-child { border-right: none; }
     .value-icon {
       width: 48px;
       height: 48px;
-      margin-bottom: 1.25rem;
+      margin-bottom: 20px;
     }
     .value-number {
       font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.75rem;
+      font-size: 12px;
       font-weight: 600;
       color: #0f62fe;
       letter-spacing: 0.08em;
-      margin-bottom: 0.5rem;
+      margin-bottom: 8px;
     }
     .value-title {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 1.0625rem;
+      font-size: 17px;
       font-weight: 600;
       color: #161616;
-      margin-bottom: 0.75rem;
+      margin-bottom: 12px;
     }
     .value-body {
-      font-size: 0.875rem;
+      font-size: 14px;
       color: #525252;
       line-height: 1.6;
     }
@@ -357,152 +395,132 @@
     .options-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
+      gap: 24px;
     }
     .option-card {
       background: #ffffff;
-      border: 1px solid #e0e0e0;
-      padding: 2rem;
+      border: 1px solid #dde1e6;
+      border-radius: 4px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
     }
-    .option-badge {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.6875rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      color: #0043ce;
-      background: #edf5ff;
-      border: 1px solid #d0e2ff;
-      padding: 0.2rem 0.6rem;
-      display: inline-block;
-      margin-bottom: 1rem;
-    }
-    .option-title {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 1.125rem;
-      font-weight: 600;
-      color: #161616;
-      margin-bottom: 0.375rem;
-    }
-    .option-sub {
-      font-family: 'IBM Plex Sans Condensed', sans-serif;
-      font-size: 0.8125rem;
-      color: #525252;
-      margin-bottom: 1.25rem;
-    }
-    .option-how-label {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.6875rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #525252;
-      margin-bottom: 0.5rem;
-    }
-    .option-body {
-      font-size: 0.875rem;
-      color: #525252;
-      line-height: 1.6;
-      margin-bottom: 1.25rem;
-    }
-    .option-link-row {
+    .option-card-header {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      padding: 0.75rem 1rem;
-      background: #f4f4f4;
-      border: 1px solid #e0e0e0;
-      margin-bottom: 1.25rem;
+      gap: 16px;
     }
-    .option-url {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.75rem;
-      color: #525252;
-      flex: 1;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .btn-copy {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: #0f62fe;
-      background: none;
-      border: 1px solid #0f62fe;
-      padding: 0.3125rem 0.75rem;
-      cursor: pointer;
-      transition: background 0.1s, color 0.1s;
-      white-space: nowrap;
+    .option-card-pictogram {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: #0f62fe;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       flex-shrink: 0;
     }
-    .btn-copy:hover { background: #edf5ff; }
-    .btn-copy.copied { color: #0e6027; border-color: #0e6027; background: #defbe6; }
-    .option-outcome {
-      display: flex;
-      align-items: flex-start;
-      gap: 0.5rem;
-      background: #defbe6;
-      border-left: 3px solid #0e6027;
-      padding: 0.625rem 0.875rem;
-      font-size: 0.8125rem;
-      color: #0e6027;
-      font-weight: 500;
+    .option-card-pictogram img {
+      width: 36px;
+      height: 36px;
+    }
+    .option-card-label {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 400;
+      color: #161616;
+      line-height: 1.25;
+      margin-bottom: 2px;
+    }
+    .option-card-title {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: #161616;
+      line-height: 1.25;
+      margin-bottom: 2px;
+    }
+    .option-card-sub {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 400;
+      color: #161616;
+      line-height: 1.375;
+    }
+    .option-steps-wrap {
+      background: #f4f4f4;
+      border: 1px solid #dde1e6;
+      border-radius: 12px;
+      box-shadow: 0 8px 8px rgba(0,0,0,0.06);
+      overflow: hidden;
+      flex: 1;
     }
     .option-steps {
       list-style: none;
       counter-reset: step;
       padding: 0;
+      margin: 0;
     }
     .option-steps li {
       counter-increment: step;
       display: flex;
       align-items: flex-start;
-      gap: 0.75rem;
-      padding: 0.625rem 0;
-      border-bottom: 1px solid #f4f4f4;
-      font-size: 0.875rem;
-      color: #525252;
+      gap: 12px;
+      padding: 14px 16px;
+      border-bottom: 1px solid #dde1e6;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 14px;
+      color: #161616;
       line-height: 1.5;
+      min-height: 52px;
     }
     .option-steps li:last-child { border-bottom: none; }
     .option-steps li::before {
-      content: counter(step);
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.75rem;
+      content: counter(step) ".";
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      color: #161616;
+      flex-shrink: 0;
+      min-width: 20px;
+      margin-top: 0;
+    }
+    .option-steps li.step-empty {
+      color: transparent;
+      pointer-events: none;
+    }
+    .option-steps li.step-empty::before {
+      color: transparent;
+    }
+    .btn-copy {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 12px;
       font-weight: 600;
       color: #0f62fe;
-      background: #edf5ff;
-      width: 22px;
-      height: 22px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      border-radius: 50%;
-      margin-top: 0.0625rem;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      white-space: nowrap;
     }
-    .option-step-content {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem;
-      flex: 1;
-    }
+    .btn-copy:hover { text-decoration: underline; }
+    .btn-copy.copied { color: #0e6027; }
     .btn-download {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.75rem;
+      font-size: 12px;
       font-weight: 600;
       color: #0f62fe;
       background: none;
       border: 1px solid #0f62fe;
-      padding: 0.3125rem 0.75rem;
+      padding: 5px 12px;
       cursor: pointer;
       transition: background 0.1s, color 0.1s;
       white-space: nowrap;
       flex-shrink: 0;
       display: inline-flex;
       align-items: center;
-      gap: 0.375rem;
+      gap: 6px;
       text-decoration: none;
     }
     .btn-download:hover { background: #edf5ff; }
@@ -529,29 +547,26 @@
       background: none;
       border: none;
       text-align: left;
-      padding: 1.25rem 1.5rem;
+      padding: 20px 24px;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 16px;
       transition: background 0.1s;
     }
     .accordion-trigger:hover { background: #f4f4f4; }
-    .accordion-trigger[aria-expanded="true"] { background: #edf5ff; }
+    .accordion-trigger[aria-expanded="true"] { background: none; }
     .accordion-step {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.6875rem;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 16px;
       font-weight: 600;
-      color: #0f62fe;
-      background: #edf5ff;
-      border: 1px solid #d0e2ff;
-      padding: 0.2rem 0.55rem;
+      color: #161616;
       white-space: nowrap;
       flex-shrink: 0;
     }
     .accordion-title {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 1rem;
+      font-size: 16px;
       font-weight: 600;
       color: #161616;
       flex: 1;
@@ -566,23 +581,23 @@
     .accordion-trigger[aria-expanded="true"] .accordion-chevron { transform: rotate(180deg); }
     .accordion-panel {
       display: none;
-      padding: 0 1.5rem 1.5rem 4rem;
+      padding: 0 24px 24px 64px;
     }
     .accordion-panel.open { display: block; }
     .accordion-panel p {
-      font-size: 0.9375rem;
+      font-size: 15px;
       color: #525252;
       line-height: 1.7;
     }
-    .accordion-panel p + p { margin-top: 0.75rem; }
+    .accordion-panel p + p { margin-top: 12px; }
     .accordion-panel ul {
-      margin: 0.75rem 0 0 1.25rem;
+      margin: 12px 0 0 20px;
     }
     .accordion-panel ul li {
-      font-size: 0.9375rem;
+      font-size: 15px;
       color: #525252;
       line-height: 1.6;
-      margin-bottom: 0.375rem;
+      margin-bottom: 6px;
     }
     .dim-tooltip-btn {
       display: inline-flex;
@@ -591,7 +606,7 @@
       width: 15px;
       height: 15px;
       font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.625rem;
+      font-size: 10px;
       font-weight: 700;
       color: #0f62fe;
       background: #edf5ff;
@@ -600,7 +615,7 @@
       cursor: pointer;
       position: relative;
       vertical-align: middle;
-      margin-left: 0.25rem;
+      margin-left: 4px;
       padding: 0;
       line-height: 1;
     }
@@ -615,10 +630,10 @@
       background: #161616;
       color: #f4f4f4;
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.75rem;
+      font-size: 12px;
       font-weight: 400;
       line-height: 1.5;
-      padding: 0.5rem 0.75rem;
+      padding: 8px 12px;
       border-radius: 0;
       white-space: normal;
       z-index: 100;
@@ -635,7 +650,7 @@
     }
     .dim-tooltip-btn.open .dim-tooltip-text { display: block; }
     .panel-subsection {
-      padding: 1rem 0;
+      padding: 16px 0;
       border-top: 1px solid #e0e0e0;
     }
     .panel-subsection--last {
@@ -643,21 +658,21 @@
     }
     .panel-subsection-label {
       font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.6875rem;
+      font-size: 11px;
       font-weight: 600;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: #0f62fe;
-      margin-bottom: 0.625rem;
+      margin-bottom: 10px;
     }
     .stage-pill {
       display: inline-block;
       font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.6875rem;
+      font-size: 11px;
       font-weight: 600;
-      padding: 0.15rem 0.55rem;
+      padding: 2.4px 8.8px;
       border-radius: 0;
-      margin: 0.125rem 0.125rem 0.125rem 0;
+      margin: 2px 2px 2px 0;
     }
     .stage-1 { background: #f4f4f4; color: #525252; border: 1px solid #e0e0e0; }
     .stage-2 { background: #edf5ff; color: #0043ce; border: 1px solid #d0e2ff; }
@@ -669,59 +684,42 @@
     .journey-banner {
       background: #161616;
       color: #ffffff;
-      padding: 3.5rem 0;
+      padding: 56px 0;
     }
     .journey-banner-inner {
       display: grid;
       grid-template-columns: 1fr auto;
       align-items: center;
-      gap: 2rem;
+      gap: 32px;
     }
     .journey-banner-eyebrow {
       font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.6875rem;
+      font-size: 11px;
       font-weight: 600;
       letter-spacing: 0.1em;
       color: #78a9ff;
       text-transform: uppercase;
-      margin-bottom: 0.75rem;
+      margin-bottom: 12px;
     }
     .journey-banner-title {
       font-family: 'IBM Plex Serif', serif;
-      font-size: 1.625rem;
+      font-size: 26px;
       font-weight: 300;
       color: #f4f4f4;
       line-height: 1.3;
-      margin-bottom: 0.75rem;
+      margin-bottom: 12px;
     }
     .journey-banner-body {
-      font-size: 0.9375rem;
+      font-size: 15px;
       color: #a8a8a8;
       max-width: 60ch;
       line-height: 1.6;
     }
-    .btn-outline-white {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.875rem;
-      font-weight: 600;
-      color: #ffffff;
-      border: 2px solid #ffffff;
-      padding: 0.75rem 1.5rem;
-      background: none;
-      cursor: pointer;
-      transition: background 0.15s, color 0.15s;
-      white-space: nowrap;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .btn-outline-white:hover { background: #ffffff; color: #161616; }
-
     /* ── Feedback Card ────────────────────────────────────── */
     .feedback-card {
       background: #ffffff;
       border: 1px solid #e0e0e0;
-      padding: 2.5rem;
+      padding: 40px;
       max-width: 640px;
       margin: 0 auto;
       text-align: center;
@@ -729,44 +727,44 @@
     .feedback-card img {
       width: 56px;
       height: 56px;
-      margin: 0 auto 1.25rem;
+      margin: 0 auto 20px;
     }
     .feedback-card-title {
       font-family: 'IBM Plex Serif', serif;
-      font-size: 1.5rem;
+      font-size: 24px;
       font-weight: 300;
       color: #161616;
-      margin-bottom: 0.625rem;
+      margin-bottom: 10px;
     }
     .feedback-card-body {
-      font-size: 0.9375rem;
+      font-size: 15px;
       color: #525252;
       line-height: 1.6;
-      margin-bottom: 0.75rem;
+      margin-bottom: 12px;
     }
     .feedback-note {
       font-family: 'IBM Plex Sans Condensed', sans-serif;
-      font-size: 0.8125rem;
+      font-size: 13px;
       color: #525252;
       background: #fff8e1;
       border-left: 3px solid #f1c21b;
-      padding: 0.625rem 0.875rem;
+      padding: 10px 14px;
       text-align: left;
-      margin-bottom: 1.5rem;
+      margin-bottom: 24px;
     }
     .btn-primary-ghost {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.875rem;
+      font-size: 14px;
       font-weight: 600;
       color: #0f62fe;
       border: 1px solid #0f62fe;
       background: none;
-      padding: 0.75rem 1.5rem;
+      padding: 12px 24px;
       cursor: pointer;
       transition: background 0.15s, color 0.15s;
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 8px;
       text-decoration: none;
     }
     .btn-primary-ghost:hover { background: #0f62fe; color: #fff; }
@@ -774,168 +772,591 @@
     /* ── Footer ───────────────────────────────────────────── */
     .site-footer {
       background: #161616;
-      border-top: 4px solid #0f62fe;
-      padding: 2.5rem 0 1.75rem;
+      border-top: 1px solid #393939;
+      padding: 32px 0;
     }
-    .footer-top {
-      display: flex;
-      align-items: flex-start;
-      gap: 3rem;
-      padding-bottom: 1.5rem;
-      border-bottom: 1px solid #393939;
-      margin-bottom: 1.25rem;
-    }
-    .footer-brand { flex-shrink: 0; }
-    .footer-brand img { height: 23px; filter: brightness(0) invert(1); margin-bottom: 0.75rem; }
-    .footer-brand-name {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.8125rem;
-      font-weight: 600;
-      color: #f4f4f4;
-    }
-    .footer-brand-sub {
-      font-family: 'IBM Plex Sans Condensed', sans-serif;
-      font-size: 0.75rem;
-      color: #6f6f6f;
-      margin-top: 0.25rem;
-    }
-    .footer-links {
-      display: flex;
-      gap: 3rem;
-      flex: 1;
-    }
-    .footer-link-group h4 {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.6875rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #6f6f6f;
-      margin-bottom: 0.75rem;
-    }
-    .footer-link-group a {
-      display: block;
-      font-size: 0.8125rem;
-      color: #c6c6c6;
-      margin-bottom: 0.5rem;
-      transition: color 0.1s;
-    }
-    .footer-link-group a:hover { color: #ffffff; }
-    .footer-bottom {
+    .footer-inner {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      gap: 32px;
       flex-wrap: wrap;
-      gap: 0.5rem;
     }
-    .footer-legal {
-      font-size: 0.75rem;
-      color: #6f6f6f;
+    .footer-logo {
+      flex-shrink: 0;
     }
-    .footer-version {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.6875rem;
+    .footer-logo img {
+      height: 32px;
+      filter: brightness(0) invert(1);
+      display: block;
+    }
+    .footer-legal-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0;
+      flex: 1;
+    }
+    .footer-legal-nav a {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 13px;
+      color: #c6c6c6;
+      padding: 4px 20px 4px 0;
+      transition: color 0.1s;
+      white-space: nowrap;
+    }
+    .footer-legal-nav a:hover { color: #ffffff; }
+
+    /* ── Report Contents Section ──────────────────────────── */
+    .report-section {
+      background: #ffffff;
+      padding: 64px 0;
+    }
+    .report-section-heading {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 32px;
+      font-weight: 300;
+      color: #161616;
+      margin-bottom: 32px;
+    }
+    .report-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    .report-card {
+      background: #f4f4f4;
+      border: 1px solid #dde1e6;
+      border-radius: 4px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .report-card-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .report-card-icon {
+      width: 84px;
+      height: 84px;
+      border-radius: 1000px;
+      background: #0f62fe;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .report-card-icon img {
+      width: 48px;
+      height: 48px;
+      filter: brightness(0) invert(1);
+    }
+    .report-card-title {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: #161616;
+      margin-bottom: 6px;
+    }
+    .report-card-body {
+      font-size: 14px;
       color: #525252;
-      background: #262626;
-      padding: 0.2rem 0.6rem;
-      border: 1px solid #393939;
+      line-height: 1.55;
+    }
+    /* GIF preview inside report cards */
+    .report-card-preview {
+      border: 1px solid #F4F4F4;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #F4F4F4;
+      padding: 16px;
+    }
+    .report-card-gif {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 4px;
+    }
+    /* Right column: stacked cards */
+    .report-right {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    /* Blue action card */
+    .report-action-card {
+      background: #f4f4f4;
+      border: 1px solid #dde1e6;
+      border-radius: 4px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .report-action-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .report-action-icon {
+      width: 84px;
+      height: 84px;
+      flex-shrink: 0;
+      background: #0f62fe;
+      border-radius: 1000px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .report-action-icon img {
+      width: 48px;
+      height: 48px;
+      filter: brightness(0) invert(1);
+    }
+    .report-action-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #161616;
+      margin-bottom: 4px;
+      line-height: 1.375;
+    }
+    .report-action-body {
+      font-size: 14px;
+      color: #161616;
+      line-height: 1.43;
+    }
+    .report-action-step-block {
+      background: #0f62fe;
+      padding: 32px 24px;
+      border-radius: 0;
+    }
+    .report-action-step-inner {
+      display: flex;
+      align-items: flex-start;
+      gap: 26px;
+    }
+    .report-action-step-inner img {
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+      filter: brightness(0) invert(1);
+    }
+    .report-action-step-text {
+      font-size: 16px;
+      color: #ffffff;
+      line-height: 1.375;
+    }
+    .report-action-step-text strong {
+      font-weight: 600;
+    }
+    .report-action-footnote {
+      font-size: 13px;
+      color: #525252;
+      border-top: 1px solid #dde1e6;
+      padding-top: 12px;
+    }
+    .report-action-footnote a {
+      color: #0f62fe;
+      text-decoration: underline;
+    }
+    /* Stage visual inside right-top card */
+    .stage-preview {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .stage-tile {
+      flex: 1;
+      border-radius: 4px;
+      padding: 14px 12px;
+      font-family: 'IBM Plex Sans', sans-serif;
+    }
+    .stage-tile--current {
+      background: #f1c21b;
+    }
+    .stage-tile--target {
+      background: #42be65;
+    }
+    .stage-tile__label {
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(0,0,0,0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+    .stage-tile__num {
+      font-size: 32px;
+      font-weight: 300;
+      color: #161616;
+      line-height: 1;
+    }
+    .stage-tile__name {
+      font-size: 12px;
+      color: #161616;
+      margin-top: 4px;
+    }
+    @media (max-width: 900px) {
+      .report-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── Additional Resources ────────────────────────────────── */
+    .resources-section {
+      background: #198038;
+      padding: 48px 0;
+    }
+    .resources-heading {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 28px;
+      font-weight: 300;
+      color: #ffffff;
+      margin-bottom: 32px;
+    }
+    .resources-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr 1fr;
+      gap: 16px;
+    }
+    .resource-item {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(167,240,186,0.44);
+      padding: 16px;
+      min-height: 384px;
+    }
+    .resource-item-inner {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex: 1;
+      gap: 16px;
+    }
+    .resource-icon {
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+    }
+    .resource-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .resource-title {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: #ffffff;
+      line-height: 1.375;
+      margin: 0;
+    }
+    .resource-desc {
+      font-size: 14px;
+      font-weight: 400;
+      color: #ffffff;
+      line-height: 1.572;
+      margin: 0;
+    }
+    .resource-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .btn-outline-white {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #ffffff;
+      border: 1px solid rgba(167,240,186,0.44);
+      padding: 12px 16px;
+      background: none;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-outline-white:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(167,240,186,0.7);
+    }
+    @media (max-width: 1024px) {
+      .resources-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 640px) {
+      .resources-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── CTA + Beta Section ───────────────────────────────── */
+    .cta-section {
+      background: #ffffff;
+      padding: 64px 0;
+    }
+    .cta-card {
+      background: #f4f4f4;
+      border: 1px solid #dde1e6;
+      border-radius: 4px;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+    .cta-block {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-width: 540px;
+    }
+    .cta-heading {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 28px;
+      font-weight: 400;
+      color: #161616;
+      line-height: 1.29;
+      margin: 0;
+    }
+    .cta-sub {
+      font-size: 14px;
+      color: #525252;
+      line-height: 1.5;
+      margin: 0;
+    }
+    .cta-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .btn-dark {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #ffffff;
+      background: #393939;
+      border: none;
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: background 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+    .btn-dark:hover { background: #161616; }
+    .beta-heading {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 28px;
+      font-weight: 400;
+      color: #161616;
+      line-height: 1.29;
+      margin: 0 0 8px;
+    }
+    .beta-body {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .beta-body p {
+      font-size: 14px;
+      color: #161616;
+      line-height: 1.43;
+      letter-spacing: 0.16px;
+      margin: 0;
+    }
+    .beta-body strong { font-weight: 600; }
+    .beta-limitations {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding-top: 6px;
+    }
+    .beta-limitations p {
+      font-size: 14px;
+      font-weight: 600;
+      color: #161616;
+      letter-spacing: 0.16px;
+      margin: 0;
+    }
+    .beta-limitations ul {
+      margin: 0;
+      padding-left: 20px;
+      list-style: disc;
+    }
+    .beta-limitations ul li {
+      font-size: 14px;
+      color: #161616;
+      line-height: 1.43;
+      letter-spacing: 0.16px;
+    }
+
+    /* ── Guiding Section ─────────────────────────────────── */
+    .guiding-section {
+      background: #ffffff;
+      padding: 64px 0;
+    }
+    .guiding-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: start;
+    }
+    .guiding-video {
+      background: #e0e0e0;
+      aspect-ratio: 16 / 9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .guiding-video-play {
+      width: 48px;
+      height: 48px;
+    }
+    @media (max-width: 900px) {
+      .guiding-inner { grid-template-columns: 1fr; }
+    }
+
+    /* ── Approach Section ─────────────────────────────────── */
+    .approach-section {
+      background: #f4f4f4;
+      padding: 80px 0;
+    }
+    .approach-inner {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 40px;
+      align-items: start;
+      margin-bottom: 48px;
+    }
+    .approach-heading {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 42px;
+      font-weight: 300;
+      color: #161616;
+      line-height: 1.18;
+      margin-bottom: 0;
+    }
+    .approach-note {
+      font-size: 16px;
+      color: #161616;
+      line-height: 1.5;
+      max-width: 42ch;
+      margin-top: auto;
+    }
+    .approach-heading-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 40px;
+    }
+    .approach-visual {
+      background: #e8e8e8;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      align-items: stretch;
+      width: 538px;
+      height: 328px;
+      flex-shrink: 0;
+    }
+    .approach-visual img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .approach-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    @media (max-width: 900px) {
+      .approach-inner { grid-template-columns: 1fr; gap: 32px; }
+      .approach-visual { width: 100%; height: 260px; }
+      .approach-options { grid-template-columns: 1fr; }
+    }
+
+    /* ── Quote Section ────────────────────────────────────── */
+    .quote-section {
+      background: #ffffff;
+      padding: 64px 0 48px;
+    }
+    .quote-text {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 32px;
+      font-weight: 300;
+      font-style: italic;
+      color: #0f62fe;
+      line-height: 1.3;
+      max-width: 640px;
+      margin-bottom: 28px;
+    }
+    .quote-text strong {
+      font-weight: 600;
+    }
+    .quote-sub {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 15px;
+      color: #161616;
+      line-height: 1.6;
+      max-width: 52ch;
+      margin-bottom: 10px;
+    }
+    .quote-scroll {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 14px;
+      color: #525252;
+      margin-top: 8px;
+    }
+    .quote-scroll img {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
     }
 
     /* ── Responsive ───────────────────────────────────────── */
     @media (max-width: 900px) {
       .hero-inner { grid-template-columns: 1fr; }
-      .hero-visual { min-height: 220px; }
-      .hero-content { padding: 3rem 0 2rem; }
+      .hero-visual { min-height: 280px; }
+      .hero-content { padding: 48px 0 32px; }
       .value-grid { grid-template-columns: 1fr; }
       .value-card { border-right: none; border-bottom: 1px solid #e0e0e0; }
       .value-card:last-child { border-bottom: none; }
       .options-grid { grid-template-columns: 1fr; }
       .journey-banner-inner { grid-template-columns: 1fr; }
-      .footer-top { flex-direction: column; gap: 2rem; }
-      .footer-links { flex-direction: column; gap: 1.5rem; }
+      .footer-top { flex-direction: column; gap: 32px; }
+      .footer-links { flex-direction: column; gap: 24px; }
     }
     @media (max-width: 600px) {
       .metric-strip .container { flex-direction: column; }
-      .metric-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.12); }
-      .site-nav a { font-size: 0.75rem; padding: 0 0.5rem; }
-      .hero-headline { font-size: 2rem; }
-      .section-title { font-size: 1.5rem; }
+      .metric-item { border-bottom: 1px solid #e0e0e0; }
+      .site-nav a { font-size: 12px; padding: 0 10px; }
+      .hero-headline { font-size: 32px; }
+      .section-title { font-size: 24px; }
+      .feedback-tab { display: none; }
     }
-    /* ── Beta Banner ──────────────────────────────────────── */
-    .beta-banner {
-      background: #fff8e1;
-      border-bottom: 1px solid #f1c21b;
-      padding: 0.625rem 0;
-    }
-    .beta-banner .container {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-    .beta-badge {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.6875rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      color: #b45309;
-      background: #fef3c7;
-      border: 1px solid #f1c21b;
-      padding: 0.2rem 0.55rem;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-    .beta-banner-text {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.8125rem;
-      color: #525252;
-      flex: 1;
-    }
-    .beta-banner-text strong {
-      color: #161616;
-      font-weight: 600;
-    }
-    .beta-banner-link {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.8125rem;
-      font-weight: 600;
-      color: #0f62fe;
-      white-space: nowrap;
-      flex-shrink: 0;
-      transition: color 0.1s;
-    }
-    .beta-banner-link:hover { color: #0043ce; text-decoration: underline; }
   </style>
 </head>
 <body>
 
-  <!-- ═══════════════ BETA BANNER ═══════════════════════════ -->
-  <div class="beta-banner" id="beta-banner" role="note" aria-label="Beta notice">
-    <div class="container">
-      <span class="beta-badge">BETA</span>
-      <p class="beta-banner-text">
-        <strong>Beta — your feedback shapes this tool.</strong>
-        Use it with real accounts, drive the conversation, and tell us what to improve. Not yet supported: partner sharing, self-serve from cloud, and automatic data capture.
-      </p>
-      <a href="https://wkf.ms/4y6RVgc" target="_blank" rel="noopener noreferrer" class="beta-banner-link">Share feedback ↗</a>
-
-    </div>
-  </div>
+  <!-- ═══════════════ FIXED FEEDBACK TAB ═══════════════════ -->
+  <a href="https://wkf.ms/4y6RVgc" target="_blank" rel="noopener noreferrer" class="feedback-tab" aria-label="Share feedback">Feedback</a>
 
   <!-- ═══════════════ HEADER ════════════════════════════════ -->
   <header class="site-header">
-    <div class="container">
-      <div class="header-wordmark">
-        <img src="assets/IBM Maximo Application Suite.svg" alt="IBM MAS" />
-        <span class="header-wordmark-text">
-          M-GRAT <span>· MAS Growth Readiness Assessment</span>
-        </span>
-      </div>
+    <div class="site-header-inner">
+      <span class="header-sitename">IBM <strong>Maximo Growth Opportunity Assessment Tool</strong></span>
       <nav class="site-nav" aria-label="Primary">
         <a href="#" class="active">Overview</a>
-        <a href="journeys.html">Growth Journeys</a>
-        <a href="https://m-grat-beta-vercel.vercel.app/" target="_blank" class="nav-cta">Launch Tool ↗</a>
-        <a href="https://wkf.ms/4y6RVgc" target="_blank" rel="noopener noreferrer" class="nav-cta">Feedback ↗</a>
+        <a href="journeys.html">Opportunity paths</a>
       </nav>
     </div>
   </header>
@@ -945,31 +1366,46 @@
     <div class="container">
       <div class="hero-inner">
         <div class="hero-content">
-          <p class="hero-eyebrow">IBM Maximo Application Suite · Internal Enablement</p>
-          <h1 class="hero-headline">Turn customer uncertainty <span style="color:#7c3df4;font-weight:600;">into a growth plan.</span></h1>
-          <p class="hero-body">
-            Use the <strong>Maximo Growth Assessment</strong> to give customers clarity on where they are, confidence in what comes next, and a roadmap to get there.
-          </p>
-          <div class="hero-pills" aria-label="Intended audience">
-            <span class="pill">IBM Sellers &amp; CSEs</span>
-            <span class="pill">Business Partners</span>
-            <span class="pill">Technical Specialists</span>
-            <span class="pill">Product Managers</span>
-            <span class="pill">Customer Success</span>
+          <!-- IBM Maximo wordmark -->
+          <div class="hero-wordmark">
+            <img src="assets/IBM Maximo Application Suite.svg" alt="IBM Maximo Application Suite" />
+            <span class="hero-wordmark-text">IBM <strong>Maximo®</strong></span>
           </div>
+          <!-- Heading -->
+          <h1 class="hero-headline">
+            Turn customer uncertainty
+            <strong>into a growth plan.</strong>
+          </h1>
+          <!-- Label + version tag -->
+          <div class="hero-label-row">
+            <span class="hero-label">IBM internal sales only</span>
+            <span class="hero-version-tag">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M17 22v-8h-4v2h2v6h-3v2h8v-2zM16 8a1.5 1.5 0 100 3 1.5 1.5 0 000-3z"/><path d="M16 30a14 14 0 110-28 14 14 0 010 28zm0-26a12 12 0 100 24 12 12 0 000-24z"/></svg>
+              Beta v3
+            </span>
+          </div>
+          <!-- Body copy -->
+          <p class="hero-body">
+            Use the Maximo Growth Opportunity Assessment Tool to guide customers through a structured conversation about their Asset Performance Management (APM) and Field Service Management (FSM) goals.
+          </p>
+          <p class="hero-body">
+            Together, you'll identify where customers are creating value today, uncover opportunities for greater business impact, and explore prioritized recommendations that help them maximize the value of their existing AppPoints investment while supporting continued progress.
+          </p>
+          <!-- CTAs -->
           <div class="hero-actions">
-            <a href="https://m-grat-beta-vercel.vercel.app/" target="_blank" class="btn-primary">
-              Launch Live Assessment
+            <a href="https://m-grat-beta-vercel.vercel.app/" target="_blank" rel="noopener noreferrer" class="btn-primary">
+              Launch live assessment
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M26 28H6a2 2 0 01-2-2V6a2 2 0 012-2h9v2H6v20h20v-9h2v9a2 2 0 01-2 2z"/><path d="M21 2v2h5.59L17 13.41 18.59 15 28 5.59V11h2V2z"/></svg>
             </a>
-            <a href="journeys.html" class="btn-secondary-link">
-              Explore Growth Journeys
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M18 6L16.6 7.4 24.2 15H4v2h20.2l-7.6 7.6L18 26l10-10z"/></svg>
+            <a href="#additional-resources" class="btn-secondary-link">
+              Explore additional resources
+              <img src="assets/Search--locate.svg" width="16" height="16" alt="" aria-hidden="true" style="display:inline-block;vertical-align:middle;" />
             </a>
           </div>
         </div>
+        <!-- Seller illustration -->
         <div class="hero-visual" aria-hidden="true">
-          <img src="assets/banner-illustration.png" alt="M-GRAT Assessment Illustration" />
+          <img src="assets/seller-hero.svg" alt="" />
         </div>
       </div>
     </div>
@@ -983,300 +1419,445 @@
         <div class="metric-label">Average completion time</div>
       </div>
       <div class="metric-item">
-        <div class="metric-value">100%</div>
-        <div class="metric-label">Client-ready instant report</div>
+        <div class="metric-value">Instant</div>
+        <div class="metric-label">Client-ready report</div>
       </div>
       <div class="metric-item">
-        <div class="metric-value">3–4</div>
-        <div class="metric-label">Prioritized roadmap actions</div>
+        <div class="metric-value">Three</div>
+        <div class="metric-label">Prioritized next actions</div>
       </div>
       <div class="metric-item">
-        <div class="metric-value">No login</div>
-        <div class="metric-label">Required to share results</div>
+        <div class="metric-value">No login required</div>
+        <div class="metric-label">&nbsp;</div>
       </div>
     </div>
   </div>
 
-  <!-- ═══════════════ VALUE FRAMEWORK ══════════════════════ -->
-  <section class="section section-alt">
+  <!-- ═══════════════ QUOTE / GUIDANCE OVERVIEW ════════════ -->
+  <section class="quote-section">
     <div class="container">
-      <div class="section-header">
-        <p class="section-eyebrow">Value Framework</p>
-        <h2 class="section-title">How you bring value through the assessment</h2>
-        <p class="section-subtitle">Three lenses that make M-GRAT a strategic conversation opener, not just a survey.</p>
-      </div>
-      <div class="value-grid" role="list">
-        <div class="value-card" role="listitem">
-          <img src="assets/Pictogram.svg" alt="" class="value-icon" aria-hidden="true" />
-          <p class="value-number">01 · WHERE THEY ARE</p>
-          <h3 class="value-title">Understand current adoption &amp; readiness stage</h3>
-          <p class="value-body">Instantly surface where the customer sits today across strategic readiness, data maturity, operational execution, and cultural change — across every account in your book.</p>
-        </div>
-        <div class="value-card" role="listitem">
-          <img src="assets/Pictogram-1.svg" alt="" class="value-icon" aria-hidden="true" />
-          <p class="value-number">02 · WHAT'S HOLDING THEM BACK</p>
-          <h3 class="value-title">Pinpoint blocker gaps and score breakdown</h3>
-          <p class="value-body">See exactly which dimensions are suppressing the overall score — so you can lead with the right conversation and bring the right IBM resource into the next call.</p>
-        </div>
-        <div class="value-card" role="listitem">
-          <img src="assets/Pictogram-2.svg" alt="" class="value-icon" aria-hidden="true" />
-          <p class="value-number">03 · WHAT TO DO NEXT</p>
-          <h3 class="value-title">Deliver a prioritized, shareable roadmap</h3>
-          <p class="value-body">3–4 high-impact next steps are generated automatically. The client-ready report requires no login and can be saved as a PDF — no post-processing required.</p>
-        </div>
-      </div>
+      <p class="quote-text">"Better conversations start<br>with a <strong>shared understanding."</strong></p>
+      <p class="quote-sub">The assessment runs entirely in the browser, with no login required. Customer<br>responses are processed locally, and a personalized report is generated instantly.</p>
+      <p class="quote-scroll">
+        Scroll down to learn more about the assessment
+        <img src="assets/Arrow--down-right.svg" alt="" aria-hidden="true" />
+      </p>
     </div>
   </section>
 
-  <!-- ═══════════════ TWO WAYS TO RUN IT ════════════════════ -->
-  <section class="section section-white">
+  <!-- ═══════════════ APPROACH SECTION ═════════════════════ -->
+  <section class="approach-section">
     <div class="container">
-      <div class="section-header">
-        <p class="section-eyebrow">For Sellers</p>
-        <h2 class="section-title">Two ways to run it</h2>
-        <p class="section-subtitle">Choose the mode that fits the customer situation — both produce the same client-ready output.</p>
+      <!-- Header row: heading left, illo card right -->
+      <div class="approach-inner">
+        <div class="approach-heading-col">
+          <h2 class="approach-heading">Choose the approach<br>that best fits the customer<br>conversation.</h2>
+          <p class="approach-note">Both options produce the same personalized opportunity roadmap.</p>
+        </div>
+        <div class="approach-visual" aria-hidden="true">
+          <img src="assets/sellers-illo-header.svg" alt="" />
+        </div>
       </div>
-      <div class="options-grid">
 
-        <!-- Option 1 -->
+      <!-- Two option cards -->
+      <div class="approach-options">
+
+        <!-- Option 1: Guided live session -->
         <div class="option-card">
-          <span class="option-badge">Option 1 · Facilitated</span>
-          <h3 class="option-title">On-call / Discovery session</h3>
-          <p class="option-sub">Guided live with the customer</p>
-          <p class="option-how-label">How</p>
-          <p class="option-body">Run the live assessment together on a call. Drive the questions, capture answers collaboratively, and walk through the report in real time.</p>
-          <div class="option-link-row">
-            <span class="option-url" id="tool-url">https://m-grat-beta-vercel.vercel.app/</span>
-            <button class="btn-copy" id="copy-btn" onclick="copyToolUrl()" aria-label="Copy tool URL">Copy Link</button>
+          <div class="option-card-header">
+            <div class="option-card-pictogram">
+              <img src="assets/video--chat.svg" alt="" aria-hidden="true" />
+            </div>
+            <div>
+              <p class="option-card-label">Option 1</p>
+              <p class="option-card-title">Guided live session</p>
+              <p class="option-card-sub">Complete the assessment with the customer</p>
+            </div>
           </div>
-          <div class="option-outcome">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true" style="flex-shrink:0;margin-top:1px"><path d="M14 21.414L9 16.414 10.414 15 14 18.586 21.586 11 23 12.414z"/><path d="M16 2a14 14 0 100 28A14 14 0 0016 2zm0 26a12 12 0 110-24 12 12 0 010 24z"/></svg>
-            In-browser report generated automatically on completion.
+          <div class="option-steps-wrap">
+            <ol class="option-steps">
+              <li>
+                <div style="display:flex;flex-direction:column;gap:4px;">
+                  <span>Open the live assessment, or copy the link:</span>
+                  <span style="display:flex;align-items:center;gap:8px;">
+                    <a href="https://m-grat-beta-vercel.vercel.app/" target="_blank" rel="noopener noreferrer" style="color:#0f62fe;font-weight:600;white-space:nowrap;">https://m-grat-beta-vercel.vercel.app</a>
+                    <button class="btn-copy" onclick="navigator.clipboard.writeText('https://m-grat-beta-vercel.vercel.app/').then(()=>{this.textContent='Copied!';this.classList.add('copied');setTimeout(()=>{this.textContent='Click to copy';this.classList.remove('copied')},2000)})">Click to copy</button>
+                  </span>
+                </div>
+              </li>
+              <li>Drive the questions.</li>
+              <li>Capture the customer's answers.<br>The report is generated automatically upon completion.</li>
+              <li>Walk through the report in real time.</li>
+              <li class="step-empty">&nbsp;</li>
+            </ol>
+          </div>
+          <div style="display:flex;justify-content:flex-end;">
+            <a href="https://m-grat-beta-vercel.vercel.app/" target="_blank" rel="noopener noreferrer" class="btn-primary">
+              Launch live assessment
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M26 28H6a2 2 0 01-2-2V6a2 2 0 012-2h9v2H6v20h20v-9h2v9a2 2 0 01-2 2z"/><path d="M21 2v2h5.59L17 13.41 18.59 15 28 5.59V11h2V2z"/></svg>
+            </a>
           </div>
         </div>
 
-        <!-- Option 2 -->
+        <!-- Option 2: Customer-led -->
         <div class="option-card">
-          <span class="option-badge">Option 2 · Self-serve</span>
-          <h3 class="option-title">Async / Offline</h3>
-          <p class="option-sub">Customer completes independently</p>
-          <p class="option-how-label">How</p>
-          <p class="option-body">Send the standalone single-file HTML bundle to the customer. They complete it on their own time — no internet required.</p>
-          <ol class="option-steps">
-            <li>
-              <div class="option-step-content">
-                <span>Download the standalone assessment file.</span>
-                <a href="MAS-growth-assessment-self-serve.html" download="MAS-growth-assessment-self-serve.html" class="btn-download">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4zm0-10l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
-                  Download
-                </a>
+          <div class="option-card-header">
+            <div class="option-card-pictogram">
+              <img src="assets/Option 2 customer led.png" alt="" aria-hidden="true" style="width: 64px; height: 64px;" />
+            </div>
+            <div>
+              <p class="option-card-label">Option 2</p>
+              <p class="option-card-title">Customer-led</p>
+              <p class="option-card-sub">Send the assessment for independent completion</p>
+            </div>
+          </div>
+          <div class="option-steps-wrap">
+            <ol class="option-steps">
+              <li>Download the assessment file.</li>
+              <li>Send the attached file to the user through an approved channel: email, Box, or OneDrive.</li>
+              <li>The customer opens the file, completes the assessment, and saves the report as a PDF.</li>
+              <li>The customer sends the report back.</li>
+              <li>Schedule a follow-up conversation.</li>
+            </ol>
+          </div>
+          <div style="display:flex;justify-content:flex-end;">
+            <a href="MAS-growth-assessment-self-serve.html" download="MAS-growth-assessment-self-serve.html" class="btn-primary">
+              Download assessment
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4zm0-10l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
+            </a>
+          </div>
+        </div>
+
+      </div><!-- end approach-options -->
+    </div>
+  </section>
+
+  <!-- ═══════════════ WHAT IS IN THE REPORT ════════════════ -->
+  <section class="report-section">
+    <div class="container">
+      <h2 class="report-section-heading">What is included in the report</h2>
+      <div class="report-grid">
+
+        <!-- Left: shared understanding card -->
+        <div class="report-card">
+          <div class="report-card-header">
+            <div class="report-card-icon">
+              <img src="assets/location.svg" alt="" aria-hidden="true" />
+            </div>
+            <div>
+              <p class="report-card-title">Build a shared understanding<br>of where the customer is today</p>
+              <p class="report-card-body">The assessment analyzes customer responses to highlight established strengths, areas requiring attention, and opportunities for further progress.</p>
+            </div>
+          </div>
+          <!-- GIF preview -->
+          <img src="assets/card 1 dimentions.svg" alt="Preview of capability dimensions" class="report-card-gif" />
+        </div>
+
+        <!-- Right: two stacked cards -->
+        <div class="report-right">
+
+          <!-- Reveal untapped value -->
+          <div class="report-card">
+            <div class="report-card-header">
+              <div class="report-card-icon">
+                <img src="assets/destination.svg" alt="" aria-hidden="true" />
               </div>
-            </li>
-            <li>Attach the file to an email or share via Box / OneDrive.</li>
-            <li>Customer opens in any browser (offline-ready), answers all questions, and clicks <strong>Save as PDF</strong>.</li>
-            <li>Customer sends the PDF back to you for review and follow-up conversation.</li>
-          </ol>
-        </div>
+              <div>
+                <p class="report-card-title">Reveal untapped value</p>
+                <p class="report-card-body">The assessment maps the results to relevant APM and FSM applications and identifies prioritized opportunities for improvement.</p>
+              </div>
+            </div>
+            <!-- GIF preview -->
+            <div class="report-card-preview">
+              <img src="assets/Stages 2.svg" alt="Preview of stage progression" class="report-card-gif" />
+            </div>
+          </div>
 
+          <!-- Turn insights into actions -->
+          <div class="report-action-card">
+            <div class="report-action-header">
+              <div class="report-action-icon">
+                <img src="assets/hiking.svg" alt="" aria-hidden="true" />
+              </div>
+              <div>
+                <p class="report-action-title">Turn insights into prioritized actions</p>
+                <p class="report-action-body">The report provides recommended next steps, conversation starters, and opportunities to get more value from the customer's existing AppPoints investment.</p>
+              </div>
+            </div>
+            <div class="report-action-step-block">
+              <div class="report-action-step-inner">
+                <img src="assets/data--scientist.svg" alt="" aria-hidden="true" />
+                <p class="report-action-step-text"><strong>Step 01:</strong><br>Collect periodic condition readings in Maximo Manage to trigger maintenance work when predefined operating limits are breached.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- ═══════════════ HOW TO GUIDE ACCORDION ════════════════ -->
-  <section class="section section-alt">
+  <!-- ═══════════════ GUIDING THE CUSTOMER ═════════════════ -->
+  <section class="guiding-section">
     <div class="container">
       <div class="section-header">
-        <p class="section-eyebrow">Seller Guide</p>
-        <h2 class="section-title">How to guide the customer</h2>
-        <p class="section-subtitle">A five-step flow for turning assessment results into a growth conversation.</p>
+        <h2 class="section-title" style="font-size:42px;font-weight:300;line-height:1.19;">Guiding the customer</h2>
+        <p class="section-subtitle">Use these five steps to understand this tool and guide the next conversation with your customer.</p>
       </div>
-
-      <div class="accordion" role="list">
-
-        <div class="accordion-item" role="listitem">
-          <button class="accordion-trigger" aria-expanded="true" aria-controls="panel-1" onclick="toggleAccordion(this)">
-            <span class="accordion-step">Step 1</span>
-            <span class="accordion-title">Launch &amp; Discovery</span>
-            <svg class="accordion-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 22L6 12l1.4-1.4L16 19.2l8.6-8.6L26 12z"/></svg>
-          </button>
-          <div class="accordion-panel open" id="panel-1" role="region">
-            <p>Open the live link or send the self-serve bundle depending on the engagement model. Before starting, set the stage clearly with the customer:</p>
-            <ul>
-              <li><strong>This is a diagnostic, not an audit.</strong> There are no wrong answers — only honest ones.</li>
-              <li>Remind them the goal is to identify the fastest path forward, not to score their current state.</li>
-              <li>Estimate 10–15 minutes for the full assessment. Have them focus on their primary operational site or BU if the organization is large.</li>
-            </ul>
+      <div class="guiding-inner">
+        <!-- Left: video placeholder -->
+        <div>
+          <div class="guiding-video" aria-hidden="true">
+            <img src="assets/Play--filled.svg" alt="" class="guiding-video-play" />
           </div>
         </div>
+        <!-- Right: accordion -->
+        <div>
+          <div class="accordion" role="list">
 
-        <div class="accordion-item" role="listitem">
-          <button class="accordion-trigger" aria-expanded="false" aria-controls="panel-2" onclick="toggleAccordion(this)">
-            <span class="accordion-step">Step 2</span>
-            <span class="accordion-title">Read the Results</span>
-            <svg class="accordion-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 22L6 12l1.4-1.4L16 19.2l8.6-8.6L26 12z"/></svg>
-          </button>
-          <div class="accordion-panel" id="panel-2" role="region">
-
-            <div class="panel-subsection">
-              <p class="panel-subsection-label">Overall Maturity</p>
-              <p>The report opens with an <strong>overall maturity score</strong> mapped to one of five descriptive levels. This tells you where the customer stands today across their full Maximo environment — use it to set shared context at the start of the conversation, not as a target.</p>
-              <p style="margin-top:0.625rem">
-                <span class="stage-pill stage-1">1 · Foundational</span>
-                <span class="stage-pill stage-2">2 · Core Operations</span>
-                <span class="stage-pill stage-3">3 · Connected</span>
-                <span class="stage-pill stage-4">4 · Optimized</span>
-                <span class="stage-pill stage-5">5 · Prescriptive &amp; Automated</span>
-              </p>
+            <div class="accordion-item" role="listitem">
+              <button class="accordion-trigger" aria-expanded="true" aria-controls="panel-1" onclick="toggleAccordion(this)">
+                <span class="accordion-step">1.</span>
+                <span class="accordion-title">Start the growth opportunity conversation</span>
+                <svg class="accordion-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 22L6 12l1.4-1.4L16 19.2l8.6-8.6L26 12z"/></svg>
+              </button>
+              <div class="accordion-panel open" id="panel-1" role="region">
+                <p>Open the live assessment or share the self-service version, depending on how you are engaging with the customer.</p>
+                <p>Before beginning the assessment, set clear expectations:</p>
+                <ul>
+                  <li><strong>This is a diagnostic, not an audit.</strong> Honest answers help reveal the most relevant growth opportunities.</li>
+                  <li>Focus the conversation on where the customer can gain more value, rather than on evaluating past performance.</li>
+                  <li>Set aside 10–15 minutes for the assessment. For larger organizations, complete the assessment for one operational site or business unit at a time.</li>
+                </ul>
+              </div>
             </div>
 
-            <div class="panel-subsection">
-              <p class="panel-subsection-label">Dimensions</p>
-              <p>Below the headline, the report shows scores across <strong>8 capability dimensions</strong>. Each is rated <em>Emerging</em> (below 40), <em>Growing</em> (40–74), or <em>Established</em> (75+):</p>
-              <ul>
-                <li><strong>Asset Data</strong> — Asset data quality, criticality, and hierarchy <button class="dim-tooltip-btn" onclick="toggleTooltip(this)" aria-label="More info">?<span class="dim-tooltip-text">Covers asset registry governance, criticality scoring, classification structure, and parent-child hierarchies — the foundation for work order linkage and downstream analytics.</span></button></li>
-                <li><strong>Work Management</strong> — Job plan and PM maturity <button class="dim-tooltip-btn" onclick="toggleTooltip(this)" aria-label="More info">?<span class="dim-tooltip-text">How well work is templated, PM strategies are tied to asset needs, and failure codes are captured at close-out.</span></button></li>
-                <li><strong>Inspections &amp; Condition Capture</strong> — Inspection programs and condition data <button class="dim-tooltip-btn" onclick="toggleTooltip(this)" aria-label="More info">?<span class="dim-tooltip-text">Whether formal inspection cycles exist and condition readings are captured digitally against assets.</span></button></li>
-                <li><strong>Supply Chain &amp; Inventory</strong> — Storeroom and inventory readiness <button class="dim-tooltip-btn" onclick="toggleTooltip(this)" aria-label="More info">?<span class="dim-tooltip-text">From basic parts tracking through to demand-driven reorder planning and inventory optimization against predicted failure risk.</span></button></li>
-                <li><strong>Scheduling</strong> — Schedule planning and optimization <button class="dim-tooltip-btn" onclick="toggleTooltip(this)" aria-label="More info">?<span class="dim-tooltip-text">Whether work has scheduled dates, forward-looking schedules are being used, and constraint-based optimization is in place.</span></button></li>
-                <li><strong>Assignment &amp; Dispatch</strong> — Work assignment and dispatch <button class="dim-tooltip-btn" onclick="toggleTooltip(this)" aria-label="More info">?<span class="dim-tooltip-text">How work is owned, dispatched, and whether skills-based best-fit assignment is being used.</span></button></li>
-                <li><strong>Reliability Practices</strong> — Failure code governance and reliability strategies <button class="dim-tooltip-btn" onclick="toggleTooltip(this)" aria-label="More info">?<span class="dim-tooltip-text">Whether failure codes feed FMEA, reliability strategies tie PMs to failure modes, and the knowledge base improves over time.</span></button></li>
-                <li><strong>Condition Monitoring &amp; Prediction</strong> — Condition visibility and predictive capability <button class="dim-tooltip-btn" onclick="toggleTooltip(this)" aria-label="More info">?<span class="dim-tooltip-text">From low-frequency manual readings and condition-driven alerts through to real-time telemetry, health scoring, and forward-looking risk prediction.</span></button></li>
-              </ul>
-              <p style="margin-top:0.625rem">Any dimension rated <em>Emerging</em> is often the most impactful conversation opener — it signals where a targeted investment would have the greatest lift on the overall score.</p>
+            <div class="accordion-item" role="listitem">
+              <button class="accordion-trigger" aria-expanded="false" aria-controls="panel-2" onclick="toggleAccordion(this)">
+                <span class="accordion-step">2.</span>
+                <span class="accordion-title">Understand the operational profile</span>
+                <svg class="accordion-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 22L6 12l1.4-1.4L16 19.2l8.6-8.6L26 12z"/></svg>
+              </button>
+              <div class="accordion-panel" id="panel-2" role="region">
+
+                <div class="panel-subsection">
+                  <p class="panel-subsection-label">Operational profile</p>
+                  <p>The report turns the customer's responses into an operational profile that shows where Maximo is creating value today and where further opportunities may exist. It highlights verified value drivers, recommends paths to greater value, and identifies a practical next step based on the customer's capabilities and priorities.</p>
+                </div>
+
+                <div class="panel-subsection">
+                  <p class="panel-subsection-label">Growth capabilities</p>
+                  <p>The operational profile shows where the customer is currently realizing value and where additional capabilities could support further growth. It covers eight capability areas:</p>
+                  <ul>
+                    <li><strong>Asset data:</strong> Asset data quality, criticality, and hierarchy</li>
+                    <li><strong>Work management:</strong> Job plan and preventive maintenance capabilities</li>
+                    <li><strong>Inspections and condition capture:</strong> Inspection programs and condition data</li>
+                    <li><strong>Supply chain and inventory:</strong> Storeroom and inventory readiness</li>
+                    <li><strong>Scheduling:</strong> Schedule planning and optimization</li>
+                    <li><strong>Assignment and dispatch:</strong> Work assignment and dispatch</li>
+                    <li><strong>Reliability practices:</strong> Failure-code governance and reliability strategies</li>
+                    <li><strong>Condition monitoring and prediction:</strong> Condition visibility and predictive capabilities</li>
+                  </ul>
+                  <p>Each capability is shown as <em>Emerging</em>, <em>Growing</em>, or <em>Established</em>. These ratings help guide the conversation:</p>
+                  <ul>
+                    <li><strong>Established:</strong> Capabilities already supporting operational value</li>
+                    <li><strong>Growing:</strong> Capabilities with a foundation that can be expanded</li>
+                    <li><strong>Emerging:</strong> Capabilities that may present new growth opportunities</li>
+                  </ul>
+                  <p>Treat the ratings as conversation starters rather than final conclusions. Consider the customer's priorities, operating model, available information, and desired outcomes before identifying the most valuable opportunity.</p>
+                </div>
+
+                <div class="panel-subsection panel-subsection--last">
+                  <p class="panel-subsection-label">Verified value drivers</p>
+                  <p>The report highlights verified value drivers, which are capabilities already working well and contributing to the customer's operations. Use this section to:</p>
+                  <ul>
+                    <li>Recognize the progress the customer has already made.</li>
+                    <li>Connect existing capabilities to measurable or observable value.</li>
+                    <li>Build confidence in the results through supporting evidence.</li>
+                    <li>Identify strong foundations that can enable the customer's next growth opportunity.</li>
+                  </ul>
+                  <p>The conversation should begin with existing value, not capability gaps. This helps position the roadmap as an extension of the customer's success, rather than a corrective plan.</p>
+                </div>
+
+              </div>
             </div>
 
-            <div class="panel-subsection">
-              <p class="panel-subsection-label">Strengths</p>
-              <p>Dimensions rated <em>Established</em> are the customer's proof points — capabilities that are already working well and creating value today. Don't overlook them.</p>
-              <ul>
-                <li>Use strengths to build credibility and reinforce what good looks like — they validate the investment the customer has already made.</li>
-                <li>Identify which Established dimensions are prerequisites for the next stage of growth. A strong Asset Data foundation, for example, directly enables more advanced APM and condition monitoring capabilities.</li>
-                <li>Frame the conversation around building <em>on</em> their strengths, not just fixing gaps — it makes the roadmap feel achievable rather than daunting.</li>
-              </ul>
+            <div class="accordion-item" role="listitem">
+              <button class="accordion-trigger" aria-expanded="false" aria-controls="panel-3" onclick="toggleAccordion(this)">
+                <span class="accordion-step">3.</span>
+                <span class="accordion-title">Explore APM and FSM paths to greater value</span>
+                <svg class="accordion-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 22L6 12l1.4-1.4L16 19.2l8.6-8.6L26 12z"/></svg>
+              </button>
+              <div class="accordion-panel" id="panel-3" role="region">
+                <p>The APM and FSM paths define specific routes to greater value. Each path includes a current stage and target stage, showing where the customer is today and where additional capabilities could create the most value.</p>
+                <ul>
+                  <li><strong>Review the target stage narrative.</strong> Use the business outcomes and potential improvements as conversation anchors.</li>
+                  <li><strong>Look beyond the primary path.</strong> If the customer's results emphasize APM, review the FSM path as well, and vice versa. This can reveal opportunities beyond the immediate next step.</li>
+                  <li><strong>Connect the path to Maximo.</strong> Use the recommended capabilities and supporting metrics to connect each opportunity to relevant Maximo solutions.</li>
+                  <li><strong>Confirm the opportunity.</strong> Ask whether the path and target stage align with the customer's priorities and desired outcomes.</li>
+                </ul>
+                <p style="margin-top:12px">
+                  <a href="journeys.html" style="display:inline-flex;align-items:center;gap:6px;font-size:14px;color:#0f62fe;font-weight:500;">
+                    Explore the paths to greater value →
+                  </a>
+                </p>
+              </div>
             </div>
 
-            <div class="panel-subsection panel-subsection--last">
-              <p class="panel-subsection-label">Unknowns</p>
-              <p>When a customer answers <em>Unknown</em> to a question, the tool treats that response the same as an unmet milestone — it counts against the score. However, <em>Unknown</em> doesn't always mean <em>absent</em> — it often means the wrong person answered that question.</p>
-              <p>Scan the responses for <em>Unknown</em> answers before the follow-up conversation:</p>
-              <ul>
-                <li>They're a signal that the customer may not have full visibility into their own environment — a second stakeholder (IT, Operations lead, or plant-level manager) may hold the real answer.</li>
-                <li>Use unknowns as conversation starters: <em>"You answered Unknown for inspection data capture — is there someone on the operations side we should pull in to validate that?"</em></li>
-                <li>Treat a cluster of unknowns in a single dimension as a discovery gap, not a confirmed deficiency. The follow-up goal is to replace unknowns with <em>Yes</em> or <em>No</em> answers — either outcome resolves the uncertainty and improves the quality of the roadmap.</li>
-              </ul>
+            <div class="accordion-item" role="listitem">
+              <button class="accordion-trigger" aria-expanded="false" aria-controls="panel-4" onclick="toggleAccordion(this)">
+                <span class="accordion-step">4.</span>
+                <span class="accordion-title">Review the action plan</span>
+                <svg class="accordion-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 22L6 12l1.4-1.4L16 19.2l8.6-8.6L26 12z"/></svg>
+              </button>
+              <div class="accordion-panel" id="panel-4" role="region">
+                <p>The action plan identifies the customer's highest-value next step and additional actions that can support continued growth. Use the plan to turn the paths to greater value into practical next steps.</p>
+                <ul>
+                  <li><strong>Start with the highest-value next step.</strong> Explain why this action was recommended and connect it to the customer's priorities, target stage, and potential value.</li>
+                  <li><strong>Review the foundational actions.</strong> Walk through what the customer can do now, which Maximo capabilities can help, and what support may be needed.</li>
+                  <li><strong>Consider the additional next steps.</strong> Show how the actions build on one another and help the customer continue progressing toward the target stage.</li>
+                  <li><strong>Use the supporting resources.</strong> Identify the guidance, Maximo capabilities, and IBM expertise that can help the customer move forward.</li>
+                  <li><strong>Let the customer lead.</strong> Ask which actions would create the most value now, then shape the next steps around the customer's response.</li>
+                </ul>
+              </div>
             </div>
 
-          </div>
-        </div>
+            <div class="accordion-item" role="listitem">
+              <button class="accordion-trigger" aria-expanded="false" aria-controls="panel-5" onclick="toggleAccordion(this)">
+                <span class="accordion-step">5.</span>
+                <span class="accordion-title">Prepare for the follow-up conversation</span>
+                <svg class="accordion-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 22L6 12l1.4-1.4L16 19.2l8.6-8.6L26 12z"/></svg>
+              </button>
+              <div class="accordion-panel" id="panel-5" role="region">
+                <p>Bring together the customer's operational profile, paths to greater value, and action plan into a clear point of view for the follow-up conversation.</p>
+                <ul>
+                  <li><strong>Lead with verified value.</strong> Recognize the capabilities already creating value and use them as the foundation for the conversation.</li>
+                  <li><strong>Summarize the opportunity.</strong> Connect the customer's priorities to the selected path, target stage, and potential value.</li>
+                  <li><strong>Focus on the action plan.</strong> Be prepared to explain the highest-value next step, additional actions, and the support available to help the customer move forward.</li>
+                  <li><strong>Bring in the right people.</strong> Identify the customer stakeholders and IBM experts needed to validate the opportunity and support the next steps.</li>
+                  <li><strong>Set a clear next step.</strong> End the conversation with an agreed action, such as a follow-up workshop, technical discovery session, or deeper discussion of the recommended path.</li>
+                </ul>
+                <p>Use the report as a shared reference before and during the conversation. Share it with the customer and relevant stakeholders to help everyone align on the opportunity and next step.</p>
+              </div>
+            </div>
 
-        <div class="accordion-item" role="listitem">
-          <button class="accordion-trigger" aria-expanded="false" aria-controls="panel-3" onclick="toggleAccordion(this)">
-            <span class="accordion-step">Step 3</span>
-            <span class="accordion-title">Explore Expansion Pathways</span>
-            <svg class="accordion-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 22L6 12l1.4-1.4L16 19.2l8.6-8.6L26 12z"/></svg>
-          </button>
-          <div class="accordion-panel" id="panel-3" role="region">
-            <p>The Growth Journeys define specific expansion paths across the APM and FSM tracks. Unlike the overall maturity level — which is purely descriptive — each journey has a <strong>current stage</strong> and a <strong>target stage</strong>, identifying where the customer is on that capability track today and where they have the most to gain. Use the journey detail to build a picture of what reaching the target stage would mean for the business.</p>
-            <ul>
-              <li><strong>Review the target stage narrative.</strong> Each stage describes the business outcomes, potential KPI improvements, and which MAS products come into play. Use the outcome stats as conversation anchors.</li>
-              <li><strong>Look beyond the current track.</strong> If the customer's results focus on APM milestones, review what FSM milestones they're also missing — and vice versa. This surfaces a broader expansion story beyond the immediate next step.</li>
-              <li><strong>Cross-reference milestones.</strong> The Journeys page details each milestone's description, value statement, and Maximo touchpoints — helping you map the customer's gaps to specific MAS modules and IBM services.</li>
-            </ul>
-            <p style="margin-top:0.75rem">
-              <a href="journeys.html" style="display:inline-flex;align-items:center;gap:0.375rem;font-size:0.875rem;color:#0f62fe;font-weight:500;">
-                Explore the Growth Journeys →
-              </a>
-            </p>
-          </div>
-        </div>
-
-        <div class="accordion-item" role="listitem">
-          <button class="accordion-trigger" aria-expanded="false" aria-controls="panel-4" onclick="toggleAccordion(this)">
-            <span class="accordion-step">Step 4</span>
-            <span class="accordion-title">Review the Action Plan</span>
-            <svg class="accordion-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 22L6 12l1.4-1.4L16 19.2l8.6-8.6L26 12z"/></svg>
-          </button>
-          <div class="accordion-panel" id="panel-4" role="region">
-            <p>The report surfaces a prioritized hero action and 2–3 secondary actions drawn from the customer's unmet milestones. Each action includes the foundational steps required and flags likely blockers.</p>
-            <ul>
-              <li><strong>Start with the target stage.</strong> The tool recommends a target stage based on the customer's stated objectives — confirm whether this feels right before diving into the actions. <em>"Does this target make sense for where you want to be in the next 12–18 months?"</em></li>
-              <li><strong>Use the hero action as the anchor.</strong> This is the highest-priority milestone the customer should focus on first. Walk through the foundational steps together and identify which blockers need to be cleared — and whether IBM support is needed to clear them.</li>
-              <li><strong>Sequence the secondary actions.</strong> The plan is cumulative — earlier milestones unlock later ones. Help the customer distinguish quick wins from multi-quarter plays, and use that to shape a realistic roadmap.</li>
-              <li><strong>Let the customer lead.</strong> Ask which actions resonate most: <em>"Which of these would create the most value for your team right now?"</em> — then build the next steps around their answer.</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="accordion-item" role="listitem">
-          <button class="accordion-trigger" aria-expanded="false" aria-controls="panel-5" onclick="toggleAccordion(this)">
-            <span class="accordion-step">Step 5</span>
-            <span class="accordion-title">Prepare for the Conversation</span>
-            <svg class="accordion-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 22L6 12l1.4-1.4L16 19.2l8.6-8.6L26 12z"/></svg>
-          </button>
-          <div class="accordion-panel" id="panel-5" role="region">
-            <p>Before the follow-up call, bring together the results, the journeys context, and the action plan into a clear point of view for the customer.</p>
-            <ul>
-              <li><strong>Map actions to MAS modules and services.</strong> Use the milestone touchpoints from the Journeys page to tie each recommended action to a specific IBM product or offering.</li>
-              <li><strong>Identify who else to bring in.</strong> If any dimension score is low, a blocker requires technical depth, or the customer answered <em>Unknown</em> for several questions in a dimension, loop in the right stakeholder before the next call. Unknown answers often point to a gap in who was in the room — not a confirmed gap in capability.</li>
-              <li><strong>Use the report as a leave-behind.</strong> The PDF is client-ready with no login required — share it with the executive sponsor or champion as a pre-read for a broader team conversation.</li>
-              <li><strong>Set a clear next step.</strong> End the conversation with a defined action: a follow-up workshop, a technical discovery call, or a specific milestone to target together.</li>
-            </ul>
-          </div>
-        </div>
-
-      </div>
+          </div><!-- end accordion -->
+        </div><!-- end right column -->
+      </div><!-- end guiding-inner -->
     </div>
   </section>
 
-  <!-- ═══════════════ JOURNEY BANNER ════════════════════════ -->
-
-  <!-- ═══════════════ FEEDBACK SECTION ══════════════════════ -->
-  <section class="section section-alt" id="feedback-section">
+  <!-- ═══════════════ CTA + BETA SECTION ═══════════════════ -->
+  <section class="cta-section" id="feedback-section">
     <div class="container">
-      <div class="feedback-card">
-        <p class="section-eyebrow" style="margin-bottom:0.75rem">Community &amp; Feedback</p>
-        <h2 class="feedback-card-title" style="font-family:'IBM Plex Serif',serif;font-size:1.5rem;font-weight:300">Help us improve the tool</h2>
-        <p class="feedback-card-body">Spotted a gap in the questions? Have a customer use case that the assessment doesn't capture? Submit it directly to the product team — your input directly drives the next iteration.</p>
-        <a href="https://wkf.ms/4y6RVgc" target="_blank" rel="noopener noreferrer" class="btn-primary-ghost">
-          Share feedback on Monday.com ↗
-        </a>
-      </div>
-    </div>
-  </section>
+      <div class="cta-card">
 
-  <!-- ═══════════════ MATURITY MAPS SECTION ═════════════════ -->
-  <section class="section section-green">
-    <div class="container">
-      <div class="maturity-maps-block">
-        <div class="maturity-maps-block__icon" aria-hidden="true">
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <g clip-path="url(#clip0_flexibility_idx)">
-              <rect width="32" height="32" fill="white" fill-opacity="0.01"/>
-              <path d="M19.3612 30.9992H18.6412V15.9992C18.6412 14.6982 19.7002 13.6392 21.0012 13.6392H30.1322L27.7462 11.2532L28.2562 10.7442L31.5102 13.9992L28.2562 17.2542L27.7462 16.7452L30.1322 14.3592H21.0012C20.0972 14.3592 19.3612 15.0952 19.3612 15.9992V30.9992ZM16.3612 30.9992H15.6412V1.86823L13.2552 4.25323L12.7462 3.74423L16.0012 0.490234L19.2562 3.74523L18.7462 4.25423L16.3612 1.86823V30.9992ZM13.3612 30.9992H12.6412V20.9992C12.6412 20.0952 11.9052 19.3592 11.0012 19.3592H1.87019L4.25519 21.7442L3.74619 22.2542L0.492188 18.9992L3.74719 15.7452L4.25619 16.2542L1.87019 18.6392H11.0012C12.3022 18.6392 13.3612 19.6982 13.3612 20.9992V30.9992Z" fill="white"/>
-            </g>
-            <defs>
-              <clipPath id="clip0_flexibility_idx">
-                <rect width="32" height="32" fill="white"/>
-              </clipPath>
-            </defs>
-          </svg>
-        </div>
-        <div class="maturity-maps-block__body">
+        <!-- Block 1: Launch CTA -->
+        <div class="cta-block">
           <div>
-            <p class="maturity-maps-block__title">Asset Performance Management &amp; Field Service Management growth journeys</p>
-            <p class="maturity-maps-block__desc">Explore the journey from foundational asset management and coordinated field operations to predictive reliability, intelligent scheduling, and fully optimized enterprise performance.</p>
+            <h2 class="cta-heading">Ready to uncover your customer's next opportunity?</h2>
+            <p class="cta-sub">Invite the customer to complete the assessment or guide them through it live.</p>
           </div>
-          <div class="maturity-maps-block__actions">
-            <a class="btn-outline-white" href="apm-maturity-map.html" target="_blank" rel="noopener noreferrer">
-              APM Growth journey
-              <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 28H6a2 2 0 01-2-2V6a2 2 0 012-2h10v2H6v20h20V16h2v10a2 2 0 01-2 2z"/><path d="M21 2v2h5.59L18 12.59 19.41 14 28 5.41V11h2V2z"/></svg>
+          <div class="cta-actions">
+            <a href="https://m-grat-beta-vercel.vercel.app/" target="_blank" rel="noopener noreferrer" class="btn-primary">
+              Launch live assessment
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M26 28H6a2 2 0 01-2-2V6a2 2 0 012-2h9v2H6v20h20v-9h2v9a2 2 0 01-2 2z"/><path d="M21 2v2h5.59L17 13.41 18.59 15 28 5.59V11h2V2z"/></svg>
             </a>
-            <a class="btn-outline-white" href="fsm-maturity-map.html" target="_blank" rel="noopener noreferrer">
-              FSM Growth journey
-              <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 28H6a2 2 0 01-2-2V6a2 2 0 012-2h10v2H6v20h20V16h2v10a2 2 0 01-2 2z"/><path d="M21 2v2h5.59L18 12.59 19.41 14 28 5.41V11h2V2z"/></svg>
+            <a href="MAS-growth-assessment-self-serve.html" download="MAS-growth-assessment-self-serve.html" class="btn-dark">
+              Download assessment
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4zm0-10l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
             </a>
           </div>
         </div>
+
+        <!-- Block 2: Beta notice -->
+        <div class="cta-block">
+          <h2 class="beta-heading">This assessment is currently in beta.</h2>
+          <div class="beta-body">
+            <p><strong>Your feedback helps to shape this tool.</strong></p>
+            <p>Use the assessment with customers and share your feedback to help shape future enhancements. Submit feedback through the feedback form or Slack channel.</p>
+          </div>
+          <div class="beta-limitations">
+            <p>Beta limitations</p>
+            <ul>
+              <li>Partner sharing is unavailable.</li>
+              <li>Customer self-service from cloud is unavailable.</li>
+              <li>Automatic data capture is unavailable.</li>
+            </ul>
+          </div>
+          <div class="cta-actions">
+            <a href="https://wkf.ms/4y6RVgc" target="_blank" rel="noopener noreferrer" class="btn-primary">
+              Share feedback
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M26 28H6a2 2 0 01-2-2V6a2 2 0 012-2h9v2H6v20h20v-9h2v9a2 2 0 01-2 2z"/><path d="M21 2v2h5.59L17 13.41 18.59 15 28 5.59V11h2V2z"/></svg>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ ADDITIONAL RESOURCES ═════════════════ -->
+  <section class="resources-section" id="additional-resources">
+    <div class="container">
+      <h2 class="resources-heading">Additional resources</h2>
+      <div class="resources-grid">
+
+        <!-- Complete checklist -->
+        <div class="resource-item">
+          <img src="assets/complete checklist pictogram.svg" alt="" class="resource-icon" aria-hidden="true" />
+          <div class="resource-item-inner">
+            <div class="resource-copy">
+              <p class="resource-title">Complete checklist</p>
+              <p class="resource-desc">Explore all opportunities identified across APM and FSM. This roadmap provides a complete view of the milestones, recommended actions, and potential value ahead, helping you plan beyond the immediate next steps.</p>
+            </div>
+            <div class="resource-actions">
+              <a href="#" class="btn-outline-white">
+                Download checklist
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4zm0-10l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Maturity maps -->
+        <div class="resource-item">
+          <img src="assets/flexibility pictogram.svg" alt="" class="resource-icon" aria-hidden="true" />
+          <div class="resource-item-inner">
+            <div class="resource-copy">
+              <p class="resource-title">Asset Performance Management (APM) and Field Service Management (FSM) growth maps</p>
+              <p class="resource-desc">Explore the journey from foundational asset management and coordinated field operations to predictive reliability, intelligent scheduling, and fully optimized enterprise performance.</p>
+            </div>
+            <div class="resource-actions">
+              <a class="btn-outline-white" href="apm-maturity-map.html" target="_blank" rel="noopener noreferrer">
+                APM growth map
+                <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M5 3V4H11.295L3 12.295L3.705 13L12 4.705V11H13V3H5Z"/></svg>
+              </a>
+              <a class="btn-outline-white" href="fsm-maturity-map.html" target="_blank" rel="noopener noreferrer">
+                FSM growth map
+                <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M5 3V4H11.295L3 12.295L3.705 13L12 4.705V11H13V3H5Z"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comprehensive guide -->
+        <div class="resource-item">
+          <img src="assets/education pictogram.svg" alt="" class="resource-icon" aria-hidden="true" />
+          <div class="resource-item-inner">
+            <div class="resource-copy">
+              <p class="resource-title">Comprehensive guide for IBM sellers</p>
+              <p class="resource-desc">Guidance for delivering the assessment, framing questions, leading customer conversations, and turning insights into clear growth opportunities and next steps.</p>
+            </div>
+            <div class="resource-actions">
+              <a class="btn-outline-white" href="https://ibm.ent.box.com/file/2526117153120?s=vzdxkx7rj40nmc4g3i233l8i2z8d3ebo" target="_blank" rel="noopener noreferrer">
+                Enablement material
+                <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 28H6a2 2 0 01-2-2V6a2 2 0 012-2h10v2H6v20h20V16h2v10a2 2 0 01-2 2z"/><path d="M21 2v2h5.59L18 12.59 19.41 14 28 5.41V11h2V2z"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>
@@ -1284,33 +1865,17 @@
   <!-- ═══════════════ FOOTER ════════════════════════════════ -->
   <footer class="site-footer">
     <div class="container">
-      <div class="footer-top">
-        <div class="footer-brand">
-          <img src="assets/ibm-logo.svg" alt="IBM" />
-          <div class="footer-brand-name">M-GRAT</div>
-          <div class="footer-brand-sub">MAS Growth Readiness Assessment Tool</div>
+      <div class="footer-inner">
+        <div class="footer-logo">
+          <img src="assets/Image - IBM Logo.svg" alt="IBM" />
         </div>
-        <div class="footer-links">
-          <div class="footer-link-group">
-            <h4>Navigation</h4>
-            <a href="#">Overview</a>
-            <a href="journeys.html">Growth Journeys</a>
-            <a href="https://wkf.ms/4y6RVgc" target="_blank" rel="noopener noreferrer">Feedback ↗</a>
-          </div>
-          <div class="footer-link-group">
-            <h4>Resources</h4>
-            <a href="https://m-grat-beta-vercel.vercel.app/" target="_blank" rel="noopener noreferrer">Launch Live Tool ↗</a>
-            <a href="../assessment-standalone.html">Self-Serve Bundle</a>
-          </div>
-          <div class="footer-link-group">
-            <h4>Feedback</h4>
-            <a href="https://wkf.ms/4y6RVgc" target="_blank" rel="noopener noreferrer">Feedback Board</a>
-          </div>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <p class="footer-legal">© 2026 IBM Corporation. Internal use only. Not for external distribution.</p>
-        <span class="footer-version">beta</span>
+        <nav class="footer-legal-nav" aria-label="Legal">
+          <a href="https://www.ibm.com/contact/us/en/" target="_blank" rel="noopener noreferrer">Contact IBM</a>
+          <a href="https://www.ibm.com/privacy" target="_blank" rel="noopener noreferrer">Privacy</a>
+          <a href="https://www.ibm.com/legal" target="_blank" rel="noopener noreferrer">Terms of use</a>
+          <a href="https://www.ibm.com/accessibility" target="_blank" rel="noopener noreferrer">Accessibility</a>
+          <a href="#">Cookie Preferences</a>
+        </nav>
       </div>
     </div>
   </footer>
@@ -1347,29 +1912,6 @@
       }
     }
 
-    /* ── Copy to Clipboard ──────────────────────────────────── */
-    function copyToolUrl() {
-      const url = document.getElementById('tool-url').textContent.trim();
-      const btn = document.getElementById('copy-btn');
-
-      if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(url).then(function() {
-          showCopied(btn);
-        });
-      } else {
-        // Fallback for older browsers / non-HTTPS
-        var ta = document.createElement('textarea');
-        ta.value = url;
-        ta.style.position = 'fixed';
-        ta.style.opacity = '0';
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
-        showCopied(btn);
-      }
-    }
-
     /* ── Dimension Tooltips ─────────────────────────────────── */
     function toggleTooltip(btn) {
       var isOpen = btn.classList.contains('open');
@@ -1391,14 +1933,6 @@
       }
     }
 
-    function showCopied(btn) {
-      btn.textContent = 'Copied!';
-      btn.classList.add('copied');
-      setTimeout(function() {
-        btn.textContent = 'Copy Link';
-        btn.classList.remove('copied');
-      }, 2000);
-    }
   </script>
 
 </body>
