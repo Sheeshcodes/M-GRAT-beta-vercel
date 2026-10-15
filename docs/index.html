@@ -969,6 +969,7 @@
       .hero-inner {
         grid-template-columns: 1fr;
         gap: var(--cds-spacing-06);
+        min-height: 0;
       }
       .hero-visual {
         min-height: auto;
@@ -978,9 +979,16 @@
       .hero-content {
         padding: var(--cds-spacing-07) 0 0 0;
       }
+      .hero-body { max-width: 100%; }
       .hero-headline {
         font-size: clamp(32px, 5.5vw, 42px);
       }
+      /* Remove constraining max-widths that create right-side gaps */
+      .quote-text { max-width: 100%; }
+      .quote-sub { max-width: 100%; }
+      .section-subtitle { max-width: 100%; }
+      .approach-note { max-width: 100%; }
+      .cta-block { max-width: 100%; }
       .approach-inner {
         grid-template-columns: 1fr;
         gap: var(--cds-spacing-07);
@@ -1019,7 +1027,7 @@
     }
     @media (max-width: 600px) {
       .cds--grid {
-        padding: 0 16px;
+        padding: 0 var(--cds-spacing-05);
       }
       .hero {
         padding-top: var(--cds-spacing-07);
@@ -1036,20 +1044,21 @@
         font-size: 18px;
       }
       .hero-headline {
-        font-size: 30px;
+        font-size: 28px;
         line-height: 1.15;
         margin-bottom: var(--cds-spacing-05);
       }
       .hero-label-row {
-        gap: 10px;
+        gap: 8px;
         margin-bottom: var(--cds-spacing-05);
       }
       .hero-label {
-        font-size: 20px;
+        font-size: 18px;
       }
       .hero-body {
         font-size: 14px;
         line-height: 1.5;
+        max-width: 100%;
       }
       .hero-actions {
         flex-direction: column;
@@ -1081,16 +1090,21 @@
         padding: var(--cds-spacing-08) 0;
       }
       .section-title, .approach-heading {
-        font-size: 28px;
+        font-size: 26px;
         line-height: 1.2;
       }
+      .section-subtitle { max-width: 100%; }
       .quote-section {
         padding: var(--cds-spacing-08) 0;
       }
       .quote-text {
-        font-size: 22px;
+        font-size: 20px;
+        max-width: 100%;
         margin-bottom: var(--cds-spacing-05);
       }
+      .quote-sub { max-width: 100%; }
+      .cta-block { max-width: 100%; }
+      .report-section-heading { max-width: 100%; }
       .report-section {
         padding: var(--cds-spacing-08) 0;
       }
@@ -1152,6 +1166,28 @@
       }
     }
 
+
+    /* ── Mobile hamburger — hide button on desktop, show on mobile ── */
+    cds-header-menu-button { display: none; }
+    #mobile-side-nav { display: none; }
+
+    /* Footer feedback link — desktop hides it (floating tab used instead) */
+    .footer-feedback-link { display: none; }
+
+    @media (max-width: 800px) {
+      /* Floating feedback tab → hidden; footer link takes over */
+      .feedback-tab { display: none; }
+      .footer-feedback-link { display: revert; }
+
+      /* Show hamburger, hide top nav */
+      cds-header-menu-button { display: flex; }
+      #mobile-side-nav { display: block; }
+      cds-header-nav { display: none; }
+
+      /* Header name fills remaining width between hamburger and edge */
+      cds-header-name { flex: 1 1 auto; min-width: 0; }
+    }
+
     /* ── Opportunity paths view ───────────────────────────── */
     [hidden] { display: none !important; }
 
@@ -1203,15 +1239,19 @@
     }
     /* Prevent content switcher from stretching full-width */
     #opp-track-switcher {
-      inline-size: auto;
-      width: auto;
+      inline-size: fit-content;
+      width: fit-content;
+      flex-shrink: 0;
     }
     /* Inner row: switcher left, toggle right, both vertically centred */
     .opp-track-bar__inner {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start;
       gap: var(--cds-spacing-07);
+    }
+    #opp-compare-toggle {
+      margin-left: auto;
     }
     /* ── Compare bar ──────────────────────────────────────────── */
     .opp-compare-bar {
@@ -1378,6 +1418,26 @@
     @media (max-width: 800px) {
       .opp-layout { grid-template-columns: minmax(0, 1fr); gap: var(--cds-spacing-06); }
       .opp-rail { display: none; }
+      /* Compare is disabled on mobile — hide the toggle */
+      #opp-compare-toggle { display: none; }
+      /* Track bar: switcher fills the full row width on mobile */
+      .opp-track-bar__inner {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--cds-spacing-04);
+      }
+      #opp-track-switcher {
+        display: flex;
+        width: 100%;
+        inline-size: 100%;
+      }
+      #opp-track-switcher::part(content-switcher) {
+        width: 100%;
+      }
+      cds-content-switcher-item {
+        flex: 1 1 0;
+        min-width: 0;
+      }
     }
 
   </style>
@@ -1389,11 +1449,26 @@
 
   <!-- ═══════════════ CARBON UI SHELL HEADER (GRAY 10) ══════ -->
   <cds-header aria-label="IBM Maximo Growth Opportunity Assessment Tool" data-carbon-theme="g10">
+    <cds-header-menu-button
+      id="mobile-menu-btn"
+      button-label-active="Close menu"
+      button-label-inactive="Open menu">
+    </cds-header-menu-button>
     <cds-header-name prefix="IBM" href="#">Maximo Growth Opportunity Assessment Tool</cds-header-name>
     <cds-header-nav menu-bar-label="Primary navigation">
       <cds-header-nav-item id="nav-overview" href="#" active>Overview</cds-header-nav-item>
       <cds-header-nav-item id="nav-opportunity-paths" href="#opportunity-paths">Opportunity paths</cds-header-nav-item>
     </cds-header-nav>
+    <cds-side-nav id="mobile-side-nav" aria-label="Side navigation" collapse-mode="responsive">
+      <cds-side-nav-items>
+        <cds-side-nav-link id="side-nav-overview" href="#" active>Overview</cds-side-nav-link>
+        <cds-side-nav-link id="side-nav-opportunity-paths" href="#opportunity-paths">Opportunity paths</cds-side-nav-link>
+        <cds-side-nav-divider></cds-side-nav-divider>
+        <cds-side-nav-link href="https://wkf.ms/4y6RVgc" target="_blank" rel="noopener noreferrer" class="side-nav-feedback">
+          Share feedback
+        </cds-side-nav-link>
+      </cds-side-nav-items>
+    </cds-side-nav>
   </cds-header>
 
   <div id="view-overview">
@@ -1477,8 +1552,8 @@
   <!-- ═══════════════ QUOTE / GUIDANCE OVERVIEW ════════════ -->
   <section class="quote-section">
     <div class="cds--grid">
-      <p class="quote-text">"Better conversations start<br>with a <strong>shared understanding."</strong></p>
-      <p class="quote-sub">The assessment runs entirely in the browser, with no login required. Customer<br>responses are processed locally, and a personalized report is generated instantly.</p>
+      <p class="quote-text">"Better conversations start with a <strong>shared understanding."</strong></p>
+      <p class="quote-sub">The assessment runs entirely in the browser, with no login required. Customer responses are processed locally, and a personalized report is generated instantly.</p>
       <p class="quote-scroll">
         Scroll down to learn more about the assessment
         <img src="assets/Arrow--down-right.svg" alt="" aria-hidden="true" />
@@ -3621,6 +3696,7 @@
           <img src="assets/Image - IBM Logo.svg" alt="IBM" />
         </div>
         <nav class="footer-legal-nav" aria-label="Legal">
+          <a href="https://wkf.ms/4y6RVgc" target="_blank" rel="noopener noreferrer" class="footer-feedback-link">Share feedback</a>
           <a href="https://www.ibm.com/contact/us/en/" target="_blank" rel="noopener noreferrer">Contact IBM</a>
           <a href="https://www.ibm.com/privacy" target="_blank" rel="noopener noreferrer">Privacy</a>
           <a href="https://www.ibm.com/legal" target="_blank" rel="noopener noreferrer">Terms of use</a>
@@ -3888,6 +3964,19 @@
         }
       }
 
+      /* ── Disable compare on mobile (resize / orientation) ──── */
+
+      var mobileBreakpoint = window.matchMedia('(max-width: 800px)');
+      function onBreakpointChange(mq) {
+        if (mq.matches && state.compare) {
+          compareToggle.checked = false;
+          toggleCompare(false);
+        }
+      }
+      mobileBreakpoint.addEventListener('change', onBreakpointChange);
+      /* Also enforce on initial load in case page opens narrow */
+      onBreakpointChange(mobileBreakpoint);
+
       /* ── Checkbox change: 2-max with replace-highest rule ───── */
 
       compareCheckboxes.addEventListener('cds-checkbox-changed', function (event) {
@@ -3980,6 +4069,32 @@
 
       window.addEventListener('hashchange', syncView);
       window.addEventListener('scroll', updateActiveRailLink, { passive: true });
+
+      /* ── Mobile side-nav wiring ─────────────────────────── */
+      var menuBtn = document.getElementById('mobile-menu-btn');
+      var sideNav = document.getElementById('mobile-side-nav');
+      var sideNavOverview = document.getElementById('side-nav-overview');
+      var sideNavPaths = document.getElementById('side-nav-opportunity-paths');
+
+      /* Close side-nav when a link is selected (Carbon opens/closes it natively) */
+      [sideNavOverview, sideNavPaths].forEach(function (link) {
+        if (!link) { return; }
+        link.addEventListener('click', function () {
+          if (menuBtn) { menuBtn.removeAttribute('active'); }
+          if (sideNav) { sideNav.removeAttribute('expanded'); }
+        });
+      });
+
+      /* Keep side-nav active items in sync with the current view */
+      var _origSyncView = syncView;
+      syncView = function () {
+        _origSyncView();
+        if (!sideNavOverview || !sideNavPaths) { return; }
+        var onPaths = window.location.hash === '#opportunity-paths' ||
+          window.location.hash.indexOf('#opp-') === 0;
+        sideNavOverview.toggleAttribute('active', !onPaths);
+        sideNavPaths.toggleAttribute('active', onPaths);
+      };
 
       renderStageTabs();
       renderStage();
