@@ -715,23 +715,6 @@
       max-width: 60ch;
       line-height: 1.6;
     }
-    .btn-outline-white {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 14px;
-      font-weight: 600;
-      color: #ffffff;
-      border: 2px solid #ffffff;
-      padding: 12px 24px;
-      background: none;
-      cursor: pointer;
-      transition: background 0.15s, color 0.15s;
-      white-space: nowrap;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .btn-outline-white:hover { background: #ffffff; color: #161616; }
-
     /* ── Feedback Card ────────────────────────────────────── */
     .feedback-card {
       background: #ffffff;
@@ -1018,60 +1001,92 @@
       .report-grid { grid-template-columns: 1fr; }
     }
 
-    /* ── Additional Resources (green) ───────────────────────── */
+    /* ── Additional Resources ────────────────────────────────── */
     .resources-section {
-      background: #ffffff;
-      padding: 0 0 64px;
-    }
-    .resources-card {
       background: #198038;
-      border-radius: 4px;
-      padding: 32px;
+      padding: 48px 0;
     }
     .resources-heading {
       font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 24px;
+      font-size: 28px;
       font-weight: 300;
       color: #ffffff;
       margin-bottom: 32px;
     }
     .resources-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 48px;
+      grid-template-columns: 1fr 1.5fr 1fr;
+      gap: 16px;
     }
     .resource-item {
       display: flex;
+      flex-direction: column;
       gap: 16px;
-      align-items: flex-start;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(167,240,186,0.44);
+      padding: 16px;
+      min-height: 384px;
+    }
+    .resource-item-inner {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex: 1;
+      gap: 16px;
     }
     .resource-icon {
-      width: 32px;
-      height: 32px;
+      width: 48px;
+      height: 48px;
       flex-shrink: 0;
-      filter: brightness(0) invert(1);
-      margin-top: 2px;
     }
-    .resource-body { flex: 1; }
+    .resource-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
     .resource-title {
       font-family: 'IBM Plex Sans', sans-serif;
       font-size: 16px;
       font-weight: 600;
       color: #ffffff;
-      margin-bottom: 10px;
+      line-height: 1.375;
+      margin: 0;
     }
     .resource-desc {
       font-size: 14px;
-      color: rgba(255,255,255,0.85);
-      line-height: 1.6;
-      margin-bottom: 20px;
+      font-weight: 400;
+      color: #ffffff;
+      line-height: 1.572;
+      margin: 0;
     }
     .resource-actions {
       display: flex;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 16px;
     }
-    @media (max-width: 900px) {
+    .btn-outline-white {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #ffffff;
+      border: 1px solid rgba(167,240,186,0.44);
+      padding: 12px 16px;
+      background: none;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-outline-white:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(167,240,186,0.7);
+    }
+    @media (max-width: 1024px) {
+      .resources-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 640px) {
       .resources-grid { grid-template-columns: 1fr; }
     }
 
@@ -1785,16 +1800,17 @@
   <!-- ═══════════════ ADDITIONAL RESOURCES ═════════════════ -->
   <section class="resources-section" id="additional-resources">
     <div class="container">
-      <div class="resources-card">
       <h2 class="resources-heading">Additional resources</h2>
       <div class="resources-grid">
 
-        <!-- Left: checklist -->
+        <!-- Complete checklist -->
         <div class="resource-item">
-          <img src="assets/review-checklist.svg" alt="" class="resource-icon" aria-hidden="true" />
-          <div class="resource-body">
-            <p class="resource-title">Complete checklist</p>
-            <p class="resource-desc">Explore all opportunities identified across APM and FSM. This roadmap provides a complete view of the milestones, recommended actions, and potential value ahead, helping you plan beyond the immediate next steps.</p>
+          <img src="assets/complete checklist pictogram.svg" alt="" class="resource-icon" aria-hidden="true" />
+          <div class="resource-item-inner">
+            <div class="resource-copy">
+              <p class="resource-title">Complete checklist</p>
+              <p class="resource-desc">Explore all opportunities identified across APM and FSM. This roadmap provides a complete view of the milestones, recommended actions, and potential value ahead, helping you plan beyond the immediate next steps.</p>
+            </div>
             <div class="resource-actions">
               <a href="#" class="btn-outline-white">
                 Download checklist
@@ -1804,12 +1820,14 @@
           </div>
         </div>
 
-        <!-- Right: maturity maps -->
+        <!-- Maturity maps -->
         <div class="resource-item">
-          <img src="assets/flexibility.svg" alt="" class="resource-icon" aria-hidden="true" />
-          <div class="resource-body">
-            <p class="resource-title">Asset Performance Management and Field Service Management growth maps</p>
-            <p class="resource-desc">Explore the journey from foundational asset management and coordinated field operations to predictive reliability, intelligent scheduling, and fully optimized enterprise performance.</p>
+          <img src="assets/flexibility pictogram.svg" alt="" class="resource-icon" aria-hidden="true" />
+          <div class="resource-item-inner">
+            <div class="resource-copy">
+              <p class="resource-title">Asset Performance Management (APM) and Field Service Management (FSM) growth maps</p>
+              <p class="resource-desc">Explore the journey from foundational asset management and coordinated field operations to predictive reliability, intelligent scheduling, and fully optimized enterprise performance.</p>
+            </div>
             <div class="resource-actions">
               <a class="btn-outline-white" href="apm-maturity-map.html" target="_blank" rel="noopener noreferrer">
                 APM Maturity map
@@ -1823,7 +1841,23 @@
           </div>
         </div>
 
-      </div>
+        <!-- Comprehensive guide -->
+        <div class="resource-item">
+          <img src="assets/education pictogram.svg" alt="" class="resource-icon" aria-hidden="true" />
+          <div class="resource-item-inner">
+            <div class="resource-copy">
+              <p class="resource-title">Comprehensive guide for IBM sellers</p>
+              <p class="resource-desc">Guidance for delivering the assessment, framing questions, leading customer conversations, and turning insights into clear growth opportunities and next steps.</p>
+            </div>
+            <div class="resource-actions">
+              <a class="btn-outline-white" href="https://ibm.ent.box.com/file/2526117153120?s=vzdxkx7rj40nmc4g3i233l8i2z8d3ebo" target="_blank" rel="noopener noreferrer">
+                Enablement material
+                <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 28H6a2 2 0 01-2-2V6a2 2 0 012-2h10v2H6v20h20V16h2v10a2 2 0 01-2 2z"/><path d="M21 2v2h5.59L18 12.59 19.41 14 28 5.41V11h2V2z"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>
