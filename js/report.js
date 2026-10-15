@@ -1300,7 +1300,10 @@ function sampleResponses() {
     __contact_name: MOCK_RESULT.contact.name,
     __contact_organization: MOCK_RESULT.contact.organization,
   };
-  const matrixPattern = ["met", "met", "unmet", "unknown"];
+  // milestone-group pattern cycles through met/unmet/unknown column slugs.
+  // usage-group (and any future matrix type) cycles through its own column
+  // values by index so every column label appears at least once in the demo.
+  const milestonePattern = ["met", "met", "unmet", "unknown"];
   assessment.pages.forEach(page => page.sections.forEach(section => section.questions.forEach(q => {
     switch (q.type) {
       case "checkbox": {
@@ -1316,10 +1319,10 @@ function sampleResponses() {
       }
       case "matrix": {
         const values = (q.columns || []).map(c => c.value);
-        answers[q.id] = Object.fromEntries((q.rows || []).map((row, i) => {
-          const wanted = matrixPattern[i % matrixPattern.length];
-          return [row.id, values.includes(wanted) ? wanted : values[0]];
-        }));
+        const pattern = q.binderType === "milestone-group" ? milestonePattern : values;
+        answers[q.id] = Object.fromEntries((q.rows || []).map((row, i) => [
+          row.id, pattern[i % pattern.length],
+        ]));
         break;
       }
     }

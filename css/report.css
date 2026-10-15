@@ -2081,8 +2081,13 @@ html, body { overflow-x: clip; }
      fit a sheet, so it moves whole rather than starting at the foot of one
      page and finishing on the next. */
   .responses-doc__page,
-  .responses-doc__q,
   .responses-doc__row {
+    break-inside: avoid;
+  }
+
+  /* Short answer types (checkbox, radio, text) stay whole; matrix questions
+     with many rows are allowed to break — individual rows stay whole above. */
+  .responses-doc__q:not(:has(.responses-doc__matrix)) {
     break-inside: avoid;
   }
 
