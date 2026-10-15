@@ -1518,6 +1518,169 @@ async function init(injectedResult) {
   initPrint(result.contact);
   fixMenuButtonMobileTap();
   closeTooltipsOnOutsideClick();
+  wireSellerButtons(result);
 }
+
+/* --------------------------------------------------------------------------
+   Seller email — plain-text body builder
+   --------------------------------------------------------------------------
+   Builds the full email body that opens when a user clicks "Talk to a seller".
+   Two parts:
+     1. A short intro note with the key scores.
+     2. A separator then every assessment question + answer in order, so the
+        IBM seller can reconstruct the full context without any tool.
+   -------------------------------------------------------------------------- */
+
+/**
+ * Convert a stored answer value to a human-readable plain-text string.
+ * Mirrors the renderAnswer() logic but produces plain text, not HTML.
+ */
+function answerToText(q, answer) {
+  const labelFor = (value) =>
+    (q.options || []).find(o => o.value === value)?.label ?? value;
+
+  switch (q.type) {
+    case "checkbox": {
+      const picked = Array.isArray(answer) ? answer : [];
+      if (!picked.length) return "(not answered)";
+      return picked.map(v => `  - ${labelFor(v)}`).join("\n");
+    }
+    case "radio":
+      return answer ? labelFor(answer) : "(not answered)";
+    case "text":
+      return answer ? answer : "(not answered)";
+    case "matrix": {
+      const given = answer && typeof answer === "object" ? answer : {};
+      const columnLabel = (value) =>
+        (q.columns || []).find(c => c.value === value)?.label ?? value;
+      return (q.rows || []).map(row =>
+        `  ${row.label}: ${given[row.id] ? columnLabel(given[row.id]) : "(not answered)"}`
+      ).join("\n");
+    }
+    default:
+      return "(not answered)";
+  }
+}
+
+/**
+ * Build the full plain-text email body.
+ *
+ * @param {object} result   - scoring result (contact, maturity, dimensions, apm, fsm)
+ * @param {object} stored   - { answers, submittedAt, sample?, missing? }
+ * @returns {string}
+ */
+function buildSellerEmailText(result, stored) {
+  const c = result.contact || {};
+  const m = result.maturity || {};
+
+  // ── 1. Intro note ────────────────────────────────────────────────────────
+  const namePart  = c.name         ? c.name                                  : "A customer";
+  const orgPart   = c.organization ? ` from ${c.organization}`               : "";
+  const indPart   = c.industry     ? ` (${c.industry})`                      : "";
+  const scoreLine = m.score != null
+    ? `Overall maturity score: ${m.score}/100 — Level ${m.level ?? ""}: ${m.levelLabel ?? ""}`
+    : "";
+  const apmLine   = result.apm?.currentStage?.label
+    ? `APM current stage:      ${result.apm.currentStage.label}`             : "";
+  const fsmLine   = result.fsm?.currentStage?.label
+    ? `FSM current stage:      ${result.fsm.currentStage.label}`             : "";
+  const facilLine = c.facilitator
+    ? `Facilitator:            ${c.facilitator}`                             : "";
+
+  const intro = [
+    "Hi,",
+    "",
+    `${namePart}${orgPart}${indPart} has just completed the MAS Growth Readiness Assessment and would like to talk to a seller about next steps.`,
+    "",
+    ...[facilLine, scoreLine, apmLine, fsmLine].filter(Boolean),
+  ].join("\n");
+
+  // ── 2. Responses section ─────────────────────────────────────────────────
+  const SEP = "=".repeat(56);
+  const pages = [SESSION_DETAILS_PAGE, ...(assessment.pages || [])];
+  const totalPages = pages.length;
+
+  const submitted = stored.submittedAt
+    ? new Date(stored.submittedAt).toLocaleDateString("en-GB", {
+        day: "numeric", month: "short", year: "numeric"
+      })
+    : null;
+
+  const provenance = stored.sample
+    ? "Note: these are sample answers — complete the assessment to include your own."
+    : stored.missing
+    ? "Note: answers were not saved in this browser tab — complete the assessment again to include them."
+    : submitted ? `Submitted: ${submitted}` : "";
+
+  const contactBlock = [
+    c.facilitator  ? `Facilitator:  ${c.facilitator}`  : "",
+    c.name         ? `Customer:     ${c.name}`          : "",
+    c.organization ? `Organization: ${c.organization}`  : "",
+    c.industry     ? `Industry:     ${c.industry}`      : "",
+    provenance,
+  ].filter(Boolean).join("\n");
+
+  const responsePages = pages.map((page, i) => {
+    const heading = `Page ${i + 1} of ${totalPages} — ${page.title}`;
+    const rule    = "-".repeat(heading.length);
+
+    const qBlocks = page.sections.flatMap(section => {
+      const sectionLabel = (section.label && section.label !== page.title)
+        ? `[${section.label}]` : null;
+      return section.questions.map(q => {
+        const title = q.title !== section.label ? q.title : section.label;
+        const ans   = answerToText(q, stored.answers?.[q.id]);
+        const isMultiLine = ans.includes("\n");
+        const prefix = sectionLabel ? `${sectionLabel}\n` : "";
+        return `${prefix}Q: ${title}\nA:${isMultiLine ? "\n" + ans : " " + ans}`;
+      });
+    });
+
+    return [heading, rule, ...qBlocks].join("\n\n");
+  });
+
+  const responsesSection = [
+    SEP,
+    "ASSESSMENT RESPONSES",
+    SEP,
+    contactBlock,
+    "",
+    responsePages.join("\n\n"),
+  ].join("\n");
+
+  return `${intro}\n\n${responsesSection}`;
+}
+
+/**
+ * Wire all "Talk to a seller" and "Schedule an IBM review" buttons.
+ * On click, opens a mailto: with the plain-text email body pre-filled.
+ *
+ * @param {object} result  - scoring result
+ */
+function wireSellerButtons(result) {
+  const SELLER_EMAIL = "mas-growth-assessment@ibm.com";
+
+  const stored = loadStoredResponses() ?? {
+    answers: {},
+    submittedAt: null,
+    missing: true,
+  };
+
+  const body    = buildSellerEmailText(result, stored);
+  const subject = encodeURIComponent("MAS Growth Readiness Assessment — talk to a seller");
+  const href    = `mailto:${SELLER_EMAIL}?subject=${subject}&body=${encodeURIComponent(body)}`;
+
+  [
+    '[data-autotrack-id^="report__btn--talk-to-seller"]',
+    '[data-autotrack-id="report__btn--schedule-ibm-review"]',
+  ].forEach(sel => {
+    document.querySelectorAll(sel).forEach(btn => {
+      btn.setAttribute("href", href);
+      btn.removeAttribute("disabled");
+    });
+  });
+}
+
+
 
 init().catch(console.error);
