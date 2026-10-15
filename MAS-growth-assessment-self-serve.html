@@ -5071,6 +5071,163 @@ html, body { overflow-x: clip; }
   }
 }
 
+/* ============================================================
+   Share-with-IBM modal
+   Matches Figma node 2172:15302
+   ============================================================ */
+
+.share-modal {
+  display: contents; /* hidden state: DOM present, nothing rendered */
+}
+
+.share-modal[hidden] {
+  display: none;
+}
+
+/* Backdrop */
+.share-modal__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(22, 22, 22, 0.5);
+  z-index: 6000;
+}
+
+/* Dialog panel */
+.share-modal__dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 6001;
+  background: #ffffff;
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.share-modal__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px;
+  position: relative;
+}
+
+.share-modal__title {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  color: #161616;
+  flex: 1;
+  margin: 0;
+  padding-right: 60px; /* space for close button */
+}
+
+.share-modal__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: #161616;
+  flex-shrink: 0;
+}
+
+.share-modal__close:focus-visible {
+  outline: 2px solid #0f62fe;
+  outline-offset: 2px;
+}
+
+/* Body */
+.share-modal__body {
+  padding: 0 16px 48px;
+}
+
+.share-modal__text {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 0.16px;
+  color: #161616;
+  margin: 0;
+}
+
+/* Footer buttons — two equal columns with 1px gap (Figma: gap-px) */
+.share-modal__footer {
+  display: flex;
+  gap: 1px;
+  background: #e0e0e0; /* gap colour shows through between buttons */
+}
+
+.share-modal__btn {
+  flex: 1;
+  height: 64px;
+  border: none;
+  cursor: pointer;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 18px;
+  letter-spacing: 0.16px;
+  color: #ffffff;
+  text-align: left;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  transition: background 70ms ease;
+}
+
+.share-modal__btn--cancel {
+  background: #393939;
+}
+
+.share-modal__btn--cancel:hover {
+  background: #4c4c4c;
+}
+
+.share-modal__btn--send {
+  background: #0f62fe;
+}
+
+.share-modal__btn--send:hover {
+  background: #0353e9;
+}
+
+.share-modal__btn:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: -4px;
+}
+
+/* Trap scroll on body when modal is open.
+   Set on <html> not <body> — body.overflow:hidden would break
+   position:sticky on the sidebar and mobile nav. */
+html:has(body.share-modal-open) {
+  overflow: hidden;
+}
+
+@media (max-width: 671px) {
+  .share-modal__dialog {
+    max-width: 100%;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    transform: none;
+  }
+}
+
 
 /* === print: assessment shell === */
 
@@ -5526,6 +5683,27 @@ html, body { overflow-x: clip; }
       </main>
     </div>
   </div>
+<!-- Share-with-IBM modal -->
+<div id="share-modal" class="share-modal" role="dialog" aria-modal="true" aria-labelledby="share-modal-title" hidden>
+  <div class="share-modal__backdrop"></div>
+  <div class="share-modal__dialog">
+    <div class="share-modal__header">
+      <p class="share-modal__title" id="share-modal-title">Explore your next steps</p>
+      <button class="share-modal__close" id="share-modal-close" aria-label="Close" data-autotrack-id="report__btn--share-modal-close">
+        <svg viewBox="0 0 20 20" width="20" height="20" fill="none" aria-hidden="true">
+          <path d="M15 5.875L14.125 5L10 9.125L5.875 5L5 5.875L9.125 10L5 14.125L5.875 15L10 10.875L14.125 15L15 14.125L10.875 10L15 5.875Z" fill="#161616"/>
+        </svg>
+      </button>
+    </div>
+    <div class="share-modal__body">
+      <p class="share-modal__text">Send your report to our growth accelerator team to explore opportunities for growth and discuss your next steps.</p>
+    </div>
+    <div class="share-modal__footer">
+      <button class="share-modal__btn share-modal__btn--cancel" id="share-modal-cancel" data-autotrack-id="report__btn--share-modal-cancel">Cancel</button>
+      <button class="share-modal__btn share-modal__btn--send" id="share-modal-send" data-autotrack-id="report__btn--share-modal-send">Send report</button>
+    </div>
+  </div>
+</div>
 </div><!-- /#view-report -->
 
   <script>
@@ -13520,7 +13698,12 @@ function renderExpansionCard(containerId, track, trackResult) {
     </div>
     </div>
 
-    `;
+    <div class="expansion-card__actions">
+      <cds-button kind="tertiary" size="lg" data-autotrack-id="report__btn--talk-to-seller-expansion-${track.toLowerCase()}">
+        Talk to a seller
+        ${ICON_USER_SERVICE}
+      </cds-button>
+    </div>`;
 
   const railEl = el.querySelector(".stage-rail");
   // Use hover mode on desktop, tap/button mode on mobile
@@ -13720,6 +13903,19 @@ function renderActionPlan(actionPlan) {
         </div>
       </div>
 
+    </div>
+
+  <div class="accelerate-card">
+    <div class="accelerate-card__inner">
+      <div class="accelerate-card__icon"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBmaWxsPSJ3aGl0ZSIgZmlsbC1vcGFjaXR5PSIwLjAxIi8+CjxwYXRoIGQ9Ik0xNS4wMDA2IDI2Ljk5OTZDMTQuNzIwNiAyNi45OTk2IDE0LjUwMDYgMjcuMjE5NiAxNC41MDA2IDI3LjQ5OTZDMTQuNTAwNiAyNy43Nzk2IDE0LjcyMDYgMjcuOTk5NiAxNS4wMDA2IDI3Ljk5OTZDMTUuMjgwNiAyNy45OTk2IDE1LjUwMDYgMjcuNzc5NiAxNS41MDA2IDI3LjQ5OTZDMTUuNTAwNiAyNy4yMTk2IDE1LjI4MDYgMjYuOTk5NiAxNS4wMDA2IDI2Ljk5OTZaTTE1LjAwMDYgMjguOTk5NkMxNC43MjA2IDI4Ljk5OTYgMTQuNTAwNiAyOS4yMTk2IDE0LjUwMDYgMjkuNDk5NkMxNC41MDA2IDI5Ljc3OTYgMTQuNzIwNiAyOS45OTk2IDE1LjAwMDYgMjkuOTk5NkMxNS4yODA2IDI5Ljk5OTYgMTUuNTAwNiAyOS43Nzk2IDE1LjUwMDYgMjkuNDk5NkMxNS41MDA2IDI5LjIxOTYgMTUuMjgwNiAyOC45OTk2IDE1LjAwMDYgMjguOTk5NlpNOC43ODA2MiA5LjIwOTY1TDUuNTAwNjMgMTIuNDg5Nkw0LjM0MDYzIDExLjMyOTZMMy44MzA2MyAxMS44Mzk2TDUuNTAwNjMgMTMuNTA5Nkw5LjI5MDYzIDkuNzE5NjVMOC43ODA2MiA5LjIwOTY1Wk0xNy4wMTA2IDIzLjk1OTZMMTcuMjcwNiAyMy43OTk2QzE4LjIzMDYgMjMuMTA5NiAxOC43ODA2IDIxLjk4OTcgMTguNzAwNiAyMC44Njk2QzE4LjY4MDYgMjAuNjQ5NyAxOC42NTA2IDIwLjQ3OTcgMTguNjIwNiAyMC4zNTk2SDE5LjE1MDZWMTkuNjM5NkgxOC41OTA2VjE5LjM5OTVDMTguNjIwNiAxOC40Mzk1IDE4LjE4MDYgMTYuNTU5NSAxNi4zNjA2IDE2LjAxOTVWMTUuOTk5NUMxNi4zNjA2IDE1Ljc5OTUgMTYuMjAwNiAxNS42Mzk1IDE2LjAwMDYgMTUuNjM5NUgxNC4wMDA2QzEzLjgwMDYgMTUuNjM5NSAxMy42NDA2IDE1Ljc5OTUgMTMuNjQwNiAxNS45OTk1VjE2LjAxOTVDMTEuODIwNiAxNi41NTk1IDExLjM4MDYgMTguNDM5NSAxMS40MTA2IDE5LjM3OTVWMTkuNjM5NUgxMC44NTA2VjIwLjM1OTVIMTEuMzgwNkMxMS4zNTA2IDIwLjQ3OTUgMTEuMzIwNiAyMC42NDk1IDExLjMwMDYgMjAuODY5NUMxMS4yMjA2IDIxLjk4OTUgMTEuNzcwNiAyMy4xMDk2IDEyLjc1MDYgMjMuODE5NUwxMi45ODA2IDIzLjk2OTVDMTAuNDIwNiAyNC44MTk1IDguNjQwNjMgMjcuMjI5NSA4LjY0MDYzIDI5Ljk5OTVIOS4zNjA2MkM5LjM2MDYyIDI3Ljk1OTUgMTAuNDYwNiAyNi4xMjk1IDEyLjE0MDYgMjUuMTM5NUwxMy40MjA2IDI2LjQxOTVDMTMuNDgwNiAyNi40Nzk1IDEzLjU3MDYgMjYuNTE5NSAxMy42NzA2IDI2LjUxOTVDMTMuNzcwNiAyNi41NTk1IDEzLjg2MDYgMjYuNDc5NSAxMy45MzA2IDI2LjQwOTVMMTUuMDAwNiAyNS4zMTk1TDE2LjA5MDYgMjYuNDE5NUMxNi4xNjA1IDI2LjQ3OTUgMTYuMjUwNiAyNi41MTk1IDE2LjM1MDUgMjYuNTE5NUMxNi40NTA1IDI2LjUxOTUgMTYuNTQwNSAyNi40Nzk1IDE2LjYwMDUgMjYuNDA5NUwxNy44NjA1IDI1LjEzOTVDMTkuNTQwNSAyNi4xMjk1IDIwLjY0MDUgMjcuOTU5NCAyMC42NDA1IDI5Ljk5OTVIMjEuMzYwNUMyMS4zNjA1IDI3LjIyOTUgMTkuNTgwNiAyNC44MTk2IDE3LjAxMDYgMjMuOTU5NlpNMTIuMTMwNiAxOS4zNzk2QzEyLjEzMDYgMTkuMjg5NiAxMi4xMDA2IDE3LjM5OTYgMTMuNjQwNiAxNi43Nzk2VjE3Ljk5OTZIMTQuMzYwNlYxNi4zNTk2SDE1LjY0MDZWMTcuOTk5NkgxNi4zNjA2VjE2Ljc3OTZDMTcuOTAwNiAxNy4zOTk2IDE3Ljg3MDYgMTkuMjg5NiAxNy44NzA2IDE5LjM3OTZWMTkuNjM5NkgxMi4xMzA2VjE5LjM3OTZaTTEzLjY3MDYgMjUuNjQ5NkwxMi44MTA2IDI0Ljc5OTZDMTMuMTMwNiAyNC42Njk2IDEzLjQ2MDYgMjQuNTU5NiAxMy44MTA2IDI0LjQ4OTZMMTQuNDMwNiAyNC44Nzk2TDEzLjY3MDYgMjUuNjQ5NlpNMTMuMTUwNiAyMy4yMTk2QzEyLjM5MDYgMjIuNjY5NiAxMS45NjA2IDIxLjc4OTYgMTIuMDIwNiAyMC45Mjk2QzEyLjA0MDYgMjAuNjE5NiAxMi4xMTA2IDIwLjQyOTYgMTIuMTEwNiAyMC40Mjk2QzEyLjEyMDYgMjAuNDA5NiAxMi4xMjA2IDIwLjM3OTcgMTIuMTIwNiAyMC4zNTk2SDE3Ljg3MDZDMTcuODgwNiAyMC4zNzk3IDE3Ljg4MDYgMjAuMzk5NiAxNy44OTA2IDIwLjQyOTZDMTcuODkwNiAyMC40Mjk2IDE3Ljk2MDYgMjAuNjE5NiAxNy45ODA2IDIwLjkyOTZDMTguMDQwNiAyMS43ODk2IDE3LjYxMDYgMjIuNjY5NiAxNi44NzA2IDIzLjIwOTZMMTUuMDAwNiAyNC4zODk3TDEzLjE1MDYgMjMuMjE5NlpNMTYuMzUwNiAyNS42NDk2TDE1LjU3MDYgMjQuODc5NkwxNi4xOTA2IDI0LjQ4OTZDMTYuNTQwNiAyNC41NTk2IDE2Ljg3MDYgMjQuNjY5NiAxNy4xOTA2IDI0Ljc5OTZMMTYuMzUwNiAyNS42NDk2Wk0yNy42NDA2IDE0Ljk5OTZWMTYuOTk5NkgyOC4zNjA2VjE0Ljk5OTZIMjcuNjQwNlpNMjUuNjQwNiAxMS45OTk2VjE2Ljk5OTZIMjYuMzYwNlYxMS45OTk2SDI1LjY0MDZaTTIzLjY0MDYgMTMuOTk5NlYxNi45OTk2SDI0LjM2MDZWMTMuOTk5NkgyMy42NDA2Wk04Ljc4MDYyIDkuMjA5NjVMNS41MDA2MyAxMi40ODk2TDQuMzQwNjMgMTEuMzI5NkwzLjgzMDYzIDExLjgzOTZMNS41MDA2MyAxMy41MDk2TDkuMjkwNjMgOS43MTk2NUw4Ljc4MDYyIDkuMjA5NjVaTTguNzgwNjIgOS4yMDk2NUw1LjUwMDYzIDEyLjQ4OTZMNC4zNDA2MyAxMS4zMjk2TDMuODMwNjMgMTEuODM5Nkw1LjUwMDYzIDEzLjUwOTZMOS4yOTA2MyA5LjcxOTY1TDguNzgwNjIgOS4yMDk2NVpNNi41MDA2MyA2LjYzOTY1QzMuODIwNjMgNi42Mzk2NSAxLjY0MDYyIDguODE5NjUgMS42NDA2MiAxMS40OTk2QzEuNjQwNjIgMTQuMTc5NiAzLjgyMDYzIDE2LjM1OTYgNi41MDA2MyAxNi4zNTk2QzkuMTgwNjIgMTYuMzU5NiAxMS4zNjA2IDE0LjE3OTYgMTEuMzYwNiAxMS40OTk2QzExLjM2MDYgOC44MTk2NSA5LjE4MDYyIDYuNjM5NjUgNi41MDA2MyA2LjYzOTY1Wk02LjUwMDYzIDE1LjYzOTZDNC4yMjA2MyAxNS42Mzk2IDIuMzYwNjIgMTMuNzc5NiAyLjM2MDYyIDExLjQ5OTZDMi4zNjA2MiA5LjIxOTY1IDQuMjIwNjMgNy4zNTk2NSA2LjUwMDYzIDcuMzU5NjVDOC43ODA2MyA3LjM1OTY1IDEwLjY0MDYgOS4yMTk2NSAxMC42NDA2IDExLjQ5OTZDMTAuNjQwNiAxMy43Nzk2IDguNzgwNjMgMTUuNjM5NiA2LjUwMDYzIDE1LjYzOTZaTTUuNTAwNjMgMTIuNDg5Nkw0LjM0MDYzIDExLjMyOTZMMy44MzA2MyAxMS44Mzk2TDUuNTAwNjMgMTMuNTA5Nkw5LjI5MDYzIDkuNzE5NjVMOC43ODA2MiA5LjIwOTY1TDUuNTAwNjMgMTIuNDg5NlpNOC43ODA2MiA5LjIwOTY1TDUuNTAwNjMgMTIuNDg5Nkw0LjM0MDYzIDExLjMyOTZMMy44MzA2MyAxMS44Mzk2TDUuNTAwNjMgMTMuNTA5Nkw5LjI5MDYzIDkuNzE5NjVMOC43ODA2MiA5LjIwOTY1Wk0zMC4zNjA2IDIuOTk5NjVWMTkuOTk5NkMzMC4zNjA2IDIwLjE5OTYgMzAuMjAwNiAyMC4zNTk2IDMwLjAwMDYgMjAuMzU5NkgyMS4wMDA2VjE5LjYzOTZIMjkuNjQwNlYzLjM1OTY1SDE1LjM2MDZWMTEuMTI5NkwxOC43NTA2IDcuNzQ5NjVDMTguODkwNiA3LjU5OTY1IDE5LjExMDYgNy41OTk2NSAxOS4yNTA2IDcuNzQ5NjVMMjMuMDAwNiAxMS40ODk2TDI3LjE0MDYgNy4zNTk2NUgyNS4wMDA2VjYuNjM5NjVIMjguMzYwNlY5Ljk5OTY1SDI3LjY0MDZWNy44NTk2NUwyMy4yNTA2IDEyLjI0OTZDMjMuMTEwNiAxMi4zOTk2IDIyLjg5MDYgMTIuMzk5NiAyMi43NTA2IDEyLjI0OTZMMTkuMDAwNiA4LjUwOTY1TDE1LjM2MDYgMTIuMTQ5NlYxMi45OTk2SDE0LjY0MDZWMi45OTk2NUMxNC42NDA2IDIuNzk5NjUgMTQuODAwNiAyLjYzOTY1IDE1LjAwMDYgMi42Mzk2NUgzMC4wMDA2QzMwLjIwMDYgMi42Mzk2NSAzMC4zNjA2IDIuNzk5NjUgMzAuMzYwNiAyLjk5OTY1WiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+Cg==" width="32" height="32" aria-hidden="true" /></div>
+      <div class="accelerate-card__body">
+        <p class="accelerate-card__title">Accelerate your Maximo Journey</p>
+        <p class="accelerate-card__desc">Discuss these prioritized immediate actions and review the full roadmap with an IBM Maximo and APM specialist to estimate ROI, run scoping exercises, or schedule a deep-dive product demonstration.</p>
+        <cds-button kind="tertiary" size="lg" data-autotrack-id="report__btn--schedule-ibm-review">
+          Schedule a review with an IBM specialist
+          ${ICON_USER_SERVICE}
+        </cds-button>
+      </div>
     </div>
   </div>`;
 
@@ -14401,6 +14597,235 @@ initReport = async function(result) {
   initPrint(result.contact);
   fixMenuButtonMobileTap();
   closeTooltipsOnOutsideClick();
+  wireSellerButtons(result);
+  initShareModal(result);
+}
+
+/* --------------------------------------------------------------------------
+   Seller email — plain-text body builder
+   --------------------------------------------------------------------------
+   Builds the full email body that opens when a user clicks "Talk to a seller".
+   Two parts:
+     1. A short intro note with the key scores.
+     2. A separator then every assessment question + answer in order, so the
+        IBM seller can reconstruct the full context without any tool.
+   -------------------------------------------------------------------------- */
+
+/**
+ * Convert a stored answer value to a human-readable plain-text string.
+ * Mirrors the renderAnswer() logic but produces plain text, not HTML.
+ */
+function answerToText(q, answer) {
+  const labelFor = (value) =>
+    (q.options || []).find(o => o.value === value)?.label ?? value;
+
+  switch (q.type) {
+    case "checkbox": {
+      const picked = Array.isArray(answer) ? answer : [];
+      if (!picked.length) return "(not answered)";
+      return picked.map(v => `  - ${labelFor(v)}`).join("\n");
+    }
+    case "radio":
+      return answer ? labelFor(answer) : "(not answered)";
+    case "text":
+      return answer ? answer : "(not answered)";
+    case "matrix": {
+      const given = answer && typeof answer === "object" ? answer : {};
+      const columnLabel = (value) =>
+        (q.columns || []).find(c => c.value === value)?.label ?? value;
+      return (q.rows || []).map(row =>
+        `  ${row.label}: ${given[row.id] ? columnLabel(given[row.id]) : "(not answered)"}`
+      ).join("\n");
+    }
+    default:
+      return "(not answered)";
+  }
+}
+
+/**
+ * Build the full plain-text email body.
+ *
+ * @param {object} result   - scoring result (contact, maturity, dimensions, apm, fsm)
+ * @param {object} stored   - { answers, submittedAt, sample?, missing? }
+ * @returns {string}
+ */
+function buildSellerEmailText(result, stored) {
+  const c = result.contact || {};
+  const m = result.maturity || {};
+
+  // ── 1. Intro note ────────────────────────────────────────────────────────
+  const namePart  = c.name         ? c.name                                  : "A customer";
+  const orgPart   = c.organization ? ` from ${c.organization}`               : "";
+  const indPart   = c.industry     ? ` (${c.industry})`                      : "";
+  const scoreLine = m.score != null
+    ? `Overall maturity score: ${m.score}/100 — Level ${m.level ?? ""}: ${m.levelLabel ?? ""}`
+    : "";
+  const apmLine   = result.apm?.currentStage?.label
+    ? `APM current stage:      ${result.apm.currentStage.label}`             : "";
+  const fsmLine   = result.fsm?.currentStage?.label
+    ? `FSM current stage:      ${result.fsm.currentStage.label}`             : "";
+  const facilLine = c.facilitator
+    ? `Facilitator:            ${c.facilitator}`                             : "";
+
+  const intro = [
+    "Hi,",
+    "",
+    `${namePart}${orgPart}${indPart} has just completed the MAS Growth Readiness Assessment and would like to talk to a seller about next steps.`,
+    "",
+    ...[facilLine, scoreLine, apmLine, fsmLine].filter(Boolean),
+  ].join("\n");
+
+  // ── 2. Responses section ─────────────────────────────────────────────────
+  const SEP = "=".repeat(56);
+  const pages = [SESSION_DETAILS_PAGE, ...(assessment.pages || [])];
+  const totalPages = pages.length;
+
+  const submitted = stored.submittedAt
+    ? new Date(stored.submittedAt).toLocaleDateString("en-GB", {
+        day: "numeric", month: "short", year: "numeric"
+      })
+    : null;
+
+  const provenance = stored.sample
+    ? "Note: these are sample answers — complete the assessment to include your own."
+    : stored.missing
+    ? "Note: answers were not saved in this browser tab — complete the assessment again to include them."
+    : submitted ? `Submitted: ${submitted}` : "";
+
+  const contactBlock = [
+    c.facilitator  ? `Facilitator:  ${c.facilitator}`  : "",
+    c.name         ? `Customer:     ${c.name}`          : "",
+    c.organization ? `Organization: ${c.organization}`  : "",
+    c.industry     ? `Industry:     ${c.industry}`      : "",
+    provenance,
+  ].filter(Boolean).join("\n");
+
+  // Indent helper — prefix every line with two spaces to visually
+  // distinguish the responses section from the intro (plain text has no
+  // font sizes; indentation is the standard plain-text equivalent).
+  const indent = (text) => text.split("\n").map(l => `  ${l}`).join("\n");
+
+  const responsePages = pages.map((page, i) => {
+    const heading = `Page ${i + 1} of ${totalPages} — ${page.title}`;
+    const rule    = "-".repeat(heading.length);
+
+    const qBlocks = page.sections.flatMap(section => {
+      const sectionLabel = (section.label && section.label !== page.title)
+        ? `[${section.label}]` : null;
+      return section.questions.map(q => {
+        const title = q.title !== section.label ? q.title : section.label;
+        const ans   = answerToText(q, stored.answers?.[q.id]);
+        const isMultiLine = ans.includes("\n");
+        const prefix = sectionLabel ? `${sectionLabel}\n` : "";
+        return `${prefix}Q: ${title}\nA:${isMultiLine ? "\n" + ans : " " + ans}`;
+      });
+    });
+
+    return indent([heading, rule, ...qBlocks].join("\n\n"));
+  });
+
+  const responsesSection = [
+    SEP,
+    "ASSESSMENT RESPONSES",
+    SEP,
+    indent(contactBlock),
+    "",
+    responsePages.join("\n\n"),
+  ].join("\n");
+
+  return `${intro}\n\n${responsesSection}`;
+}
+
+/**
+ * Wire all "Talk to a seller" and "Schedule an IBM review" buttons.
+ * On click, opens a mailto: with the plain-text email body pre-filled.
+ *
+ * @param {object} result  - scoring result
+ */
+function wireSellerButtons(result) {
+  const SELLER_EMAIL = "mas-growth-assessment@ibm.com";
+
+  const stored = loadStoredResponses() ?? {
+    answers: {},
+    submittedAt: null,
+    missing: true,
+  };
+
+  const body    = buildSellerEmailText(result, stored);
+  const subject = encodeURIComponent("MAS Growth Readiness Assessment — talk to a seller");
+  const href    = `mailto:${SELLER_EMAIL}?subject=${subject}&body=${encodeURIComponent(body)}`;
+
+  [
+    '[data-autotrack-id^="report__btn--talk-to-seller"]',
+    '[data-autotrack-id="report__btn--schedule-ibm-review"]',
+  ].forEach(sel => {
+    document.querySelectorAll(sel).forEach(btn => {
+      btn.setAttribute("href", href);
+      btn.removeAttribute("disabled");
+    });
+  });
+}
+
+
+
+/* --------------------------------------------------------------------------
+   Share-with-IBM modal
+   --------------------------------------------------------------------------
+   Shows once after the user returns from the PDF print/save dialog.
+   The Send button opens the same pre-built mailto as the seller buttons.
+   Dismissed with Cancel, close button, backdrop click, or Escape.
+   Never shown again in the same tab once dismissed or sent.
+   -------------------------------------------------------------------------- */
+function initShareModal(result) {
+  const modal     = document.getElementById("share-modal");
+  const sendBtn   = document.getElementById("share-modal-send");
+  const cancelBtn = document.getElementById("share-modal-cancel");
+  const closeBtn  = document.getElementById("share-modal-close");
+  const backdrop  = modal?.querySelector(".share-modal__backdrop");
+  if (!modal || !sendBtn || !cancelBtn || !closeBtn) return;
+
+  let shown = false;
+
+  // Build the mailto href the same way wireSellerButtons does
+  const SELLER_EMAIL = "mas-growth-assessment@ibm.com";
+  const stored = loadStoredResponses() ?? { answers: {}, submittedAt: null, missing: true };
+  const body    = buildSellerEmailText(result, stored);
+  const subject = encodeURIComponent("MAS Growth Readiness Assessment — results");
+  const href    = `mailto:${SELLER_EMAIL}?subject=${subject}&body=${encodeURIComponent(body)}`;
+
+  function openModal() {
+    if (shown) return;
+    shown = true;
+    modal.removeAttribute("hidden");
+    document.body.classList.add("share-modal-open");
+    closeBtn.focus();
+  }
+
+  function closeModal() {
+    modal.setAttribute("hidden", "");
+    document.body.classList.remove("share-modal-open");
+  }
+
+  sendBtn.addEventListener("click", () => {
+    window.location.href = href;
+    closeModal();
+  });
+
+  cancelBtn.addEventListener("click", closeModal);
+  closeBtn.addEventListener("click", closeModal);
+  backdrop?.addEventListener("click", closeModal);
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !modal.hasAttribute("hidden")) closeModal();
+  });
+
+  // Trigger: fire once when the user returns from the print/save dialog.
+  // afterprint fires in all major browsers when window.print() completes
+  // (whether the user saved the PDF, printed, or cancelled).
+  window.addEventListener("afterprint", () => {
+    // Small delay so the page has fully restored before the modal appears
+    setTimeout(openModal, 400);
+  });
 }
 }
 

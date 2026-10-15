@@ -294,24 +294,6 @@ def patch_report_js(source: str) -> str:
         f'toggleBtn.querySelector("img").src = isExpanded ? "{file_to_data_uri("assets/cb904.svg")}" : "{file_to_data_uri("assets/3f8ce.svg")}";',
     )
 
-    source = re.sub(
-        r'<div class="expansion-card__actions">\s*<cds-button[^>]*>\s*Talk to a seller.*?</cds-button>\s*</div>',
-        "",
-        source,
-        flags=re.DOTALL,
-    )
-    source = re.sub(
-        r'<cds-button kind="tertiary" size="lg">\s*Talk to a seller.*?</cds-button>',
-        "",
-        source,
-        flags=re.DOTALL,
-    )
-    source = re.sub(
-        r'\s*<div class="accelerate-card">.*?</div>\s*</div>',
-        "",
-        source,
-        flags=re.DOTALL,
-    )
     return source
 
 
@@ -428,12 +410,12 @@ def verify_bundle(html_content: str, baked: bool) -> None:
         "session details page": 'id: "details"',
         "web-report-only note above Additional resources in the PDF": 'class="report-eyebrow-row bonus-block__print-note"',
         "'Coming soon' on the checklist": "Coming soon",
+        "seller email builder": "buildSellerEmailText(",
+        "seller button wiring": "wireSellerButtons(result)",
     }
     must_not_have = {
         "redirect to report.html (report would never show)": 'window.location.href = "report.html"',
         "report auto-start (would run before scoring)": "\ninit().catch(console.error)",
-        "'Talk to a seller' button": "Talk to a seller",
-        "seller call-to-action card": 'class="accelerate-card"',
         "the old single Download PDF button": "js-download-pdf",
         "the old answers-in-report section": 'id="answers-section"',
         "a local file reference (breaks once shared)": 'src="assets/',
