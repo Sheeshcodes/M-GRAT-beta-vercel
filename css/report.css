@@ -2127,6 +2127,19 @@ html, body { overflow-x: clip; }
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   z-index: 9999;
 }
+/* Inline variant — used inside the hamburger panel where the list flows in
+   the document rather than floating as an overlay. No absolute positioning
+   so no clipping issues regardless of ancestor overflow values. */
+.dl-menu__list--inline {
+  position: static;
+  width: 100%;
+  box-shadow: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+  margin-top: 2px;
+}
+
 .dl-menu__list--up {
   top: auto;
   bottom: calc(100% + 2px);
