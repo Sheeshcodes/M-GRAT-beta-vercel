@@ -15353,10 +15353,11 @@ const handleNext = (event) => {
     Promise.resolve()
       .then(() => score(answers, assessment))
       .then(result => {
+        result._rawAnswers = answers; // persist answers with result for refresh restore
         try {
           sessionStorage.setItem("scoringResult", JSON.stringify(result));
         } catch (_) {}
-        (result._rawAnswers = answers, window.__showReport(result, answers));
+        window.__showReport(result, answers);
       })
       .catch(err => {
         console.error("Scoring failed:", err);
@@ -15454,6 +15455,16 @@ const getNextLabel = () =>
 render(); // no await in standalone — Carbon upgrades asynchronously
 updateProgressOffset();
 updateScrollState(true);
+
+// On page refresh, sessionStorage still holds the last scoring result.
+// Restore the report view directly so the user doesn't lose their results.
+try {
+  const stored = sessionStorage.getItem("scoringResult");
+  if (stored) {
+    const result = JSON.parse(stored);
+    window.__showReport(result, result._rawAnswers || {});
+  }
+} catch (_) {}
 }
 })();
 </script>
