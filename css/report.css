@@ -2303,23 +2303,25 @@ html, body { overflow-x: clip; }
     display: block !important;
   }
 
+  /* Tighter inter-section gap on print — 64px on screen is generous;
+     32px still visually separates sections without leaving half-pages empty. */
   .report-content > * + * {
-    margin-top: 64px;
+    margin-top: 32px;
   }
 
   /* !important: some intro paragraphs carry an inline margin-top: 0. */
   .report-section > * + *,
   .section-opener > * + * {
-    margin-top: 32px !important;
+    margin-top: 20px !important;
   }
 
   .established-panel > * + *,
   .expansion-card > * + * {
-    margin-top: 24px;
+    margin-top: 16px;
   }
 
   #action-plan-container > * + * {
-    margin-top: 16px;
+    margin-top: 12px;
   }
 
   .report-section {
@@ -2333,8 +2335,8 @@ html, body { overflow-x: clip; }
     flex-direction: row;
     flex-wrap: nowrap;
     align-items: flex-start;
-    gap: 48px;
-    padding: 28px 32px;
+    gap: 32px;
+    padding: 20px 24px;
     min-height: 0;
   }
 
@@ -2394,8 +2396,8 @@ html, body { overflow-x: clip; }
     height: auto;
     display: flex !important;
     flex-direction: column;
-    gap: 16px;
-    padding: 16px 16px 0;
+    gap: 10px;
+    padding: 12px 12px 0;
     box-sizing: border-box;
     opacity: 1 !important;
     visibility: visible !important;
@@ -2425,8 +2427,8 @@ html, body { overflow-x: clip; }
     position: static;
     width: 100%;
     height: auto;
-    padding: 0 16px 16px;
-    margin-top: 16px;
+    padding: 0 12px 12px;
+    margin-top: 10px;
     box-sizing: border-box;
     opacity: 1 !important;
     transform: none !important;
@@ -2467,25 +2469,42 @@ html, body { overflow-x: clip; }
     display: block;
   }
 
+  /* Truly atomic units that must never split — short enough to always fit. */
   .section-opener,
   .maturity-banner,
   .dimension-grid,
-  .expansion-intro,
   .established-sub-section,
   .stage-card,
-  .expansion-summary,
-  .expansion-value,
-  .potential-outcomes,
-  .expansion-products,
   .action-hero-card,
-  .action-details-card,
-  .action-details-section,
-  .bonus-block,
   .bonus-resource,
   .accelerate-card,
   .outcome-item {
     break-inside: avoid;
   }
+
+  /* Larger containers: allow page breaks inside, but keep each labelled
+     sub-block whole and glued to its label. */
+  .expansion-intro__track,
+  .expansion-value__item,
+  .potential-outcomes__item,
+  .expansion-products__item,
+  .action-details-section,
+  .bonus-block__heading + * {
+    break-inside: avoid;
+  }
+
+  /* Labels/eyebrows always stay with what follows them. */
+  .expansion-value__label,
+  .potential-outcomes__label,
+  .expansion-products__label,
+  .action-details-label,
+  .action-details-label-row,
+  .bonus-block__heading {
+    break-after: avoid;
+  }
+
+  /* The bonus block as a whole can break; its heading is already tied above. */
+  .bonus-block { break-inside: auto; }
 
   .report-eyebrow-row.bonus-block__print-note {
     display: flex;
@@ -2504,7 +2523,7 @@ html, body { overflow-x: clip; }
   .expansion-intro {
     flex-direction: row;
     gap: 32px;
-    padding: 28px 24px;
+    padding: 16px 24px; /* reduce vertical padding — saves ~24px per intro block */
   }
 
   .expansion-intro__track {
