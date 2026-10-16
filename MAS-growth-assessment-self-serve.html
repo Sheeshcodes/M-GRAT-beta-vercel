@@ -4783,40 +4783,69 @@ html, body { overflow-x: clip; }
     max-width: none;
   }
 
+  /* ── Each major section starts on its own page ──────────────────────────
+     Mirrors the responses-doc model: one logical chapter = one clean page
+     start, so no section ever begins at the foot of a previous one's page. */
+  #act-roi,
+  #act-plan,
+  #act-resources,
+  #act-improve {
+    break-before: page;
+  }
+
   /* ── Page-level stacks print as block flow ──────────────────────────────
-     On screen these are flex columns spaced with gap. Chrome cannot paginate
-     that safely: when a block inside a flex column is pushed to the next page
-     to keep it whole, what follows is not always pushed with it, and the next
-     heading prints on top of it. In block flow the page breaks are reliable
-     and "keep with next" works, so the same spacing is set with margins. */
+     Chromium does not honour break-inside:avoid on flex or grid items.
+     Every container that participates in page-break logic must be
+     display:block so that the break rules actually fire. Spacing is
+     replaced with margin-top on the first child of each block. */
   .report-content,
   .report-section,
   .section-opener,
   .established-card,
   .established-panel,
   .expansion-card,
+  .expansion-summary,
+  .expansion-value,
+  .potential-outcomes,
+  .expansion-products,
+  .action-details-card,
+  .action-details-section,
+  .remediation-steps,
+  .potential-outcomes__items,
+  .action-hero-card,
+  .bonus-resource,
+  .remediation-step,
   #action-plan-container {
     display: block !important;
   }
 
-  .report-content > * + * {
-    margin-top: 64px;
-  }
+  /* Spacing for converted block containers — replaces flex/column gap. */
+  .report-content > * + * { margin-top: 32px; }
 
   /* !important: some intro paragraphs carry an inline margin-top: 0. */
   .report-section > * + *,
-  .section-opener > * + * {
-    margin-top: 32px !important;
-  }
+  .section-opener > * + * { margin-top: 20px !important; }
 
   .established-panel > * + *,
-  .expansion-card > * + * {
-    margin-top: 24px;
-  }
+  .expansion-card > * + * { margin-top: 16px; }
 
-  #action-plan-container > * + * {
-    margin-top: 16px;
-  }
+  .expansion-summary > * + * { margin-top: 20px; }
+  .expansion-value > * + *,
+  .potential-outcomes > * + *,
+  .expansion-products > * + * { margin-top: 10px; }
+
+  .potential-outcomes__items > * + * { margin-top: 14px; }
+
+  .action-details-card > * + * { margin-top: 20px; }
+  .action-details-section > * + * { margin-top: 10px; }
+  .remediation-steps > * + * { margin-top: 16px; }
+  .remediation-step > * + * { margin-top: 6px; }
+
+  .action-hero-card > * + * { margin-top: 40px; }
+
+  .bonus-resource > * + * { margin-top: 28px; }
+
+  #action-plan-container > * + * { margin-top: 12px; }
 
   .report-section {
     padding-bottom: 0;
@@ -4979,7 +5008,9 @@ html, body { overflow-x: clip; }
   .bonus-block,
   .bonus-resource,
   .accelerate-card,
-  .outcome-item {
+  .outcome-item,
+  .expansion-intro__track,
+  .remediation-step {
     break-inside: avoid;
   }
 
@@ -5009,9 +5040,7 @@ html, body { overflow-x: clip; }
   }
 
   .expansion-summary {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 24px;
+    display: block !important;
     width: 100%;
   }
 

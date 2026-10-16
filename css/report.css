@@ -2287,6 +2287,16 @@ html, body { overflow-x: clip; }
     max-width: none;
   }
 
+  /* ── Each major section starts on its own page ──────────────────────────
+     Mirrors the responses-doc model: one logical chapter = one clean page
+     start, so no section ever begins at the foot of a previous one's page. */
+  #act-roi,
+  #act-plan,
+  #act-resources,
+  #act-improve {
+    break-before: page;
+  }
+
   /* ── Page-level stacks print as block flow ──────────────────────────────
      Chromium does not honour break-inside:avoid on flex or grid items.
      Every container that participates in page-break logic must be
@@ -2305,11 +2315,15 @@ html, body { overflow-x: clip; }
   .action-details-card,
   .action-details-section,
   .remediation-steps,
+  .potential-outcomes__items,
+  .action-hero-card,
+  .bonus-resource,
+  .remediation-step,
   #action-plan-container {
     display: block !important;
   }
 
-  /* Spacing for converted block containers — replaces flex gap. */
+  /* Spacing for converted block containers — replaces flex/column gap. */
   .report-content > * + * { margin-top: 32px; }
 
   /* !important: some intro paragraphs carry an inline margin-top: 0. */
@@ -2324,9 +2338,16 @@ html, body { overflow-x: clip; }
   .potential-outcomes > * + *,
   .expansion-products > * + * { margin-top: 10px; }
 
+  .potential-outcomes__items > * + * { margin-top: 14px; }
+
   .action-details-card > * + * { margin-top: 20px; }
   .action-details-section > * + * { margin-top: 10px; }
   .remediation-steps > * + * { margin-top: 16px; }
+  .remediation-step > * + * { margin-top: 6px; }
+
+  .action-hero-card > * + * { margin-top: 40px; }
+
+  .bonus-resource > * + * { margin-top: 28px; }
 
   #action-plan-container > * + * { margin-top: 12px; }
 
@@ -2336,7 +2357,13 @@ html, body { overflow-x: clip; }
 
   /* The phone layout stacks the score and the strengths; a page is wide
      enough to put them side by side, which keeps "Where you are today" on
-     the first page instead of pushing it to the second. */
+     the first page instead of pushing it to the second.
+     display:block so break-inside:avoid is honoured by Chromium — the two
+     cells are then positioned with float/inline-block or margin. Since the
+     banner must keep its side-by-side look, we keep flex but force
+     break-inside:avoid on the banner's parent (.report-section) via
+     page-level break-before instead. The banner itself is small enough
+     to always fit on one page, so the main fix is the section page-break. */
   .maturity-banner {
     flex-direction: row;
     flex-wrap: nowrap;
@@ -2475,8 +2502,12 @@ html, body { overflow-x: clip; }
     display: block;
   }
 
-  /* Atomic units that must never split. These are all now display:block
-     so break-inside:avoid is honoured by Chromium. */
+  /* Atomic units that must never split.
+     Elements now converted to display:block honour break-inside:avoid in
+     Chromium. flex/grid items still need a block ancestor — hence the
+     page-level break-before on each section gives Chromium the block
+     context it needs for the containers we cannot convert (maturity-banner,
+     dimension-grid) because they rely on their flex/grid layout visually. */
   .section-opener,
   .maturity-banner,
   .dimension-grid,
