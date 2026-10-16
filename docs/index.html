@@ -1243,23 +1243,40 @@
       width: fit-content;
       flex-shrink: 0;
     }
-    /* Inner row: switcher left, toggle right, both vertically centred */
+    /* Inner row: switcher */
     .opp-track-bar__inner {
       display: flex;
       align-items: center;
       justify-content: flex-start;
       gap: var(--cds-spacing-07);
     }
+    /* Stage row: tabs (or compare checkboxes) left, compare toggle right */
+    .opp-stage-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: var(--cds-spacing-05);
+    }
+    .opp-stage-row cds-tabs {
+      flex: 1;
+      min-width: 0;
+    }
+    .opp-stage-row cds-tabs[hidden] { display: none; }
+
     #opp-compare-toggle {
       margin-left: auto;
+      flex-shrink: 0;
     }
-    /* ── Compare bar ──────────────────────────────────────────── */
+    /* ── Compare bar (checkboxes, replaces tabs in the stage row) ── */
     .opp-compare-bar {
+      flex: 1;
+      min-width: 0;
       background: var(--cds-layer-01);
       border-bottom: 1px solid var(--cds-border-subtle);
-      padding: var(--cds-spacing-05) 0;
+      padding: var(--cds-spacing-03) var(--cds-spacing-05);
     }
-    .opp-compare-bar .cds--grid {
+    .opp-compare-bar[hidden] { display: none; }
+    .opp-compare-bar #opp-compare-checkboxes {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
@@ -1417,9 +1434,15 @@
 
     @media (max-width: 800px) {
       .opp-layout { grid-template-columns: minmax(0, 1fr); gap: var(--cds-spacing-06); }
+      .opp-layout--compare { grid-template-columns: minmax(0, 1fr) !important; }
       .opp-rail { display: none; }
-      /* Compare is disabled on mobile — hide the toggle */
-      #opp-compare-toggle { display: none; }
+      /* On mobile: toggle drops to its own line below the tabs */
+      #opp-compare-toggle {
+        flex-basis: 100%;
+        margin-left: 0;
+        padding: var(--cds-spacing-03) 0;
+        border-top: 1px solid var(--cds-border-subtle);
+      }
       /* Track bar: switcher fills the full row width on mobile */
       .opp-track-bar__inner {
         flex-direction: column;
@@ -1437,6 +1460,33 @@
       cds-content-switcher-item {
         flex: 1 1 0;
         min-width: 0;
+      }
+
+      /* ── Mobile compare: full-bleed horizontal scroll with 80vw columns ── */
+      .opp-compare-cols {
+        /* Keep the same grid structure (display:contents rows rely on it)
+           but make columns 80vw so the next stage peeks out */
+        grid-template-columns: 80vw 1px 80vw;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        /* Full-bleed: escape all ancestor padding/margins regardless of nesting depth */
+        width: 100vw;
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%);
+        /* Inner padding so content doesn't touch the screen edges */
+        padding-left: var(--cds-spacing-05);
+        padding-right: var(--cds-spacing-05);
+        /* scroll-padding matches padding-left so snap lands at content edge */
+        scroll-padding-left: var(--cds-spacing-05);
+      }
+      /* Each cell in a column snaps on scroll */
+      .opp-compare-cols .opp-compare-cell:first-child {
+        scroll-snap-align: start;
+      }
+      .opp-compare-cols .opp-compare-cell:nth-child(3) {
+        scroll-snap-align: start;
       }
     }
 
@@ -1963,16 +2013,7 @@
           <cds-content-switcher-item value="fsm" selected>Field Service Management (FSM)</cds-content-switcher-item>
           <cds-content-switcher-item value="apm">Asset Performance Management (APM)</cds-content-switcher-item>
         </cds-content-switcher>
-        <cds-toggle id="opp-compare-toggle"
-          label-text="Compare stages"
-          hide-label
-          size="sm">
-        </cds-toggle>
       </div>
-    </div>
-
-    <div id="opp-compare-bar" class="opp-compare-bar" hidden>
-      <div class="cds--grid" id="opp-compare-checkboxes"></div>
     </div>
 
     <div class="cds--grid opp-layout" id="opp-layout">
@@ -1984,7 +2025,16 @@
         <a href="#opp-steps">Getting started (minimum viable steps)</a>
       </nav>
       <div class="opp-main" id="opp-main">
-        <cds-tabs id="opp-stage-tabs" value="0" trigger-content="Select stage"></cds-tabs>
+        <div class="opp-stage-row">
+          <cds-tabs id="opp-stage-tabs" value="0" trigger-content="Select stage"></cds-tabs>
+          <div id="opp-compare-bar" class="opp-compare-bar" hidden>
+            <div id="opp-compare-checkboxes"></div>
+          </div>
+          <cds-toggle id="opp-compare-toggle"
+            label-text="Compare stages"
+            size="sm">
+          </cds-toggle>
+        </div>
         <div id="opp-content" class="opp-content"></div>
       </div>
     </div>
@@ -3962,19 +4012,6 @@
           updateActiveRailLink();
         }
       }
-
-      /* ── Disable compare on mobile (resize / orientation) ──── */
-
-      var mobileBreakpoint = window.matchMedia('(max-width: 800px)');
-      function onBreakpointChange(mq) {
-        if (mq.matches && state.compare) {
-          compareToggle.checked = false;
-          toggleCompare(false);
-        }
-      }
-      mobileBreakpoint.addEventListener('change', onBreakpointChange);
-      /* Also enforce on initial load in case page opens narrow */
-      onBreakpointChange(mobileBreakpoint);
 
       /* ── Checkbox change: 2-max with replace-highest rule ───── */
 
