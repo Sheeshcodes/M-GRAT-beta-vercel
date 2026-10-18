@@ -15,3 +15,6 @@ __pycache__/
 .idea/
 .vercel
 .env*
+
+# Graphify output
+graphify-out/

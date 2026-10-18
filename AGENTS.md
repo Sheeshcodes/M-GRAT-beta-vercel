@@ -82,3 +82,13 @@ The 4-pass pipeline lives in `js/scoring.js`. Do not change pass logic without r
 ## Wiki / Changelog
 
 `wiki/` is the source of truth for the GitHub Wiki. A git post-commit hook auto-syncs it to the wiki repo on every commit. Also synced on push to `main` via `.github/workflows/sync-wiki.yml`. Edit `wiki/Changelog.md` and `wiki/Decision-Log.md` directly in this repo.
+
+## Knowledge graph (graphify)
+
+`graphify-out/` holds a knowledge graph of this repo (`graph.json`, `GRAPH_REPORT.md`, `graph.html`). It is gitignored and local-only, so it must be built on each clone with `/graphify .`.
+
+- For architecture or "how does X relate to Y" questions, check the graph before grepping: read `graphify-out/GRAPH_REPORT.md`, then use `graphify query "<question>"`, `graphify path "A" "B"`, or `graphify explain "<node>"`.
+- After changing code files, run `graphify update .` to refresh the graph (AST only, no LLM). After changing docs or markdown, run `/graphify . --update`.
+- Not in the graph: images, videos, the `Logic/*.xlsx` workbooks (office conversion unavailable), the generated `MAS-growth-assessment-self-serve.html` bundles, `docs/index.html`, and `.github/workflows/*.yml`. Use grep or the workbooks directly for those.
+- The graph is a map, not ground truth. `INFERRED` edges are guesses, and the build reported dangling and collapsed edges. Confirm in the source before acting on a relationship.
+
