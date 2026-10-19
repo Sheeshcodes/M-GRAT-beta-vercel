@@ -3954,11 +3954,10 @@ cds-menu-item::part(list-item) {
     background: #ffffff;
     width: 100%;
     max-width: 100vw;
-    /* clip instead of hidden: clip does not create a scroll container so
-       position:sticky still works, and it does not clip absolutely-positioned
-       descendants — Carbon's cds-menu dropdown positions outside this box
-       and was being cut off by overflow:hidden on mobile. */
-    overflow-x: clip;
+    /* overflow must stay visible so the .dl-menu__list dropdown can
+       extend below the sticky bar without being clipped. The bar has
+       no horizontal overflow content that needs hiding. */
+    overflow: visible;
   }
 
   .report-nav {
@@ -4646,6 +4645,78 @@ html, body { overflow-x: clip; }
   line-height: 20px;
   color: var(--cds-text-primary);
 }
+/* --------------------------------------------------------------------------
+   Native download menu — replaces cds-menu-button in mobile nav + footer.
+   A plain <button> trigger + <ul> popover, no shadow DOM, works on mobile.
+   -------------------------------------------------------------------------- */
+.dl-menu {
+  position: relative;
+  display: inline-block;
+}
+
+/* Trigger styled to match Carbon tertiary button */
+.dl-menu__trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 16px;
+  border: 1px solid var(--cds-button-tertiary, #0f62fe);
+  background: transparent;
+  color: var(--cds-button-tertiary, #0f62fe);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.16px;
+  cursor: pointer;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  width: 192px;
+}
+.dl-menu__trigger:hover { background: var(--cds-layer-hover, #e8e8e8); color: var(--cds-button-tertiary, #0f62fe); }
+.dl-menu__trigger:active { background: var(--cds-layer-active, #c6c6c6); color: var(--cds-button-tertiary, #0f62fe); }
+.dl-menu__trigger:focus-visible { outline: 2px solid var(--cds-focus, #0f62fe); outline-offset: -2px; }
+.dl-menu__trigger[aria-expanded="true"] .dl-menu__chevron { transform: rotate(180deg); }
+
+/* Dropdown list */
+.dl-menu__list {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 2px);
+  min-width: 192px;
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+  background: var(--cds-layer, #f4f4f4);
+  border: 1px solid var(--cds-border-subtle, #e0e0e0);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 9999;
+}
+.dl-menu__list--up {
+  top: auto;
+  bottom: calc(100% + 2px);
+}
+.dl-menu__list[hidden] { display: none; }
+
+.dl-menu__item {
+  display: block;
+  width: 100%;
+  padding: 11px 16px;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 14px;
+  text-align: left;
+  color: var(--cds-text-primary, #161616);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.dl-menu__item:hover { background: var(--cds-layer-hover, #e8e8e8); }
+.dl-menu__item:disabled { color: var(--cds-text-disabled, #8d8d8d); cursor: not-allowed; }
+
 
 @media print {
   /* Each assessment page is one section of the document and is short enough to
@@ -4853,13 +4924,19 @@ html, body { overflow-x: clip; }
 
   /* The phone layout stacks the score and the strengths; a page is wide
      enough to put them side by side, which keeps "Where you are today" on
-     the first page instead of pushing it to the second. */
+     the first page instead of pushing it to the second.
+     display:block so break-inside:avoid is honoured by Chromium — the two
+     cells are then positioned with float/inline-block or margin. Since the
+     banner must keep its side-by-side look, we keep flex but force
+     break-inside:avoid on the banner's parent (.report-section) via
+     page-level break-before instead. The banner itself is small enough
+     to always fit on one page, so the main fix is the section page-break. */
   .maturity-banner {
     flex-direction: row;
     flex-wrap: nowrap;
     align-items: flex-start;
-    gap: 48px;
-    padding: 28px 32px;
+    gap: 32px;
+    padding: 20px 24px;
     min-height: 0;
   }
 
@@ -4919,8 +4996,8 @@ html, body { overflow-x: clip; }
     height: auto;
     display: flex !important;
     flex-direction: column;
-    gap: 16px;
-    padding: 16px 16px 0;
+    gap: 10px;
+    padding: 12px 12px 0;
     box-sizing: border-box;
     opacity: 1 !important;
     visibility: visible !important;
@@ -4950,8 +5027,8 @@ html, body { overflow-x: clip; }
     position: static;
     width: 100%;
     height: auto;
-    padding: 0 16px 16px;
-    margin-top: 16px;
+    padding: 0 12px 12px;
+    margin-top: 10px;
     box-sizing: border-box;
     opacity: 1 !important;
     transform: none !important;
@@ -4992,26 +5069,41 @@ html, body { overflow-x: clip; }
     display: block;
   }
 
+  /* Atomic units that must never split.
+     Elements now converted to display:block honour break-inside:avoid in
+     Chromium. flex/grid items still need a block ancestor — hence the
+     page-level break-before on each section gives Chromium the block
+     context it needs for the containers we cannot convert (maturity-banner,
+     dimension-grid) because they rely on their flex/grid layout visually. */
   .section-opener,
   .maturity-banner,
   .dimension-grid,
-  .expansion-intro,
   .established-sub-section,
   .stage-card,
-  .expansion-summary,
-  .expansion-value,
-  .potential-outcomes,
-  .expansion-products,
   .action-hero-card,
-  .action-details-card,
-  .action-details-section,
-  .bonus-block,
   .bonus-resource,
   .accelerate-card,
   .outcome-item,
   .expansion-intro__track,
+  .expansion-value,
+  .potential-outcomes,
+  .expansion-products,
+  .action-details-section,
   .remediation-step {
     break-inside: avoid;
+  }
+
+  /* A label must never be the last thing on a page — glue it to its
+     sibling content with break-after:avoid. */
+  .expansion-value__label,
+  .potential-outcomes__label,
+  .expansion-products__label,
+  .action-details-label,
+  .action-details-label-row,
+  .action-plan__next-label,
+  .bonus-block__heading,
+  .expansion-card__header {
+    break-after: avoid;
   }
 
   .report-eyebrow-row.bonus-block__print-note {
@@ -5031,7 +5123,7 @@ html, body { overflow-x: clip; }
   .expansion-intro {
     flex-direction: row;
     gap: 32px;
-    padding: 28px 24px;
+    padding: 16px 24px; /* reduce vertical padding — saves ~24px per intro block */
   }
 
   .expansion-intro__track {
@@ -5039,10 +5131,7 @@ html, body { overflow-x: clip; }
     min-width: 0;
   }
 
-  .expansion-summary {
-    display: block !important;
-    width: 100%;
-  }
+  /* expansion-summary is now display:block in print (see block-flow list above) */
 
   .outcome-item__stat {
     background: none !important;
@@ -5248,12 +5337,12 @@ html:has(body.share-modal-open) {
 
 @media (max-width: 671px) {
   .share-modal__dialog {
-    max-width: 100%;
-    top: auto;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    transform: none;
+    max-width: calc(100% - 32px);
+    top: 50%;
+    left: 50%;
+    bottom: auto;
+    right: auto;
+    transform: translate(-50%, -50%);
   }
 }
 
@@ -5513,13 +5602,17 @@ html:has(body.share-modal-open) {
       </ul>
       <div class="mobile-nav__actions">
         
-        <cds-menu-button kind="tertiary" label="Download" menu-alignment="bottom" size="lg" data-autotrack-id="report__menu-btn--download-mobile-nav">
-          <cds-menu>
-            <cds-menu-item label="Full PDF report" data-download="pdf" data-autotrack-id="report__menu-item--download-pdf-mobile-nav"></cds-menu-item>
-            <cds-menu-item label="Full checklist" disabled></cds-menu-item>
-            <cds-menu-item label="Your responses" disabled data-download="responses" data-autotrack-id="report__menu-item--download-responses-mobile-nav"></cds-menu-item>
-          </cds-menu>
-        </cds-menu-button>
+        <div class="dl-menu" data-autotrack-id="report__dl-menu--mobile-nav">
+          <button type="button" class="dl-menu__trigger" aria-haspopup="true" aria-expanded="false">
+            Download
+            <svg class="dl-menu__chevron" viewBox="0 0 32 32" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M16 22L6 12l1.4-1.4 8.6 8.6 8.6-8.6L26 12z"/></svg>
+          </button>
+          <ul class="dl-menu__list dl-menu__list--up" hidden role="menu">
+            <li role="none"><button type="button" role="menuitem" class="dl-menu__item" data-download="pdf" data-autotrack-id="report__btn--download-pdf-mobile-nav">Full PDF report</button></li>
+            <li role="none"><button type="button" role="menuitem" class="dl-menu__item" disabled>Full checklist</button></li>
+            <li role="none"><button type="button" role="menuitem" class="dl-menu__item" data-download="responses" data-autotrack-id="report__btn--download-responses-mobile-nav" disabled>Your responses</button></li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
@@ -5700,13 +5793,17 @@ html:has(body.share-modal-open) {
              page, so they are never more than a scroll away. -->
         <div class="report-end-actions">
           
-          <cds-menu-button kind="tertiary" label="Download" menu-alignment="top" size="lg" data-autotrack-id="report__menu-btn--download-footer">
-            <cds-menu>
-              <cds-menu-item label="Full PDF report" data-download="pdf" data-autotrack-id="report__menu-item--download-pdf-footer"></cds-menu-item>
-              <cds-menu-item label="Full checklist" disabled></cds-menu-item>
-              <cds-menu-item label="Your responses" disabled data-download="responses" data-autotrack-id="report__menu-item--download-responses-footer"></cds-menu-item>
-            </cds-menu>
-          </cds-menu-button>
+          <div class="dl-menu" data-autotrack-id="report__dl-menu--footer">
+            <button type="button" class="dl-menu__trigger" aria-haspopup="true" aria-expanded="false">
+              Download
+              <svg class="dl-menu__chevron" viewBox="0 0 32 32" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M16 22L6 12l1.4-1.4 8.6 8.6 8.6-8.6L26 12z"/></svg>
+            </button>
+            <ul class="dl-menu__list dl-menu__list--up" hidden role="menu">
+              <li role="none"><button type="button" role="menuitem" class="dl-menu__item" data-download="pdf" data-autotrack-id="report__btn--download-pdf-footer">Full PDF report</button></li>
+              <li role="none"><button type="button" role="menuitem" class="dl-menu__item" disabled>Full checklist</button></li>
+              <li role="none"><button type="button" role="menuitem" class="dl-menu__item" data-download="responses" data-autotrack-id="report__btn--download-responses-footer" disabled>Your responses</button></li>
+            </ul>
+          </div>
         </div>
 
       </main>
@@ -13898,15 +13995,15 @@ function renderActionPlan(actionPlan) {
         <div class="bonus-resource__inner">
           <div class="bonus-resource__icon">${PICTOGRAM_TREE_MAP}</div>
           <div class="bonus-resource__body">
-            <p class="bonus-resource__title">Asset Performance Management &amp; Field Service Management maturity maps</p>
+            <p class="bonus-resource__title">Asset Performance Management &amp; Field Service Management Value capture maps</p>
             <p class="bonus-resource__desc">Explore the journey from foundational asset management and coordinated field operations to predictive reliability, intelligent scheduling, and fully optimized enterprise performance.</p>
             <div class="bonus-resource__action bonus-resource__action--row">
               <cds-button kind="tertiary" size="lg" href="docs/apm-maturity-map.html" target="_blank" rel="noopener noreferrer" data-autotrack-id="report__btn--open-apm-maturity-map">
-                APM Maturity map
+                APM Value capture map
                 <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 28H6a2 2 0 01-2-2V6a2 2 0 012-2h10v2H6v20h20V16h2v10a2 2 0 01-2 2z"/><path d="M21 2v2h5.59L18 12.59 19.41 14 28 5.41V11h2V2z"/></svg>
               </cds-button>
               <cds-button kind="tertiary" size="lg" href="docs/fsm-maturity-map.html" target="_blank" rel="noopener noreferrer" data-autotrack-id="report__btn--open-fsm-maturity-map">
-                FSM Maturity map
+                FSM Value capture map
                 <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 28H6a2 2 0 01-2-2V6a2 2 0 012-2h10v2H6v20h20V16h2v10a2 2 0 01-2 2z"/><path d="M21 2v2h5.59L18 12.59 19.41 14 28 5.41V11h2V2z"/></svg>
               </cds-button>
             </div>
@@ -14153,17 +14250,24 @@ function initScrollSpy() {
 
   /* scrollIntoView puts the target flush against the top of the viewport, which
      on a phone parks it underneath the pinned bar — the heading you asked for
-     ends up hidden. Measure the bar and land the section just below it. Not
-     every target is a .report-section (the resources block is not), so the
+     ends up hidden. Measure the full sticky nav wrapper (not just the inner bar)
+     and scroll to the section heading rather than the section element, which has
+     padding above the heading that would put the heading below the visible area.
+     Not every target is a .report-section (the resources block is not), so the
      offset is computed here rather than left to scroll-margin-top. */
+  const mobileNav = $(".report-mobile-nav");
   const goTo = (sectionId) => {
-    const target = $(`#${sectionId}`);
-    if (!target) return;
-    // On desktop the bar is inside a hidden wrapper, so it still reports a
-    // display value — its measured height is what tells us it is really there.
-    const barHeight = bar ? bar.getBoundingClientRect().height : 0;
-    const offset = barHeight ? barHeight + 8 : 24;
-    const top = window.scrollY + target.getBoundingClientRect().top - offset;
+    const section = $(`#${sectionId}`);
+    if (!section) return;
+    // Prefer the heading inside the section so we land on the text, not on
+    // the section's top padding. Fall back to the section itself.
+    const heading = section.querySelector(".report-section__heading, h2, h3") || section;
+    // The whole .report-mobile-nav wrapper is sticky at top:0 on mobile.
+    // On desktop it is display:none so its height is 0 — use the sidebar instead.
+    const stickyEl = (mobileNav && mobileNav.offsetParent !== null) ? mobileNav : bar;
+    const stickyHeight = stickyEl ? stickyEl.getBoundingClientRect().height : 0;
+    const offset = stickyHeight + 12;
+    const top = window.scrollY + heading.getBoundingClientRect().top - offset;
     window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
     setActive(sectionId);
   };
@@ -14251,26 +14355,6 @@ function fitMenuButtons() {
   customElements.whenDefined("cds-menu-button").then(() => {
     requestAnimationFrame(sync);
     window.addEventListener("resize", sync);
-  });
-}
-
-/* --------------------------------------------------------------------------
-   Fix cds-menu-button requiring two taps to open on mobile. Carbon registers
-   a focus step on first tap before opening — intercept touchend on the host
-   and fire a synthetic click on the internal trigger button so the menu opens
-   on the very first touch.
-   -------------------------------------------------------------------------- */
-function fixMenuButtonMobileTap() {
-  customElements.whenDefined("cds-menu-button").then(() => {
-    $$("cds-menu-button").forEach(mb => {
-      mb.addEventListener("touchend", e => {
-        // Only act when the menu is currently closed
-        if (mb.hasAttribute("open")) return;
-        e.preventDefault();
-        const btn = mb.shadowRoot?.querySelector("button");
-        if (btn) btn.click();
-      }, { passive: false });
-    });
   });
 }
 
@@ -14370,14 +14454,39 @@ function initPrint(contact) {
   window.addEventListener("beforeprint", openEverything);
   window.addEventListener("afterprint", restore);
 
-  $$('cds-menu-item[data-download="pdf"]').forEach(item => {
-    item.addEventListener("click", () => {
-      // print() lays the page out for paper itself, so it is called straight
-      // away. Waiting a frame first would stall indefinitely in a tab that is
-      // not visible, leaving the page opened up with the print title.
-      openEverything();
-      window.print();
-    });
+  const pdfAction = () => {
+    openEverything();
+    window.print();
+  };
+
+  // Covers both plain <button data-download="pdf"> (mobile nav / footer)
+  // and the remaining cds-menu-item (desktop sidebar).
+  $$('[data-download="pdf"]').forEach(el => {
+    el.addEventListener("click", pdfAction);
+  });
+}
+
+/* --------------------------------------------------------------------------
+   Native download menus — wire the .dl-menu trigger + list in mobile nav
+   and footer. Opens/closes on click, closes on outside tap, calls the
+   registered pdf/responses actions when an item is tapped.
+   -------------------------------------------------------------------------- */
+function initNativeDownloadMenus() {
+  $$(".dl-menu").forEach(menu => {
+    const trigger = menu.querySelector(".dl-menu__trigger");
+    const list    = menu.querySelector(".dl-menu__list");
+    if (!trigger || !list) return;
+
+    const open  = () => { list.hidden = false; trigger.setAttribute("aria-expanded", "true"); };
+    const close = () => { list.hidden = true;  trigger.setAttribute("aria-expanded", "false"); };
+    const toggle = () => list.hidden ? open() : close();
+
+    trigger.addEventListener("click", toggle);
+
+    // Close when anything outside the menu is tapped
+    document.addEventListener("click", e => {
+      if (!menu.contains(e.target)) close();
+    }, { capture: true });
   });
 }
 
@@ -14623,8 +14732,8 @@ initReport = async function(result) {
   wireFeedback();
   initScrollSpy();
   fitMenuButtons();
+  initNativeDownloadMenus();
   initPrint(result.contact);
-  fixMenuButtonMobileTap();
   closeTooltipsOnOutsideClick();
   wireSellerButtons(result);
   initShareModal(result);
@@ -14687,7 +14796,7 @@ function buildSellerEmailText(result, stored) {
   const orgPart   = c.organization ? ` from ${c.organization}`               : "";
   const indPart   = c.industry     ? ` (${c.industry})`                      : "";
   const scoreLine = m.score != null
-    ? `Overall maturity score: ${m.score}/100 — Level ${m.level ?? ""}: ${m.levelLabel ?? ""}`
+    ? `Overall Value capture score: ${m.score}/100 — Level ${m.level ?? ""}: ${m.levelLabel ?? ""}`
     : "";
   const apmLine   = result.apm?.currentStage?.label
     ? `APM current stage:      ${result.apm.currentStage.label}`             : "";
@@ -14772,7 +14881,7 @@ function buildSellerEmailText(result, stored) {
  * @param {object} result  - scoring result
  */
 function wireSellerButtons(result) {
-  const SELLER_EMAIL = "mas-growth-assessment@ibm.com";
+  const SELLER_EMAIL = "alm.growth.assessment@ibm.com";
 
   const stored = loadStoredResponses() ?? {
     answers: {},
@@ -14816,7 +14925,7 @@ function initShareModal(result) {
   let shown = false;
 
   // Build the mailto href the same way wireSellerButtons does
-  const SELLER_EMAIL = "mas-growth-assessment@ibm.com";
+  const SELLER_EMAIL = "alm.growth.assessment@ibm.com";
   const stored = loadStoredResponses() ?? { answers: {}, submittedAt: null, missing: true };
   const body    = buildSellerEmailText(result, stored);
   const subject = encodeURIComponent("MAS Growth Readiness Assessment — results");
@@ -15382,11 +15491,10 @@ const handleNext = (event) => {
     Promise.resolve()
       .then(() => score(answers, assessment))
       .then(result => {
-        result._rawAnswers = answers; // persist answers with result for refresh restore
         try {
           sessionStorage.setItem("scoringResult", JSON.stringify(result));
         } catch (_) {}
-        window.__showReport(result, answers);
+        (result._rawAnswers = answers, window.__showReport(result, answers));
       })
       .catch(err => {
         console.error("Scoring failed:", err);
@@ -15468,6 +15576,41 @@ stackedLayout.addEventListener("change", () => { sidebar.classList.remove("is-co
 new ResizeObserver(updateProgressOffset).observe(sidebar);
 
 /* ----------------------------------------------------------------------
+   Prevent iOS Safari from zooming when tapping a text input. iOS zooms
+   whenever the focused input's font-size is below 16px. Carbon renders
+   its own <input> inside the shadow root at a smaller size, so we pierce
+   the shadow and inject a minimal stylesheet that bumps it to 16px.
+   A MutationObserver ensures any inputs added by render() later are
+   also patched. The override only activates on touch devices so desktop
+   rendering is unchanged.
+   ---------------------------------------------------------------------- */
+function preventInputZoom() {
+  // Only apply on touch-capable devices (avoids unnecessary shadow patching on desktop)
+  if (!("ontouchstart" in window)) return;
+  const STYLE_MARKER = "data-no-zoom";
+  const patch = (el) => {
+    if (!el.shadowRoot) return;
+    if (el.shadowRoot.querySelector(`style[${STYLE_MARKER}]`)) return;
+    const s = document.createElement("style");
+    s.setAttribute(STYLE_MARKER, "");
+    s.textContent = "input { font-size: 16px !important; }";
+    el.shadowRoot.append(s);
+  };
+  const patchAll = () =>
+    document.querySelectorAll("cds-text-input").forEach(patch);
+
+  customElements.whenDefined("cds-text-input").then(() => {
+    patchAll();
+    // Watch for inputs added dynamically (page navigation re-renders the form)
+    new MutationObserver(patchAll).observe(els.sections, {
+      childList: true,
+      subtree: true,
+    });
+  });
+}
+preventInputZoom();
+
+/* ----------------------------------------------------------------------
    Boot
    ---------------------------------------------------------------------- */
 els.product.textContent = assessment.product;
@@ -15484,16 +15627,6 @@ const getNextLabel = () =>
 render(); // no await in standalone — Carbon upgrades asynchronously
 updateProgressOffset();
 updateScrollState(true);
-
-// On page refresh, sessionStorage still holds the last scoring result.
-// Restore the report view directly so the user doesn't lose their results.
-try {
-  const stored = sessionStorage.getItem("scoringResult");
-  if (stored) {
-    const result = JSON.parse(stored);
-    window.__showReport(result, result._rawAnswers || {});
-  }
-} catch (_) {}
 }
 })();
 </script>

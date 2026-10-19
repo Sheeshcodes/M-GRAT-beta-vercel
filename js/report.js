@@ -781,15 +781,15 @@ function renderActionPlan(actionPlan) {
         <div class="bonus-resource__inner">
           <div class="bonus-resource__icon">${PICTOGRAM_TREE_MAP}</div>
           <div class="bonus-resource__body">
-            <p class="bonus-resource__title">Asset Performance Management &amp; Field Service Management maturity maps</p>
+            <p class="bonus-resource__title">Asset Performance Management &amp; Field Service Management Value capture maps</p>
             <p class="bonus-resource__desc">Explore the journey from foundational asset management and coordinated field operations to predictive reliability, intelligent scheduling, and fully optimized enterprise performance.</p>
             <div class="bonus-resource__action bonus-resource__action--row">
               <cds-button kind="tertiary" size="lg" href="docs/apm-maturity-map.html" target="_blank" rel="noopener noreferrer" data-autotrack-id="report__btn--open-apm-maturity-map">
-                APM Maturity map
+                APM Value capture map
                 <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 28H6a2 2 0 01-2-2V6a2 2 0 012-2h10v2H6v20h20V16h2v10a2 2 0 01-2 2z"/><path d="M21 2v2h5.59L18 12.59 19.41 14 28 5.41V11h2V2z"/></svg>
               </cds-button>
               <cds-button kind="tertiary" size="lg" href="docs/fsm-maturity-map.html" target="_blank" rel="noopener noreferrer" data-autotrack-id="report__btn--open-fsm-maturity-map">
-                FSM Maturity map
+                FSM Value capture map
                 <svg slot="icon" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M26 28H6a2 2 0 01-2-2V6a2 2 0 012-2h10v2H6v20h20V16h2v10a2 2 0 01-2 2z"/><path d="M21 2v2h5.59L18 12.59 19.41 14 28 5.41V11h2V2z"/></svg>
               </cds-button>
             </div>
@@ -1591,7 +1591,7 @@ function buildSellerEmailText(result, stored) {
   const orgPart   = c.organization ? ` from ${c.organization}`               : "";
   const indPart   = c.industry     ? ` (${c.industry})`                      : "";
   const scoreLine = m.score != null
-    ? `Overall maturity score: ${m.score}/100 — Level ${m.level ?? ""}: ${m.levelLabel ?? ""}`
+    ? `Overall Value capture score: ${m.score}/100 — Level ${m.level ?? ""}: ${m.levelLabel ?? ""}`
     : "";
   const apmLine   = result.apm?.currentStage?.label
     ? `APM current stage:      ${result.apm.currentStage.label}`             : "";
