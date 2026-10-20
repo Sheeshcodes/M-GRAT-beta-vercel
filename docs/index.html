@@ -1841,7 +1841,7 @@
                 <li><strong>Confirm the opportunity.</strong> Ask whether the path and target stage align with the customer's priorities and desired outcomes.</li>
               </ul>
               <p style="margin-top:12px">
-                <cds-link href="journeys.html" size="md">
+                <cds-link href="#opportunity-paths" size="md">
                   Explore the paths to greater value →
                 </cds-link>
               </p>
@@ -2021,6 +2021,7 @@
         <a href="#opp-where">Where the customer is</a>
         <a href="#opp-value">Value after resolving</a>
         <a href="#opp-pilot">Pilot recommendation</a>
+        <a href="#opp-modules">Required Maximo modules</a>
         <a href="#opp-milestones">Key milestones</a>
         <a href="#opp-steps">Getting started (minimum viable steps)</a>
       </nav>
@@ -2053,6 +2054,7 @@
    "valueStatement": "Establishes baseline scheduling discipline and digital labor records—moving away from unstructured verbal dispatch to formal scheduled dates and distinct work assignments in Maximo Manage.",
    "potentialOutcomes": "• Elimination of lost or unassigned work orders through formal Assignment records\n• Accurate baseline capture of technician craft, shift, and calendar availability\n• Baseline tracking of work order scheduled start and finish targets",
    "keyMoves": "• Establish formal Assignment records for all active work orders.\n• Define technician craft, shift, and calendar records.\n• Ensure all active work orders carry scheduled start and finish dates.",
+   "masProducts": "Maximo Manage — Core\nMaximo Mobile — Entry\nSpatial — Optional",
    "areYouReady": "Labour records, craft classifications, calendar/shift definitions, and basic job plan templates are established. Work orders carry scheduled dates.",
    "milestones": [
     {
@@ -2237,6 +2239,7 @@
    "valueStatement": "Centralizes schedule coordination and field dispatch—providing single-pane visibility across labor and crew capacity, extending forward planning horizons, and deploying mobile work execution to eliminate paper delays.",
    "potentialOutcomes": "• 10–15% reduction in administrative dispatch overhead and phone coordination\n• 8–12% increase in wrench time through mobile work order delivery and status updates\n• Multi-week forward planning horizon actively managed in Assignment Manager",
    "keyMoves": "• Stand up a central scheduler/dispatcher role in Assignment Manager.\n• Enrich workforce availability with shifts, exceptions, and crafts.\n• Add materials, tools, and classifications to job plans.\n• Roll out mobile work execution to field crews.",
+   "masProducts": "Maximo Manage — Strong\nMaximo Mobile — Core\nMaximo HSE — Entry\nMAS Scheduler (GWW) — Entry",
    "areYouReady": "Work orders carry scheduled dates and a forward planning horizon is established (weekly to monthly). A centralized scheduler or dispatcher role is active in Assignment Manager, workforce availability is enriched with exceptions, and job plans gain materials, tools, and classifications. HSE, Inspections, and Inventory enter as parallel capability layers.",
    "milestones": [
     {
@@ -2494,6 +2497,7 @@
    "valueStatement": "Optimizes crew productivity and work preparation—enriching job plans with planned materials and tool requirements, sequencing work by dependencies, and routing technicians by geographic proximity.",
    "potentialOutcomes": "• 15–25% reduction in technician travel time and return trips via proximity routing\n• Significant reduction in job delays caused by missing parts, permits, or tools\n• Real-time effective capacity calculation accounting for leaves and active assignments",
    "keyMoves": "• Move to rolling planning windows with predecessor constraints.\n• Enable system-suggested dispatch on effective availability.\n• Scope job plans to asset classes and hierarchies.\n• Feed inspection results into asset condition data.",
+   "masProducts": "Maximo Manage — Strong\nMaximo Mobile — Core\nMAS Scheduler — Core\nSpatial — Planning\nDispatcher — Limited/Emerging",
    "areYouReady": "Forward planning extends to rolling windows with predecessor and hierarchy constraints. System-suggested dispatch based on effective availability is active. Job plans are scoped to asset classes, include hierarchies and predecessors, and link to asset data. Inspection results feed condition data and inventory is planned against work requirements.",
    "milestones": [
     {
@@ -2783,6 +2787,7 @@
    "valueStatement": "Automates schedule optimization and exception handling—using constraint-based algorithms to match technicians by skill and location, dynamically inject emergency break-in work, and integrate storeroom inventory at the point of work.",
    "potentialOutcomes": "• ≥80% First-Time Fix Rate (FTFR) through automated skill- and parts-aware dispatch\n• 15–20% reduction in emergency travel disruption via dynamic break-in scheduling\n• Real-time storeroom balance visibility and mobile material issuance from the field",
    "keyMoves": "• Introduce optimization-driven scheduling across crews and territories.\n• Connect condition and IoT signals to trigger work automatically.\n• Plan inventory and logistics against forecast work demand.\n• Measure schedule compliance and wrench time continuously.",
+   "masProducts": "Maximo Manage — Strong\nMaximo Mobile — Core\nMAS Scheduler — Advanced\nDispatcher — Core\nSpatial — Core\nOptimizer — Emerging",
    "areYouReady": "The Optimizer runs automatically via cron-based scheduling. Assignments are system-generated from constraints, skills, and optimized availability. Planning, Scheduling, and Dispatch dashboards are live with cost, resource, and compliance views. Condition-based inspection and optimized inventory management are active.",
    "milestones": [
     {
@@ -2924,6 +2929,7 @@
    "valueStatement": "Achieves autonomous, end-to-end field workforce execution—leveraging automated cron-based optimization, GenAI point-of-work troubleshooting, and real-time field actuals to drive continuous schedule refinement.",
    "potentialOutcomes": "• Up to 26% overall technician productivity gain (achieving ≥45–55% wrench time)\n• 10–20% reduction in overtime through autonomous schedule balancing\n• Closed-loop feedback from field actuals directly into job plan durations and inventory forecasts",
    "keyMoves": "• Run continuous, AI-assisted schedule optimization.\n• Close the loop from asset health to planning and dispatch.\n• Standardize KPIs and benchmarks across all regions.\n• Embed field feedback into job-plan and reliability improvement.",
+   "masProducts": "Maximo Manage — Strong\nMaximo Mobile — Core\nMAS Scheduler — Advanced\nOptimizer — Full\nDispatcher — Exception Management",
    "areYouReady": "The Optimizer operates fully autonomously for routine scheduling and dispatch. Humans are approvers and exception handlers only. Strategic inventory, AIP-connected job plans, and GenAI-assisted work execution complete the full FSM maturity picture.",
    "milestones": [
     {
@@ -3053,6 +3059,7 @@
    "valueStatement": "This is the foundation everything else is built on. Clean, criticality-scored asset data gives you a single source of truth for work order linkage, failure mode mapping, and future analytics. Structured failure data and reliable work management data become the raw material that FMEA, Reliability Strategies, and health scoring all depend on later — skip this, and every capability above Stage 1 inherits the gap. Mobility closes the paper lag, and condition monitoring gets your team acting on asset signals for the first time, without needing IoT investment yet.",
    "potentialOutcomes": "• 10–15% increase in technician productivity via standardized job plans\n• Accurate asset hierarchy and criticality rankings across maintainable assets\n• Standardized failure code capture (Problem-Cause-Remedy) on 100% of closed work orders",
    "keyMoves": null,
+   "masProducts": "Maximo Manage — Strong\nHealth — Not in use\nMonitor — Not in use\nRS — Not in use\nPredict — Not in use\nAIP — Not in use",
    "areYouReady": "You have an ISO 14224-aligned asset hierarchy, criticality scoring, maturing work management, mobility, and initial condition monitoring in place.",
    "milestones": [
     {
@@ -3164,6 +3171,7 @@
    "valueStatement": "Maintenance starts being driven by evidence instead of habit. Reliability Strategies tie every work order to a documented failure mode, not just a fixed interval. A foundational health score gives you one number to judge asset condition instead of checking multiple sources separately. And exploring Monitor with data you already have lets you experience real dashboards — a low-risk way to build momentum before committing to full instrumentation.",
    "potentialOutcomes": "• 15–20% reduction in unplanned downtime for critical pilot assets\n• Single, objective health score view across critical asset classes in Maximo Health\n• Elimination of calendar-only guesswork through lightweight condition telemetry",
    "keyMoves": "• Activate Reliability Strategies to tie work orders to failure modes.\n• Enable foundational health scores for your critical assets.\n• Begin Monitor exploration using your existing data sources.",
+   "masProducts": "Maximo Manage — Strong\nHealth — Low/Exploring\nMonitor — Low/Exploring\nRS — Low/Exploring\nPredict — Not in use\nAIP — Not in use",
    "areYouReady": "Reliability Strategies are activated, foundational health scores are live for critical assets, and Monitor exploration is underway.",
    "milestones": [
     {
@@ -3296,6 +3304,7 @@
    "valueStatement": "This is where Maximo stops just running maintenance and starts predicting it. FMEA gives every PM strategy a documented failure-mode rationale instead of an OEM default. Full OT/IoT integration and multivariable health scoring eliminate the blind spots between PM windows, replacing calendar guesses with real-time visibility. PM intervals, technician scheduling, capital planning, and inventory all start reacting to that visibility instead of fixed assumptions — the whole operation becomes condition-driven, not just individual capabilities.",
    "potentialOutcomes": "• 20–30% reduction in unnecessary preventive maintenance labor and parts spend\n• Real-time OT/IoT telemetry ingestion in Maximo Monitor mapped to health factors\n• Dynamic PM frequency adjustments driven by asset condition and operating context",
    "keyMoves": "• Integrate OT/IoT and bring multivariable health scoring live.\n• Operationalise FMEA and optimise PM cycles with condition evidence.\n• Make workforce scheduling risk-driven and begin AIP exploration.",
+   "masProducts": "Maximo Manage — Strong\nHealth — Medium→Strong\nMonitor — Medium\nRS — Medium+\nPredict — Not in use\nAIP — Not in use",
    "areYouReady": "OT/IoT is fully integrated, multivariable health scoring is live, FMEA is operationalised, and PM cycles are condition-optimised.",
    "milestones": [
     {
@@ -3517,6 +3526,7 @@
    "valueStatement": "Maintenance shifts from reactive to prescriptive. RSE doesn't just score current condition — it simulates how degradation will evolve and tells your team what to do about it: inspect, defer, advance the PM, or adjust the strategy. RCBF turns every investigation into a model improvement, so the system gets smarter with each intervention instead of repeating the same fire drills. And capital planning stops assuming and starts reflecting real, continuously-updated asset condition — reducing both premature replacement and unexpected failure-driven spend.",
    "potentialOutcomes": "• Up to 47% reduction in unplanned downtime via early failure prediction\n• 10–20% reduction in maintenance overtime and emergency repair costs\n• Continuous failure probability scoring and automated anomaly detection in Maximo Predict",
    "keyMoves": "• Bring the Risk Scenario Engine (RSE) live to simulate degradation.\n• Make root-cause-before-failure (RCBF) standard practice.\n• Connect failure evidence to capital planning with AIP Foundation.",
+   "masProducts": "Maximo Manage — Strong\nHealth — Strong\nMonitor — Strong\nRS — Strong\nPredict — Medium→Strong\nAIP — Low/Exploring",
    "areYouReady": "The Risk Scenario Engine is live, RCBF is standard practice, and AIP Foundation connects failure evidence to capital planning.",
    "milestones": [
     {
@@ -3665,6 +3675,7 @@
    "valueStatement": "Reliability becomes a compounding, self-improving system instead of a set of one-time projects. FMEA is reviewed on a continuous cycle, refined by real RSE evidence rather than reopened once and forgotten. Inventory strategy shifts from stocking against fear to stocking against actual predicted risk. And the loop closes all the way back to procurement — every failure investigated in operations informs the next asset you buy, so reliability gets designed in before an asset ever enters service, not fixed after the fact. This is the difference between managing failures and preventing them.",
    "potentialOutcomes": "• 10–15% extension in asset economic lifespan through evidence-based lifecycle planning\n• 8–15% optimization in MRO spare parts inventory holding costs\n• Closed-loop operational learning with GenAI prescriptive guidance at the point of work",
    "keyMoves": "• Run continuous FMEA governance refined by RSE evidence.\n• Make AIP fully operational and shift to lean, risk-based inventory.\n• Close the design-for-reliability loop back to procurement.",
+   "masProducts": "Maximo Manage — Strong\nHealth — Strong\nMonitor — Strong\nRS — Strong\nPredict — Strong\nAIP — Strong",
    "areYouReady": "FMEA governance is continuous, RSE models are maturing from evidence, AIP is fully operational, lean inventory is active, and the design-for-reliability loop is closed.",
    "milestones": [
     {
@@ -3841,6 +3852,23 @@
         return section('opp-pilot', 'Pilot recommendation', list(stage.keyMoves, 'opp-list'));
       }
 
+      /* "Maximo Manage — Core" -> "Manage"; entries marked "Not in use" are skipped. */
+      function moduleTags(text) {
+        return text.split('\n')
+          .filter(function (line) { return !/—\s*Not in use\s*$/i.test(line); })
+          .map(function (line) { return line.split('—')[0].replace(/^\s*Maximo\s+/, '').trim(); })
+          .filter(function (name) { return name !== ''; })
+          .map(function (name) { return '<cds-tag type="outline" size="lg">' + esc(name) + '</cds-tag>'; })
+          .join('');
+      }
+
+      function renderModules(stage) {
+        if (!stage.masProducts) { return ''; }
+        var tags = moduleTags(stage.masProducts);
+        if (!tags) { return ''; }
+        return section('opp-modules', 'Required Maximo modules', '<div class="opp-tags">' + tags + '</div>');
+      }
+
       var VALUE_ICON = '<svg class="opp-tile__value-icon" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
         '<path d="M15 3V2H13.5V1H12.5V2H12C11.4486 2 11 2.44875 11 3V4C11 4.55125 11.4486 5 12 5H14V6H11V7H12.5V8H13.5V7H14C14.5514 7 15 6.55125 15 6V5C15 4.44875 14.5514 4 14 4H12V3H15Z" fill="currentColor"/>' +
         '<path d="M12 10V11H13.2929L11.5001 12.7929L10.3542 11.6465C10.2605 11.5527 10.1333 11.5 10.0007 11.5C9.8682 11.5 9.74085 11.5527 9.6471 11.6465L7 14.2929L7.70715 15L10.0005 12.7071L11.1463 13.8535C11.2401 13.9473 11.3673 14 11.5 14C11.6326 14 11.7598 13.9473 11.8535 13.8535L14 11.7071V13H15V10H12Z" fill="currentColor"/>' +
@@ -3888,7 +3916,8 @@
       function renderStageHTML(stage) {
         return '<h2 class="opp-stage"><span class="opp-stage__number">' + esc(stage.stage) + '</span>' +
           '<span class="opp-stage__name">' + esc(stage.stageName) + '</span></h2>' +
-          renderWhere(stage) + renderValue(stage) + renderPilot(stage) + renderMilestones(stage) + renderSteps(stage);
+          renderWhere(stage) + renderValue(stage) + renderPilot(stage) + renderModules(stage) +
+          renderMilestones(stage) + renderSteps(stage);
       }
 
       function syncRail() {

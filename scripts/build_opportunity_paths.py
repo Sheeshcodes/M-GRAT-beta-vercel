@@ -75,6 +75,7 @@ def build_stage(
         "valueStatement": blank_to_none(row["Value statement"]),
         "potentialOutcomes": blank_to_none(row["Potential outcomes"]),
         "keyMoves": blank_to_none(row["Key moves"]),
+        "masProducts": blank_to_none(row["MAS Products"]),
         "areYouReady": blank_to_none(row["Are you ready"]),
         "milestones": milestones,
     }
