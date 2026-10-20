@@ -1959,11 +1959,11 @@
               <p class="resource-desc">Explore the journey from foundational asset management and coordinated field operations to predictive reliability, intelligent scheduling, and fully optimized enterprise performance.</p>
             </div>
             <div class="resource-actions">
-              <a class="btn-outline-white" href="apm-maturity-map.html" target="_blank" rel="noopener noreferrer">
+              <a class="btn-outline-white" href="#opp-track-apm">
                 APM growth map
                 <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M5 3V4H11.295L3 12.295L3.705 13L12 4.705V11H13V3H5Z"/></svg>
               </a>
-              <a class="btn-outline-white" href="fsm-maturity-map.html" target="_blank" rel="noopener noreferrer">
+              <a class="btn-outline-white" href="#opp-track-fsm">
                 FSM growth map
                 <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M5 3V4H11.295L3 12.295L3.705 13L12 4.705V11H13V3H5Z"/></svg>
               </a>
@@ -4119,9 +4119,28 @@
         });
       }
 
+      /* #opp-track-apm / #opp-track-fsm select the track and reset to stage 1. */
+      function applyTrackFromHash(hash) {
+        var match = /^#opp-track-(apm|fsm)$/.exec(hash);
+        if (!match) { return; }
+        var track = match[1];
+        state.track = track;
+        state.stage = 0;
+        trackTabs.value = track;
+        if (state.compare) {
+          state.compareStages = defaultComparePair(0);
+          renderCompareBar();
+          renderCompare();
+        } else {
+          renderStageTabs();
+          renderStage();
+        }
+      }
+
       function syncView() {
         var hash = window.location.hash;
         var onPaths = hash === '#opportunity-paths' || hash.indexOf('#opp-') === 0;
+        if (onPaths) { applyTrackFromHash(hash); }
         overview.hidden = onPaths;
         paths.hidden = !onPaths;
         navOverview.toggleAttribute('active', !onPaths);
