@@ -1200,10 +1200,11 @@ cds-menu-item::part(list-item) {
   max-width: 100%;
 }
 
-/* Carbon caps a tag at 208px and ellipsises past it; these role labels are the
-   point of the pill, so let them size to their text. */
+/* Carbon caps a tag at 208px and ellipsises past it; these role labels and
+   product names are the point of the pill, so let them size to their text. */
 .bonus-resource__tags cds-tag,
-.remediation-step__roles cds-tag {
+.remediation-step__roles cds-tag,
+.expansion-products__tags cds-tag {
   max-width: 100%;
 }
 
@@ -2776,5 +2777,423 @@ html:has(body.share-modal-open) {
     bottom: auto;
     right: auto;
     transform: translate(-50%, -50%);
+  }
+}
+
+
+/* ==========================================================================
+   Mobile Comparison View
+   All rules here are inside @media (max-width: 767px) unless noted.
+   The overlay is hidden on desktop via display:none regardless of JS state.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   "Opportunity paths" entry point button in mobile nav panel
+   -------------------------------------------------------------------------- */
+@media (max-width: 767px) {
+  .mobile-nav__item--compare {
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    /* matches .mobile-nav__item */
+    padding: 22px 16px;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--cds-text-secondary);
+    font-family: inherit;
+  }
+  .mobile-nav__item--compare:hover {
+    background: var(--cds-layer-hover);
+    color: var(--cds-text-primary);
+  }
+  .mobile-nav__item--compare.is-active {
+    color: var(--cds-text-primary);
+    font-weight: 600;
+  }
+  .mobile-nav__compare-badge {
+    flex-shrink: 0;
+    color: var(--cds-text-secondary);
+  }
+
+  /* Config button in nav bar — hidden until compare is open */
+  .mobile-nav__compare-config {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    background: #0f62fe;
+    border: none;
+    border-radius: 2px;
+    color: #fff;
+    cursor: pointer;
+  }
+  .mobile-nav__compare-config:hover {
+    background: #0353e9;
+  }
+  /* Keep it next to the title by pushing everything else left */
+  .mobile-nav__bar {
+    display: flex;
+    align-items: center;
+  }
+  .mobile-nav__title {
+    flex: 1;
+  }
+}
+
+/* On desktop, always hide the compare-config gear button */
+@media (min-width: 768px) {
+  .mobile-nav__compare-config { display: none !important; }
+  .mobile-nav__item--compare   { display: none !important; }
+}
+
+/* --------------------------------------------------------------------------
+   Comparison view overlay — full-viewport, sits above report body
+   -------------------------------------------------------------------------- */
+@media (max-width: 767px) {
+  .compare-view {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    /* The sticky mobile nav bar is 48px; the info bar is 44px */
+    top: 48px;
+    overflow: hidden;
+  }
+
+  /* Info bar — sticky below the nav bar, never scrolls */
+  .compare-view__info-bar {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 8px 16px;
+    border-bottom: 1px solid #e0e0e0;
+    background: #fff;
+  }
+  .compare-view__label {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.32px;
+    color: #525252;
+    display: block;
+  }
+  .compare-view__subtitle {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.32px;
+    color: #525252;
+    display: block;
+  }
+
+  /* Panes fill equal halves of the remaining height */
+  .compare-view__pane {
+    flex: 1 1 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* Pane header — sticky inside its pane */
+  .compare-view__pane-header {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 8px 16px;
+    background: #fff;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  .compare-view__pane-num {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.32px;
+    color: #161616;
+  }
+  .compare-view__pane-name {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.32px;
+    color: #161616;
+  }
+
+  /* Scrollable content inside pane */
+  .compare-view__pane-scroll {
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding: 16px;
+  }
+
+  /* Divider between the two panes — purple brand line */
+  .compare-view__divider {
+    flex-shrink: 0;
+    height: 9px;
+    background: #8a3ffc;
+    width: 100%;
+  }
+
+  /* ---------- Pane content styles ---------- */
+  .compare-pane-section {
+    margin-bottom: 24px;
+  }
+  .compare-pane-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .compare-pane__heading {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 28px;
+    letter-spacing: 0;
+    color: #161616;
+    margin: 0 0 12px;
+  }
+
+  .compare-pane__body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 22px;
+    color: #161616;
+    margin: 0 0 12px;
+  }
+
+  .compare-pane__sub-label {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 18px;
+    letter-spacing: 0.16px;
+    color: #161616;
+    margin: 0 0 8px;
+  }
+
+  /* Blue characteristic tags */
+  .compare-pane__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .compare-pane__tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    background: #d0e2ff;
+    color: #0043ce;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 12px;
+    line-height: 18px;
+    border-radius: 2px;
+  }
+
+  /* Value outcomes */
+  .compare-pane__outcomes {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .compare-pane__outcome-stat {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 26px;
+    color: #0f62fe;
+    margin: 0;
+  }
+  .compare-pane__outcome-label {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    line-height: 18px;
+    color: #161616;
+    margin: 0;
+  }
+
+  /* Key moves */
+  .compare-pane__moves {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .compare-pane__move-item {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+    color: #161616;
+    padding-left: 16px;
+    position: relative;
+  }
+  .compare-pane__move-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #8a3ffc;
+  }
+}
+
+/* Desktop — always hide the compare-view overlay itself */
+@media (min-width: 768px) {
+  .compare-view {
+    display: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Configure comparison panel
+   Slides in from the top (below the nav bar).
+   -------------------------------------------------------------------------- */
+@media (max-width: 767px) {
+  .compare-config-panel {
+    position: fixed;
+    top: 48px; /* nav bar height */
+    left: 0;
+    right: 0;
+    z-index: 300;
+    background: #fff;
+    border-bottom: 1px solid #e0e0e0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+  }
+  .compare-config-panel__inner {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .compare-config-panel__heading-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .compare-config-panel__heading {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.32px;
+    color: #525252;
+    margin: 0;
+  }
+  .compare-config-panel__sub {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.32px;
+    color: #525252;
+    margin: 0;
+  }
+
+  .compare-config-panel__field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .compare-config-panel__label {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.32px;
+    color: #525252;
+  }
+  .compare-config-panel__select-wrap {
+    position: relative;
+  }
+  .compare-config-panel__select {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
+    height: 48px;
+    padding: 0 40px 0 16px;
+    background: #f4f4f4;
+    border: none;
+    border-bottom: 1px solid #8d8d8d;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    line-height: 18px;
+    color: #161616;
+    cursor: pointer;
+  }
+  .compare-config-panel__select:focus {
+    outline: 2px solid #0f62fe;
+    outline-offset: -2px;
+  }
+  .compare-config-panel__chevron {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #161616;
+  }
+
+  .compare-config-panel__to {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 28px;
+    color: #161616;
+    margin: 0;
+  }
+
+  .compare-config-panel__done {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 16px;
+    background: #0f62fe;
+    color: #fff;
+    border: none;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 18px;
+    cursor: pointer;
+    min-width: 128px;
+  }
+  .compare-config-panel__done:hover {
+    background: #0353e9;
+  }
+  .compare-config-panel__done:focus {
+    outline: 2px solid #0f62fe;
+    outline-offset: 2px;
+  }
+}
+
+/* Desktop — always hide config panel */
+@media (min-width: 768px) {
+  .compare-config-panel {
+    display: none !important;
   }
 }
