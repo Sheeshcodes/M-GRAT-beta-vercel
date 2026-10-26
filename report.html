@@ -46,12 +46,33 @@
         <svg class="mobile-nav__icon mobile-nav__icon--close" viewBox="0 0 32 32" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M17.4141 16 24 9.4141 22.5859 8 16 14.5859 9.4143 8 8 9.4141 14.5859 16 8 22.5859 9.4143 24 16 17.4141 22.5859 24 24 22.5859 17.4141 16z"/></svg>
       </button>
       <p class="mobile-nav__title" id="mobile-nav-title">Your operational profile</p>
+      <!-- Comparison view config button — shown only when split view is active -->
+      <button
+        type="button"
+        class="mobile-nav__compare-config"
+        id="compare-config-btn"
+        aria-label="Configure comparison view"
+        aria-expanded="false"
+        aria-controls="compare-config-panel"
+        hidden
+      >
+        <!-- Sliders / settings icon -->
+        <svg viewBox="0 0 32 32" width="20" height="20" fill="currentColor" aria-hidden="true">
+          <path d="M30 9H16.73A5 5 0 007.27 9H2v2h5.27a5 5 0 009.46 0H30zM12 12a3 3 0 113-3 3 3 0 01-3 3zM30 21h-5.27a5 5 0 00-9.46 0H2v2h13.27a5 5 0 009.46 0H30zM20 24a3 3 0 113-3 3 3 0 01-3 3z"/>
+        </svg>
+      </button>
     </div>
 
     <div class="mobile-nav__panel" id="mobile-nav-panel" hidden>
       <ul class="mobile-nav__list">
         <li><a class="mobile-nav__item mobile-nav__item--active" href="#act-today" data-section="act-today">Your operational profile</a></li>
         <li><a class="mobile-nav__item" href="#act-roi" data-section="act-roi">Paths to greater value</a></li>
+        <li>
+          <button type="button" class="mobile-nav__item mobile-nav__item--compare" id="mobile-compare-toggle" data-autotrack-id="report__btn--open-comparison-view">
+            Opportunity paths
+            <svg class="mobile-nav__compare-badge" viewBox="0 0 32 32" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M16 2a14 14 0 1014 14A14 14 0 0016 2zm1 21h-2v-9h2zm0-12h-2v-2h2z"/></svg>
+          </button>
+        </li>
         <li><a class="mobile-nav__item" href="#act-plan" data-section="act-plan">Highest-value next step</a></li>
         <li><a class="mobile-nav__item" href="#act-resources" data-section="act-resources">Additional resources</a></li>
         <li><a class="mobile-nav__item" href="#act-improve" data-section="act-improve">Help us improve</a></li>
@@ -293,6 +314,106 @@
   </div>
 </div>
 
+
+<!-- =====================================================================
+     Mobile Comparison View overlay — hidden on desktop via CSS
+     ===================================================================== -->
+<div
+  class="compare-view"
+  id="compare-view"
+  role="region"
+  aria-label="Comparison view"
+  hidden
+>
+  <!-- Sticky info header (below the nav bar) -->
+  <div class="compare-view__info-bar" id="compare-info-bar">
+    <span class="compare-view__label">Comparison view</span>
+    <span class="compare-view__subtitle" id="compare-subtitle">Field Service Management (FSM)</span>
+  </div>
+
+  <!-- Top pane -->
+  <div class="compare-view__pane compare-view__pane--top" id="compare-pane-top">
+    <div class="compare-view__pane-header" id="compare-pane-top-header">
+      <span class="compare-view__pane-num" id="compare-pane-top-num">Stage 1</span>
+      <span class="compare-view__pane-name" id="compare-pane-top-name">Reactive execution</span>
+    </div>
+    <div class="compare-view__pane-scroll" id="compare-pane-top-scroll">
+      <!-- populated by JS -->
+    </div>
+  </div>
+
+  <!-- Pane divider -->
+  <div class="compare-view__divider" aria-hidden="true"></div>
+
+  <!-- Bottom pane -->
+  <div class="compare-view__pane compare-view__pane--bottom" id="compare-pane-bottom">
+    <div class="compare-view__pane-header" id="compare-pane-bottom-header">
+      <span class="compare-view__pane-num" id="compare-pane-bottom-num">Stage 2</span>
+      <span class="compare-view__pane-name" id="compare-pane-bottom-name">Managed response</span>
+    </div>
+    <div class="compare-view__pane-scroll" id="compare-pane-bottom-scroll">
+      <!-- populated by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- Configure comparison panel — slides up from bottom of nav bar -->
+<div
+  class="compare-config-panel"
+  id="compare-config-panel"
+  role="dialog"
+  aria-modal="false"
+  aria-label="Comparison view settings"
+  hidden
+>
+  <div class="compare-config-panel__inner">
+    <div class="compare-config-panel__heading-group">
+      <p class="compare-config-panel__heading">Comparison view</p>
+      <p class="compare-config-panel__sub">Settings</p>
+    </div>
+
+    <!-- Track selector -->
+    <div class="compare-config-panel__field">
+      <label class="compare-config-panel__label" for="compare-track-select">Compare</label>
+      <div class="compare-config-panel__select-wrap">
+        <select class="compare-config-panel__select" id="compare-track-select">
+          <option value="fsm">Field Service Management (FSM)</option>
+          <option value="apm">Asset Performance Management (APM)</option>
+        </select>
+        <svg class="compare-config-panel__chevron" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M16 22L6 12l1.4-1.4 8.6 8.6 8.6-8.6L26 12z"/></svg>
+      </div>
+    </div>
+
+    <!-- Stage A selector -->
+    <div class="compare-config-panel__field">
+      <label class="compare-config-panel__label" for="compare-stage-a-select">Stage (top pane)</label>
+      <div class="compare-config-panel__select-wrap">
+        <select class="compare-config-panel__select" id="compare-stage-a-select">
+          <!-- options injected by JS -->
+        </select>
+        <svg class="compare-config-panel__chevron" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M16 22L6 12l1.4-1.4 8.6 8.6 8.6-8.6L26 12z"/></svg>
+      </div>
+    </div>
+
+    <p class="compare-config-panel__to">to</p>
+
+    <!-- Stage B selector -->
+    <div class="compare-config-panel__field">
+      <label class="compare-config-panel__label" for="compare-stage-b-select">Stage (bottom pane)</label>
+      <div class="compare-config-panel__select-wrap">
+        <select class="compare-config-panel__select" id="compare-stage-b-select">
+          <!-- options injected by JS -->
+        </select>
+        <svg class="compare-config-panel__chevron" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M16 22L6 12l1.4-1.4 8.6 8.6 8.6-8.6L26 12z"/></svg>
+      </div>
+    </div>
+
+    <button type="button" class="compare-config-panel__done" id="compare-config-done">
+      Done
+      <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M13 24L4 15l1.41-1.41L13 21.17l13.59-13.59L28 9 13 24z"/></svg>
+    </button>
+  </div>
+</div>
 
   <script type="module" src="js/report.js"></script>
   <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
