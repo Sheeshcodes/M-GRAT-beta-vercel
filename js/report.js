@@ -845,6 +845,7 @@ function wireFeedback() {
 
   const send = (value, comment) => {
     document.dispatchEvent(new CustomEvent("report:feedback", { detail: { value, comment: comment || "" } }));
+    window.va?.("event", { name: "report_feedback", data: { value } });
     el.innerHTML = `<p class="feedback__thanks">Thanks — noted.</p>`;
     // Both "Yes" and "No" print in the PDF. The section is shown whenever
     // answered; the answer (and optional comment for "No") appear under the question.
@@ -1499,6 +1500,233 @@ function initResponsesDownload(contact, isDemoReport, growthAppetite) {
 /* --------------------------------------------------------------------------
    Bootstrap
    -------------------------------------------------------------------------- */
+/* --------------------------------------------------------------------------
+   Mobile Comparison View
+   Renders a full-screen split view on mobile (≤767px) that lets the user
+   compare two journey stages side by side (top/bottom).
+   -------------------------------------------------------------------------- */
+function initComparisonView(result) {
+  // Only activate on mobile — if window is desktop-width we still wire
+  // everything but the overlay remains CSS-hidden.
+  const overlay      = document.getElementById("compare-view");
+  const configPanel  = document.getElementById("compare-config-panel");
+  const configBtn    = document.getElementById("compare-config-btn");
+  const configDone   = document.getElementById("compare-config-done");
+  const navToggle    = document.getElementById("mobile-compare-toggle");
+  const navPanel     = document.getElementById("mobile-nav-panel");
+  const navBarToggle = document.getElementById("mobile-nav-toggle");
+  const subtitle     = document.getElementById("compare-subtitle");
+
+  const trackSel  = document.getElementById("compare-track-select");
+  const stageASel = document.getElementById("compare-stage-a-select");
+  const stageBSel = document.getElementById("compare-stage-b-select");
+
+  const paneTopScroll = document.getElementById("compare-pane-top-scroll");
+  const paneBotScroll = document.getElementById("compare-pane-bottom-scroll");
+  const paneTopNum  = document.getElementById("compare-pane-top-num");
+  const paneTopName = document.getElementById("compare-pane-top-name");
+  const paneBotNum  = document.getElementById("compare-pane-bottom-num");
+  const paneBotName = document.getElementById("compare-pane-bottom-name");
+
+  if (!overlay || !configPanel || !trackSel || !stageASel || !stageBSel) return;
+
+  // State
+  let activeTrack = result?.fsm ? "fsm" : "apm";
+  const apmResult = result?.apm || { currentStage: 1, targetStage: 2 };
+  const fsmResult = result?.fsm || { currentStage: 1, targetStage: 2 };
+
+  // Track labels
+  const TRACK_LABELS = {
+    apm: "Asset Performance Management (APM)",
+    fsm: "Field Service Management (FSM)",
+  };
+
+  /* ---------- Helpers ---------- */
+  function escH(s) { return escHtml(s); }
+
+  function buildPaneContent(stageData) {
+    if (!stageData) return "<p>No data.</p>";
+    const outcomesHtml = (stageData.potentialOutcomes || []).map(o => `
+      <div class="compare-pane__outcome-item">
+        <p class="compare-pane__outcome-stat">${escH(o.stat)}</p>
+        <p class="compare-pane__outcome-label">${escH(o.label)}</p>
+      </div>`).join("");
+
+    const movesHtml = (stageData.keyMoves || []).length
+      ? `<div class="compare-pane-section">
+           <p class="compare-pane__sub-label">Key moves</p>
+           <ul class="compare-pane__moves">
+             ${stageData.keyMoves.map(m => `<li class="compare-pane__move-item">${escH(m)}</li>`).join("")}
+           </ul>
+         </div>`
+      : "";
+
+    const productsHtml = (stageData.products || []).length
+      ? `<div class="compare-pane-section">
+           <p class="compare-pane__sub-label">Products</p>
+           <div class="compare-pane__tags">
+             ${stageData.products.map(p => `<span class="compare-pane__tag${p.active ? " compare-pane__tag--active" : ""}">${escH(p.name)}</span>`).join("")}
+           </div>
+         </div>`
+      : "";
+
+    return `
+      <div class="compare-pane-section">
+        <h3 class="compare-pane__heading">Where the customer is</h3>
+        <p class="compare-pane__body">${escH(stageData.description)}</p>
+      </div>
+
+      <div class="compare-pane-section">
+        <p class="compare-pane__sub-label">Value after resolving</p>
+        <p class="compare-pane__body">${escH(stageData.valueStatement || "")}</p>
+        <div class="compare-pane__outcomes">${outcomesHtml}</div>
+      </div>
+
+      ${movesHtml}
+      ${productsHtml}`;
+  }
+
+  /* ---------- Populate stage dropdowns for a given track ---------- */
+  function populateStageOptions(track) {
+    const stages = journey[track] || [];
+    const res    = track === "apm" ? apmResult : fsmResult;
+    const defaultA = res.currentStage - 1;
+    const defaultB = res.targetStage  - 1;
+
+    [stageASel, stageBSel].forEach((sel, idx) => {
+      const defaultIdx = idx === 0 ? defaultA : defaultB;
+      sel.innerHTML = stages.map((s, i) => `
+        <option value="${i}" ${i === defaultIdx ? "selected" : ""}>
+          Stage ${pad2(i + 1)} — ${escH(s.name)}
+        </option>`).join("");
+    });
+  }
+
+  /* ---------- Render both panes ---------- */
+  function renderPanes() {
+    const stages  = journey[activeTrack] || [];
+    const idxA    = Number(stageASel.value);
+    const idxB    = Number(stageBSel.value);
+    const stageA  = stages[idxA];
+    const stageB  = stages[idxB];
+
+    // Update pane headers
+    if (stageA) {
+      paneTopNum.textContent  = `Stage ${pad2(idxA + 1)}`;
+      paneTopName.textContent = stageA.name;
+    }
+    if (stageB) {
+      paneBotNum.textContent  = `Stage ${pad2(idxB + 1)}`;
+      paneBotName.textContent = stageB.name;
+    }
+
+    // Update subtitle
+    if (subtitle) subtitle.textContent = TRACK_LABELS[activeTrack] || activeTrack.toUpperCase();
+
+    // Render content
+    if (paneTopScroll) paneTopScroll.innerHTML = buildPaneContent(stageA);
+    if (paneBotScroll) paneBotScroll.innerHTML = buildPaneContent(stageB);
+
+    // Reset scroll positions
+    if (paneTopScroll) paneTopScroll.scrollTop = 0;
+    if (paneBotScroll) paneBotScroll.scrollTop = 0;
+  }
+
+  /* ---------- Linked scroll (sync the two panes) ---------- */
+  let scrollingSide = null;
+  let scrollTimer   = null;
+
+  function syncScroll(source, target) {
+    if (scrollingSide && scrollingSide !== source) return;
+    scrollingSide = source;
+    const sourceEl = source === "top" ? paneTopScroll : paneBotScroll;
+    const targetEl = source === "top" ? paneBotScroll : paneTopScroll;
+    if (!sourceEl || !targetEl) return;
+
+    const sourcePct = sourceEl.scrollTop / (sourceEl.scrollHeight - sourceEl.clientHeight || 1);
+    const targetPos = sourcePct * (targetEl.scrollHeight - targetEl.clientHeight);
+    targetEl.scrollTop = targetPos;
+
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(() => { scrollingSide = null; }, 80);
+  }
+
+  if (paneTopScroll) paneTopScroll.addEventListener("scroll", () => syncScroll("top", "bot"),    { passive: true });
+  if (paneBotScroll) paneBotScroll.addEventListener("scroll", () => syncScroll("bot", "top"), { passive: true });
+
+  /* ---------- Open / close the overlay ---------- */
+  function openCompareView() {
+    overlay.removeAttribute("hidden");
+    // Show gear button in nav bar
+    if (configBtn) configBtn.removeAttribute("hidden");
+    // Close nav panel if open
+    if (navPanel) navPanel.hidden = true;
+    if (navBarToggle) navBarToggle.setAttribute("aria-expanded", "false");
+    document.body.style.overflow = "hidden"; // prevent body scroll under overlay
+  }
+
+  function closeCompareView() {
+    overlay.setAttribute("hidden", "");
+    configPanel.setAttribute("hidden", "");
+    if (configBtn) configBtn.setAttribute("hidden", "");
+    document.body.style.overflow = "";
+  }
+
+  /* ---------- Open / close the config panel ---------- */
+  function openConfigPanel() {
+    configPanel.removeAttribute("hidden");
+    if (configBtn) configBtn.setAttribute("aria-expanded", "true");
+  }
+
+  function closeConfigPanel() {
+    configPanel.setAttribute("hidden", "");
+    if (configBtn) configBtn.setAttribute("aria-expanded", "false");
+  }
+
+  /* ---------- Apply config (Done button) ---------- */
+  function applyConfig() {
+    const newTrack = trackSel.value;
+    if (newTrack !== activeTrack) {
+      activeTrack = newTrack;
+      populateStageOptions(activeTrack);
+    }
+    renderPanes();
+    closeConfigPanel();
+  }
+
+  /* ---------- Wire events ---------- */
+  if (navToggle) {
+    navToggle.addEventListener("click", () => {
+      populateStageOptions(activeTrack);
+      renderPanes();
+      openCompareView();
+    });
+  }
+
+  if (configBtn) configBtn.addEventListener("click", () => {
+    if (configPanel.hasAttribute("hidden")) openConfigPanel();
+    else closeConfigPanel();
+  });
+
+  if (configDone) configDone.addEventListener("click", applyConfig);
+
+  // Track selector change → repopulate stage options instantly (no "Done" needed)
+  if (trackSel) trackSel.addEventListener("change", () => {
+    populateStageOptions(trackSel.value);
+  });
+
+  // Escape closes config panel, then compare view
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    if (!configPanel.hasAttribute("hidden")) { closeConfigPanel(); return; }
+    if (!overlay.hasAttribute("hidden"))     { closeCompareView(); }
+  });
+
+  // Initialise: pre-populate dropdowns using the result's track default
+  populateStageOptions(activeTrack);
+  if (trackSel) trackSel.value = activeTrack;
+}
+
 async function init(injectedResult) {
   // In the standalone build, app.js passes the result directly to avoid
   // sessionStorage and page navigation.  On report.html, fall back to
@@ -1514,6 +1742,18 @@ async function init(injectedResult) {
       result = MOCK_RESULT;
     }
   }
+
+  // Track report view. Demo/mock reports are labelled so they can be filtered
+  // out of completion counts in the Vercel Analytics dashboard.
+  const isDemoReport = result === MOCK_RESULT || !!result._demo;
+  window.va?.("event", {
+    name: "report_viewed",
+    data: {
+      demo: isDemoReport,
+      ...(result.contact?.industry && { industry: result.contact.industry }),
+      ...(result.maturity?.score != null && { maturity_score: result.maturity.score }),
+    },
+  });
 
   // Render all sections
   renderSidebarMeta(result.contact);
@@ -1532,6 +1772,7 @@ async function init(injectedResult) {
   closeTooltipsOnOutsideClick();
   wireSellerButtons(result);
   initShareModal(result);
+  initComparisonView(result);
 }
 
 /* --------------------------------------------------------------------------
@@ -1695,6 +1936,15 @@ function wireSellerButtons(result) {
     document.querySelectorAll(sel).forEach(btn => {
       btn.setAttribute("href", href);
       btn.removeAttribute("disabled");
+      btn.addEventListener("click", () => {
+        window.va?.("event", {
+          name: "seller_contact_initiated",
+          data: {
+            source: btn.dataset.autotrackId ?? sel,
+            ...(result.contact?.industry && { industry: result.contact.industry }),
+          },
+        });
+      });
     });
   });
 }
@@ -1740,6 +1990,13 @@ function initShareModal(result) {
   }
 
   sendBtn.addEventListener("click", () => {
+    window.va?.("event", {
+      name: "seller_contact_initiated",
+      data: {
+        source: "share_modal",
+        ...(result.contact?.industry && { industry: result.contact.industry }),
+      },
+    });
     window.location.href = href;
     closeModal();
   });

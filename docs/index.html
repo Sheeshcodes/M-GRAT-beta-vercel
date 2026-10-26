@@ -74,7 +74,7 @@
 
     /* ── Reset & Base ─────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; overflow-x: hidden; }
     body {
       font-family: var(--cds-font-sans);
       font-size: 16px;
@@ -83,6 +83,8 @@
       background: var(--cds-layer-01);
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+      padding-top: 48px;
     }
     a { color: inherit; text-decoration: none; }
     img, svg { display: block; max-width: 100%; }
@@ -97,16 +99,26 @@
 
     /* ── Carbon UI Shell (Gray 10 Theme) ───────────────────── */
     cds-header {
-      position: sticky;
-      top: 0;
-      z-index: 8000;
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      width: 100% !important;
+      height: 48px !important;
+      z-index: 8000 !important;
       --cds-background: #f4f4f4;
-      background: #f4f4f4;
+      background: #f4f4f4 !important;
       border-bottom: 1px solid var(--cds-border-subtle);
     }
     cds-header-name {
       color: var(--cds-text-primary);
       font-family: var(--cds-font-sans);
+    }
+    .header-name--full   { display: inline; }
+    .header-name--short  { display: none; }
+    @media (max-width: 800px) {
+      .header-name--full  { display: none; }
+      .header-name--short { display: inline; }
     }
     cds-header-nav-item {
       color: var(--cds-text-secondary);
@@ -184,9 +196,9 @@
     }
     .hero-headline {
       font-family: var(--cds-font-serif);
-      font-size: 48px;
+      font-size: 42px;
       font-weight: 300;
-      line-height: 1.125;
+      line-height: 1.19;
       color: var(--cds-text-primary);
       margin-bottom: var(--cds-spacing-06);
       letter-spacing: -0.5px;
@@ -232,25 +244,13 @@
       gap: var(--cds-spacing-05);
       flex-wrap: wrap;
     }
-    .hero-actions cds-button[kind="ghost"] {
-      color: #0f62fe;
-    }
-    .hero-actions cds-button[kind="ghost"]::part(button) {
-      padding-right: 16px;
-      padding-left: 16px;
-      justify-content: flex-start;
-      gap: 8px;
-    }
-    .hero-actions cds-button[kind="ghost"] svg[slot="icon"] {
-      fill: #0f62fe;
-      color: #0f62fe;
-      margin-left: 8px;
+    .hero-actions cds-button[kind="secondary"] svg[slot="icon"] {
       flex-shrink: 0;
       transition: fill 0.15s ease;
     }
-    .hero-actions cds-button[kind="ghost"]:hover svg[slot="icon"] {
-      fill: #0043ce;
-      color: #0043ce;
+    .hero-actions cds-button[kind="secondary"]:hover svg[slot="icon"] {
+      fill: currentColor;
+      color: currentColor;
     }
     .hero-visual {
       position: relative;
@@ -276,6 +276,7 @@
     .metric-strip .cds--grid {
       display: flex;
       align-items: stretch;
+      flex-wrap: wrap;
       gap: 0;
     }
     .metric-item {
@@ -411,9 +412,10 @@
       overflow: hidden;
       display: flex;
       align-items: stretch;
-      width: 538px;
+      width: min(538px, 100%);
       height: 328px;
-      flex-shrink: 0;
+      flex-shrink: 1;
+      min-width: 0;
     }
     .approach-visual img {
       width: 100%;
@@ -435,6 +437,8 @@
       display: flex;
       flex-direction: column;
       gap: var(--cds-spacing-07);
+      min-width: 0;
+      overflow: hidden;
     }
     .option-card-header {
       display: flex;
@@ -503,7 +507,7 @@
       font-size: 14px;
       color: var(--cds-text-primary);
       line-height: 1.5;
-      min-height: 52px;
+      min-height: 48px;
     }
     .option-steps li:last-child { border-bottom: none; }
     .option-steps li::before {
@@ -1044,8 +1048,8 @@
         font-size: 18px;
       }
       .hero-headline {
-        font-size: 28px;
-        line-height: 1.15;
+        font-size: 42px;
+        line-height: 1.19;
         margin-bottom: var(--cds-spacing-05);
       }
       .hero-label-row {
@@ -1067,6 +1071,11 @@
       }
       .hero-actions cds-button {
         width: 100%;
+      }
+      /* Mobile touch targets — all interactive list/step items min 48px */
+      .option-steps li {
+        min-height: 48px;
+        padding: 12px 16px;
       }
       .hero-visual {
         max-width: 300px;
@@ -1192,7 +1201,36 @@
     [hidden] { display: none !important; }
 
     #view-opportunity-paths { background: var(--cds-background); }
-    #view-opportunity-paths cds-tag { padding: 0 var(--cds-spacing-03); margin: 0; }
+    #view-opportunity-paths cds-tag { margin: 0; max-width: 100%; }
+
+    /* Plain tag pills — full padding control, no shadow DOM */
+    .opp-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 24px;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 12px;
+      line-height: 18px;
+      letter-spacing: 0.16px;
+      white-space: normal;
+      word-break: break-word;
+    }
+    .opp-tag--outline {
+      border: 1px solid #8d8d8d;
+      background: transparent;
+      color: #161616;
+    }
+    .opp-tag--gray {
+      border: 1px solid transparent;
+      background: #e0e0e0;
+      color: #161616;
+    }
+    .opp-tag--blue {
+      border: 1px solid transparent;
+      background: #d0e2ff;
+      color: #0043ce;
+    }
 
     /* ── Milestone accordion ──────────────────────────────────── */
     #view-opportunity-paths .opp-accordion {
@@ -1214,16 +1252,28 @@
       margin: var(--cds-spacing-05) 0 0;
     }
 
+    /* Screen 1 Sub-header bar calling out Opportunity paths */
+    .opp-subbar {
+      background: #f4f4f4;
+      border-bottom: 1px solid var(--cds-border-subtle);
+      padding: 12px 0;
+    }
+    .opp-subbar__title {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--cds-text-primary);
+    }
+
     .opp-hero {
       background: var(--cds-layer-01);
-      padding: var(--cds-spacing-10) 0 var(--cds-spacing-09);
+      padding: 48px 0;
     }
     .opp-hero__title {
       font-family: var(--cds-font-serif);
       font-size: 42px;
       font-weight: 300;
       line-height: 1.19;
-      max-width: 14ch;
+      max-width: 600px;
       margin-bottom: var(--cds-spacing-06);
     }
     .opp-hero__sub {
@@ -1253,7 +1303,7 @@
     /* Stage row: tabs (or compare checkboxes) left, compare toggle right */
     .opp-stage-row {
       display: flex;
-      align-items: center;
+      align-items: flex-end;
       flex-wrap: wrap;
       gap: var(--cds-spacing-05);
     }
@@ -1266,6 +1316,8 @@
     #opp-compare-toggle {
       margin-left: auto;
       flex-shrink: 0;
+      align-self: flex-end;
+      margin-bottom: 4px;
     }
     /* ── Compare bar (checkboxes, replaces tabs in the stage row) ── */
     .opp-compare-bar {
@@ -1436,13 +1488,20 @@
       .opp-layout { grid-template-columns: minmax(0, 1fr); gap: var(--cds-spacing-06); }
       .opp-layout--compare { grid-template-columns: minmax(0, 1fr) !important; }
       .opp-rail { display: none; }
-      /* On mobile: toggle drops to its own line below the tabs */
+      /* On mobile: compare toggle drops to its own line below the tabs — full touch target */
       #opp-compare-toggle {
         flex-basis: 100%;
         margin-left: 0;
-        padding: var(--cds-spacing-03) 0;
+        padding: 12px 0;
         border-top: 1px solid var(--cds-border-subtle);
+        align-self: stretch;
       }
+      /* In compare mode: hide the toggle and the compare bar — the overlay owns that UI */
+      .is-mobile-compare #opp-compare-toggle { display: none; }
+      .is-mobile-compare #opp-compare-bar    { display: none; }
+      /* Also hide the normal page content while the overlay is open */
+      .is-mobile-compare #opp-main { visibility: hidden; pointer-events: none; }
+
       /* Track bar: switcher fills the full row width on mobile */
       .opp-track-bar__inner {
         flex-direction: column;
@@ -1462,32 +1521,357 @@
         min-width: 0;
       }
 
-      /* ── Mobile compare: full-bleed horizontal scroll with 80vw columns ── */
+      /* ── Desktop compare cols not needed on mobile ── */
       .opp-compare-cols {
-        /* Keep the same grid structure (display:contents rows rely on it)
-           but make columns 80vw so the next stage peeks out */
-        grid-template-columns: 80vw 1px 80vw;
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
-        /* Full-bleed: escape all ancestor padding/margins regardless of nesting depth */
-        width: 100vw;
-        position: relative;
-        left: 50%;
-        transform: translateX(-50%);
-        /* Inner padding so content doesn't touch the screen edges */
-        padding-left: var(--cds-spacing-05);
-        padding-right: var(--cds-spacing-05);
-        /* scroll-padding matches padding-left so snap lands at content edge */
-        scroll-padding-left: var(--cds-spacing-05);
+        display: block; /* remove the grid entirely; overlay handles it */
       }
-      /* Each cell in a column snaps on scroll */
-      .opp-compare-cols .opp-compare-cell:first-child {
-        scroll-snap-align: start;
-      }
-      .opp-compare-cols .opp-compare-cell:nth-child(3) {
-        scroll-snap-align: start;
-      }
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       MOBILE SPLIT-PANE COMPARE OVERLAY
+       Only active at ≤800px when compare mode is on.
+       All desktop compare (grid / checkboxes) is untouched.
+       ════════════════════════════════════════════════════════════ */
+
+    /* ── Overlay shell ── */
+    .mob-compare {
+      display: none; /* hidden by default; shown via JS on mobile compare */
+      position: fixed;
+      inset: 0;
+      top: 48px; /* Carbon header height */
+      z-index: 7500;
+      background: var(--cds-background);
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .mob-compare.is-open {
+      display: flex;
+    }
+    /* On desktop: never show, regardless of JS state */
+    @media (min-width: 801px) {
+      .mob-compare { display: none !important; }
+    }
+
+    /* ── Sticky info bar (green toggle + track label + config button) ── */
+    .mob-compare__bar {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--cds-border-subtle);
+      background: var(--cds-background);
+      gap: 12px;
+    }
+    /* Active green toggle switch */
+    .mob-compare__toggle-btn {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+    }
+    .mob-compare__toggle-btn:focus-visible {
+      outline: 2px solid var(--cds-border-interactive);
+      outline-offset: 2px;
+    }
+    .mob-compare__toggle-track {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 24px;
+      background: #24a148;
+      border-radius: 12px;
+      transition: background 0.2s ease;
+    }
+    .mob-compare__toggle-thumb {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      width: 18px;
+      height: 18px;
+      background: #ffffff;
+      border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+      transition: transform 0.2s ease;
+    }
+    .mob-compare__bar-text {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .mob-compare__bar-label {
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 18px;
+      color: var(--cds-text-primary);
+      white-space: nowrap;
+    }
+    .mob-compare__bar-subtitle {
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 16px;
+      letter-spacing: 0.16px;
+      color: var(--cds-text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    /* Config (sliders) button */
+    .mob-compare__config-btn {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: var(--cds-button-primary);
+      border: none;
+      border-radius: 2px;
+      color: #fff;
+      cursor: pointer;
+    }
+    .mob-compare__config-btn:hover { background: var(--cds-button-primary-hover); }
+    .mob-compare__config-btn:focus-visible {
+      outline: 2px solid var(--cds-border-interactive);
+      outline-offset: 2px;
+    }
+
+    /* ── Panes ── */
+    .mob-compare__panes {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .mob-compare__pane {
+      flex: 1 1 0;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative; /* needed for blur overlay */
+      /* Smooth size transition when a pane expands */
+      transition: flex 0.25s ease;
+    }
+    /* When a pane has an open accordion item, give it more space */
+    .mob-compare__pane.has-expanded {
+      flex: 2 1 0;
+    }
+    /* The other pane shrinks gracefully */
+    .mob-compare__pane.is-shrunk {
+      flex: 0.5 1 0;
+    }
+
+    /* Sticky pane header: stage number + name (1:1 with Figma) */
+    .mob-compare__pane-hdr {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 10px 16px 12px;
+      background: #262626;
+      border-bottom: 1px solid #393939;
+    }
+    .mob-compare__pane-num {
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 14px;
+      letter-spacing: 0.32px;
+      color: #c6c6c6;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+    .mob-compare__pane-name {
+      font-family: var(--cds-font-serif, "IBM Plex Serif", Georgia, serif);
+      font-size: 20px;
+      font-weight: 400;
+      line-height: 26px;
+      color: #ffffff;
+    }
+
+    /* Scrollable content area */
+    .mob-compare__pane-body {
+      flex: 1;
+      background: #ffffff;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      padding: 16px;
+      /* Leave room for the blur fade overlay at the bottom */
+      padding-bottom: 48px;
+    }
+
+    /* ── Blur fade edge — masks content at the bottom of each pane ── */
+    .mob-compare__pane::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 48px;
+      background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.85) 60%,
+        rgba(255, 255, 255, 1) 100%
+      );
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+      z-index: 2;
+    }
+    /* When pane is scrolled to the bottom: fade the mask out */
+    .mob-compare__pane.is-at-end::after {
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    /* In Figma, panes sit directly adjacent with their dark headers — no divider line */
+    .mob-compare__divider {
+      display: none;
+    }
+
+    /* ── Content inside pane (reuse existing opp- classes where possible) ── */
+    .mob-compare__pane-body .opp-stage  { font-size: 22px; margin-bottom: 20px; }
+    .mob-compare__pane-body .opp-section { margin-bottom: 24px; }
+    .mob-compare__pane-body .opp-section__title { font-size: 16px; margin-bottom: 10px; }
+    .mob-compare__pane-body .opp-body   { font-size: 14px; line-height: 1.5; }
+    .mob-compare__pane-body .opp-label  { font-size: 12px; }
+    .mob-compare__pane-body .opp-list   { font-size: 13px; }
+    .mob-compare__pane-body .opp-tags   { gap: 6px; }
+
+    /* ── Scrim overlay for settings modal (Screen 3) ── */
+    .mob-compare__scrim {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: rgba(22, 22, 22, 0.6);
+      z-index: 90;
+      cursor: pointer;
+    }
+    .mob-compare__scrim.is-open {
+      display: block;
+    }
+
+    /* ── Config drawer / panel: sits directly below the info bar ── */
+    .mob-compare__cfg {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: var(--cds-layer-01, #f4f4f4);
+      border-bottom: 1px solid var(--cds-border-subtle, #e0e0e0);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      padding: 20px 16px 24px;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .mob-compare__cfg.is-open { display: flex; }
+
+    .mob-compare__cfg-heading {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .mob-compare__cfg-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--cds-text-primary, #161616);
+      margin: 0;
+    }
+    .mob-compare__cfg-sub {
+      font-size: 12px;
+      color: var(--cds-text-secondary, #525252);
+      margin: 0;
+    }
+
+    .mob-compare__cfg-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .mob-compare__cfg-group-label {
+      font-family: var(--cds-font-sans);
+      font-size: 20px;
+      font-weight: 400;
+      line-height: 28px;
+      color: var(--cds-text-primary, #161616);
+      margin: 4px 0 0;
+    }
+
+    .mob-compare__cfg-field { display: flex; flex-direction: column; gap: 6px; }
+    .mob-compare__cfg-label {
+      font-size: 12px;
+      letter-spacing: 0.32px;
+      color: var(--cds-text-secondary, #525252);
+    }
+    .mob-compare__cfg-select-wrap { position: relative; }
+    .mob-compare__cfg-select {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 48px;
+      padding: 0 40px 0 16px;
+      background: #ffffff;
+      border: none;
+      border-bottom: 1px solid var(--cds-border-strong-01, #8d8d8d);
+      font-family: var(--cds-font-sans);
+      font-size: 14px;
+      color: var(--cds-text-primary, #161616);
+      cursor: pointer;
+    }
+    .mob-compare__cfg-select:focus {
+      outline: 2px solid var(--cds-border-interactive);
+      outline-offset: -2px;
+    }
+    .mob-compare__cfg-chevron {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: var(--cds-text-primary);
+    }
+    .mob-compare__cfg-to {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--cds-text-primary);
+      margin: 0;
+    }
+    .mob-compare__cfg-done {
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 16px;
+      background: var(--cds-button-primary);
+      color: #fff;
+      border: none;
+      font-family: var(--cds-font-sans);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 0;
+      min-width: 0;
+      width: fit-content;
+      margin-top: 8px;
+    }
+    .mob-compare__cfg-done svg {
+      flex-shrink: 0;
+      margin-left: 16px;
+    }
+    .mob-compare__cfg-done:hover  { background: var(--cds-button-primary-hover); }
+    .mob-compare__cfg-done:focus-visible {
+      outline: 2px solid var(--cds-border-interactive);
+      outline-offset: 2px;
     }
 
   </style>
@@ -1504,7 +1888,10 @@
       button-label-active="Close menu"
       button-label-inactive="Open menu">
     </cds-header-menu-button>
-    <cds-header-name prefix="IBM" href="#">Maximo Growth Opportunity Assessment Tool</cds-header-name>
+    <cds-header-name prefix="IBM" href="#">
+      <span class="header-name--full">Maximo Growth Opportunity Assessment Tool</span>
+      <span class="header-name--short">M-GOA-Tool</span>
+    </cds-header-name>
     <cds-header-nav menu-bar-label="Primary navigation">
       <cds-header-nav-item id="nav-overview" href="#" active>Overview</cds-header-nav-item>
       <cds-header-nav-item id="nav-opportunity-paths" href="#opportunity-paths">Opportunity paths</cds-header-nav-item>
@@ -1558,14 +1945,9 @@
               Launch live assessment
               <svg slot="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M26 28H6a2 2 0 01-2-2V6a2 2 0 012-2h9v2H6v20h20v-9h2v9a2 2 0 01-2 2z"/><path d="M21 2v2h5.59L17 13.41 18.59 15 28 5.59V11h2V2z"/></svg>
             </cds-button>
-            <cds-button kind="ghost" size="lg" href="#additional-resources">
+            <cds-button kind="secondary" size="lg" href="#additional-resources">
               Explore additional resources
-              <svg slot="icon" width="16" height="16" viewBox="0 0 16 16" fill="#0f62fe" aria-hidden="true">
-                <path d="M15 14.2929L12.6558 11.9487C13.2823 11.1423 13.5779 10.1274 13.4824 9.11065C13.3869 8.0939 12.9075 7.15178 12.1417 6.47613C11.376 5.80048 10.3815 5.4421 9.36074 5.47398C8.34001 5.50585 7.36981 5.92558 6.6477 6.6477C5.92558 7.36981 5.50585 8.34001 5.47398 9.36074C5.4421 10.3815 5.80048 11.376 6.47613 12.1417C7.15178 12.9075 8.0939 13.3869 9.11065 13.4824C10.1274 13.5779 11.1423 13.2823 11.9487 12.6558L14.2929 15L15 14.2929ZM9.5 12.5C8.90666 12.5 8.32664 12.3241 7.83329 11.9944C7.33994 11.6648 6.95542 11.1962 6.72836 10.6481C6.5013 10.0999 6.44189 9.49667 6.55764 8.91473C6.6734 8.33279 6.95912 7.79824 7.37868 7.37868C7.79824 6.95912 8.33279 6.6734 8.91473 6.55764C9.49667 6.44189 10.0999 6.5013 10.6481 6.72836C11.1962 6.95542 11.6648 7.33994 11.9944 7.83329C12.3241 8.32664 12.5 8.90666 12.5 9.5C12.4991 10.2954 12.1828 11.0579 11.6204 11.6204C11.0579 12.1828 10.2954 12.4991 9.5 12.5Z"/>
-                <path d="M5 6H1V7H5V6Z"/>
-                <path d="M9 1H1V2H9V1Z"/>
-                <path d="M9 3.5H1V4.5H9V3.5Z"/>
-              </svg>
+              <svg slot="icon" width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M24.59 16.59L17 24.17V4h-2v20.17l-7.59-7.58L6 18l10 10 10-10-1.41-1.41z"/></svg>
             </cds-button>
           </div>
         </div>
@@ -1996,14 +2378,21 @@
 
   <!-- ═══════════════ OPPORTUNITY PATHS VIEW ════════════════ -->
   <main id="view-opportunity-paths" hidden>
+    <!-- Sub-header bar calling out Opportunity paths (Screen 1) -->
+    <div class="opp-subbar">
+      <div class="cds--grid">
+        <span class="opp-subbar__title">Opportunity paths</span>
+      </div>
+    </div>
+
     <section class="opp-hero" aria-labelledby="opp-title">
       <div class="cds--grid">
         <div class="hero-wordmark">
           <img src="assets/IBM Maximo Application Suite.svg" alt="" />
           <span class="hero-wordmark-text">IBM <strong>Maximo®</strong></span>
         </div>
-        <h1 class="opp-hero__title" id="opp-title">Plan your customers' next move</h1>
-        <p class="opp-hero__sub">Assess where customers' asset performance and field service management operations stand today and advance toward reliability-driven, self-optimizing operations.</p>
+        <h1 class="opp-hero__title" id="opp-title">Explore, compare,<br>and recommend</h1>
+        <p class="opp-hero__sub">Explore recommended opportunity paths to understand why they're suggested, compare journey stages, and evaluate the opportunities each path can unlock. Use your expertise to recommend the best way forward for your customer.</p>
       </div>
     </section>
 
@@ -3812,7 +4201,7 @@
         return text.split(';')
           .map(function (name) { return name.trim(); })
           .filter(function (name) { return name !== ''; })
-          .map(function (name) { return '<cds-tag type="gray" size="md">' + esc(name) + '</cds-tag>'; })
+          .map(function (name) { return '<span class="opp-tag opp-tag--gray">' + esc(name) + '</span>'; })
           .join('');
       }
 
@@ -3858,7 +4247,7 @@
           .filter(function (line) { return !/—\s*Not in use\s*$/i.test(line); })
           .map(function (line) { return line.split('—')[0].replace(/^\s*Maximo\s+/, '').trim(); })
           .filter(function (name) { return name !== ''; })
-          .map(function (name) { return '<cds-tag type="outline" size="lg">' + esc(name) + '</cds-tag>'; })
+          .map(function (name) { return '<span class="opp-tag opp-tag--outline">' + esc(name) + '</span>'; })
           .join('');
       }
 
@@ -3878,7 +4267,7 @@
 
       function renderTile(milestone) {
         var tileContent = '';
-        if (milestone.pillar) { tileContent += '<cds-tag type="blue" size="md">' + esc(milestone.pillar) + '</cds-tag>'; }
+        if (milestone.pillar) { tileContent += '<span class="opp-tag opp-tag--blue">' + esc(milestone.pillar) + '</span>'; }
         if (milestone.description) { tileContent += '<p class="opp-tile__description">' + esc(milestone.description) + '</p>'; }
         if (milestone.valueStatement) {
           tileContent += '<div class="opp-tile__value">' +
@@ -3987,6 +4376,7 @@
           function (s) { return renderWhere(s); },
           function (s) { return renderValue(s); },
           function (s) { return renderPilot(s); },
+          function (s) { return renderModules(s); },
           function (s) { return renderMilestones(s); },
           function (s) { return renderSteps(s); },
         ];
@@ -4180,12 +4570,582 @@
         sideNavPaths.toggleAttribute('active', onPaths);
       };
 
+      /* Responsive toggle sizing: size="sm" on desktop, standard/large on mobile */
+      function updateToggleSize() {
+        if (!compareToggle) { return; }
+        if (window.innerWidth <= 800) {
+          compareToggle.removeAttribute('size');
+        } else {
+          compareToggle.setAttribute('size', 'sm');
+        }
+      }
+      window.addEventListener('resize', updateToggleSize, { passive: true });
+      updateToggleSize();
+
       renderStageTabs();
       renderStage();
       syncView();
     })();
   </script>
 
+  <!-- ═══════════════ MOBILE SPLIT-PANE COMPARE OVERLAY ═══════════════════ -->
+  <div class="mob-compare" id="mob-compare" role="region" aria-label="Comparison view" aria-hidden="true">
+
+    <!-- Info bar: green toggle + Compare stages label + track subtitle + config button (Screen 2) -->
+    <div class="mob-compare__bar" id="mob-compare-bar">
+      <button type="button" class="mob-compare__toggle-btn" id="mob-compare-toggle-btn" aria-label="Compare stages active, click to turn off" title="Turn off compare mode">
+        <span class="mob-compare__toggle-track">
+          <span class="mob-compare__toggle-thumb"></span>
+        </span>
+      </button>
+      <div class="mob-compare__bar-text">
+        <span class="mob-compare__bar-label">Compare stages</span>
+        <span class="mob-compare__bar-subtitle" id="mob-compare-subtitle">Field Service Management (FSM)</span>
+      </div>
+      <button type="button" class="mob-compare__config-btn" id="mob-compare-cfg-btn"
+        aria-label="Configure comparison view" aria-expanded="false" aria-controls="mob-compare-cfg">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M15 4H12.95C12.7 2.85 11.7 2 10.5 2C9.3 2 8.3 2.85 8.05 4H1V5H8.05C8.3 6.15 9.3 7 10.5 7C11.7 7 12.7 6.15 12.95 5H15V4ZM10.5 6C9.65 6 9 5.35 9 4.5C9 3.65 9.65 3 10.5 3C11.35 3 12 3.65 12 4.5C12 5.35 11.35 6 10.5 6Z" fill="white"/>
+          <path d="M1 12H3.05C3.3 13.15 4.3 14 5.5 14C6.7 14 7.7 13.15 7.95 12H15V11H7.95C7.7 9.85 6.7 9 5.5 9C4.3 9 3.3 9.85 3.05 11H1V12ZM5.5 10C6.35 10 7 10.65 7 11.5C7 12.35 6.35 13 5.5 13C4.65 13 4 12.35 4 11.5C4 10.65 4.65 10 5.5 10Z" fill="white"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Scrim overlay underneath settings drawer (Screen 3) -->
+    <div class="mob-compare__scrim" id="mob-compare-scrim" aria-hidden="true"></div>
+
+    <!-- Config panel / drawer: light gray background (Screen 3) -->
+    <div class="mob-compare__cfg" id="mob-compare-cfg" role="dialog" aria-label="Comparison settings">
+      <div class="mob-compare__cfg-heading">
+        <p class="mob-compare__cfg-title">Compare stages</p>
+        <p class="mob-compare__cfg-sub">Settings</p>
+      </div>
+
+      <!-- ── Compare section: journey path selector + top-pane stage ── -->
+      <div class="mob-compare__cfg-group">
+        <p class="mob-compare__cfg-group-label">Compare</p>
+        <!-- Track / journey selector -->
+        <div class="mob-compare__cfg-field">
+          <label class="mob-compare__cfg-label" for="mob-cfg-track">Journey</label>
+          <div class="mob-compare__cfg-select-wrap">
+            <select class="mob-compare__cfg-select" id="mob-cfg-track">
+              <option value="fsm">Field Service Management (FSM)</option>
+              <option value="apm">Asset Performance Management (APM)</option>
+            </select>
+            <svg class="mob-compare__cfg-chevron" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M16 22L6 12l1.4-1.4 8.6 8.6 8.6-8.6L26 12z"/></svg>
+          </div>
+        </div>
+        <!-- Top pane stage -->
+        <div class="mob-compare__cfg-field">
+          <label class="mob-compare__cfg-label" for="mob-cfg-stage-a">Stage (top pane)</label>
+          <div class="mob-compare__cfg-select-wrap">
+            <select class="mob-compare__cfg-select" id="mob-cfg-stage-a"></select>
+            <svg class="mob-compare__cfg-chevron" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M16 22L6 12l1.4-1.4 8.6 8.6 8.6-8.6L26 12z"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <p class="mob-compare__cfg-to">to</p>
+
+      <!-- ── Bottom-pane stage ── -->
+      <div class="mob-compare__cfg-field">
+        <label class="mob-compare__cfg-label" for="mob-cfg-stage-b">Stage (bottom pane)</label>
+        <div class="mob-compare__cfg-select-wrap">
+          <select class="mob-compare__cfg-select" id="mob-cfg-stage-b"></select>
+          <svg class="mob-compare__cfg-chevron" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M16 22L6 12l1.4-1.4 8.6 8.6 8.6-8.6L26 12z"/></svg>
+        </div>
+      </div>
+      <button type="button" class="mob-compare__cfg-done" id="mob-compare-cfg-done">
+        Done
+        <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M13 24L4 15l1.41-1.41L13 21.17l13.59-13.59L28 9 13 24z"/></svg>
+      </button>
+    </div>
+
+    <!-- Panes -->
+    <div class="mob-compare__panes">
+      <div class="mob-compare__pane" id="mob-pane-top">
+        <div class="mob-compare__pane-hdr">
+          <span class="mob-compare__pane-num" id="mob-pane-top-num">Stage 1</span>
+          <span class="mob-compare__pane-name" id="mob-pane-top-name">Reactive Execution</span>
+        </div>
+        <div class="mob-compare__pane-body" id="mob-pane-top-body"></div>
+      </div>
+      <div class="mob-compare__divider" aria-hidden="true"></div>
+      <div class="mob-compare__pane" id="mob-pane-bottom">
+        <div class="mob-compare__pane-hdr">
+          <span class="mob-compare__pane-num" id="mob-pane-bottom-num">Stage 2</span>
+          <span class="mob-compare__pane-name" id="mob-pane-bottom-name">Managed Response</span>
+        </div>
+        <div class="mob-compare__pane-body" id="mob-pane-bottom-body"></div>
+      </div>
+    </div>
+
+  </div><!-- /.mob-compare -->
+
+  <!-- ═══════════════ MOBILE SPLIT-PANE JS ═════════════════ -->
+  <script>
+  (function () {
+    'use strict';
+
+    // ── Element refs ─────────────────────────────────────────────
+    var overlay      = document.getElementById('mob-compare');
+    var toggleBtn    = document.getElementById('mob-compare-toggle-btn');
+    var cfgBtn       = document.getElementById('mob-compare-cfg-btn');
+    var cfgPanel     = document.getElementById('mob-compare-cfg');
+    var cfgDone      = document.getElementById('mob-compare-cfg-done');
+    var cfgTrackSel  = document.getElementById('mob-cfg-track');
+    var cfgSelA      = document.getElementById('mob-cfg-stage-a');
+    var cfgSelB      = document.getElementById('mob-cfg-stage-b');
+    var subtitle     = document.getElementById('mob-compare-subtitle');
+    var scrim        = document.getElementById('mob-compare-scrim');
+
+    var paneTopEl    = document.getElementById('mob-pane-top');
+    var paneBotEl    = document.getElementById('mob-pane-bottom');
+    var paneTopNum   = document.getElementById('mob-pane-top-num');
+    var paneTopName  = document.getElementById('mob-pane-top-name');
+    var paneTopBody  = document.getElementById('mob-pane-top-body');
+    var paneBotNum   = document.getElementById('mob-pane-bottom-num');
+    var paneBotName  = document.getElementById('mob-pane-bottom-name');
+    var paneBotBody  = document.getElementById('mob-pane-bottom-body');
+
+    var paths        = document.getElementById('view-opportunity-paths');
+    var compareToggle = document.getElementById('opp-compare-toggle');
+
+    if (!overlay || !toggleBtn) { return; }
+
+    // ── Shared DATA ref (already parsed by the existing script) ──
+    // Wait until the other IIFE has populated window.__mgoatData, or
+    // re-parse it here from the JSON script tag.
+    var DATA = (function () {
+      try { return JSON.parse(document.getElementById('opportunity-paths-data').textContent); }
+      catch (e) { return null; }
+    })();
+    if (!DATA) { return; }
+
+    var TRACK_LABELS = {
+      fsm: 'Field Service Management (FSM)',
+      apm: 'Asset Performance Management (APM)'
+    };
+
+    // ── Internal state (mirrors the main script's state) ─────────
+    var mobState = { track: 'fsm', stageA: 0, stageB: 1 };
+
+    // ── Utility: reuse same renderer from main IIFE ───────────────
+    // We inline a minimal version rather than coupling to the other closure.
+    var ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+    function esc(t) { return String(t).replace(/[&<>"']/g, function(c){ return ESCAPES[c]; }); }
+    function lines(text) {
+      return String(text || '').split('\n')
+        .map(function(l){ return l.replace(/^\s*•\s*/, '').trim(); })
+        .filter(Boolean);
+    }
+    function list(text, cls) {
+      return '<ul class="' + cls + '">' +
+        lines(text).map(function(l){ return '<li>' + esc(l) + '</li>'; }).join('') + '</ul>';
+    }
+
+    var VALUE_ICON = '<svg class="opp-tile__value-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" width="16" height="16"><path d="M15 3V2H13.5V1H12.5V2H12C11.449 2 11 2.449 11 3V4C11 4.551 11.449 5 12 5H14V6H11V7H12.5V8H13.5V7H14C14.551 7 15 6.551 15 6V5C15 4.449 14.551 4 14 4H12V3H15Z"/><path d="M12 10V11H13.293L11.5 12.793L10.354 11.646A.5.5 0 009.647 11.646L7 14.293L7.707 15L10 12.707L11.146 13.854A.5.5 0 0011.854 13.854L14 11.707V13H15V10H12Z"/><path d="M2 15H1V12.5C1 10.57 2.57 9 4.5 9H7.5C8.494 9 9.445 9.425 10.109 10.166L9.363 10.833C8.889 10.304 8.21 10 7.5 10H4.5C3.121 10 2 11.121 2 12.5V15Z"/><path d="M6 8C7.933 8 9.5 6.433 9.5 4.5C9.5 2.567 7.933 1 6 1C4.067 1 2.5 2.567 2.5 4.5C2.5 6.433 4.067 8 6 8ZM6 2C7.381 2 8.5 3.119 8.5 4.5C8.5 5.881 7.381 7 6 7C4.619 7 3.5 5.881 3.5 4.5C3.502 3.12 4.62 2.002 6 2Z"/></svg>';
+
+    function renderPaneHTML(stage) {
+      if (!stage) { return '<p>No data.</p>'; }
+      var html = '';
+      // Where the customer is
+      if (stage.description || stage.areYouReady) {
+        html += '<section class="opp-section" data-section-key="customer" aria-label="Where the customer is">' +
+                '<h3 class="opp-section__title">Where the customer is</h3>';
+        if (stage.description) { html += '<p class="opp-body">' + esc(stage.description) + '</p>'; }
+        if (stage.areYouReady) {
+          html += '<div class="opp-ready"><p class="opp-ready__label">' +
+                  '<svg width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true">' +
+                  '<path d="M14 21.414l-5-5.001L10.413 15 14 18.586 21.585 11 23 12.415l-9 8.999z"/>' +
+                  '<path d="M16 2a14 14 0 1014 14A14 14 0 0016 2zm0 26a12 12 0 1112-12 12 12 0 01-12 12z"/>' +
+                  '</svg>Are you ready?</p>' +
+                  '<p class="opp-ready__text">' + esc(stage.areYouReady) + '</p></div>';
+        }
+        html += '</section>';
+      }
+      // Value after resolving
+      if (stage.valueStatement || stage.potentialOutcomes) {
+        html += '<section class="opp-section" data-section-key="value" aria-label="Value after resolving">' +
+                '<h3 class="opp-section__title">Value after resolving</h3>';
+        if (stage.valueStatement) { html += '<p class="opp-body">' + esc(stage.valueStatement) + '</p>'; }
+        if (stage.potentialOutcomes) {
+          html += '<p class="opp-label">Potential outcomes</p>' + list(stage.potentialOutcomes, 'opp-list');
+        }
+        html += '</section>';
+      }
+      // Pilot recommendation
+      if (stage.keyMoves) {
+        html += '<section class="opp-section" data-section-key="pilot" aria-label="Pilot recommendation">' +
+                '<h3 class="opp-section__title">Pilot recommendation</h3>' +
+                list(stage.keyMoves, 'opp-list') + '</section>';
+      }
+      // Required Maximo modules
+      if (stage.masProducts) {
+        var tags = String(stage.masProducts).split('\n')
+          .filter(function(l){ return !/—\s*Not in use\s*$/i.test(l); })
+          .map(function(l){ return l.split('—')[0].replace(/^\s*Maximo\s+/, '').trim(); })
+          .filter(Boolean)
+          .map(function(n){ return '<span class="opp-tag opp-tag--outline">' + esc(n) + '</span>'; })
+          .join('');
+        if (tags) {
+          html += '<section class="opp-section" data-section-key="modules" aria-label="Required Maximo modules">' +
+                  '<h3 class="opp-section__title">Required Maximo modules</h3>' +
+                  '<div class="opp-tags">' + tags + '</div></section>';
+        }
+      }
+      // Key milestones (accordion — simplified list in pane)
+      if (stage.milestones && stage.milestones.length) {
+        html += '<section class="opp-section" data-section-key="milestones" aria-label="Key milestones">' +
+                '<h3 class="opp-section__title">Key milestones</h3>' +
+                '<cds-accordion class="opp-accordion">';
+        stage.milestones.forEach(function(m) {
+          var inner = '';
+          if (m.pillar)      { inner += '<span class="opp-tag opp-tag--blue">' + esc(m.pillar) + '</span>'; }
+          if (m.description) { inner += '<p class="opp-tile__description">' + esc(m.description) + '</p>'; }
+          if (m.valueStatement) {
+            inner += '<div class="opp-tile__value"><div class="opp-tile__value-header">' + VALUE_ICON +
+                     '<span class="opp-tile__value-label">Value</span></div>' +
+                     '<p>' + esc(m.valueStatement) + '</p></div>';
+          }
+          if (m.signals) { inner += '<p class="opp-label">Signals</p>' + list(m.signals, 'opp-list'); }
+          html += '<cds-accordion-item title="' + esc(m.name) + '">' + inner + '</cds-accordion-item>';
+        });
+        html += '</cds-accordion></section>';
+      }
+      // Getting started
+      var groups = (stage.milestones || []).filter(function(m){ return m.actions && m.actions.length; });
+      if (groups.length) {
+        html += '<section class="opp-section" data-section-key="getting-started" aria-label="Getting started">' +
+                '<h3 class="opp-section__title">Getting started (minimum viable steps)</h3>';
+        groups.forEach(function(m) {
+          html += '<div class="opp-steps__group"><h4 class="opp-steps__milestone">' + esc(m.name) + '</h4>';
+          m.actions.forEach(function(a) {
+            html += '<div class="opp-step"><cds-checkbox label-text="' + esc(a.text) + '"></cds-checkbox>' +
+                    (a.roles ? '<p class="opp-step__roles">Active roles: ' + esc(a.roles) + '</p>' : '') +
+                    '</div>';
+          });
+          html += '</div>';
+        });
+        html += '</section>';
+      }
+      return html;
+    }
+
+    // ── Populate stage <select> options ──────────────────────────
+    function populateSelects(track) {
+      // Sync the track dropdown to current state
+      if (cfgTrackSel) { cfgTrackSel.value = track; }
+      var stages = DATA[track] || [];
+      [cfgSelA, cfgSelB].forEach(function(sel, i) {
+        var def = (i === 0) ? mobState.stageA : mobState.stageB;
+        // Clamp default in case the new track has fewer stages
+        def = Math.min(def, stages.length - 1);
+        sel.innerHTML = stages.map(function(s, idx) {
+          return '<option value="' + idx + '"' + (idx === def ? ' selected' : '') + '>' +
+                 esc(s.stage) + ' \u2014 ' + esc(s.stageName) + '</option>';
+        }).join('');
+      });
+    }
+
+    // Repopulate stage options immediately when track changes inside the panel
+    if (cfgTrackSel) {
+      cfgTrackSel.addEventListener('change', function() {
+        var t = cfgTrackSel.value;
+        // Reset stage defaults for the new track
+        mobState.stageA = 0;
+        mobState.stageB = Math.min(1, (DATA[t] || []).length - 1);
+        populateSelects(t);
+      });
+    }
+
+    // ── Render both panes ─────────────────────────────────────────
+    function renderPanes() {
+      var track  = mobState.track;
+      var stages = DATA[track] || [];
+      var sA     = stages[mobState.stageA];
+      var sB     = stages[mobState.stageB];
+
+      // Update pane headers
+      if (sA) {
+        paneTopNum.textContent  = esc(sA.stage);
+        paneTopName.textContent = esc(sA.stageName);
+      }
+      if (sB) {
+        paneBotNum.textContent  = esc(sB.stage);
+        paneBotName.textContent = esc(sB.stageName);
+      }
+
+      // Render content
+      paneTopBody.innerHTML  = renderPaneHTML(sA);
+      paneBotBody.innerHTML  = renderPaneHTML(sB);
+
+      // Scroll both back to top
+      paneTopBody.scrollTop  = 0;
+      paneBotBody.scrollTop  = 0;
+
+      // Reset accordion state (new content = all items collapsed)
+      expandedCount.top = 0;
+      expandedCount.bot = 0;
+      paneTopEl.classList.remove('has-expanded', 'is-shrunk');
+      paneBotEl.classList.remove('has-expanded', 'is-shrunk');
+
+      // Reset blur state
+      paneTopEl.classList.remove('is-at-end');
+      paneBotEl.classList.remove('is-at-end');
+      checkScrollEnd(paneTopBody, paneTopEl);
+      checkScrollEnd(paneBotBody, paneBotEl);
+
+      // Update subtitle
+      if (subtitle) { subtitle.textContent = TRACK_LABELS[track] || track.toUpperCase(); }
+    }
+
+    // ── Blur fade: show/hide the bottom gradient ──────────────────
+    function checkScrollEnd(bodyEl, paneEl) {
+      var atEnd = bodyEl.scrollHeight - bodyEl.scrollTop - bodyEl.clientHeight < 2;
+      paneEl.classList.toggle('is-at-end', atEnd);
+    }
+
+    // ── Expanded-accordion tracking ───────────────────────────────
+    // Each pane body independently tracks how many accordion items are open.
+    // When count > 0 the pane is "free-scrolling"; linked scroll is suspended
+    // for that pane and it gets more vertical room.
+    var expandedCount = { top: 0, bot: 0 };
+
+    function updatePaneExpansion() {
+      var topExpanded = expandedCount.top > 0;
+      var botExpanded = expandedCount.bot > 0;
+      paneTopEl.classList.toggle('has-expanded', topExpanded);
+      paneBotEl.classList.toggle('has-expanded', botExpanded);
+      // Shrink the opposite pane only when one side is expanded
+      paneTopEl.classList.toggle('is-shrunk', botExpanded && !topExpanded);
+      paneBotEl.classList.toggle('is-shrunk', topExpanded && !botExpanded);
+    }
+
+    function watchAccordion(bodyEl, side) {
+      // cds-accordion fires 'cds-accordion-item-toggled' on open AND close
+      bodyEl.addEventListener('cds-accordion-item-toggled', function(e) {
+        var open = e.detail && e.detail.open;
+        if (open) {
+          expandedCount[side] = (expandedCount[side] || 0) + 1;
+        } else {
+          expandedCount[side] = Math.max(0, (expandedCount[side] || 0) - 1);
+        }
+        updatePaneExpansion();
+        // Re-check blur after the accordion animation settles
+        setTimeout(function() {
+          checkScrollEnd(bodyEl, side === 'top' ? paneTopEl : paneBotEl);
+        }, 300);
+      });
+    }
+    watchAccordion(paneTopBody, 'top');
+    watchAccordion(paneBotBody, 'bot');
+
+    // ── Linked synchronized scroll (strictly monotonic section mapping) ──
+    var scrolling = null;
+    var scrollTimer = null;
+
+    function getSectionAnchors(srcBody, tgtBody) {
+      var srcSections = srcBody.querySelectorAll('.opp-section[data-section-key]');
+      var srcMax = Math.max(1, srcBody.scrollHeight - srcBody.clientHeight);
+      var tgtMax = Math.max(1, tgtBody.scrollHeight - tgtBody.clientHeight);
+
+      var anchors = [{ src: 0, tgt: 0 }];
+
+      for (var i = 0; i < srcSections.length; i++) {
+        var sec = srcSections[i];
+        var key = sec.getAttribute('data-section-key');
+        var tgtSec = tgtBody.querySelector('.opp-section[data-section-key="' + key + '"]');
+        if (tgtSec) {
+          anchors.push({
+            src: sec.offsetTop,
+            tgt: tgtSec.offsetTop
+          });
+        }
+      }
+
+      anchors.push({ src: srcMax, tgt: tgtMax });
+      anchors.sort(function(a, b) { return a.src - b.src; });
+      return anchors;
+    }
+
+    function mapSectionScroll(srcTop, anchors) {
+      if (srcTop <= anchors[0].src) { return anchors[0].tgt; }
+      var last = anchors[anchors.length - 1];
+      if (srcTop >= last.src) { return last.tgt; }
+
+      for (var i = 0; i < anchors.length - 1; i++) {
+        var a0 = anchors[i];
+        var a1 = anchors[i + 1];
+        if (srcTop >= a0.src && srcTop <= a1.src) {
+          var spanSrc = a1.src - a0.src;
+          var spanTgt = a1.tgt - a0.tgt;
+          if (spanSrc <= 0) { return a0.tgt; }
+          var ratio = (srcTop - a0.src) / spanSrc;
+          return a0.tgt + ratio * spanTgt;
+        }
+      }
+      return anchors[0].tgt;
+    }
+
+    function syncScroll(srcBody, tgtBody, srcPane, tgtPane, srcSide) {
+      // If either pane has an expanded accordion item, let it scroll freely
+      if (expandedCount[srcSide] > 0 || expandedCount[srcSide === 'top' ? 'bot' : 'top'] > 0) {
+        checkScrollEnd(srcBody, srcPane);
+        return;
+      }
+
+      // Prevent reciprocal event loops
+      if (scrolling && scrolling !== srcBody) { return; }
+      scrolling = srcBody;
+
+      var anchors = getSectionAnchors(srcBody, tgtBody);
+      var targetScrollTop = mapSectionScroll(srcBody.scrollTop, anchors);
+
+      tgtBody.scrollTop = targetScrollTop;
+
+      checkScrollEnd(srcBody, srcPane);
+      checkScrollEnd(tgtBody, tgtPane);
+
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(function() {
+        scrolling = null;
+      }, 50);
+    }
+
+    paneTopBody.addEventListener('scroll', function() {
+      syncScroll(paneTopBody, paneBotBody, paneTopEl, paneBotEl, 'top');
+    }, { passive: true });
+    paneBotBody.addEventListener('scroll', function() {
+      syncScroll(paneBotBody, paneTopBody, paneBotEl, paneTopEl, 'bot');
+    }, { passive: true });
+
+    // Always update blur on any scroll (independent of sync)
+    paneTopBody.addEventListener('scroll', function() { checkScrollEnd(paneTopBody, paneTopEl); }, { passive: true });
+    paneBotBody.addEventListener('scroll', function() { checkScrollEnd(paneBotBody, paneBotEl); }, { passive: true });
+
+    // ── Open / close overlay ──────────────────────────────────────
+    function openOverlay() {
+      overlay.classList.add('is-open');
+      overlay.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      // Add class to paths container so the toggle + bar hide on mobile
+      if (paths) { paths.classList.add('is-mobile-compare'); }
+    }
+
+    function closeOverlay() {
+      overlay.classList.remove('is-open');
+      overlay.setAttribute('aria-hidden', 'true');
+      cfgPanel.classList.remove('is-open');
+      if (scrim) { scrim.classList.remove('is-open'); }
+      document.body.style.overflow = '';
+      if (paths) { paths.classList.remove('is-mobile-compare'); }
+      // Turn the Carbon toggle back off so state stays consistent
+      if (compareToggle && compareToggle.checked) {
+        compareToggle.checked = false;
+        compareToggle.dispatchEvent(new CustomEvent('cds-toggle-changed', {
+          bubbles: true,
+          composed: true,
+          detail: { checked: false }
+        }));
+      }
+      if (window.location.hash !== '#opportunity-paths') {
+        window.location.hash = '#opportunity-paths';
+      }
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+
+    toggleBtn.addEventListener('click', closeOverlay);
+
+    if (scrim) {
+      scrim.addEventListener('click', function () {
+        cfgPanel.classList.remove('is-open');
+        scrim.classList.remove('is-open');
+        cfgBtn.setAttribute('aria-expanded', 'false');
+      });
+    }
+
+    // ── Config panel ─────────────────────────────────────────────
+    cfgBtn.addEventListener('click', function() {
+      var isOpen = cfgPanel.classList.contains('is-open');
+      if (!isOpen) {
+        // Re-sync selects to current state before showing the panel
+        populateSelects(mobState.track);
+      }
+      cfgPanel.classList.toggle('is-open', !isOpen);
+      if (scrim) { scrim.classList.toggle('is-open', !isOpen); }
+      cfgBtn.setAttribute('aria-expanded', String(!isOpen));
+    });
+
+    cfgDone.addEventListener('click', function() {
+      // Apply track change if different
+      if (cfgTrackSel && cfgTrackSel.value !== mobState.track) {
+        mobState.track = cfgTrackSel.value;
+      }
+      mobState.stageA = parseInt(cfgSelA.value, 10);
+      mobState.stageB = parseInt(cfgSelB.value, 10);
+      renderPanes();
+      cfgPanel.classList.remove('is-open');
+      if (scrim) { scrim.classList.remove('is-open'); }
+      cfgBtn.setAttribute('aria-expanded', 'false');
+    });
+
+    // ── Escape: close config first, then overlay ──────────────────
+    document.addEventListener('keydown', function(e) {
+      if (e.key !== 'Escape') { return; }
+      if (cfgPanel.classList.contains('is-open')) {
+        cfgPanel.classList.remove('is-open');
+        if (scrim) { scrim.classList.remove('is-open'); }
+        cfgBtn.setAttribute('aria-expanded', 'false');
+      } else if (overlay.classList.contains('is-open')) {
+        closeOverlay();
+      }
+    });
+
+    // ── Hook into the existing compare toggle ────────────────────
+    // The main IIFE fires cds-toggle-changed → toggleCompare(on).
+    // On mobile we intercept that and open/close the overlay instead.
+    var existingToggle = document.getElementById('opp-compare-toggle');
+    if (existingToggle) {
+      existingToggle.addEventListener('cds-toggle-changed', function(e) {
+        var on = (e.detail && typeof e.detail.checked === 'boolean')
+                 ? e.detail.checked
+                 : (e.target && typeof e.target.checked === 'boolean' ? e.target.checked : !!existingToggle.checked);
+        if (window.innerWidth > 800) { return; } // desktop: let main IIFE handle it
+        if (on) {
+          // Seed from the default pair used by the main script
+          var trackEl = document.getElementById('opp-track-switcher');
+          var curTrack = (trackEl && trackEl.value) || 'fsm';
+          mobState.track  = curTrack;
+          mobState.stageA = 0;
+          mobState.stageB = Math.min(1, (DATA[curTrack] || []).length - 1);
+          populateSelects(curTrack);
+          renderPanes();
+          openOverlay();
+        } else {
+          closeOverlay();
+        }
+      }, true); // capture: run before the main IIFE's listener
+    }
+
+    // Keep mobState.track in sync if track switcher fires while overlay is open
+    var trackSwitcher = document.getElementById('opp-track-switcher');
+    if (trackSwitcher) {
+      trackSwitcher.addEventListener('cds-content-switcher-selected', function(e) {
+        if (!overlay.classList.contains('is-open')) { return; }
+        var item = e.detail && e.detail.item;
+        var t    = item ? item.getAttribute('value') : null;
+        if (!t || t === mobState.track) { return; }
+        mobState.track  = t;
+        mobState.stageA = 0;
+        mobState.stageB = Math.min(1, (DATA[t] || []).length - 1);
+        populateSelects(t);
+        renderPanes();
+      });
+    }
+
+  })();
+  </script>
 
 </body>
 </html>

@@ -47,6 +47,7 @@ window.startAssessment = () => {
   loadAssessmentArtwork();
   render();
   window.scrollTo({ top: 0, behavior: "instant" });
+  window.va?.("event", { name: "assessment_started" });
 };
 
 /* The sidebar artwork is ~580KB and belongs to the assessment, which nobody is
@@ -497,6 +498,10 @@ const handleNext = (event) => {
     } catch {
       // storage unavailable — the report simply leaves "Download responses" off
     }
+    // Track submission with industry for completion-by-industry breakdown.
+    // __contact_industry is set on the session details page (scoring.js line ~483).
+    const industry = answers["__contact_industry"] ?? null;
+    window.va?.("event", { name: "assessment_submitted", ...(industry && { data: { industry } }) });
     // Run scoring engine and redirect to report page
     els.btnNext.disabled = true;
     import("./scoring.js")
@@ -516,6 +521,7 @@ const handleNext = (event) => {
       });
     return;
   }
+  window.va?.("event", { name: "assessment_page_advance", data: { page: state.page + 1 } });
   goTo(state.page + 1);
 };
 
@@ -525,8 +531,30 @@ els.btnBack.addEventListener("click", () => {
   if (state.page === 0) {
     showSplash();
   } else {
+    window.va?.("event", { name: "assessment_page_back", data: { from: state.page } });
     goTo(state.page - 1);
   }
+});
+
+/* ----------------------------------------------------------------------
+   Exit / stall tracking
+   Fires once per tab when the user leaves the page mid-assessment.
+   Records the page index so we can rank which question loses the most people.
+   Uses pagehide (reliable on mobile Safari) with visibilitychange as backup.
+   Only fires when they have started answering (page > 0) and have not yet
+   submitted (submission navigates away before this can fire).
+   ---------------------------------------------------------------------- */
+let _submitted = false;
+document.addEventListener("assessment:submit", () => { _submitted = true; });
+
+function trackExit() {
+  if (_submitted || state.page === 0) return;
+  window.va?.("event", { name: "assessment_exit", data: { page: state.page } });
+}
+
+window.addEventListener("pagehide", trackExit);
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") trackExit();
 });
 
 /* ----------------------------------------------------------------------
