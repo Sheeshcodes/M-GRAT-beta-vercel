@@ -1252,18 +1252,6 @@
       margin: var(--cds-spacing-05) 0 0;
     }
 
-    /* Screen 1 Sub-header bar calling out Opportunity paths */
-    .opp-subbar {
-      background: #f4f4f4;
-      border-bottom: 1px solid var(--cds-border-subtle);
-      padding: 12px 0;
-    }
-    .opp-subbar__title {
-      font-size: 14px;
-      font-weight: 400;
-      color: var(--cds-text-primary);
-    }
-
     .opp-hero {
       background: var(--cds-layer-01);
       padding: 48px 0;
@@ -1313,12 +1301,23 @@
     }
     .opp-stage-row cds-tabs[hidden] { display: none; }
 
-    #opp-compare-toggle {
+    /* Holds the compare toggle (and, on mobile only, the Download PDF button) */
+    .opp-stage-row__actions {
+      display: flex;
+      align-items: center;
+      gap: var(--cds-spacing-05);
       margin-left: auto;
       flex-shrink: 0;
       align-self: flex-end;
       margin-bottom: 4px;
     }
+    /* Desktop: the button lives under the left rail instead */
+    .opp-download--inline { display: none; }
+    .opp-rail__download { margin-top: var(--cds-spacing-07); }
+    .opp-rail__download cds-button { max-inline-size: 100%; }
+    /* Not offered while comparing stages (the PDF is the full 5-stage track) */
+    .opp-layout--compare .opp-rail__download,
+    .opp-layout--compare .opp-download--inline { display: none; }
     /* ── Compare bar (checkboxes, replaces tabs in the stage row) ── */
     .opp-compare-bar {
       flex: 1;
@@ -1488,16 +1487,20 @@
       .opp-layout { grid-template-columns: minmax(0, 1fr); gap: var(--cds-spacing-06); }
       .opp-layout--compare { grid-template-columns: minmax(0, 1fr) !important; }
       .opp-rail { display: none; }
-      /* On mobile: compare toggle drops to its own line below the tabs — full touch target */
-      #opp-compare-toggle {
+      /* On mobile: toggle + Download PDF share their own line below the tabs — full touch target */
+      .opp-stage-row__actions {
         flex-basis: 100%;
+        flex-wrap: wrap;
+        justify-content: space-between;
         margin-left: 0;
+        margin-bottom: 0;
         padding: 12px 0;
         border-top: 1px solid var(--cds-border-subtle);
         align-self: stretch;
       }
-      /* In compare mode: hide the toggle and the compare bar — the overlay owns that UI */
-      .is-mobile-compare #opp-compare-toggle { display: none; }
+      .opp-download--inline { display: inline-block; margin-left: auto; }
+      /* In compare mode: hide the toggle row and the compare bar — the overlay owns that UI */
+      .is-mobile-compare .opp-stage-row__actions { display: none; }
       .is-mobile-compare #opp-compare-bar    { display: none; }
       /* Also hide the normal page content while the overlay is open */
       .is-mobile-compare #opp-main { visibility: hidden; pointer-events: none; }
@@ -1872,6 +1875,105 @@
     .mob-compare__cfg-done:focus-visible {
       outline: 2px solid var(--cds-border-interactive);
       outline-offset: 2px;
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       OPPORTUNITY PATHS — DOWNLOAD PDF (one track, 5 stage columns)
+       The PDF is a 1920px-wide page so five columns stay breathable;
+       the page height is set from JS to match the content (see beginPrint).
+       ════════════════════════════════════════════════════════════ */
+
+    /* Screen: the print document is never visible (beginPrint shows it off-screen briefly to measure it) */
+    #opp-print-doc { display: none; }
+
+    /* Why: fixed 1920px canvas so five columns have room. Defined outside @media print so the
+       height can be measured before the print dialog opens. */
+    #opp-print-doc .opp-print__page {
+      width: 1920px;
+      padding: 56px 96px 56px;
+      background: #ffffff;
+    }
+    #opp-print-doc .opp-print__head { margin-bottom: 40px; }
+    #opp-print-doc .opp-print__head .hero-wordmark { margin-bottom: 32px; }
+    #opp-print-doc .opp-print__eyebrow {
+      font-size: 14px;
+      letter-spacing: 0.32px;
+      color: var(--cds-text-secondary);
+      margin-bottom: 8px;
+    }
+    #opp-print-doc .opp-print__title {
+      font-family: var(--cds-font-serif);
+      font-size: 48px;
+      font-weight: 300;
+      line-height: 1.2;
+    }
+    /* Why: one grid row per section keeps headings aligned across all five stages.
+       Five equal columns with wide gutters for easy scanning. */
+    #opp-print-doc .opp-print__row {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      column-gap: 64px;
+      margin-bottom: 32px;
+    }
+    #opp-print-doc .opp-print__row:last-child { margin-bottom: 0; }
+    #opp-print-doc .opp-print__row--stage {
+      padding-bottom: 24px;
+      border-bottom: 2px solid var(--cds-text-primary);
+      margin-bottom: 32px;
+    }
+    #opp-print-doc .opp-print__cell { min-width: 0; }
+    #opp-print-doc .opp-print__cell .opp-section { margin-bottom: 0; }
+    #opp-print-doc .opp-stage { margin-bottom: 0; }
+    #opp-print-doc .opp-section__title { margin-bottom: 20px; }
+    /* Why: the page title on pages 2 and 3 replaces the label that would otherwise repeat in every column.
+       Outside @media print so the JS height measurement matches the printed page. */
+    #opp-print-doc .opp-print__page--2 .opp-section__title,
+    #opp-print-doc .opp-print__page--3 .opp-section__title { display: none; }
+
+    .opp-print-ms {
+      border-top: 1px solid var(--cds-border-subtle);
+      padding: var(--cds-spacing-05) 0 var(--cds-spacing-06);
+    }
+    .opp-print-ms__name {
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 22px;
+      margin-bottom: var(--cds-spacing-04);
+    }
+    .opp-step__line { display: flex; gap: var(--cds-spacing-03); font-size: 14px; line-height: 20px; }
+    .opp-print-check {
+      flex: 0 0 auto;
+      width: 14px;
+      height: 14px;
+      margin-top: 3px;
+      border: 1px solid var(--cds-border-strong-01);
+    }
+
+    @media print {
+      /* Why: the PDF is its own document — hide the whole site and show only #opp-print-doc */
+      html.is-printing-opp body > *:not(#opp-print-doc) { display: none !important; }
+      html.is-printing-opp #opp-print-doc { display: block !important; }
+
+      /* Why: Carbon fills (tags, value boxes) carry meaning; browsers drop backgrounds by default */
+      html.is-printing-opp, html.is-printing-opp * {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        transition: none !important;
+      }
+      html.is-printing-opp, html.is-printing-opp body {
+        background: #ffffff !important;
+        padding-top: 0 !important;
+        overflow: visible !important;
+      }
+
+      /* Why: the page is exactly as wide as the canvas, no extra margin */
+      html.is-printing-opp #opp-print-doc { width: 1920px; }
+
+      /* Why: three named pages so each gets its own height from JS (no dead space at the foot of any page) */
+      html.is-printing-opp .opp-print__page--1 { page: opp1; }
+      html.is-printing-opp .opp-print__page--2 { page: opp2; break-before: page; }
+      html.is-printing-opp .opp-print__page--3 { page: opp3; break-before: page; }
     }
 
   </style>
@@ -2378,13 +2480,6 @@
 
   <!-- ═══════════════ OPPORTUNITY PATHS VIEW ════════════════ -->
   <main id="view-opportunity-paths" hidden>
-    <!-- Sub-header bar calling out Opportunity paths (Screen 1) -->
-    <div class="opp-subbar">
-      <div class="cds--grid">
-        <span class="opp-subbar__title">Opportunity paths</span>
-      </div>
-    </div>
-
     <section class="opp-hero" aria-labelledby="opp-title">
       <div class="cds--grid">
         <div class="hero-wordmark">
@@ -2413,6 +2508,12 @@
         <a href="#opp-modules">Required Maximo modules</a>
         <a href="#opp-milestones">Key milestones</a>
         <a href="#opp-steps">Getting started (minimum viable steps)</a>
+        <div class="opp-rail__download">
+          <cds-button id="opp-download-rail" kind="tertiary" size="md" aria-label="Download PDF of the selected track">
+            Download PDF
+            <svg slot="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4zm0-10l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
+          </cds-button>
+        </div>
       </nav>
       <div class="opp-main" id="opp-main">
         <div class="opp-stage-row">
@@ -2420,15 +2521,25 @@
           <div id="opp-compare-bar" class="opp-compare-bar" hidden>
             <div id="opp-compare-checkboxes"></div>
           </div>
-          <cds-toggle id="opp-compare-toggle"
-            label-text="Compare stages"
-            size="sm">
-          </cds-toggle>
+          <div class="opp-stage-row__actions">
+            <cds-toggle id="opp-compare-toggle"
+              label-text="Compare stages"
+              size="sm">
+            </cds-toggle>
+            <cds-button id="opp-download-inline" class="opp-download--inline" kind="tertiary" size="md" aria-label="Download PDF of the selected track">
+              Download PDF
+              <svg slot="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M26 24v4H6v-4H4v4a2 2 0 002 2h20a2 2 0 002-2v-4zm0-10l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10 10-10z"/></svg>
+            </cds-button>
+          </div>
         </div>
         <div id="opp-content" class="opp-content"></div>
       </div>
     </div>
   </main>
+  <!-- Print-only PDF document. Filled from the Opportunity paths data when "Download PDF" is used. -->
+  <div id="opp-print-doc" aria-hidden="true"></div>
+
+
 
   <!-- Opportunity paths content. Generated from Logic/Milestone_Register*.xlsx — run: python3 scripts/build_opportunity_paths.py -->
   <!-- OPP-DATA:START -->
@@ -4265,7 +4376,8 @@
         '<path d="M6 8C7.933 8 9.5 6.433 9.5 4.5C9.5 2.567 7.933 1 6 1C4.067 1 2.5 2.567 2.5 4.5C2.5 6.433 4.067 8 6 8ZM6 2C7.38075 2 8.5 3.11925 8.5 4.5C8.5 5.88075 7.38075 7 6 7C4.61925 7 3.5 5.88075 3.5 4.5C3.5016 3.11995 4.61995 2.0016 6 2Z" fill="currentColor"/>' +
         '</svg>';
 
-      function renderTile(milestone) {
+      /* Shared by the screen accordion and the expanded PDF milestone. */
+      function tileBody(milestone) {
         var tileContent = '';
         if (milestone.pillar) { tileContent += '<span class="opp-tag opp-tag--blue">' + esc(milestone.pillar) + '</span>'; }
         if (milestone.description) { tileContent += '<p class="opp-tile__description">' + esc(milestone.description) + '</p>'; }
@@ -4279,22 +4391,37 @@
         if (milestone.personas) {
           tileContent += '<p class="opp-label">Personas</p><div class="opp-tags">' + personaTags(milestone.personas) + '</div>';
         }
-        return '<cds-accordion-item title="' + esc(milestone.name) + '">' + tileContent + '</cds-accordion-item>';
+        return tileContent;
       }
 
-      function renderMilestones(stage) {
+      function renderTile(milestone) {
+        return '<cds-accordion-item title="' + esc(milestone.name) + '">' + tileBody(milestone) + '</cds-accordion-item>';
+      }
+
+      /* forPrint: every milestone is open, since paper cannot expand an accordion. */
+      function renderMilestones(stage, forPrint) {
         if (!stage.milestones.length) { return ''; }
+        if (forPrint) {
+          return section('opp-milestones', 'Key milestones', stage.milestones.map(function (milestone) {
+            return '<article class="opp-print-ms"><h4 class="opp-print-ms__name">' + esc(milestone.name) + '</h4>' +
+              tileBody(milestone) + '</article>';
+          }).join(''));
+        }
         return section('opp-milestones', 'Key milestones',
           '<cds-accordion class="opp-accordion">' + stage.milestones.map(renderTile).join('') + '</cds-accordion>');
       }
 
-      function renderSteps(stage) {
+      /* forPrint: a drawn check square replaces the interactive checkbox. */
+      function renderSteps(stage, forPrint) {
         var groups = stage.milestones.filter(function (m) { return m.actions.length; });
         if (!groups.length) { return ''; }
         var body = groups.map(function (milestone) {
           return '<div class="opp-steps__group"><h4 class="opp-steps__milestone">' + esc(milestone.name) + '</h4>' +
             milestone.actions.map(function (action) {
-              return '<div class="opp-step"><cds-checkbox label-text="' + esc(action.text) + '"></cds-checkbox>' +
+              var control = forPrint
+                ? '<p class="opp-step__line"><span class="opp-print-check" aria-hidden="true"></span><span>' + esc(action.text) + '</span></p>'
+                : '<cds-checkbox label-text="' + esc(action.text) + '"></cds-checkbox>';
+              return '<div class="opp-step">' + control +
                 (action.roles ? '<p class="opp-step__roles">Active roles: ' + esc(action.roles) + '</p>' : '') + '</div>';
             }).join('') + '</div>';
         }).join('');
@@ -4581,6 +4708,112 @@
       }
       window.addEventListener('resize', updateToggleSize, { passive: true });
       updateToggleSize();
+
+      /* ── Download PDF ────────────────────────────────────────
+         Prints the selected track (all 5 stages, side by side, every milestone open)
+         from the same DATA the screen uses. beforeprint/afterprint also cover Cmd+P. */
+
+      var root = document.documentElement;
+      var printDoc = document.getElementById('opp-print-doc');
+      var PRINT_WIDTH = 1920;
+      var PRINT_MAX_HEIGHT = 19000; /* Chrome's PDF page limit is 200in (19200px) */
+      var TRACK_LABELS = { fsm: 'Field Service Management (FSM)', apm: 'Asset Performance Management (APM)' };
+      var printPageStyle = document.createElement('style');
+      var savedTitle = null;
+      document.head.appendChild(printPageStyle);
+
+      /* The screen DOM already holds these ids; the print copy must not duplicate them. */
+      function stripIds(html) {
+        return html.replace(/ (?:id|aria-labelledby)="opp-[a-z]+(?:-title)?"/g, '');
+      }
+
+      function printRow(cells, modifier) {
+        return '<div class="opp-print__row' + (modifier ? ' opp-print__row--' + modifier : '') + '">' +
+          cells.map(function (cell) { return '<div class="opp-print__cell">' + cell + '</div>'; }).join('') + '</div>';
+      }
+
+      /* Stage number + name for each column; repeated on page 2 so it reads on its own. */
+      function printStageRow(stages) {
+        return printRow(stages.map(function (s) {
+          return '<h2 class="opp-stage"><span class="opp-stage__number">' + esc(s.stage) + '</span>' +
+            '<span class="opp-stage__name">' + esc(s.stageName) + '</span></h2>';
+        }), 'stage');
+      }
+
+      /* One grid row per section so headings line up across all 5 stages. */
+      function printSectionRows(stages, sectionFns) {
+        return sectionFns.map(function (fn) {
+          var cells = stages.map(fn);
+          if (cells.every(function (c) { return c === ''; })) { return ''; }
+          return printRow(cells.map(stripIds));
+        }).join('');
+      }
+
+      var PRINT_PAGE_COUNT = 3;
+
+      /* Pages 2 and 3 get their own title and a repeated stage row so each reads on its own. */
+      function printPage(number, headHTML, stages, sectionFns) {
+        return '<div class="opp-print__page opp-print__page--' + number + '">' +
+          '<header class="opp-print__head">' + headHTML + '</header>' +
+          printStageRow(stages) + printSectionRows(stages, sectionFns) + '</div>';
+      }
+
+      function printSubHead(track, title) {
+        return '<p class="opp-print__eyebrow">' + esc(TRACK_LABELS[track]) + '</p>' +
+          '<h1 class="opp-print__title">' + esc(title) + '</h1>';
+      }
+
+      /* Page 1: overview. Page 2: Key milestones. Page 3: Getting started. */
+      function renderPrintDoc(track) {
+        var stages = DATA[track];
+        var cover = '<div class="hero-wordmark"><img src="assets/IBM Maximo Application Suite.svg" alt="" width="52" height="52" />' +
+          '<span class="hero-wordmark-text">IBM <strong>Maximo®</strong></span></div>' +
+          '<p class="opp-print__eyebrow">Opportunity paths</p>' +
+          '<h1 class="opp-print__title">' + esc(TRACK_LABELS[track]) + '</h1>';
+        return printPage(1, cover, stages, [renderWhere, renderValue, renderPilot, renderModules]) +
+          printPage(2, printSubHead(track, 'Key milestones'), stages,
+            [function (s) { return renderMilestones(s, true); }]) +
+          printPage(3, printSubHead(track, 'Getting started (minimum viable steps)'), stages,
+            [function (s) { return renderSteps(s, true); }]);
+      }
+
+      function beginPrint() {
+        if (paths.hidden || root.classList.contains('is-printing-opp')) { return; }
+        savedTitle = document.title;
+        document.title = 'Maximo Opportunity Paths - ' + state.track.toUpperCase();
+        printDoc.innerHTML = renderPrintDoc(state.track);
+        root.classList.add('is-printing-opp');
+        /* Each page is sized to its own content so none has dead space at the foot.
+           The doc is display:none on screen, so show it off-screen just long enough to measure. */
+        printDoc.style.cssText = 'display:block;position:absolute;left:-99999px;top:0;width:' + PRINT_WIDTH + 'px;';
+        var sizes = [];
+        for (var n = 1; n <= PRINT_PAGE_COUNT; n++) {
+          var pageEl = printDoc.querySelector('.opp-print__page--' + n);
+          var pageHeight = Math.min(Math.ceil(pageEl.getBoundingClientRect().height) + 1, PRINT_MAX_HEIGHT);
+          /* Pin the box to the page height: if the printed layout runs a few px taller than this
+             measurement, the overflow is absorbed by the bottom padding instead of pushing a whole
+             row onto an extra page (which left the page title alone on its own page). */
+          pageEl.style.height = pageHeight + 'px';
+          pageEl.style.overflow = 'hidden';
+          sizes.push('@page opp' + n + ' { size: ' + PRINT_WIDTH + 'px ' + pageHeight + 'px; margin: 0; }');
+        }
+        printDoc.style.cssText = '';
+        printPageStyle.textContent = sizes.join('\n');
+      }
+
+      function endPrint() {
+        if (!root.classList.contains('is-printing-opp')) { return; }
+        root.classList.remove('is-printing-opp');
+        printPageStyle.textContent = '';
+        printDoc.innerHTML = '';
+        if (savedTitle !== null) { document.title = savedTitle; savedTitle = null; }
+      }
+
+      window.addEventListener('beforeprint', beginPrint);
+      window.addEventListener('afterprint', endPrint);
+      ['opp-download-rail', 'opp-download-inline'].forEach(function (id) {
+        document.getElementById(id).addEventListener('click', function () { window.print(); });
+      });
 
       renderStageTabs();
       renderStage();
