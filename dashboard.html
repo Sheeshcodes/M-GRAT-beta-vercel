@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <title>M-GRAT Analytics — Growth Readiness Assessment</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ── tokens ──────────────────────────────────────────────── */
+    :root {
+      --g100:#161616;--g90:#262626;--g80:#393939;--g70:#525252;--g60:#6f6f6f;
+      --g50:#8d8d8d;--g40:#a8a8a8;--g30:#c6c6c6;--g20:#e0e0e0;--g10:#f4f4f4;--white:#fff;
+      --blue-70:#0043ce;--blue-60:#0f62fe;--blue-50:#4589ff;--blue-40:#78a9ff;
+      --blue-20:#c6dbff;--blue-10:#edf5ff;
+      --green-50:#24a148;--green-10:#defbe6;
+      --orange-40:#ff832b;--orange-10:#fff2e8;
+      --sans:'IBM Plex Sans',-apple-system,'Segoe UI',system-ui,sans-serif;
+      --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+      --ease:cubic-bezier(.2,.8,.2,1);
+      --ease-p:cubic-bezier(0,0,.38,.9);
+      --hdr:48px;--nav:220px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{font-family:var(--sans);font-size:14px;line-height:1.43;letter-spacing:.16px;
+      color:var(--g100);background:var(--g10);-webkit-font-smoothing:antialiased}
+    a{color:var(--blue-60);text-decoration:none}
+    button{font-family:inherit;font-size:inherit;letter-spacing:inherit;cursor:pointer}
+
+    /* ── header ──────────────────────────────────────────────── */
+    .hdr{position:fixed;top:0;left:0;right:0;height:var(--hdr);background:var(--g100);
+      display:flex;align-items:center;z-index:60;border-bottom:1px solid var(--g90)}
+    .hdr-name{display:flex;align-items:center;gap:0;height:100%;padding:0 16px;color:#fff;
+      font-size:14px;letter-spacing:.16px;text-decoration:none}
+    .hdr-name .sep{color:var(--g50);margin:0 10px}
+    .hdr-name b{font-weight:600}
+    .hdr-sp{flex:1}
+    .hdr-pill{display:flex;align-items:center;gap:8px;height:100%;padding:0 16px;
+      color:var(--g30);font-size:12px;letter-spacing:.32px;border-left:1px solid var(--g80)}
+    .hdr-pill b{color:#fff;font-weight:500}
+
+    /* ── nav ─────────────────────────────────────────────────── */
+    .nav{position:fixed;top:var(--hdr);bottom:0;left:0;width:var(--nav);
+      background:var(--white);border-right:1px solid var(--g20);padding:16px 0;
+      overflow-y:auto;z-index:50}
+    .nav-sec{font-size:11px;font-family:var(--mono);letter-spacing:.13em;text-transform:uppercase;
+      color:var(--g60);padding:18px 16px 8px}
+    .nav-i{display:flex;align-items:center;gap:12px;height:40px;padding:0 16px;
+      color:var(--g80);font-size:14px;letter-spacing:.16px;border-left:3px solid transparent;
+      cursor:pointer;background:transparent;border-top:0;border-right:0;border-bottom:0;width:100%;
+      text-align:left;transition:background .11s var(--ease-p),color .11s var(--ease-p)}
+    .nav-i svg{flex-shrink:0;opacity:.7}
+    .nav-i:hover{background:var(--g10);color:var(--g100)}
+    .nav-i.on{background:var(--g10);color:var(--g100);font-weight:600;border-left-color:var(--blue-60)}
+    .nav-i.on svg{opacity:1;color:var(--blue-60)}
+    .nav-foot{padding:16px;border-top:1px solid var(--g20);font-size:12px;color:var(--g60);
+      line-height:1.55;margin-top:24px}
+
+    /* ── layout ──────────────────────────────────────────────── */
+    .main{margin-left:var(--nav);padding-top:var(--hdr);min-height:100vh}
+    .page{padding:32px 48px 80px;max-width:1280px;margin-inline:auto}
+
+    /* ── page header ─────────────────────────────────────────── */
+    .ph{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
+      flex-wrap:wrap;margin-bottom:8px}
+    .ph h1{font-size:32px;line-height:1.25;font-weight:300;letter-spacing:0}
+    .ph .sub{font-size:14px;color:var(--g70);margin:6px 0 0}
+    .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+      color:var(--g60);margin-bottom:8px}
+    .ph-rule{height:1px;background:var(--g20);margin:22px 0 26px}
+    .ph-acts{display:flex;gap:8px;align-items:center}
+
+    /* ── tiles ───────────────────────────────────────────────── */
+    .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+      background:var(--g20);border:1px solid var(--g20);margin-bottom:24px}
+    .tile{background:var(--white);padding:20px 20px 18px;min-height:128px;display:flex;flex-direction:column}
+    .tile-k{font-size:12px;letter-spacing:.32px;color:var(--g70);margin-bottom:12px;display:block}
+    .tile-v{font-size:42px;line-height:1;font-weight:300;letter-spacing:-.02em;color:var(--g100);margin-bottom:auto}
+    .tile-v .u{font-size:20px;font-weight:400;color:var(--g60);margin-left:2px}
+    .tile-v.acc{color:var(--blue-60)}
+    .tile-d{font-size:12px;letter-spacing:.32px;color:var(--g60);margin-top:14px}
+    .tile-d .acc{color:var(--green-50);font-weight:600}
+
+    /* ── surfaces ────────────────────────────────────────────── */
+    .surface{background:var(--white);border:1px solid var(--g20)}
+    .surface-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
+      padding:16px 20px;border-bottom:1px solid var(--g20)}
+    .surface-hd h3{font-size:16px;font-weight:600;letter-spacing:.16px}
+    .surface-hd .t-helper{margin:3px 0 0;font-size:12px;letter-spacing:.32px;color:var(--g60)}
+    .surface-bd{padding:20px}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+    /* ── funnel ──────────────────────────────────────────────── */
+    .metric-head{margin-bottom:18px}
+    .metric-no{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.14em;
+      text-transform:uppercase;color:var(--g60);margin-bottom:6px}
+    .metric-name{font-size:20px;font-weight:600;letter-spacing:0}
+    .metric-sub{font-size:13.5px;color:var(--g70);line-height:1.5;margin:6px 0 0}
+    .metric-band{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
+      flex-wrap:wrap;padding:16px 0;border-top:1px solid var(--g20);border-bottom:1px solid var(--g20)}
+    .metric-big{font-size:56px;font-weight:300;line-height:.9;letter-spacing:-.03em}
+    .metric-big .pc{font-size:26px;font-weight:400;color:var(--g60);margin-left:2px}
+    .metric-eq{font-family:var(--mono);font-size:13px;color:var(--blue-60);
+      background:var(--blue-10);padding:4px 10px;white-space:nowrap;margin-bottom:6px}
+    .fn{margin-top:20px}
+    .fn-row{display:flex;align-items:center;gap:16px;padding:5px 0}
+    .fn-lab{width:150px;flex-shrink:0;font-size:14px;color:var(--g80);text-align:right}
+    .fn-track{flex:1;position:relative;height:32px;background:var(--g10)}
+    .fn-bar{position:absolute;left:0;top:0;bottom:0;background:var(--blue-60);
+      transition:width .7s var(--ease);display:flex;align-items:center;
+      justify-content:flex-end;padding-right:10px}
+    .fn-bar.b2{background:var(--blue-50)} .fn-bar.b3{background:var(--blue-40)}
+    .fn-bar.acc{background:var(--g100)} .fn-bar.mut{background:var(--g30)}
+    .fn-bar b{color:#fff;font-family:var(--mono);font-size:12px;font-weight:500}
+    .fn-bar.mut b{color:var(--g70)}
+    .fn-pc{width:52px;flex-shrink:0;font-family:var(--mono);font-size:12px;color:var(--g60)}
+    .fn-drop{display:flex;align-items:flex-start;gap:10px;margin:2px 0 2px 166px;padding:6px 0 8px}
+    .fn-drop-l{width:1px;height:26px;background:var(--g30);flex-shrink:0;margin-left:2px}
+    .fn-drop-t{font-size:12px;letter-spacing:.32px;color:var(--g60);line-height:1.5;padding-top:5px}
+    .fn-drop-t b{color:var(--g80);font-weight:600}
+
+    /* ── stall list ──────────────────────────────────────────── */
+    .stall{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--g20)}
+    .stall:last-child{border-bottom:0}
+    .stall-q{font-family:var(--mono);font-size:12px;color:var(--blue-60);width:28px;flex-shrink:0}
+    .stall-t{flex:1;font-size:13.5px;color:var(--g80)}
+    .stall-bar{width:76px;height:6px;background:var(--g10);flex-shrink:0}
+    .stall-bar i{display:block;height:6px;background:var(--orange-40);transition:width .6s var(--ease)}
+    .stall-n{font-family:var(--mono);font-size:13px;color:var(--g100);font-weight:500;
+      width:32px;text-align:right;flex-shrink:0}
+
+    /* ── industry bars ───────────────────────────────────────── */
+    .ind-row{display:flex;align-items:center;gap:16px;padding:7px 0}
+    .ind-lab{width:180px;flex-shrink:0;font-size:13px;color:var(--g80);text-align:right}
+    .ind-track{flex:1;height:24px;background:var(--g10);position:relative}
+    .ind-bar{position:absolute;left:0;top:0;bottom:0;display:flex;align-items:center;
+      justify-content:flex-end;padding-right:8px;transition:width .7s var(--ease)}
+    .ind-bar b{font-family:var(--mono);font-size:11px;font-weight:500;color:#fff}
+    .ind-pc{width:48px;flex-shrink:0;font-family:var(--mono);font-size:12px;color:var(--g60)}
+
+    /* ── notif ───────────────────────────────────────────────── */
+    .notif{display:flex;gap:14px;padding:14px 16px;border-left:3px solid var(--blue-60);
+      background:var(--blue-10);align-items:flex-start;margin-top:18px}
+    .notif.warn{border-left-color:var(--orange-40);background:var(--orange-10)}
+    .notif svg{flex:0 0 auto;margin-top:1px;color:var(--blue-60)}
+    .notif.warn svg{color:var(--orange-40)}
+    .notif h4{font-size:14px;font-weight:600;margin-bottom:3px}
+    .notif p{font-size:13px;color:var(--g80);line-height:1.5}
+
+    /* ── data-source notice ──────────────────────────────────── */
+    .source-bar{display:flex;align-items:center;gap:10px;padding:10px 14px;
+      background:var(--blue-10);border-left:3px solid var(--blue-40);
+      font-size:12px;color:var(--g70);letter-spacing:.32px;margin-bottom:24px}
+    .source-bar b{color:var(--g100)}
+
+    /* ── trend badge ─────────────────────────────────────────── */
+    .trend{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:11px;
+      padding:2px 6px}
+    .trend.up{color:var(--green-50);background:var(--green-10)}
+    .trend.flat{color:var(--g60);background:var(--g10)}
+
+    /* ── last updated ────────────────────────────────────────── */
+    .last-updated{font-family:var(--mono);font-size:11px;color:var(--g50);
+      letter-spacing:.08em;white-space:nowrap}
+
+    /* ── section page visibility ─────────────────────────────── */
+    .view{display:none} .view.on{display:block}
+
+    /* ── responsive ──────────────────────────────────────────── */
+    @media(max-width:1100px){
+      .tiles{grid-template-columns:repeat(2,1fr)}
+      .grid2{grid-template-columns:1fr}
+      .page{padding:24px 24px 64px}
+    }
+    @media(max-width:820px){
+      :root{--nav:0px}
+      .nav{transform:translateX(-100%);box-shadow:none}
+      .fn-lab{width:96px}.fn-drop{margin-left:112px}
+      .ind-lab{width:120px}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ──────────────────────────────────────────────────── -->
+<header class="hdr">
+  <a class="hdr-name" href="index.html">
+    <svg width="32" height="13" viewBox="0 0 32 13" fill="#fff" aria-label="IBM" role="img">
+      <path d="M0 0h4.9v1.6H0zm0 2.4h4.9V4H0zm0 2.4h4.9v1.6H0zM0 7.2h4.9v1.6H0zm0 2.4h4.9V11H0zm0 2.4h4.9V13H0z"/>
+      <path d="M6.5 4.8h12.2v1.6H6.5zm0-4.8h12.2v1.6H6.5zm0 7.2h12.2v1.6H6.5zm0 2.4h12.2v1.6H6.5zm0 2.4h12.2V13H6.5zM8.1 2.4h9v1.6h-9zm13.8-2.4h4.9v1.6h-4.9zm0 2.4h4.9V4h-4.9zm0 2.4h4.9v1.6h-4.9zm0 2.4h4.9v1.6h-4.9zm0 2.4h4.9v1.6h-4.9zm0 2.4h4.9V13h-4.9z"/>
+    </svg>
+    <span class="sep">/</span>
+    <b>M-GRAT</b>&nbsp;<span style="color:var(--g50)">Analytics</span>
+  </a>
+  <div class="hdr-sp"></div>
+  <div class="hdr-pill">
+    <b>Vercel Analytics</b>
+    <span>source</span>
+  </div>
+</header>
+
+<!-- ── Side nav ────────────────────────────────────────────────── -->
+<nav class="nav" aria-label="Dashboard navigation">
+  <p class="nav-sec">Overview</p>
+  <button class="nav-i on" data-view="funnel">
+    <svg width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M4 2H2v26a2 2 0 002 2h26v-2H4zM30 9l-7 7-6-6-9 9 1.4 1.4L17 12.8l6 6 8.4-8.4z"/></svg>
+    The two metrics
+  </button>
+  <button class="nav-i" data-view="stalls">
+    <svg width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M11 23H5a1 1 0 01-1-1V10a1 1 0 011-1h6a1 1 0 011 1v12a1 1 0 01-1 1zm-5-2h4V11H6zM19 23h-6a1 1 0 01-1-1V6a1 1 0 011-1h6a1 1 0 011 1v16a1 1 0 01-1 1zm-5-2h4V7h-4zM27 23h-6a1 1 0 01-1-1v-8a1 1 0 011-1h6a1 1 0 011 1v8a1 1 0 01-1 1zm-5-2h4v-6h-4z"/></svg>
+    Where people stall
+  </button>
+  <button class="nav-i" data-view="industry">
+    <svg width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M28 28V13.86l-4-2.67V6h-2v4.53L16 7 4 14.93V28H2v2h28v-2zM6 28V16.07l10-6.54 10 6.54V28z"/></svg>
+    By industry
+  </button>
+  <p class="nav-sec">Reference</p>
+  <a class="nav-i" href="index.html" target="_blank">
+    <svg width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M26 28H6a2 2 0 01-2-2V6a2 2 0 012-2h9v2H6v20h20v-9h2v9a2 2 0 01-2 2z"/><path d="M21 2v2h5.59L18 12.58 19.42 14 28 5.41V11h2V2z"/></svg>
+    Open assessment
+  </a>
+  <div class="nav-foot">
+    Data flows from Vercel Analytics via the custom events added to app.js and report.js.
+  </div>
+</nav>
+
+<!-- ── Main ─────────────────────────────────────────────────────── -->
+<main class="main">
+  <div class="page">
+
+    <!-- data source notice -->
+    <div class="source-bar">
+      <svg width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 2A14 14 0 1030 16 14 14 0 0016 2zm0 26a12 12 0 1112-12 12 12 0 01-12 12zm-1-8h2V14h-2zm0-8h2V8h-2z"/></svg>
+      <span>This dashboard reads from <b>Vercel Analytics custom events</b> — assessment_started, assessment_submitted, report_viewed, seller_contact_initiated, assessment_exit, report_feedback. Numbers below show representative demo data until live events arrive.</span>
+      <span class="last-updated" id="last-updated" style="margin-left:auto">—</span>
+    </div>
+
+    <!-- ══ VIEW: The two metrics ══════════════════════════════════ -->
+    <section class="view on" id="view-funnel">
+      <div class="ph">
+        <div>
+          <p class="eyebrow">M-GRAT / Growth Readiness Assessment</p>
+          <h1>The two metrics</h1>
+          <p class="sub">Everything else in the funnel is diagnostic. These two are what we report on.</p>
+        </div>
+        <div class="ph-acts">
+          <span class="trend up" id="trend-comp">
+            <svg width="12" height="12" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 4L6 14l1.4 1.4L15 7.8V28h2V7.8l7.6 7.6L26 14z"/></svg>
+            —
+          </span>
+        </div>
+      </div>
+      <div class="ph-rule"></div>
+
+      <!-- top tiles -->
+      <div class="tiles">
+        <div class="tile">
+          <span class="tile-k">Assessments started</span>
+          <div class="tile-v" id="t-started">—</div>
+          <div class="tile-d">Sessions that passed the splash screen</div>
+        </div>
+        <div class="tile">
+          <span class="tile-k">Completed</span>
+          <div class="tile-v acc" id="t-done">—</div>
+          <div class="tile-d" id="t-done-d">Submitted and reached the report</div>
+        </div>
+        <div class="tile">
+          <span class="tile-k">Seller contact initiated</span>
+          <div class="tile-v" id="t-contact">—</div>
+          <div class="tile-d" id="t-contact-d">Of completions, clicked Talk to a seller</div>
+        </div>
+        <div class="tile">
+          <span class="tile-k">Helpful feedback</span>
+          <div class="tile-v" id="t-helpful">—</div>
+          <div class="tile-d" id="t-helpful-d">Of feedback given, rated yes</div>
+        </div>
+      </div>
+
+      <!-- metric cards -->
+      <div class="grid2" style="align-items:start">
+        <div class="surface">
+          <div class="surface-hd">
+            <div>
+              <div class="metric-no">Metric 01</div>
+              <h3 class="metric-name">Completion rate</h3>
+              <p class="metric-sub">Of everyone who started, how many finished?</p>
+            </div>
+          </div>
+          <div class="surface-bd">
+            <div class="metric-band">
+              <div class="metric-big" id="m1-pct">—<span class="pc">%</span></div>
+              <span class="metric-eq">Completed ÷ Started</span>
+            </div>
+            <div class="fn" id="fn-completion">
+              <!-- rendered by JS -->
+            </div>
+          </div>
+        </div>
+
+        <div class="surface">
+          <div class="surface-hd">
+            <div>
+              <div class="metric-no">Metric 02</div>
+              <h3 class="metric-name">Follow-up rate</h3>
+              <p class="metric-sub">Of everyone who completed it, how many reached out?</p>
+            </div>
+          </div>
+          <div class="surface-bd">
+            <div class="metric-band">
+              <div class="metric-big" id="m2-pct">—<span class="pc">%</span></div>
+              <span class="metric-eq">Seller contact ÷ Completed</span>
+            </div>
+            <div class="fn" id="fn-followup">
+              <!-- rendered by JS -->
+            </div>
+            <div style="border-top:1px solid var(--g20);margin-top:18px;padding-top:18px">
+              <p style="font-size:13.5px;color:var(--g80);margin-bottom:10px;line-height:1.6">
+                <b>A high rate</b> says the report gave them something worth a conversation.
+              </p>
+              <p style="font-size:13.5px;color:var(--g80);line-height:1.6">
+                <b>A low rate</b> says they already have a workflow doing this, or the report did not answer what they needed.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- exits notice -->
+      <div class="notif warn" id="exit-notif" style="display:none">
+        <svg width="18" height="18" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 2a14 14 0 1014 14A14 14 0 0016 2zm-1 8h2v11h-2zm1 17a1.5 1.5 0 111.5-1.5A1.5 1.5 0 0116 27z"/></svg>
+        <div>
+          <h4 id="exit-notif-title">Exits detected</h4>
+          <p id="exit-notif-body">People are leaving before finishing. See the stall view for which page loses the most people.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ VIEW: Where people stall ═══════════════════════════════ -->
+    <section class="view" id="view-stalls">
+      <div class="ph">
+        <div>
+          <p class="eyebrow">Diagnostic</p>
+          <h1>Where people stall</h1>
+          <p class="sub">Ranked by page exits. Closed-tab counts come from the assessment_exit event trail.</p>
+        </div>
+      </div>
+      <div class="ph-rule"></div>
+
+      <div class="grid2" style="align-items:start">
+        <div class="surface">
+          <div class="surface-hd">
+            <div>
+              <h3>Exit by assessment page</h3>
+              <p class="t-helper">Page number recorded at the moment the tab was closed or the user navigated away</p>
+            </div>
+          </div>
+          <div class="surface-bd" id="stall-list">
+            <!-- rendered by JS -->
+          </div>
+        </div>
+
+        <div class="surface">
+          <div class="surface-hd">
+            <div>
+              <h3>What this tells you</h3>
+              <p class="t-helper">Reading the stall data correctly</p>
+            </div>
+          </div>
+          <div class="surface-bd">
+            <div style="display:flex;flex-direction:column;gap:18px">
+              <div>
+                <p style="font-size:13px;font-weight:600;margin-bottom:4px">An early stall (page 1–2)</p>
+                <p style="font-size:13px;color:var(--g70);line-height:1.6">Usually a framing problem. The customer did not understand why the question mattered. Rewrite the section intro, not the question.</p>
+              </div>
+              <div>
+                <p style="font-size:13px;font-weight:600;margin-bottom:4px">A late stall (page 4+)</p>
+                <p style="font-size:13px;color:var(--g70);line-height:1.6">Usually a detail problem. The question needs knowledge they do not have to hand. Consider adding a "skip for now" path.</p>
+              </div>
+              <div>
+                <p style="font-size:13px;font-weight:600;margin-bottom:4px">One page dominates the exits</p>
+                <p style="font-size:13px;color:var(--g70);line-height:1.6">Editorial fix, not an analytics one. If ≥ 40% of exits happen on one page, the content on that page is the problem.</p>
+              </div>
+              <div id="stall-top-notif"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ VIEW: By industry ═══════════════════════════════════════ -->
+    <section class="view" id="view-industry">
+      <div class="ph">
+        <div>
+          <p class="eyebrow">Segment read</p>
+          <h1>Completion by industry</h1>
+          <p class="sub">Which segments are actually engaging with the assessment.</p>
+        </div>
+      </div>
+      <div class="ph-rule"></div>
+
+      <div class="grid2" style="align-items:start">
+        <div class="surface">
+          <div class="surface-hd">
+            <div>
+              <h3>Industry breakdown</h3>
+              <p class="t-helper">Completions ÷ starts per industry. Requires __contact_industry to be collected on the session details page.</p>
+            </div>
+          </div>
+          <div class="surface-bd" id="industry-list">
+            <!-- rendered by JS -->
+          </div>
+        </div>
+
+        <div class="surface">
+          <div class="surface-hd"><div><h3>Maturity score distribution</h3><p class="t-helper">Where completed assessments are landing on the 0–100 scale</p></div></div>
+          <div class="surface-bd" id="score-dist">
+            <!-- rendered by JS -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /page -->
+</main>
+
+<script type="module">
+/* ----------------------------------------------------------------
+   DEMO DATA
+   Replace the objects below with real Vercel Analytics API calls
+   once you wire up the API token. The shape matches the events
+   added to app.js and report.js exactly.
+   ---------------------------------------------------------------- */
+const DEMO = {
+  started:   63,
+  submitted: 31,
+  reportViewed: 29,
+  sellerContact: 14,
+  feedbackYes: 9,
+  feedbackNo:  4,
+  exitsByPage: [
+    { page: 1, label: "Goals & objectives",          n: 3 },
+    { page: 2, label: "Maintenance operations",      n: 8 },
+    { page: 3, label: "Field service",               n: 5 },
+    { page: 4, label: "Asset performance management",n: 11 },
+    { page: 5, label: "Maximo usage",                n: 4 },
+    { page: 6, label: "Growth appetite",             n: 2 },
+  ],
+  byIndustry: [
+    { industry: "Utilities & Energy",      started: 18, done: 9  },
+    { industry: "Manufacturing",           started: 14, done: 5  },
+    { industry: "Transportation & Logistics", started: 11, done: 4 },
+    { industry: "Oil & Gas / Petrochemical",  started: 9,  done: 4 },
+    { industry: "Mining & Metals",         started: 7,  done: 3  },
+    { industry: "Other / Not specified",   started: 4,  done: 6  },
+  ],
+  scoreDistribution: [
+    { range: "0–19",   n: 2  },
+    { range: "20–39",  n: 6  },
+    { range: "40–59",  n: 12 },
+    { range: "60–79",  n: 8  },
+    { range: "80–100", n: 3  },
+  ],
+  updatedAt: new Date().toISOString(),
+};
+
+/* ----------------------------------------------------------------
+   HELPERS
+   ---------------------------------------------------------------- */
+const pc = (a, b) => (b ? Math.round((a / b) * 100) : 0);
+const $ = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+
+function fnRow(label, n, base, cls, pct) {
+  const w = Math.max(2, Math.round((n / (base || 1)) * 100));
+  return `<div class="fn-row">
+    <span class="fn-lab">${label}</span>
+    <div class="fn-track"><div class="fn-bar ${cls||''}" style="width:${w}%"><b>${n}</b></div></div>
+    <span class="fn-pc">${pct != null ? pct + '%' : ''}</span>
+  </div>`;
+}
+
+function fnDrop(html) {
+  return `<div class="fn-drop"><span class="fn-drop-l"></span><span class="fn-drop-t">${html}</span></div>`;
+}
+
+/* ----------------------------------------------------------------
+   RENDER
+   ---------------------------------------------------------------- */
+function render(d) {
+  const compRate = pc(d.submitted, d.started);
+  const followRate = pc(d.sellerContact, d.submitted);
+  const feedbackTotal = d.feedbackYes + d.feedbackNo;
+  const helpfulRate = pc(d.feedbackYes, feedbackTotal);
+  const exits = d.exitsByPage.reduce((s, p) => s + p.n, 0);
+  const topExit = d.exitsByPage.sort((a,b) => b.n - a.n)[0];
+
+  // Top tiles
+  $('#t-started').textContent = d.started;
+  $('#t-done').textContent = d.submitted;
+  $('#t-done-d').textContent = `${compRate}% completion rate`;
+  $('#t-contact').textContent = d.sellerContact;
+  $('#t-contact-d').textContent = feedbackTotal
+    ? `${followRate}% of completions`
+    : 'Of completions, clicked Talk to a seller';
+  $('#t-helpful').textContent = d.feedbackYes;
+  $('#t-helpful-d').textContent = feedbackTotal
+    ? `${helpfulRate}% of ${feedbackTotal} responses`
+    : 'No feedback received yet';
+
+  // Metric 01 number
+  const m1 = $('#m1-pct');
+  m1.innerHTML = `${compRate}<span class="pc">%</span>`;
+
+  // Metric 01 funnel
+  const notStarted = d.started - d.submitted;
+  let fnHtml = fnRow('Started', d.started, d.started, '', 100);
+  if (notStarted > 0) fnHtml += fnDrop(`<b>${notStarted} did not finish</b>: exited before submitting`);
+  fnHtml += fnRow('Submitted', d.submitted, d.started, 'b2', compRate);
+  fnHtml += fnRow('Report viewed', d.reportViewed, d.started, 'b3', pc(d.reportViewed, d.started));
+  fnHtml += fnRow('Seller contact', d.sellerContact, d.started, 'acc', pc(d.sellerContact, d.started));
+  $('#fn-completion').innerHTML = fnHtml;
+
+  // Metric 02 number
+  const m2 = $('#m2-pct');
+  m2.innerHTML = `${followRate}<span class="pc">%</span>`;
+
+  // Metric 02 funnel
+  let fn2Html = fnRow('Completed', d.submitted, d.submitted, 'b2', 100);
+  fn2Html += fnRow('Seller contact', d.sellerContact, d.submitted, 'b3', followRate);
+  fn2Html += fnRow('Helpful feedback', d.feedbackYes, d.submitted, 'acc', pc(d.feedbackYes, d.submitted));
+  fn2Html += fnRow('Sales', 0, d.submitted, 'mut', null);
+  fn2Html += fnDrop('Sales attribution arrives with the sales system integration: <b>not instrumented yet</b>');
+  $('#fn-followup').innerHTML = fn2Html;
+
+  // Exit notif
+  if (exits > 0 && topExit) {
+    const topShare = pc(topExit.n, exits);
+    const notif = $('#exit-notif');
+    notif.style.display = 'flex';
+    if (topShare >= 35) {
+      $('#exit-notif-title').textContent = `One page is ${topShare}% of all exits`;
+      $('#exit-notif-body').textContent =
+        `Page ${topExit.page} (${topExit.label}) is where most people leave. That is an editorial fix.`;
+    }
+  }
+
+  // Trend badge
+  const trend = $('#trend-comp');
+  trend.textContent = compRate + '%';
+  trend.className = 'trend ' + (compRate >= 45 ? 'up' : 'flat');
+
+  // ── Stalls ──
+  const maxN = topExit ? topExit.n : 1;
+  const sortedExits = [...d.exitsByPage].sort((a,b) => b.n - a.n);
+  let stallHtml = '';
+  if (!sortedExits.length) {
+    stallHtml = '<p style="font-size:13px;color:var(--g60)">No exit events received yet.</p>';
+  } else {
+    sortedExits.forEach((s, i) => {
+      const w = Math.round((s.n / maxN) * 100);
+      stallHtml += `<div class="stall">
+        <span class="stall-q">${String(i+1).padStart(2,'0')}</span>
+        <span class="stall-t">Page ${s.page} — ${s.label}</span>
+        <span class="stall-bar"><i style="width:${w}%"></i></span>
+        <span class="stall-n">${s.n}</span>
+      </div>`;
+    });
+  }
+  $('#stall-list').innerHTML = stallHtml;
+
+  // Stall top notif
+  if (topExit && exits > 0) {
+    const pct = pc(topExit.n, exits);
+    if (pct >= 35) {
+      $('#stall-top-notif').innerHTML = `<div class="notif warn">
+        <svg width="18" height="18" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 2a14 14 0 1014 14A14 14 0 0016 2zm-1 8h2v11h-2zm1 17a1.5 1.5 0 111.5-1.5A1.5 1.5 0 0116 27z"/></svg>
+        <div>
+          <h4>Page ${topExit.page} is ${pct}% of all exits</h4>
+          <p>${topExit.n} of ${exits} people leave on "${topExit.label}". Edit the content on that page, not the analytics.</p>
+        </div>
+      </div>`;
+    }
+  }
+
+  // ── Industry ──
+  const maxInd = Math.max(...d.byIndustry.map(r => r.started), 1);
+  let indHtml = '';
+  if (!d.byIndustry.length) {
+    indHtml = '<p style="font-size:13px;color:var(--g60)">No industry data yet. The __contact_industry field needs to be added to the session details page.</p>';
+  } else {
+    d.byIndustry.forEach(r => {
+      const rate = pc(r.done, r.started);
+      const col = rate >= 45 ? '#0f62fe' : rate >= 35 ? '#4589ff' : '#78a9ff';
+      const w = Math.max(2, rate);
+      indHtml += `<div class="ind-row">
+        <span class="ind-lab">${r.industry}</span>
+        <div class="ind-track"><div class="ind-bar" style="width:${w}%;background:${col}">
+          <b>${rate}%</b>
+        </div></div>
+        <span class="ind-pc">${r.done}/${r.started}</span>
+      </div>`;
+    });
+  }
+  $('#industry-list').innerHTML = indHtml;
+
+  // Score distribution bars
+  const maxScore = Math.max(...d.scoreDistribution.map(b => b.n), 1);
+  let scoreHtml = '';
+  d.scoreDistribution.forEach(b => {
+    const w = Math.max(2, Math.round((b.n / maxScore) * 100));
+    scoreHtml += `<div class="ind-row">
+      <span class="ind-lab" style="width:80px;font-family:var(--mono);font-size:12px">${b.range}</span>
+      <div class="ind-track"><div class="ind-bar" style="width:${w}%;background:var(--blue-60)">
+        <b>${b.n}</b>
+      </div></div>
+      <span class="ind-pc"></span>
+    </div>`;
+  });
+  scoreHtml += `<p style="font-size:12px;color:var(--g60);margin-top:14px;letter-spacing:.32px;line-height:1.5">
+    Score distribution from <code>maturity_score</code> property on the <code>report_viewed</code> event.
+  </p>`;
+  $('#score-dist').innerHTML = scoreHtml;
+
+  // Last updated
+  const dt = new Date(d.updatedAt);
+  $('#last-updated').textContent = 'Demo data · ' + dt.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+}
+
+/* ----------------------------------------------------------------
+   NAV SWITCHING
+   ---------------------------------------------------------------- */
+function switchView(name) {
+  $$('.view').forEach(v => v.classList.remove('on'));
+  $$('.nav-i[data-view]').forEach(b => b.classList.remove('on'));
+  const v = $(`#view-${name}`);
+  const b = $(`.nav-i[data-view="${name}"]`);
+  if (v) v.classList.add('on');
+  if (b) b.classList.add('on');
+}
+
+$$('.nav-i[data-view]').forEach(btn => {
+  btn.addEventListener('click', () => switchView(btn.dataset.view));
+});
+
+/* ----------------------------------------------------------------
+   BOOT
+   ---------------------------------------------------------------- */
+render(DEMO);
+</script>
+</body>
+</html>
