@@ -599,6 +599,11 @@ function renderExpansionCard(containerId, track, trackResult) {
       <p class="expansion-value__text">${escHtml(targetStageData.description)}</p>
     </div>
 
+    ${targetStageData.readinessText ? `<div class="expansion-value">
+      <p class="expansion-value__label">Are you ready?</p>
+      <p class="expansion-value__text">${escHtml(targetStageData.readinessText)}</p>
+    </div>` : ""}
+
     <div class="potential-outcomes">
       <p class="potential-outcomes__label">Potential outcomes</p>
       <div class="potential-outcomes__items">${outcomesHtml}</div>

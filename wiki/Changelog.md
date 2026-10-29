@@ -4,6 +4,20 @@ A high-level record of what changed in M-GRAT and when. This focuses on what sel
 
 ---
 
+## Week of 23–29 Oct 2026
+
+### ✦ New capabilities
+- **"Are you ready?" on the report's stage card** — The target-stage card on the report now shows a short readiness statement for each stage, sourced from the "Are you ready" column in the Milestone Register.
+
+### ◎ Changed behaviour
+- **Updated FSM readiness wording** — The FSM Stage 2–5 "Are you ready" statements were rewritten in the Milestone Register. They now describe each stage's capability, for example "Centralized schedule coordination and field dispatch…". The Opportunity paths page and its PDF show the new wording.
+
+### ⚑ Infrastructure
+- **Fixed readiness text not reaching the report data** — The report data build read a column that no longer exists, so every stage's readiness text came out empty. It now reads "Are you ready", and all 10 APM and FSM stages carry their text.
+- **Regenerated the self-serve bundle and docs** — The self-serve HTML, the docs copy, and the embedded Opportunity paths data in `docs/index.html` were rebuilt from the updated register.
+
+---
+
 ## Week of 9–15 Oct 2026
 
 ### ✦ New capabilities

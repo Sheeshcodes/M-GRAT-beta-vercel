@@ -6010,12 +6010,33 @@ html:has(body.share-modal-open) {
         <svg class="mobile-nav__icon mobile-nav__icon--close" viewBox="0 0 32 32" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M17.4141 16 24 9.4141 22.5859 8 16 14.5859 9.4143 8 8 9.4141 14.5859 16 8 22.5859 9.4143 24 16 17.4141 22.5859 24 24 22.5859 17.4141 16z"/></svg>
       </button>
       <p class="mobile-nav__title" id="mobile-nav-title">Your operational profile</p>
+      <!-- Comparison view config button — shown only when split view is active -->
+      <button
+        type="button"
+        class="mobile-nav__compare-config"
+        id="compare-config-btn"
+        aria-label="Configure comparison view"
+        aria-expanded="false"
+        aria-controls="compare-config-panel"
+        hidden
+      >
+        <!-- Sliders / settings icon -->
+        <svg viewBox="0 0 32 32" width="20" height="20" fill="currentColor" aria-hidden="true">
+          <path d="M30 9H16.73A5 5 0 007.27 9H2v2h5.27a5 5 0 009.46 0H30zM12 12a3 3 0 113-3 3 3 0 01-3 3zM30 21h-5.27a5 5 0 00-9.46 0H2v2h13.27a5 5 0 009.46 0H30zM20 24a3 3 0 113-3 3 3 0 01-3 3z"/>
+        </svg>
+      </button>
     </div>
 
     <div class="mobile-nav__panel" id="mobile-nav-panel" hidden>
       <ul class="mobile-nav__list">
         <li><a class="mobile-nav__item mobile-nav__item--active" href="#act-today" data-section="act-today">Your operational profile</a></li>
         <li><a class="mobile-nav__item" href="#act-roi" data-section="act-roi">Paths to greater value</a></li>
+        <li>
+          <button type="button" class="mobile-nav__item mobile-nav__item--compare" id="mobile-compare-toggle" data-autotrack-id="report__btn--open-comparison-view">
+            Opportunity paths
+            <svg class="mobile-nav__compare-badge" viewBox="0 0 32 32" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M16 2a14 14 0 1014 14A14 14 0 0016 2zm1 21h-2v-9h2zm0-12h-2v-2h2z"/></svg>
+          </button>
+        </li>
         <li><a class="mobile-nav__item" href="#act-plan" data-section="act-plan">Highest-value next step</a></li>
         <li><a class="mobile-nav__item" href="#act-resources" data-section="act-resources">Additional resources</a></li>
         <li><a class="mobile-nav__item" href="#act-improve" data-section="act-improve">Help us improve</a></li>
@@ -6248,6 +6269,107 @@ html:has(body.share-modal-open) {
       <button class="share-modal__btn share-modal__btn--cancel" id="share-modal-cancel" data-autotrack-id="report__btn--share-modal-cancel">Cancel</button>
       <button class="share-modal__btn share-modal__btn--send" id="share-modal-send" data-autotrack-id="report__btn--share-modal-send">Send report</button>
     </div>
+  </div>
+</div>
+
+
+<!-- =====================================================================
+     Mobile Comparison View overlay — hidden on desktop via CSS
+     ===================================================================== -->
+<div
+  class="compare-view"
+  id="compare-view"
+  role="region"
+  aria-label="Comparison view"
+  hidden
+>
+  <!-- Sticky info header (below the nav bar) -->
+  <div class="compare-view__info-bar" id="compare-info-bar">
+    <span class="compare-view__label">Comparison view</span>
+    <span class="compare-view__subtitle" id="compare-subtitle">Field Service Management (FSM)</span>
+  </div>
+
+  <!-- Top pane -->
+  <div class="compare-view__pane compare-view__pane--top" id="compare-pane-top">
+    <div class="compare-view__pane-header" id="compare-pane-top-header">
+      <span class="compare-view__pane-num" id="compare-pane-top-num">Stage 1</span>
+      <span class="compare-view__pane-name" id="compare-pane-top-name">Reactive execution</span>
+    </div>
+    <div class="compare-view__pane-scroll" id="compare-pane-top-scroll">
+      <!-- populated by JS -->
+    </div>
+  </div>
+
+  <!-- Pane divider -->
+  <div class="compare-view__divider" aria-hidden="true"></div>
+
+  <!-- Bottom pane -->
+  <div class="compare-view__pane compare-view__pane--bottom" id="compare-pane-bottom">
+    <div class="compare-view__pane-header" id="compare-pane-bottom-header">
+      <span class="compare-view__pane-num" id="compare-pane-bottom-num">Stage 2</span>
+      <span class="compare-view__pane-name" id="compare-pane-bottom-name">Managed response</span>
+    </div>
+    <div class="compare-view__pane-scroll" id="compare-pane-bottom-scroll">
+      <!-- populated by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- Configure comparison panel — slides up from bottom of nav bar -->
+<div
+  class="compare-config-panel"
+  id="compare-config-panel"
+  role="dialog"
+  aria-modal="false"
+  aria-label="Comparison view settings"
+  hidden
+>
+  <div class="compare-config-panel__inner">
+    <div class="compare-config-panel__heading-group">
+      <p class="compare-config-panel__heading">Comparison view</p>
+      <p class="compare-config-panel__sub">Settings</p>
+    </div>
+
+    <!-- Track selector -->
+    <div class="compare-config-panel__field">
+      <label class="compare-config-panel__label" for="compare-track-select">Compare</label>
+      <div class="compare-config-panel__select-wrap">
+        <select class="compare-config-panel__select" id="compare-track-select">
+          <option value="fsm">Field Service Management (FSM)</option>
+          <option value="apm">Asset Performance Management (APM)</option>
+        </select>
+        <svg class="compare-config-panel__chevron" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M16 22L6 12l1.4-1.4 8.6 8.6 8.6-8.6L26 12z"/></svg>
+      </div>
+    </div>
+
+    <!-- Stage A selector -->
+    <div class="compare-config-panel__field">
+      <label class="compare-config-panel__label" for="compare-stage-a-select">Stage (top pane)</label>
+      <div class="compare-config-panel__select-wrap">
+        <select class="compare-config-panel__select" id="compare-stage-a-select">
+          <!-- options injected by JS -->
+        </select>
+        <svg class="compare-config-panel__chevron" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M16 22L6 12l1.4-1.4 8.6 8.6 8.6-8.6L26 12z"/></svg>
+      </div>
+    </div>
+
+    <p class="compare-config-panel__to">to</p>
+
+    <!-- Stage B selector -->
+    <div class="compare-config-panel__field">
+      <label class="compare-config-panel__label" for="compare-stage-b-select">Stage (bottom pane)</label>
+      <div class="compare-config-panel__select-wrap">
+        <select class="compare-config-panel__select" id="compare-stage-b-select">
+          <!-- options injected by JS -->
+        </select>
+        <svg class="compare-config-panel__chevron" viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M16 22L6 12l1.4-1.4 8.6 8.6 8.6-8.6L26 12z"/></svg>
+      </div>
+    </div>
+
+    <button type="button" class="compare-config-panel__done" id="compare-config-done">
+      Done
+      <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M13 24L4 15l1.41-1.41L13 21.17l13.59-13.59L28 9 13 24z"/></svg>
+    </button>
   </div>
 </div>
 </div><!-- /#view-report -->
@@ -10004,7 +10126,7 @@ const reportData = {
       "name": "Digital Maintenance Foundation",
       "description": "Good Asset Management Practices (GAMP) — Know your assets before you can manage them. ISO 14224-aligned asset hierarchy, criticality scoring, maturing work management, mobility enablement, and condition monitoring established.",
       "valueStatement": "This is the foundation everything else is built on. Clean, criticality-scored asset data gives you a single source of truth for work order linkage, failure mode mapping, and future analytics. Structured failure data and reliable work management data become the raw material that FMEA, Reliability Strategies, and health scoring all depend on later — skip this, and every capability above Stage 1 inherits the gap. Mobility closes the paper lag, and condition monitoring gets your team acting on asset signals for the first time, without needing IoT investment yet.",
-      "readinessText": null,
+      "readinessText": "You have an ISO 14224-aligned asset hierarchy, criticality scoring, maturing work management, mobility, and initial condition monitoring in place.",
       "potentialOutcomes": [
         {
           "stat": "10–15%",
@@ -10059,7 +10181,7 @@ const reportData = {
       "name": "APM Foundation",
       "description": "Build the foundational APM data loop — strategy, scores, and condition visibility. Reliability Strategies activated, foundational health scores enabled for critical assets, Monitor exploration with existing data sources begins.",
       "valueStatement": "Maintenance starts being driven by evidence instead of habit. Reliability Strategies tie every work order to a documented failure mode, not just a fixed interval. A foundational health score gives you one number to judge asset condition instead of checking multiple sources separately. And exploring Monitor with data you already have lets you experience real dashboards — a low-risk way to build momentum before committing to full instrumentation.",
-      "readinessText": null,
+      "readinessText": "Reliability Strategies are activated, foundational health scores are live for critical assets, and Monitor exploration is underway.",
       "potentialOutcomes": [
         {
           "stat": "15–20%",
@@ -10118,7 +10240,7 @@ const reportData = {
       "name": "Maintenance Optimisation (CBM+)",
       "description": "Make every maintenance decision evidence-driven. OT/IoT fully integrated, multivariable health scoring live, FMEA operationalised, PM cycles optimised, workforce scheduling risk-driven, AIP exploration begins.",
       "valueStatement": "This is where Maximo stops just running maintenance and starts predicting it. FMEA gives every PM strategy a documented failure-mode rationale instead of an OEM default. Full OT/IoT integration and multivariable health scoring eliminate the blind spots between PM windows, replacing calendar guesses with real-time visibility. PM intervals, technician scheduling, capital planning, and inventory all start reacting to that visibility instead of fixed assumptions — the whole operation becomes condition-driven, not just individual capabilities.",
-      "readinessText": null,
+      "readinessText": "OT/IoT is fully integrated, multivariable health scoring is live, FMEA is operationalised, and PM cycles are condition-optimised.",
       "potentialOutcomes": [
         {
           "stat": "20–30%",
@@ -10177,7 +10299,7 @@ const reportData = {
       "name": "Prescriptive Reliability",
       "description": "Know when assets will fail before they do. Quantify risk, prescribe action, prevent failure. Risk Scenario Engine (RSE) live, RCBF standard practice, AIP Foundation active connecting failure evidence to capital planning.",
       "valueStatement": "Maintenance shifts from reactive to prescriptive. RSE doesn't just score current condition — it simulates how degradation will evolve and tells your team what to do about it: inspect, defer, advance the PM, or adjust the strategy. RCBF turns every investigation into a model improvement, so the system gets smarter with each intervention instead of repeating the same fire drills. And capital planning stops assuming and starts reflecting real, continuously-updated asset condition — reducing both premature replacement and unexpected failure-driven spend.",
-      "readinessText": null,
+      "readinessText": "The Risk Scenario Engine is live, RCBF is standard practice, and AIP Foundation connects failure evidence to capital planning.",
       "potentialOutcomes": [
         {
           "stat": "Up to 47%",
@@ -10236,7 +10358,7 @@ const reportData = {
       "name": "Reliability Enterprise",
       "description": "Embed reliability into every asset decision — forever. FMEA governance continuous, RSE models maturing from evidence, AIP fully operational, lean inventory, design-for-reliability loop closed.",
       "valueStatement": "Reliability becomes a compounding, self-improving system instead of a set of one-time projects. FMEA is reviewed on a continuous cycle, refined by real RSE evidence rather than reopened once and forgotten. Inventory strategy shifts from stocking against fear to stocking against actual predicted risk. And the loop closes all the way back to procurement — every failure investigated in operations informs the next asset you buy, so reliability gets designed in before an asset ever enters service, not fixed after the fact. This is the difference between managing failures and preventing them.",
-      "readinessText": null,
+      "readinessText": "FMEA governance is continuous, RSE models are maturing from evidence, AIP is fully operational, lean inventory is active, and the design-for-reliability loop is closed.",
       "potentialOutcomes": [
         {
           "stat": "10–15%",
@@ -10297,7 +10419,7 @@ const reportData = {
       "name": "Reactive Execution",
       "description": "The organization operates in a reactive mode: work is logged but not systematically planned or dispatched. The data foundation for FSM is being established — labor records, craft classifications, calendar/shift definitions, and basic job plan templates. Scheduled dates on work orders and the ownership-vs-assignment distinction are the defining Level 1 signals.",
       "valueStatement": "Establishes baseline scheduling discipline and digital labor records — moving away from unstructured verbal dispatch to formal scheduled dates and distinct work assignments in Maximo Manage.",
-      "readinessText": null,
+      "readinessText": "Labour records, craft classifications, calendar/shift definitions, and basic job plan templates are established. Work orders carry scheduled dates.",
       "potentialOutcomes": [
         {
           "stat": "Elimination",
@@ -10341,7 +10463,7 @@ const reportData = {
       "name": "Coordinated Operations",
       "description": "Work orders carry scheduled dates and a forward planning horizon is established (weekly to monthly). A centralized scheduler or dispatcher role is active and using Assignment Manager. Workforce availability data is enriched with exceptions. Job plans are enriched with materials, tools, and classifications. HSE, Inspections, and Inventory management enter at this stage as parallel capability layers.",
       "valueStatement": "Centralizes schedule coordination and field dispatch — providing single-pane visibility across labor and crew capacity, extending forward planning horizons, and deploying mobile work execution to eliminate paper delays.",
-      "readinessText": null,
+      "readinessText": "Centralized schedule coordination and field dispatch — single-pane visibility across labor and crew capacity, extended planning horizons, and mobile work execution that eliminates paper delays.",
       "potentialOutcomes": [
         {
           "stat": "10–15%",
@@ -10391,7 +10513,7 @@ const reportData = {
       "name": "Structured Scheduling",
       "description": "Forward planning extends to rolling windows with predecessor and hierarchy constraints. System-suggested dispatch based on effective availability is active. Job plans are scoped to asset classes, include hierarchies and predecessors, and are linked to asset data. Inspection results feed condition data and inventory is planned against work requirements.",
       "valueStatement": "Optimizes crew productivity and work preparation — enriching job plans with planned materials and tool requirements, sequencing work by dependencies, and routing technicians by geographic proximity.",
-      "readinessText": null,
+      "readinessText": "Optimized crew productivity and work preparation — enriching job plans with planned materials and tools, sequencing work by dependencies, and routing technicians by geographic proximity.",
       "potentialOutcomes": [
         {
           "stat": "15–25%",
@@ -10446,7 +10568,7 @@ const reportData = {
       "name": "Intelligent Field Coordination",
       "description": "The Optimizer runs automatically via cron-based scheduling. Assignments are system-generated based on constraints, skills, and optimized availability. Planning, Scheduling, and Dispatch dashboards are live with cost, resource, and compliance views. Condition-based inspection and optimized inventory management are active.",
       "valueStatement": "Automates schedule optimization and exception handling — using constraint-based algorithms to match technicians by skill and location, dynamically inject emergency break-in work, and integrate storeroom inventory at the point of work.",
-      "readinessText": null,
+      "readinessText": "Automated schedule optimization and exception handling — constraint-based algorithms match technicians by skill and location, inject emergency break-in work, and integrate storeroom inventory at the point of work.",
       "potentialOutcomes": [
         {
           "stat": "≥80%",
@@ -10506,7 +10628,7 @@ const reportData = {
       "name": "Optimized Field Operations",
       "description": "The Optimizer operates fully autonomously for routine scheduling and dispatch. Humans are approvers and exception handlers only. Strategic inventory, AIP-connected job plans, and GenAI-assisted work execution complete the full FSM maturity picture.",
       "valueStatement": "Achieves autonomous, end-to-end field workforce execution — leveraging automated cron-based optimization, GenAI point-of-work troubleshooting, and real-time field actuals to drive continuous schedule refinement.",
-      "readinessText": null,
+      "readinessText": "Achieved autonomous, end-to-end field workforce execution — automated cron-based optimization, GenAI point-of-work troubleshooting, and real-time field actuals driving continuous schedule refinement.",
       "potentialOutcomes": [
         {
           "stat": "Up to 26%",
@@ -11565,7 +11687,7 @@ const journey = {
       "name": "Digital Maintenance Foundation",
       "description": "Good Asset Management Practices (GAMP) — Know your assets before you can manage them. ISO 14224-aligned asset hierarchy, criticality scoring, maturing work management, mobility enablement, and condition monitoring established.",
       "valueStatement": "This is the foundation everything else is built on. Clean, criticality-scored asset data gives you a single source of truth for work order linkage, failure mode mapping, and future analytics. Structured failure data and reliable work management data become the raw material that FMEA, Reliability Strategies, and health scoring all depend on later — skip this, and every capability above Stage 1 inherits the gap. Mobility closes the paper lag, and condition monitoring gets your team acting on asset signals for the first time, without needing IoT investment yet.",
-      "readinessText": null,
+      "readinessText": "You have an ISO 14224-aligned asset hierarchy, criticality scoring, maturing work management, mobility, and initial condition monitoring in place.",
       "potentialOutcomes": [
         {
           "stat": "10–15%",
@@ -11620,7 +11742,7 @@ const journey = {
       "name": "APM Foundation",
       "description": "Build the foundational APM data loop — strategy, scores, and condition visibility. Reliability Strategies activated, foundational health scores enabled for critical assets, Monitor exploration with existing data sources begins.",
       "valueStatement": "Maintenance starts being driven by evidence instead of habit. Reliability Strategies tie every work order to a documented failure mode, not just a fixed interval. A foundational health score gives you one number to judge asset condition instead of checking multiple sources separately. And exploring Monitor with data you already have lets you experience real dashboards — a low-risk way to build momentum before committing to full instrumentation.",
-      "readinessText": null,
+      "readinessText": "Reliability Strategies are activated, foundational health scores are live for critical assets, and Monitor exploration is underway.",
       "potentialOutcomes": [
         {
           "stat": "15–20%",
@@ -11679,7 +11801,7 @@ const journey = {
       "name": "Maintenance Optimisation (CBM+)",
       "description": "Make every maintenance decision evidence-driven. OT/IoT fully integrated, multivariable health scoring live, FMEA operationalised, PM cycles optimised, workforce scheduling risk-driven, AIP exploration begins.",
       "valueStatement": "This is where Maximo stops just running maintenance and starts predicting it. FMEA gives every PM strategy a documented failure-mode rationale instead of an OEM default. Full OT/IoT integration and multivariable health scoring eliminate the blind spots between PM windows, replacing calendar guesses with real-time visibility. PM intervals, technician scheduling, capital planning, and inventory all start reacting to that visibility instead of fixed assumptions — the whole operation becomes condition-driven, not just individual capabilities.",
-      "readinessText": null,
+      "readinessText": "OT/IoT is fully integrated, multivariable health scoring is live, FMEA is operationalised, and PM cycles are condition-optimised.",
       "potentialOutcomes": [
         {
           "stat": "20–30%",
@@ -11738,7 +11860,7 @@ const journey = {
       "name": "Prescriptive Reliability",
       "description": "Know when assets will fail before they do. Quantify risk, prescribe action, prevent failure. Risk Scenario Engine (RSE) live, RCBF standard practice, AIP Foundation active connecting failure evidence to capital planning.",
       "valueStatement": "Maintenance shifts from reactive to prescriptive. RSE doesn't just score current condition — it simulates how degradation will evolve and tells your team what to do about it: inspect, defer, advance the PM, or adjust the strategy. RCBF turns every investigation into a model improvement, so the system gets smarter with each intervention instead of repeating the same fire drills. And capital planning stops assuming and starts reflecting real, continuously-updated asset condition — reducing both premature replacement and unexpected failure-driven spend.",
-      "readinessText": null,
+      "readinessText": "The Risk Scenario Engine is live, RCBF is standard practice, and AIP Foundation connects failure evidence to capital planning.",
       "potentialOutcomes": [
         {
           "stat": "Up to 47%",
@@ -11797,7 +11919,7 @@ const journey = {
       "name": "Reliability Enterprise",
       "description": "Embed reliability into every asset decision — forever. FMEA governance continuous, RSE models maturing from evidence, AIP fully operational, lean inventory, design-for-reliability loop closed.",
       "valueStatement": "Reliability becomes a compounding, self-improving system instead of a set of one-time projects. FMEA is reviewed on a continuous cycle, refined by real RSE evidence rather than reopened once and forgotten. Inventory strategy shifts from stocking against fear to stocking against actual predicted risk. And the loop closes all the way back to procurement — every failure investigated in operations informs the next asset you buy, so reliability gets designed in before an asset ever enters service, not fixed after the fact. This is the difference between managing failures and preventing them.",
-      "readinessText": null,
+      "readinessText": "FMEA governance is continuous, RSE models are maturing from evidence, AIP is fully operational, lean inventory is active, and the design-for-reliability loop is closed.",
       "potentialOutcomes": [
         {
           "stat": "10–15%",
@@ -11858,7 +11980,7 @@ const journey = {
       "name": "Reactive Execution",
       "description": "The organization operates in a reactive mode: work is logged but not systematically planned or dispatched. The data foundation for FSM is being established — labor records, craft classifications, calendar/shift definitions, and basic job plan templates. Scheduled dates on work orders and the ownership-vs-assignment distinction are the defining Level 1 signals.",
       "valueStatement": "Establishes baseline scheduling discipline and digital labor records — moving away from unstructured verbal dispatch to formal scheduled dates and distinct work assignments in Maximo Manage.",
-      "readinessText": null,
+      "readinessText": "Labour records, craft classifications, calendar/shift definitions, and basic job plan templates are established. Work orders carry scheduled dates.",
       "potentialOutcomes": [
         {
           "stat": "Elimination",
@@ -11902,7 +12024,7 @@ const journey = {
       "name": "Coordinated Operations",
       "description": "Work orders carry scheduled dates and a forward planning horizon is established (weekly to monthly). A centralized scheduler or dispatcher role is active and using Assignment Manager. Workforce availability data is enriched with exceptions. Job plans are enriched with materials, tools, and classifications. HSE, Inspections, and Inventory management enter at this stage as parallel capability layers.",
       "valueStatement": "Centralizes schedule coordination and field dispatch — providing single-pane visibility across labor and crew capacity, extending forward planning horizons, and deploying mobile work execution to eliminate paper delays.",
-      "readinessText": null,
+      "readinessText": "Centralized schedule coordination and field dispatch — single-pane visibility across labor and crew capacity, extended planning horizons, and mobile work execution that eliminates paper delays.",
       "potentialOutcomes": [
         {
           "stat": "10–15%",
@@ -11952,7 +12074,7 @@ const journey = {
       "name": "Structured Scheduling",
       "description": "Forward planning extends to rolling windows with predecessor and hierarchy constraints. System-suggested dispatch based on effective availability is active. Job plans are scoped to asset classes, include hierarchies and predecessors, and are linked to asset data. Inspection results feed condition data and inventory is planned against work requirements.",
       "valueStatement": "Optimizes crew productivity and work preparation — enriching job plans with planned materials and tool requirements, sequencing work by dependencies, and routing technicians by geographic proximity.",
-      "readinessText": null,
+      "readinessText": "Optimized crew productivity and work preparation — enriching job plans with planned materials and tools, sequencing work by dependencies, and routing technicians by geographic proximity.",
       "potentialOutcomes": [
         {
           "stat": "15–25%",
@@ -12007,7 +12129,7 @@ const journey = {
       "name": "Intelligent Field Coordination",
       "description": "The Optimizer runs automatically via cron-based scheduling. Assignments are system-generated based on constraints, skills, and optimized availability. Planning, Scheduling, and Dispatch dashboards are live with cost, resource, and compliance views. Condition-based inspection and optimized inventory management are active.",
       "valueStatement": "Automates schedule optimization and exception handling — using constraint-based algorithms to match technicians by skill and location, dynamically inject emergency break-in work, and integrate storeroom inventory at the point of work.",
-      "readinessText": null,
+      "readinessText": "Automated schedule optimization and exception handling — constraint-based algorithms match technicians by skill and location, inject emergency break-in work, and integrate storeroom inventory at the point of work.",
       "potentialOutcomes": [
         {
           "stat": "≥80%",
@@ -12067,7 +12189,7 @@ const journey = {
       "name": "Optimized Field Operations",
       "description": "The Optimizer operates fully autonomously for routine scheduling and dispatch. Humans are approvers and exception handlers only. Strategic inventory, AIP-connected job plans, and GenAI-assisted work execution complete the full FSM maturity picture.",
       "valueStatement": "Achieves autonomous, end-to-end field workforce execution — leveraging automated cron-based optimization, GenAI point-of-work troubleshooting, and real-time field actuals to drive continuous schedule refinement.",
-      "readinessText": null,
+      "readinessText": "Achieved autonomous, end-to-end field workforce execution — automated cron-based optimization, GenAI point-of-work troubleshooting, and real-time field actuals driving continuous schedule refinement.",
       "potentialOutcomes": [
         {
           "stat": "Up to 26%",
@@ -14233,6 +14355,11 @@ function renderExpansionCard(containerId, track, trackResult) {
       <p class="expansion-value__text">${escHtml(targetStageData.description)}</p>
     </div>
 
+    ${targetStageData.readinessText ? `<div class="expansion-value">
+      <p class="expansion-value__label">Are you ready?</p>
+      <p class="expansion-value__text">${escHtml(targetStageData.readinessText)}</p>
+    </div>` : ""}
+
     <div class="potential-outcomes">
       <p class="potential-outcomes__label">Potential outcomes</p>
       <div class="potential-outcomes__items">${outcomesHtml}</div>
@@ -14479,6 +14606,7 @@ function wireFeedback() {
 
   const send = (value, comment) => {
     document.dispatchEvent(new CustomEvent("report:feedback", { detail: { value, comment: comment || "" } }));
+    window.va?.("event", { name: "report_feedback", data: { value } });
     el.innerHTML = `<p class="feedback__thanks">Thanks — noted.</p>`;
     // Both "Yes" and "No" print in the PDF. The section is shown whenever
     // answered; the answer (and optional comment for "No") appear under the question.
@@ -15134,11 +15262,250 @@ function initResponsesDownload(contact, isDemoReport, growthAppetite) {
 /* --------------------------------------------------------------------------
    Bootstrap
    -------------------------------------------------------------------------- */
+/* --------------------------------------------------------------------------
+   Mobile Comparison View
+   Renders a full-screen split view on mobile (≤767px) that lets the user
+   compare two journey stages side by side (top/bottom).
+   -------------------------------------------------------------------------- */
+function initComparisonView(result) {
+  // Only activate on mobile — if window is desktop-width we still wire
+  // everything but the overlay remains CSS-hidden.
+  const overlay      = document.getElementById("compare-view");
+  const configPanel  = document.getElementById("compare-config-panel");
+  const configBtn    = document.getElementById("compare-config-btn");
+  const configDone   = document.getElementById("compare-config-done");
+  const navToggle    = document.getElementById("mobile-compare-toggle");
+  const navPanel     = document.getElementById("mobile-nav-panel");
+  const navBarToggle = document.getElementById("mobile-nav-toggle");
+  const subtitle     = document.getElementById("compare-subtitle");
+
+  const trackSel  = document.getElementById("compare-track-select");
+  const stageASel = document.getElementById("compare-stage-a-select");
+  const stageBSel = document.getElementById("compare-stage-b-select");
+
+  const paneTopScroll = document.getElementById("compare-pane-top-scroll");
+  const paneBotScroll = document.getElementById("compare-pane-bottom-scroll");
+  const paneTopNum  = document.getElementById("compare-pane-top-num");
+  const paneTopName = document.getElementById("compare-pane-top-name");
+  const paneBotNum  = document.getElementById("compare-pane-bottom-num");
+  const paneBotName = document.getElementById("compare-pane-bottom-name");
+
+  if (!overlay || !configPanel || !trackSel || !stageASel || !stageBSel) return;
+
+  // State
+  let activeTrack = result?.fsm ? "fsm" : "apm";
+  const apmResult = result?.apm || { currentStage: 1, targetStage: 2 };
+  const fsmResult = result?.fsm || { currentStage: 1, targetStage: 2 };
+
+  // Track labels
+  const TRACK_LABELS = {
+    apm: "Asset Performance Management (APM)",
+    fsm: "Field Service Management (FSM)",
+  };
+
+  /* ---------- Helpers ---------- */
+  function escH(s) { return escHtml(s); }
+
+  function buildPaneContent(stageData) {
+    if (!stageData) return "<p>No data.</p>";
+    const outcomesHtml = (stageData.potentialOutcomes || []).map(o => `
+      <div class="compare-pane__outcome-item">
+        <p class="compare-pane__outcome-stat">${escH(o.stat)}</p>
+        <p class="compare-pane__outcome-label">${escH(o.label)}</p>
+      </div>`).join("");
+
+    const movesHtml = (stageData.keyMoves || []).length
+      ? `<div class="compare-pane-section">
+           <p class="compare-pane__sub-label">Key moves</p>
+           <ul class="compare-pane__moves">
+             ${stageData.keyMoves.map(m => `<li class="compare-pane__move-item">${escH(m)}</li>`).join("")}
+           </ul>
+         </div>`
+      : "";
+
+    const productsHtml = (stageData.products || []).length
+      ? `<div class="compare-pane-section">
+           <p class="compare-pane__sub-label">Products</p>
+           <div class="compare-pane__tags">
+             ${stageData.products.map(p => `<span class="compare-pane__tag${p.active ? " compare-pane__tag--active" : ""}">${escH(p.name)}</span>`).join("")}
+           </div>
+         </div>`
+      : "";
+
+    return `
+      <div class="compare-pane-section">
+        <h3 class="compare-pane__heading">Where the customer is</h3>
+        <p class="compare-pane__body">${escH(stageData.description)}</p>
+      </div>
+
+      <div class="compare-pane-section">
+        <p class="compare-pane__sub-label">Value after resolving</p>
+        <p class="compare-pane__body">${escH(stageData.valueStatement || "")}</p>
+        <div class="compare-pane__outcomes">${outcomesHtml}</div>
+      </div>
+
+      ${movesHtml}
+      ${productsHtml}`;
+  }
+
+  /* ---------- Populate stage dropdowns for a given track ---------- */
+  function populateStageOptions(track) {
+    const stages = journey[track] || [];
+    const res    = track === "apm" ? apmResult : fsmResult;
+    const defaultA = res.currentStage - 1;
+    const defaultB = res.targetStage  - 1;
+
+    [stageASel, stageBSel].forEach((sel, idx) => {
+      const defaultIdx = idx === 0 ? defaultA : defaultB;
+      sel.innerHTML = stages.map((s, i) => `
+        <option value="${i}" ${i === defaultIdx ? "selected" : ""}>
+          Stage ${pad2(i + 1)} — ${escH(s.name)}
+        </option>`).join("");
+    });
+  }
+
+  /* ---------- Render both panes ---------- */
+  function renderPanes() {
+    const stages  = journey[activeTrack] || [];
+    const idxA    = Number(stageASel.value);
+    const idxB    = Number(stageBSel.value);
+    const stageA  = stages[idxA];
+    const stageB  = stages[idxB];
+
+    // Update pane headers
+    if (stageA) {
+      paneTopNum.textContent  = `Stage ${pad2(idxA + 1)}`;
+      paneTopName.textContent = stageA.name;
+    }
+    if (stageB) {
+      paneBotNum.textContent  = `Stage ${pad2(idxB + 1)}`;
+      paneBotName.textContent = stageB.name;
+    }
+
+    // Update subtitle
+    if (subtitle) subtitle.textContent = TRACK_LABELS[activeTrack] || activeTrack.toUpperCase();
+
+    // Render content
+    if (paneTopScroll) paneTopScroll.innerHTML = buildPaneContent(stageA);
+    if (paneBotScroll) paneBotScroll.innerHTML = buildPaneContent(stageB);
+
+    // Reset scroll positions
+    if (paneTopScroll) paneTopScroll.scrollTop = 0;
+    if (paneBotScroll) paneBotScroll.scrollTop = 0;
+  }
+
+  /* ---------- Linked scroll (sync the two panes) ---------- */
+  let scrollingSide = null;
+  let scrollTimer   = null;
+
+  function syncScroll(source, target) {
+    if (scrollingSide && scrollingSide !== source) return;
+    scrollingSide = source;
+    const sourceEl = source === "top" ? paneTopScroll : paneBotScroll;
+    const targetEl = source === "top" ? paneBotScroll : paneTopScroll;
+    if (!sourceEl || !targetEl) return;
+
+    const sourcePct = sourceEl.scrollTop / (sourceEl.scrollHeight - sourceEl.clientHeight || 1);
+    const targetPos = sourcePct * (targetEl.scrollHeight - targetEl.clientHeight);
+    targetEl.scrollTop = targetPos;
+
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(() => { scrollingSide = null; }, 80);
+  }
+
+  if (paneTopScroll) paneTopScroll.addEventListener("scroll", () => syncScroll("top", "bot"),    { passive: true });
+  if (paneBotScroll) paneBotScroll.addEventListener("scroll", () => syncScroll("bot", "top"), { passive: true });
+
+  /* ---------- Open / close the overlay ---------- */
+  function openCompareView() {
+    overlay.removeAttribute("hidden");
+    // Show gear button in nav bar
+    if (configBtn) configBtn.removeAttribute("hidden");
+    // Close nav panel if open
+    if (navPanel) navPanel.hidden = true;
+    if (navBarToggle) navBarToggle.setAttribute("aria-expanded", "false");
+    document.body.style.overflow = "hidden"; // prevent body scroll under overlay
+  }
+
+  function closeCompareView() {
+    overlay.setAttribute("hidden", "");
+    configPanel.setAttribute("hidden", "");
+    if (configBtn) configBtn.setAttribute("hidden", "");
+    document.body.style.overflow = "";
+  }
+
+  /* ---------- Open / close the config panel ---------- */
+  function openConfigPanel() {
+    configPanel.removeAttribute("hidden");
+    if (configBtn) configBtn.setAttribute("aria-expanded", "true");
+  }
+
+  function closeConfigPanel() {
+    configPanel.setAttribute("hidden", "");
+    if (configBtn) configBtn.setAttribute("aria-expanded", "false");
+  }
+
+  /* ---------- Apply config (Done button) ---------- */
+  function applyConfig() {
+    const newTrack = trackSel.value;
+    if (newTrack !== activeTrack) {
+      activeTrack = newTrack;
+      populateStageOptions(activeTrack);
+    }
+    renderPanes();
+    closeConfigPanel();
+  }
+
+  /* ---------- Wire events ---------- */
+  if (navToggle) {
+    navToggle.addEventListener("click", () => {
+      populateStageOptions(activeTrack);
+      renderPanes();
+      openCompareView();
+    });
+  }
+
+  if (configBtn) configBtn.addEventListener("click", () => {
+    if (configPanel.hasAttribute("hidden")) openConfigPanel();
+    else closeConfigPanel();
+  });
+
+  if (configDone) configDone.addEventListener("click", applyConfig);
+
+  // Track selector change → repopulate stage options instantly (no "Done" needed)
+  if (trackSel) trackSel.addEventListener("change", () => {
+    populateStageOptions(trackSel.value);
+  });
+
+  // Escape closes config panel, then compare view
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    if (!configPanel.hasAttribute("hidden")) { closeConfigPanel(); return; }
+    if (!overlay.hasAttribute("hidden"))     { closeCompareView(); }
+  });
+
+  // Initialise: pre-populate dropdowns using the result's track default
+  populateStageOptions(activeTrack);
+  if (trackSel) trackSel.value = activeTrack;
+}
+
 initReport = async function(result) {
   // In the standalone build, app.js passes the result directly to avoid
   // sessionStorage and page navigation.  On report.html, fall back to
   // sessionStorage (or the mock when nothing has been stored yet).
   result = result ?? MOCK_RESULT;
+
+  // Track report view. Demo/mock reports are labelled so they can be filtered
+  // out of completion counts in the Vercel Analytics dashboard.
+  const isDemoReport = result === MOCK_RESULT || !!result._demo;
+  window.va?.("event", {
+    name: "report_viewed",
+    data: {
+      demo: isDemoReport,
+      ...(result.contact?.industry && { industry: result.contact.industry }),
+      ...(result.maturity?.score != null && { maturity_score: result.maturity.score }),
+    },
+  });
 
   // Render all sections
   renderSidebarMeta(result.contact);
@@ -15157,6 +15524,7 @@ initReport = async function(result) {
   closeTooltipsOnOutsideClick();
   wireSellerButtons(result);
   initShareModal(result);
+  initComparisonView(result);
 }
 
 /* --------------------------------------------------------------------------
@@ -15320,6 +15688,15 @@ function wireSellerButtons(result) {
     document.querySelectorAll(sel).forEach(btn => {
       btn.setAttribute("href", href);
       btn.removeAttribute("disabled");
+      btn.addEventListener("click", () => {
+        window.va?.("event", {
+          name: "seller_contact_initiated",
+          data: {
+            source: btn.dataset.autotrackId ?? sel,
+            ...(result.contact?.industry && { industry: result.contact.industry }),
+          },
+        });
+      });
     });
   });
 }
@@ -15365,6 +15742,13 @@ function initShareModal(result) {
   }
 
   sendBtn.addEventListener("click", () => {
+    window.va?.("event", {
+      name: "seller_contact_initiated",
+      data: {
+        source: "share_modal",
+        ...(result.contact?.industry && { industry: result.contact.industry }),
+      },
+    });
     window.location.href = href;
     closeModal();
   });
@@ -15456,6 +15840,7 @@ window.startAssessment = () => {
   loadAssessmentArtwork();
   render();
   window.scrollTo({ top: 0, behavior: "instant" });
+  window.va?.("event", { name: "assessment_started" });
 };
 
 /* The sidebar artwork is ~580KB and belongs to the assessment, which nobody is
@@ -15906,6 +16291,10 @@ const handleNext = (event) => {
     } catch {
       // storage unavailable — the report simply leaves "Download responses" off
     }
+    // Track submission with industry for completion-by-industry breakdown.
+    // __contact_industry is set on the session details page (scoring.js line ~483).
+    const industry = answers["__contact_industry"] ?? null;
+    window.va?.("event", { name: "assessment_submitted", ...(industry && { data: { industry } }) });
     // Run scoring engine and redirect to report page
     els.btnNext.disabled = true;
     Promise.resolve()
@@ -15922,6 +16311,7 @@ const handleNext = (event) => {
       });
     return;
   }
+  window.va?.("event", { name: "assessment_page_advance", data: { page: state.page + 1 } });
   goTo(state.page + 1);
 };
 
@@ -15931,8 +16321,30 @@ els.btnBack.addEventListener("click", () => {
   if (state.page === 0) {
     showSplash();
   } else {
+    window.va?.("event", { name: "assessment_page_back", data: { from: state.page } });
     goTo(state.page - 1);
   }
+});
+
+/* ----------------------------------------------------------------------
+   Exit / stall tracking
+   Fires once per tab when the user leaves the page mid-assessment.
+   Records the page index so we can rank which question loses the most people.
+   Uses pagehide (reliable on mobile Safari) with visibilitychange as backup.
+   Only fires when they have started answering (page > 0) and have not yet
+   submitted (submission navigates away before this can fire).
+   ---------------------------------------------------------------------- */
+let _submitted = false;
+document.addEventListener("assessment:submit", () => { _submitted = true; });
+
+function trackExit() {
+  if (_submitted || state.page === 0) return;
+  window.va?.("event", { name: "assessment_exit", data: { page: state.page } });
+}
+
+window.addEventListener("pagehide", trackExit);
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") trackExit();
 });
 
 /* ----------------------------------------------------------------------

@@ -174,7 +174,7 @@ def build_journey(rows: list[dict[str, str]]) -> list[dict[str, Any]]:
             "name": row.get("Stage Name"),
             "description": clean_dash_spacing(blank_to_none(row.get("Description"))),
             "valueStatement": clean_dash_spacing(blank_to_none(row.get("Value statement"))),
-            "readinessText": clean_dash_spacing(blank_to_none(row.get("Milestones"))),
+            "readinessText": clean_dash_spacing(blank_to_none(row.get("Are you ready"))),
             "potentialOutcomes": parse_outcomes(row.get("Potential outcomes")),
             "keyMoves": split_bullet_lines(row.get("Key moves")),
             "products": parse_products(row.get("MAS Products")),
